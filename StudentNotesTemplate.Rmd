@@ -1,0 +1,28 @@
+---
+title: "Student Notes Template (Replace Title With Day or Section Number)"
+author: "Student Name"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#We'll load the tidyverse since it includes the majority of packages we'll want
+library(tidyverse)
+library(tidymodels)
+```
+
+**General Note:** You should keep a copy of this template on your computer. Open it at the beginning of each class period, and use `File -> Save As` to save a new copy corresponding to that class period. This way you'll have a notebook for each individual class meeting and you won't ever overwrite the template file or your previous notes, on accident. 
+
+Add your own description of the topic...You can type text freely outside of the code chunks.
+
+## Read in Data
+
+We'll start the semester with pre-built notes utilizing the palmer penguins data. Since those notes are pre-built with all of the necessary code and output, I think its a good idea to rewrite your own notes using a different data set. A great example here is the `ames` dataset, which provides us with records of real estate transactions in Ames, Iowa. You are certainly free to choose a different dataset if you'd like though! You can even switch it up from class meeting to class meeting if you are feeling adventurous.
+
+```{r} 
+ames <- read_csv("https://raw.githubusercontent.com/wblakecannon/ames/master/data/housing.csv")
+
+ames
+```
+
+## 

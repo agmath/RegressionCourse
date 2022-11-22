@@ -1,0 +1,40 @@
+---
+title: "Accessing R and RStudio"
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    keep-md: true
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+```
+
+
+The steps for installing R and RStudio are listed below, but detailed instructions follow for both Windows and Mac OS systems.
+
+1. **Install R:** R is a computing language which has been optimized for use in statistics, data analytics, and data science.
+2. **Install RStudio:** RStudio is a convenient way to interface with the R language. Think of R as "Spanish" and RStudio as Microsoft Word -- you can write R in RStudio, just like you can write Spanish text in Microsoft Word.
+
+## 1. Installing R
+
+Installing R is quite simple. Navigate to [CRAN (the Comprehensive R Archive Network)](https://cran.r-project.org/){target="_blank"} and choose the link corresponding to your operating system. Follow the instructions below corresponding to your operating system below. 
+
+**Windows:** 
+
++ Click the link titled **<span style = "color:blue">Install R for the first time</span>**.
++ Click the link to <span style = "color:blue">Download R X.Y.Z for Windows</span>.
++ Once the download completes, run the installer -- keep all of the default options.
+
+
+**MACOS:**
+
++ After clicking the link for the Mac OS X operating system, look for the link titled <span style = "color:blue">R-X.Y.Z.pkg</span>. Click this link and follow the installation instructions. Keep all of the defaults set.
+
+## 2. Installing RStudio
+
++ To install RStudio, click [this link](https://rstudio.com/products/rstudio/download/){target="_blank"}. 
++ Under the *Choose Your Version* heading, you'll click the Download button underneath the *Free Desktop Version*.
++ RStudio.com will automatically detect your operating system. Click the download link presented to you. It is a blue button underneath step "2." -- you've already done step "1.".
++ Once the download has finished, run the installer -- keep all of the default options.

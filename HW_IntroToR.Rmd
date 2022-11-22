@@ -1,0 +1,51 @@
+---
+title: 'Homework Problems: Introduction to R'
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+    keep-md: true
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+
+```
+
+This homework set is intended to provide you with practice manipulating and visualizing data. 
+
+**Feel free to ask questions or for help with errors in the Slack channel or during our weekly meetings.** 
+
+For these problems, we will use the `nycflights13` datasets, which can be downloaded using the commands
+
+```{r echo = TRUE, eval = FALSE, message = FALSE, warning = FALSE}
+install.packages("nycflights13")
+library(nycflights13)
+```
+
+```{r echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE}
+library(nycflights13)
+```
+
+You now have access to five data frames: `airlines`, `airports`, `flights`, `weather`, and `planes`. A portion of the `flights` dataframe is shown below:
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+flights
+```
+
+You can read more about what each of the variables represents by running `?flights` in the console.
+
+1. Visualize the departure delays in the `flights` data set using a histogram. You should relabel the axes and give your plot a title. What information have you learned from the plot?
+
+2. Create a new column in the data set called `time_gained` which is equal to the departure delay subtracted from the arrival delay. Visualize the `time_gained` variable using a box plot. Describe what you see.
+
+3. Do some airlines tend to have more arrival delays than others? Use side-by-side box plots to visualize the arrival delays of each airline.
+
+4. Let's answer the question above in a slightly different way. Calculate the median arrival delays of each airline using the `median()` function. (You'll want to add the argument `na.rm = TRUE` inside the `median()` function to ignore the `NA` values in the data frame.) Sort the airline carriers from the airlines by median arrival delay. Which airlines are consistently ahead of schedule? You can consult the `airlines` data frame to find the airline names that correspond to the abbreviations. Even better, you can use `left_join()` to join the `airlines` data to your data frame of median arrival delays!
+
+5. From the `weather` data frame, visualize the temperature at the `EWR` airport during the entire month of January in 2013. *Hint:* Use the `origin`, `year`, and `month` variables to `filter()` the data frame, and use `time_hour` as the x coordinate in the plot.
+
+6. Make a bar plot which visualizes the top 30 destinations for planes which depart from `JFK` airport.
+
+7. Pick some other variables that you are interested in from these data frames and make appropriate visualizations.

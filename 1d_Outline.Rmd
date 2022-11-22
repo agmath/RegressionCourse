@@ -1,0 +1,127 @@
+---
+title: "MAT 300: Introduction and What to Expect"
+output:
+  html_document
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(MASS)
+library(tidyverse)
+```
+
+## Syllabus
+
+<div id = "boxedtext"> **Major Highlights from the Syllabus**: I'll ask you to read the syllabus, but here are the most important items:
+
+  + Instructor: Dr. Adam Gilbert
+  
+    + e-mail address: [a.gilbert1@snhu.edu](mailto:a.gilbert1@snhu.edu)
+    + Office: Robert Frost Hall, Room 215
+    + Office Hours: TBD
+  
+  + Books and software are all freely available, see the syllabus for links.
+  + Grading Scheme:
+  <center> 
+  Grade Item                     | Value
+  -------------------------------|-----------
+  Participation                  | TBD
+  Homework/Quizzes/Labs          | TBD
+  Practical Exams (2)            | TBD
+  Competition                    | TBD
+  Projects                       | TBD
+  </center>
+  
+  + The tentative course outline is truly tentative. Use this as a loose agenda, but expect that it will change as we go more quickly or slowly through particular topics.
+</div>
+
+<div id = "boxedtext"> **About the Competition**: The best way to learn regression is by doing regression. I've created a Kaggle competition that is private for students in our class as well as students in a similar class at another college. You'll be in a friendly competition with your classmates and those students from St. Vincent College in Pennsylvania this semester. Your task is to predict XXYY and provide insight into what factors most greatly influence XXYY. Your goal:
+
+  + construct the best performing predictive model (metric used is root mean square prediction error on the evaluation set with hidden XXYY)
+
+You'll need to create a free [Kaggle](https://www.kaggle.com) account before gaining access to the competition. Once you are logged into your Kagge account, you can access the competition information and data [NEED NEW COMPETITION LINK](https://www.kaggle.com/t/46dd24fb0dcb4520bba3762b533a58e9). I hope that you'll find this friendly competition to be fun and motivating.
+</div>
+
+<div id = "boxedtext"> **Projects**: Students in MAT300 will be broken into teams of three students to work on a large-scale project at the end of the semester. That project will include a full *analytics report*. MORE INFORMATION TO COME.
+</div>
+
+## Brightspace
+
+<div id = "boxedtext"> Brighspace will contain much of our course material. The following sections will be used:
+
+  + **Syllabus**: our class syllabus will always be available here
+  + **Notes**: It won't be extremely often that we have formal notes, but I'll post important synopses of our discussions here.
+  + **Practical Activities**: Most of our coursework and learning will be done interactively in class. Your interests and insights will dictate the analyses we run. For the majority of these *practical activities*, I will post recap documents which serve as a *debrief* of the most important takeaways from that activity.
+  + **Homework**: I'll post homework assignments and solutions here.
+  + **Projects**: Get generic information about the projects will go here.
+</div>
+
+## Day-to-Day Activity
+
+<div id = "boxedtext"> Here's what you can expect to see in class:
+
+  + **Discussion Days** - This course will be infinitely better if we all contribute ideas. We'll spend quite a few of our class meetings discussing material, applications, and interpretations.
+  + **Practical Activity / Lab Days** - I really think that this material is best learned by actually working with data, constructing and evaluating models, and also interpreting what our models tell us. My hope is that you'll learn most of the material in this course through doing hands on labs.
+  + **Lecture Days** - I honestly hope to have none of these. I think that most of the material can be delivered and uncovered via activities and our discussions. I'll spend time explaining the more technical portions of the course material as needed though.
+
+As with every one of my courses, I am absolutely open to changing the structure of course delivery. If the structure of this course isn't working for you, please reach out to me and we can make changes. My goal in this course is for all of you to learn as much about regression and statistical modeling as possible -- we can't achieve that if you don't feel like you are learning.
+</div>
+
+## The Big Picture
+
+<div id = "boxedtext"> We'll be discussing a lot of material in MAT 300. Here is a very generic road map of what we will discuss. Starting now.
+
+  + What are we doing?
+  
+    + Data science?
+    + Machine learning?
+    + Statistical learning?
+    
+  + Background for working with data
+  
+    + What is data?
+    + How to work with data: Don't spend it all in one place!
+    + How do we visualize and story-tell with data?
+    + What if my data is messy? (Spoiler Alert: It will be!)
+    
+  + What do I need from MAT 240?
+  + Regression
+  
+    + What is regression?
+    + Simple regression
+    + Assessing model performance
+    + The bias-variance trade off
+    + Accuracy versus interpretability
+    + Multiple linear regression
+    + How do we deal with categorical predictors?
+  
+  + Advanced topics
+  
+    + What if my dataset has lots of features?
+    + Can we penalize models to avoid overfitting?
+    + What happens when relationships change?
+    + Are there other classes of regression model?
+    + Can we build models that predict a categorical outcome?
+</div>
+
+## Closing...
+
+<div id = "boxedtext"> **Homework**: Please do the following for homework before our next meeting:
+
+  + Read Chapter 1 (pages 1 - 14) of the [Introduction to Statistical Learning (ISLR)](https://hastie.su.domains/ISLR2/ISLRv2_website.pdf) book.
+  
+    + The chapter discusses three arenas where statistical learning is applied (regression, classification, and unsupervised learning). We will only discuss regression and a tiny snippet of classification in this course, but reading those example scenarios will give you a better grasp on what it is we are doing in this class.
+  
+  + Download the `HW1.rmd` homework file from BrightSpace and open it in RStudio. Complete the tasks, render the document as an HTML file, and submit both your `HW1.rmd` and `HW1.html` files to the Homework 1 Assignment Folder in BrightSpace.
+</div>
+
+<div id = "boxedtext"> **Next time**: we will discuss...
+  
+  + What is statistical learning in terms of regression?
+  + Why try to build models (estimate $f$)?
+  + What are noise, reducible error, and irreducible error?
+  + Why are prediction and interpretation competing objectives?
+  + What are parametric and non-parametric models?
+  + How do I identify regression versus classification problems?
+  + What is the difference between supervised and unsupervised learning?
+</div>

@@ -1,0 +1,253 @@
+---
+title: 'Enter the Tidyverse: An Introduction to Tidy Data Analysis in R'
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    css: lab.css
+    keep-md: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+```
+
+## Objectives
+
+This notebook addresses the following items.
+
+  + How do I install and load packages in R? In particular we'll work with the `tidyverse`.
+  + How do I read data into R from both local and remote sources?
+  + How do I interact with, and manipulate, data using the tools and principles of the `tidyverse`?
+  
+## Installing and Loading Packages
+
+We can install R packages using the command `install.packages("PACKAGE_NAME")`. Once packages are installed, we can load them into an R Session by running `library(PACKAGE_NAME)`. While packages only need to be *installed* once, they must be loaded in each R Session you intend to use them in (**note:** an R Session begins when R/RStudio are opened and ends when they are closed or terminated). We can install and load the `tidyverse` by running the code below:
+
+```{r echo = TRUE, eval = FALSE}
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+1. Open RStudio and run these commands in the Console pane (left/lower-left). We'll be using the `tidytext` package in the summer 2021 workshop -- install this package as well. You can also load it if you want, but we won't use it here.
+
+## Loading Data
+
+Now that you have the `tidyverse` loaded, the next thing we'll need is actual data to manipulate. The `tidyverse` comes with a few standard data sets for practicing with, but we'll be much more interested in working with our own data which we'll either find locally (stored on your own computer) or remotely (accessed via a web URL). The `tidyverse` includes several functions for reading data in a variety of formats:
+
+  + `read_csv("PATH_TO_FILE")` can be used to read data from a comma separated values (csv) file.
+  + `read_delim("PATH_TO_FILE", delim = "DELIMITER")` is a more general version of the `read_csv()` function -- we can use this to read text files whose delimiter is something other than a comma. Common delimiters are the tab (`\t`) or space (`\s`).
+  + `read_excel("PATH_TO_FILE", sheet = "SHEET_NAME")` can be used to read data from a particular sheet within an xls or xlsx file.
+
+The following examples show how we can read a variety of files into an R Session.
+
+```{r echo = TRUE, eval = FALSE}
+#Read the MAT241 sheet from the grades.xls file in 
+#the Spring 2021 folder on my computer's desktop
+grades <- read_excel("C:/Users/agilb/Desktop/Spring 2021/grades.xls", sheet = "MAT241")
+
+#Read in data from a csv file of Tate Gallery Artists housed 
+#in a public github repository on the web
+tate_artists <- read_csv("https://github.com/tategallery/collection/raw/master/artist_data.csv")
+
+#Read in data from a csv file of Tate Gallery Artworks housed
+#in a public github repository on the web
+#*Note* that read_csv() would have worked just fine here too
+tate_works <- read_delim("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-12/artwork.csv", delim = ",")
+```
+  
+## Viewing Data
+
+Now that we've got data, the first thing we should do is look at it. There are a few really handy R functions for *getting a feel* for the data you have access to. The `View()`, `head()`, `tail()`, and `glimpse()` functions are four that are really commonly used. For the remainder of this notebook we'll use a data frame called `mpg` which is built into the `tidyverse`.
+
+  + Running `View(mpg)` will open a file viewer which allows you to navigate the data frame in a familiar spreadsheet format. 
+  + Using `head(mpg)` and `tail(mpg)` give us a convenient method for looking at the first six and last six rows of a data frame, respectively. This is typically enough to give us an idea of the type of data we are working with. Running both of these functions can also make us aware of potential inconsistencies in data collection.
+    ```{r echo = TRUE, eval = TRUE}
+    head(mpg)
+    tail(mpg)
+    ```
+  + Running `glimpse(mpg)` provides us with a bit more technical information about how R is interpreting the columns of the `mpg` data frame. Knowing how R is interpreting our variables (columns) is important because certain operations are possible with numerical data but are not possible with categorical data, and vice-versa. Common data types in R are `chr`/`fct` (categorical data) and `num`/`dbl`/`int` (numerical data).
+    ```{r echo = TRUE, eval = TRUE}
+    glimpse(mpg)
+    ```
+
+## Manipulating Data
+
+Now that we know how to load and view our data, let's talk about manipulating it. We can restrict the data we are working with, produce summaries of the data, transform the data, and more.
+
+### Pipes `%>%`
+
+Pipes are a functionality that is included in a package that is part of `tidyverse` library. At first, the syntax may seem a bit strange, but pipes allow you to easily manipulate data without having to rename and save the dataset along the way. I strongly encourage you get used to working with pipes! In the previous section we saw how to use R's `head()` function to look at the first six rows of the dataset. Here's how to achieve the same outcome with the use of the pipe (`%>%`) operator.
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+mpg %>%
+  head()
+```
+
+You can read the code above as saying "take the `mpg` dataset, and plug it into the `head()` function". Putting `head()` indented on a new line is not necessary for the code to work, but it does make the code easier to read. This new method of asking for the `head()` of the dataset may seem silly and inefficient, but the real magic of the pipe is that it allows us to chain operations together in a way that mimics the way humans think about instructions. We'll see this in action as we get exposure to more data manipulation tools below.
+
+### Restricting Data
+
+The most common methods for restricting data deal with filtering out rows or columns so that we are only working with a subset of our original data set.
+
+#### Filtering Rows (`filter()`)
+
+Sometimes we are not interested in all of the observations in a particular dataset, but only those satisfying certain criteria. For example, maybe we only want to see vehicles falling into the class of *subcompact* cars. The `filter()` function will allow us to get rid of all other classes of vehicle.
+
+```{r echo = TRUE, eval = TRUE}
+mpg %>% 
+  filter(class == "subcompact") %>%
+  head()
+```
+
+We can also use more complex conditions on which rows to see using *and* (`&`) and *or* (`|`) statements. Maybe we want to see only those vehicles in the made by `subaru` or  getting at least a 35 highway mile per gallon rating (`hwy`).
+
+```{r echo = TRUE, eval = TRUE}
+mpg %>% 
+  filter(manufacturer == "subaru" | hwy >= 35) %>%
+  head()
+```
+
+#### Selecting Columns (`select()`)
+
+Similarly to the way we can filter rows, we can select only those columns we are interested in. We can pass the names of the columns we are interested in to R's `select()` function so that we only see those selected columns returned.
+
+```{r echo = TRUE, eval = TRUE}
+mpg %>%
+  select(manufacturer, model, year, cty, hwy, class) %>%
+  head()
+```
+
+We can also select all columns *except* certain ones by preceding the column name with a `-`.
+
+```{r echo = TRUE, eval = TRUE}
+mpg %>%
+  select(-displ,-cyl) %>%
+  head()
+```
+
+The `select()` function is also useful for changing the order of the columns.
+
+```{r echo = TRUE, eval = TRUE}
+mpg %>%
+  select(cty, hwy, manufacturer) %>%
+  head()
+```
+
+We can combine `filter()` and `select()` through the pipe as well. For any pipe, the result of the "upstream" code (the code before the pipe) is passed into the function that follows the pipe.
+
+```{r echo = TRUE, eval = TRUE}
+mpg %>%
+  filter(year >= 2005) %>%
+  select(manufacturer, model, year, cty, hwy, class) %>%
+  head()
+```
+
+**A Note on Pipes:** The advantage to the pipe operator is probably pretty clear by now. The code we just wrote says *take the `mpg` data set, filter it so that we only see cars manufactured since 2005, show me only the few columns I am interested in, and just let me see the first six rows for now*. The alternative to this would be writing code that looks a lot less readable:
+
+```{r echo = TRUE, eval = FALSE}
+head(select(filter(mpg, year >= 2005), manufacturer, model, year, cty, hwy, class))
+```
+
+### Summarizing Data
+
+There are lots of ways we can summarize our data. We can provide simple counts, compute averages, even build out our own summary functions.
+
+#### Computing Counts
+
+We can start with a simple question like, *how many cars from each manufacturer are contained in this dataset?* To answer this, we simply pipe the `mpg` data frame into the `count()` function, identifying the `manufacturer` column as the column we wish to count.
+
+```{r echo = TRUE, eval = TRUE}
+mpg %>%
+  count(manufacturer) %>%
+  head()
+```
+
+The counts are displayed in alphabetical order by manufacturer. We might be interested in the most well-represented manufacturers. We'll do this with `arrange()` -- we can pass this function the argument `desc(n)` to say that we want to arrange by our new count column in descending order, and let's ask for the top 10 rows instead of the top 6.
+
+```{r echo = TRUE, eval = TRUE}
+mpg %>%
+  count(manufacturer) %>%
+  arrange(desc(n)) %>%
+  head(n = 10)
+```
+
+Let's say we wanted to know how many different models of car each manufacturer has released since the year 2000. This is a more complicated question. We would first need to filter the data so that we are only considering cars manufactured since the year 2000. Then we would subset to include only the `manufacturer` and `model` columns. There are lots of duplicates here, so we would want to remove them with a function called `distinct()`, and then finally we could count occurrences within each `manufacturer`
+
+```{r echo = TRUE, eval = TRUE}
+mpg %>%
+  filter(year >= 2000) %>%
+  select(manufacturer, model) %>%
+  distinct() %>%
+  count(manufacturer) %>%
+  arrange(desc(n)) %>%
+  head()
+```
+
+#### Summarizing Numerical Data
+
+Summarizing categorical data is most often done with counts, but we've got many more choices when we are working with numerical data. We have several measures of center or spread that we could choose from -- we could even define our own metrics. Let's say we wanted to know the median highway mile per gallon rating across all vehicles in our dataset. We'll need the help of R's `summarize()` function as well as the `median()` function for this.
+
+```{r echo = TRUE, eval = TRUE}
+mpg %>% 
+  summarize(median_hwy = median(hwy))
+```
+
+With the use of `summarize()` we can get multiple summaries at once. Let's compute the mean and standard deviation for both the highway and city mile per gallon ratings across all of the vehicles in our data set.
+
+```{r echo = TRUE, eval = TRUE}
+mpg %>% 
+  summarize(mean_hwy = mean(hwy), std_deviation_hwy = sd(hwy), mean_cty = mean(cty), std_deviation_cty = sd(cty))
+```
+
+It might be useful if we could get grouped summary statistics. Let's use `group_by()` to see how these measures vary across the different vehicle classes.
+
+```{r echo = TRUE, eval = TRUE, message = FALSE}
+mpg %>%
+  group_by(class) %>%
+  summarize(mean_hwy = mean(hwy), std_deviation_hwy = sd(hwy), mean_cty = mean(cty), std_deviation_cty = sd(cty))
+```
+
+Let's arrange the result here by mean highway mile per gallon rating in the default ascending order.
+
+```{r echo = TRUE, eval = TRUE, message = FALSE}
+mpg %>%
+  group_by(class) %>%
+  summarize(mean_hwy = mean(hwy), std_deviation_hwy = sd(hwy), mean_cty = mean(cty), std_deviation_cty = sd(cty)) %>%
+  arrange(mean_hwy)
+```
+
+That's pretty informative although not totally surprising. Subcompact cars seem to have a high level of variation in their mpg ratings though!
+
+### Transforming Data
+
+Often, you may be in a situation where you would like to create new columns, using the existing columns. This can be done using the `mutate()` command. The syntax is
+
+```{r echo = TRUE, eval = FALSE, message = FALSE, warning = FALSE}
+dataset %>%
+  mutate(new_column_name = function_of_old_columns)
+```
+
+In the `mpg` dataset, let's add a column which is the ratio between the city `cty` and highway `hwy` gas milages, and use the `arrange()` function to find cars with the highest city to highway gas milages:
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+mpg %>%
+  mutate(mpg_ratio = cty/hwy) %>%
+  select(manufacturer,model,cty,hwy,mpg_ratio) %>%
+  arrange(desc(mpg_ratio))
+```
+
+Once pretty common step in an analysis is to create a categorical column from a variable which was originally numeric. In order to do this we can use the `if_else()` function. The three arguments of `if_else()` are a condition, and the values you want to fill if the condition is true or false, respectively.
+
+```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+mpg %>%
+  mutate(pre_2000 = if_else(year < 2000, "yes", "no")) %>%
+  select(manufacturer,model,year,pre_2000)
+```
+
+
+## Final Thoughts
+
+There is a lot more to learn about data manipulation and R in general. Sticking to the `tidyverse` and the other package groups within the *tidy*-ecosystem (ie. `tidytext`, `tidymodels`, etc.) will be beneficial because they are all built on common syntax and programmatic principles. You can read more about this in the [TidyTools Manifesto](https://tidyverse.tidyverse.org/articles/manifesto.html).
+
+You won't be an expert after working through this document, but it should provide you with a solid start. Please feel free to add your own notes to this markdown file as we encounter more advanced functionality.

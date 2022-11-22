@@ -1,0 +1,51 @@
+---
+title: "MAT300 Regression Analysis: Simple R Markdown Notebook Template"
+author: "Me, Researcher"
+date: "`r format(Sys.Date(), '%d %B, %Y')`" 
+output: 
+  html_document:
+    theme: cerulean
+    highlight: pygments
+---
+
+## Purpose
+
+The purpose of this template is to introduce R Markdown as a method for constructing reproducible research involving data analysis. Markdown allows us to mix free-form text and executable code, among other things (html and LaTeX). Be sure to view this document via the RMD source file in RStudio rather than as the rendered HTML file so that you can see the structure of the Markdown file. 
+
+You can download the source file <a href="https://raw.githubusercontent.com/agmath/FacultyUpskilling/main/2021_NLP/MarkdownTemplate.Rmd" download>here</a>. If the file downloads directly to your computer you can just move it to a convenient location and then open it in RStudio using $\tt{File~\to~Open~File}$. Otherwise, if you see a page of text, you can create a new R Markdown file in RStudio using $\tt{File~\to~New~File~\to~R~Markdown}$ and then click the button in the lower left to $\tt{Create~Empty~Document}$ -- now you can copy and paste the text into the blank markdown editor. Now you can see and edit the source code for this document.
+
+## Structure
+
+### YAML Header
+
+R Markdown documents begin with a YAML (yet another markdown language) header, specifying the output document type and properties. The YAML header is positioned between two sets of three hyphens and accommodates lots of customization options. If you want to learn more about the YAML header for various document types, check out [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/html-document.html) from Yihui Xie.
+
+### Document Body
+
+If you are viewing the source code for this template, you've seen what the YAML header looks like, you've also seen that the syntax for creating headings uses the hashtag symbol (\#). You've also noticed that the more hashtags you provide, the lower-level the heading. Finally, you've seen free text and a couple of other tricks like creating a hyperlink and typesetting special characters like the hashtag, which need to be escaped with the backslash \\.
+
+If you want stylized text, you can feel free to use most HTML tags, or you can surround text with a single asterisk (\*) on each side for *italics*, or two asterisks on each side for **bold**.
+
+In addition to free text, you can typeset R code by surrounding it with backticks. For example, R has a function called `median()` which can be used to compute the median of a set of values. You can use similar code to actually execute R code inline by placing an r as the first character inside of the backticks. That is, the median of the values 2, 6, 9, 1, 18, 4, 750 is: `r median(c(2, 6, 9, 1, 18, 4, 750))` while the mean is `r mean(c(2, 6, 9, 1, 18, 4, 750))`.
+
+Sometimes you'll want more R code than is reasonable to write inline. When this happens, we can use R chunks. These chunks sit on their own sets of lines, and begin/end with triple backticks (\`\`\`). There are lots of customization options for R chunks and you can see those options in [R Markdown: The Definitive Guide](https://bookdown.org/yihui/rmarkdown/r-code.html). For now, here is a sample R chunk and its corresponding output.
+
+````markdown
+`r ''````{r echo = TRUE, eval = TRUE}
+#Here is a comment in my chunk
+2*(3 + 5)
+```
+````
+
+```{r echo = TRUE, eval = TRUE}
+#Here is a comment in my chunk
+2*(3 + 5)
+```
+
+## Rendering Your Markdown File
+
+When working with an R Markdown file in RStudio, you should have an icon at the top of your script editor labeled *Knit*. To render your output, just click that Knit button.
+
+## Closing
+
+That's it for now. You'll likely want to keep some notes from this summer's workshop in these markdown notebooks because of the ability to include and execute code. If you have questions about markdown or encounter knitting errors, check out Yihui Xie's Definitive Guide to R Markdown, check out the [Markdown Cheatsheet](https://rmarkdown.rstudio.com/lesson-15.html) (or by navigating to the $\tt{Help\to Cheatsheets}$ menu within RStudio), or reach out to Dr. G.

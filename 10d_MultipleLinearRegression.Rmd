@@ -1,5 +1,5 @@
 ---
-title: "Multiple Linear Regression`"
+title: "Multiple Linear Regression"
 output:
   html_document
 ---
@@ -15,11 +15,11 @@ rm(list = ls())
 
 ## Objectives
 
-This notebook gives an overview of Simple Linear Regression, where we'll use a single predictor to predict a numerical response variable. After reviewing this notebook, you should be able to:
+This notebook gives an overview of Multiple Linear Regression, where we'll use more than one feature/predictor to predict a numerical response variable. After reviewing this notebook, you should be able to:
 
 + Fit a multiple linear regression model to training data using `tidymodels`
 + Assess that model's performance on the training data by looking at global model utility metrics, and by analyzing metrics for the model term.
-+ Interpret a mutliple linear regression model with statistically significant predictors.
++ Interpret a multiple linear regression model with statistically significant predictors.
 + Use a multiple linear regression model to make predictions on new data.
 + Evaluate model performance on the test set.
   

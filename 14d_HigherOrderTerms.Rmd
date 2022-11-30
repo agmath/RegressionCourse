@@ -1,0 +1,780 @@
+---
+title: "Using Higher-Order Terms: Curvature and Interaction"
+output:
+  html_document
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(patchwork)
+library(kableExtra)
+
+tidymodels_prefer()
+rm(list = ls())
+
+set.seed(123)
+penguins_split <- initial_split(penguins)
+penguins_train <- training(penguins_split)
+penguins_test <- testing(penguins_split)
+```
+
+## Where We Stand
+
+We've come a long way over the past few weeks. We've followed the trajectory below.
+
++ **Simple Linear Regression Models:** $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 \cdot x_1$
+
+  + *General Assumption*: We can predict the response, $y$, using knowledge of another variable, $x_1$. The relationship between $y$ and $x_1$ is a straight line relationship, with random noise (irreducible error).
+  + *Model Form*: A simple linear regression model is a straight line.
+
++ **Multiple Linear Regression Models:** $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$
+
+  + *General Assumption*: We can predict the response, $y$, using knowledge of other variables, $x_1,~x_2,~\cdots,~x_k$.
+    
+    + For any of the $x_i$ which are numerical, the association between $y$ and $x_i$ is a straight line relationship, with slope independent of all other predictors $x_j$.
+    + For any of the $x_i$ which are dummy variables corresponding to a categorical predictor, the impact of including $x_i$ in the model is a vertical shift. That is, a change in *intercept* specific to that particular level of the categorical variable.
+    + All other fluctuation in $y$ is random noise (irreducible error).
+  
+  + *Model Form*: A multiple linear regression model with no categorical predictors is a *flat* hyperplane, while a multiple linear regression model with categorical predictors is a set of parallel, flat hyperplanes.
+  
+We can see these model forms below. For ease of visualization, we'll use a simple linear regression model to predict penguin `body_mass_g` using `bill_length_mm` on the left. In the plot on the right, we'll extend that model by introducing dummy variables corresponding to the `species` variable. Note that a hyperplane in two dimensions (`bill_length_mm` and `body_mass_g`) is a straight line.
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+simp_reg_spec <- linear_reg() %>%
+  set_engine("lm")
+
+simp_reg_rec <- recipe(body_mass_g ~ bill_length_mm, data = penguins_train)
+
+simp_reg_wf <- workflow() %>%
+  add_model(simp_reg_spec) %>%
+  add_recipe(simp_reg_rec)
+
+simp_reg_fit <- simp_reg_wf %>%
+  fit(penguins_train)
+
+multi_reg_spec <- linear_reg() %>%
+  set_engine("lm")
+
+multi_reg_rec <- recipe(body_mass_g ~ bill_length_mm + species, data = penguins_train) %>%
+  step_dummy(species)
+
+multi_reg_wf <- workflow() %>%
+  add_model(multi_reg_spec) %>%
+  add_recipe(multi_reg_rec)
+
+multi_reg_fit <- multi_reg_wf %>%
+  fit(penguins_train)
+
+new_bill_lengths <- seq(min(penguins_train$bill_length_mm, na.rm = TRUE), 
+                max(penguins_train$bill_length_mm, na.rm = TRUE),
+                length.out = 250)
+
+new_data <- crossing(bill_length_mm = new_bill_lengths, species = c("Adelie", "Chinstrap", "Gentoo"))
+
+new_data <- simp_reg_fit %>%
+  augment(new_data) %>%
+  rename(.pred_simp = .pred)
+
+new_data <- multi_reg_fit %>%
+  augment(new_data) %>%
+  rename(.pred_multi = .pred)
+
+p1 <- penguins_train %>%
+  ggplot() +
+  geom_point(aes(x = bill_length_mm,
+                 y = body_mass_g),
+             alpha = 0.4) +
+  geom_line(data = new_data,
+            aes(x = bill_length_mm,
+                  y = .pred_simp),
+              color = "blue") +
+  labs(title = "Predicting Body Mass",
+       x = "Bill Length (mm)",
+       y = "Body Mass (g)")
+
+p2 <- penguins_train %>%
+  ggplot() +
+  geom_point(aes(x = bill_length_mm,
+                 y = body_mass_g,
+                 color = species),
+             alpha = 0.4,
+             show.legend = FALSE) +
+  geom_line(data = new_data,
+            aes(x = bill_length_mm,
+                  y = .pred_multi,
+                  color = species),
+            show.legend = FALSE) +
+  labs(title = "Predicting Body Mass",
+       x = "Bill Length (mm)",
+       y = "Body Mass (g)")
+
+(p1 + p2)
+```
+  
+We can see that our models in both cases are straight lines, and that the models are parallel lines in the case where we included the `species` variable. We'll move beyond these restrictions in this notebook.
+
+## Objectives
+
+In previous notebooks we learned how to build, assess, and interpret simple and multiple linear regression models, including those with categorical predictors. Those models all made the following assumptions:
+
++ The association between the response and any individual predictor is linear.
++ All predictor variables act independently in influencing/predicting the response.
++ The association between any numerical predictor and the response (the *slope* of the model) is the same, regardless of the class/category 
+
+What happens if these assumptions aren't reasonable (or we want to explore whether relaxing these assumptions improves fit)? In this notebook, we'll see how to update our models to allow for curved relationships and predictors which do not act independently to influence our response variable. After reviewing this notebook, you should be able to:
+
++ Use exploratory data analysis to identify visual evidence for curved relationships and interaction between predictors.
++ Use `step_*()` functions to augment a `recipe()`, updating how predictor variables are utilized in a regression model.
++ Use `step_poly()` to allow for polynomial terms in a model -- that is, terms whose corresponding predictor variable is raised to a positive integer power.
++ Use `step_interact()` to create additional model terms corresponding to the interaction (product) between two or more predictors.
++ Fit, assess, reduce, interpret, and utilize models including polynomial and interactions terms.
+
+***
+
+## A New Data Set: Boston Housing
+
+There's not much visual evidence to suggest curved relationships between the physiological features and penguin body mass in the `palmerpenguins` data set. We'll shift to a new data set on median property values in Boston from the 1970's.
+
+```{r}
+boston <- read_csv("https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv")
+
+boston %>%
+  head() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+This Boston housing dataset is quite famous, and includes features on each neighborhood and the corresponding median home value in that neighborhood. You can see a data dictionary [here](https://www.kaggle.com/code/prasadperera/the-boston-housing-dataset). The data set has many interesting features and even allows us some ability to explore structural racism in property valuation in 1970s Boston.
+
+We'll assume that `medv`, the median home value in thousands of dollars, is our response variable and we'll consider all of the available predictors.
+
+## Motivating Interaction and Higher-Order Terms
+
+Let's take a look at the relationships between some of the available predictors in the `boston` data set and the median home values (`medv`). As usual, we'll split off the *training* and *test* sets so that the *test* data remains hidden from ourselves and the model.
+
+```{r}
+boston_split <- initial_split(boston)
+boston_train <- training(boston_split)
+boston_test <- testing(boston_split)
+
+boston_test %>%
+  head() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
+```
+
+Now let's do some visualization.
+
+```{r}
+p1 <- boston_train %>%
+  ggplot() + 
+  geom_hex(aes(x = lstat, y = medv)) +
+  labs(x = "Proportion Residents with Low Socioeconomic Status",
+       y = "Median Home Values (000s)")
+
+p2 <- boston_train %>%
+  ggplot() +
+  geom_point(aes(x = age, y = medv),
+             alpha = 0.5) + 
+  labs(x = "Proportion of Homes Built Before 1940",
+       y = "Median Home Values (000s)")
+
+p3 <- boston_train %>%
+  mutate(chas = ifelse(chas == 1, "on", "off")) %>%
+  ggplot() + 
+  geom_boxplot(aes(x = chas, y = medv)) +
+  labs(x = "On the Charles River",
+       y = "Median Home Values (000s)") +
+  coord_flip()
+
+(p1 + p2) / p3
+```
+
+From the plots above, we see that the association between the proportion of residents having low socioeconomic status (`lstat`) and the median home values (`medv`) have a nonlinear association. Additionally, it may be reasonable to suspect that the "slope" of the model with respect to `age` (the proportion of homes built prior to 1940) is different for neighborhoods on the Charles River versus those which are away from the river. We'll explore all of these things, and more, in the coming sections of this notebook.
+
+## New Terminology
+
+Before we start building models, its worth developing some helpful terminology. Consider the model below:
+
+$\begin{align}\mathbb{E}\left[\text{medv}\right] = &\beta_0 + \beta_1\cdot\left(\text{age}\right) + \beta_2\cdot\left(\text{lstat}\right) + \beta_3\cdot\left(\text{chas}\right) + \beta_4\cdot\left(\text{age}^2\right) +\\ &\beta_5\cdot\left(\text{chas}\cdot\text{age}\right) + \beta_6\cdot\left(\text{chas}\cdot\text{age}^2\right) + \beta_7\cdot\left(\text{chas}\cdot\text{lstat}\right) + \beta_8\cdot\left(\text{age}\cdot\text{lstat}\right) + \beta_9\cdot\left(\text{age}^2\cdot \text{lstat}\right)\end{align}$
+
++ The **order** of a model is the highest degree of any term in the model. Only numeric predictors contribute to the degree of a term. 
+
+  + The order of the proposed model above is *third* order, because of the $\text{age}^2\cdot\text{lstat}$ term.
++ Models including interaction terms include **main effects** and **mixed effects** terms. The main effects terms contain a single predictor, while the mixed effects terms contain multiple predictors.
+
+$\begin{align}\mathbb{E}\left[\text{medv}\right] = &\overbrace{\beta_0 + \beta_1\cdot\left(\text{age}\right) + \beta_2\cdot\left(\text{lstat}\right) + \beta_3\cdot\left(\text{chas}\right) + \beta_4\cdot\left(\text{age}^2\right)}^{\text{Main Effects}} +\\ &\underbrace{\beta_5\cdot\left(\text{chas}\cdot\text{age}\right) + \beta_6\cdot\left(\text{chas}\cdot\text{age}^2\right) + \beta_7\cdot\left(\text{chas}\cdot\text{lstat}\right) + \beta_8\cdot\left(\text{age}\cdot\text{lstat}\right) + \beta_9\cdot\left(\text{age}^2\cdot \text{lstat}\right)}_{\text{Mixed Effects}}\end{align}$
+
+## Starting with a Main-Effects Model
+
+Let's start out with a basic model which uses `age`, `lstat`, and `chas` as predictors of median home values. 
+
+```{r}
+main_reg_spec <- linear_reg() %>%
+  set_engine("lm")
+
+main_reg_rec <- recipe(medv ~ age + lstat + chas, data = boston_train)
+
+main_reg_wf <- workflow() %>%
+  add_model(main_reg_spec) %>%
+  add_recipe(main_reg_rec)
+
+main_reg_fit <- main_reg_wf %>%
+  fit(boston_train)
+
+main_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+Let's compute our performance metrics for our main effects model so that we have a benchmark to try improving from.
+
+```{r}
+my_metrics <- metric_set(rsq, rmse)
+
+(main_reg_fit %>%
+    augment(boston_train) %>%
+    my_metrics(medv, .pred) %>%
+    mutate(type = "train")
+    ) %>%
+  bind_rows(
+    main_reg_fit %>%
+      augment(boston_test) %>%
+      my_metrics(medv, .pred) %>%
+      mutate(type = "test")
+    ) %>%
+  pivot_wider(id_cols = .metric,
+              names_from = type,
+              values_from = .estimate) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+Okay, now that we've got those benchmark metrics, let's see if we can improve on them by using higher-order or interaction terms.
+
+## Building a Model Including Curvature (`step_poly()`)
+
+In order to build a model including curvature, we'll need to include some *polynomial* terms. These are simply terms which include a predictor raised to an integer power greater than $1$. We can do this by adding a *feature engineering* step to our `recipe()`, just like we did with `step_dummy()`. In order to add these higher-order terms that introduce curvature, we'll use `step_poly()`. Let's see it in action! We'll include second-order terms associated with `age` and `lstat`, but not for the `chas` variable. This is because `chas` is a dummy variable, which can only take the values $0$ or $1$ -- what happens when you square these values? Including polynomial terms with dummy variables doesn't actually do anything!
+
+Before we build our model, there are just a few comments about `step_poly()` that we should highlight.
+
++ If you'd like to build polynomial terms associated with multiple variables, you can do this all at once by including each of the variables as the first few arguments to `step_poly()`, separating the variables by commas.
+
++ Set the `degree` of the polynomial terms (the amount of *wiggling* you'd like to allow) with the `degree` argument.
+
+  + The default degree for `step_poly()` is degree $2$, allowing a single bend in the association between your predictor(s) and the response. You can override this default by setting `degree = 6`, for example. This would allow up to five bends in the association.
+
++ Maintain your ability to interpret by setting `options = list(raw = TRUE)`
+
+  + There is some *linear algebra* that can be done to try and reduce the correlation between our polynomial terms and their corresponding lower-order terms. You can think of this as squeezing all of the predictive juice out of the predictor. The `step_poly()` function does this by default, but results in a model which is more difficult to interpret. I recommend overriding this any time you intend to interpret your models. You can do this by setting `options = list(raw = TRUE)`.
+
+```{r}
+poly_reg_spec <- linear_reg() %>%
+  set_engine("lm")
+
+poly_reg_rec <- recipe(medv ~ age + lstat + chas, data = boston_train) %>%
+  step_poly(age, degree = 2, options = list( raw = TRUE)) %>%
+  step_poly(lstat, degree = 2, options = list(raw = TRUE))
+
+poly_reg_wf <- workflow() %>%
+  add_model(poly_reg_spec) %>%
+  add_recipe(poly_reg_rec)
+
+poly_reg_fit <- poly_reg_wf %>%
+  fit(boston_train)
+
+poly_reg_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+poly_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy()  %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+Note that the term for `age_poly_2` is not statistically significant. We'll drop it from the model and re-run the regression.
+
+```{r}
+poly_reg_spec <- linear_reg() %>%
+  set_engine("lm")
+
+poly_reg_rec <- recipe(medv ~ age + lstat + chas, data = boston_train) %>%
+  step_poly(lstat, degree = 2, options = list(raw = TRUE))
+
+poly_reg_wf <- workflow() %>%
+  add_model(poly_reg_spec) %>%
+  add_recipe(poly_reg_rec)
+
+poly_reg_fit <- poly_reg_wf %>%
+  fit(boston_train)
+
+poly_reg_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+poly_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy()  %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+There; now all of our model terms are statistically significant. Let's see what that model looks like!
+
+```{r}
+poly_reg_fit %>%
+  augment(boston_train) %>%
+  ggplot() +
+  geom_point(aes(x = lstat, y = medv),
+             alpha = 0.5) + 
+  geom_point(aes(x = lstat, y = .pred), 
+             color = "red",
+             alpha = 0.4) + 
+  labs(x = "Proportion of Residents with Low Socioeconomic Status",
+       y = "Median Neighborhood Home Value (000s)",
+       title = "Median Home Values and Socioeconomic Status",
+       subtitle = "Actuals in Black, Predicted Values in Red")
+```
+
+We can also look at our model for a few `age` thresholds.
+
+```{r}
+new_data <- crossing(age = c(10, 25, 50),
+                     chas = c(0, 1),
+                     lstat = seq(min(boston_train$lstat, na.rm = TRUE),
+                                max(boston_train$lstat, na.rm = TRUE,
+                                    by = 1)))
+
+poly_reg_fit %>%
+  augment(new_data) %>%
+  ggplot() + 
+  geom_line(aes(x = lstat, 
+                y = .pred, 
+                color = as.factor(age),
+                linetype = as.factor(chas)),
+            lwd = 1) +
+  labs(x = "Proportion of Residents with Low Socioeconomic Status",
+       y = "Predicted Median Home Value",
+       title = "Estimated Median Home Values",
+       subtitle = "(by prevalence of low socioeconomic status)")
+```
+
+
+
+This is a model we can interpret and utilize. Before we do, including higher-order terms in a model requires some additional care.
+
+**Note:** Since `lstat_poly_2`, the term corresponding to `lstat`$^2$, is statistically significant, we must keep the lower order term for `lstat` in the model. In general, if we have a statistically significant higher-order, or interaction term in a model, then we *must* retain all of the associated lower-order terms in the model, regardless of whether or not they are statistically significant. For example, if we had a term for `lstat`$\cdot$`age`$^2$ in our model, then we must keep the individual terms for `lstat` and `age`, the term for `age`$^2$ and the term for `lstat`$\cdot$`age`, regardless of whether the $p$-values associated with those terms are small.
+
+### Interpreting a Model with Curvature
+
+```{r}
+poly_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>% 
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+Now that we have estimated coefficients, we can write down the estimated model form:
+$$\mathbb{E}\left[\text{medv}\right] \approx 40.61 + 0.08\cdot\text{age} + 4.03\cdot\text{chas} - 2.68\cdot\text{lstat} + 0.05\cdot\text{lstat}^2$$
+
+From here, we see that older neighborhoods tend to have slightly higher median home values. Neighborhoods along the Charles River have higher median home values. Before moving to interpret the `lstat` variable, let's formalize the interpretations associated with `age` and `chas`.
+
++ Holding all variables other than `age` constant (controlling for them), an increase by $1$ percentage point in the proportion of homes in a neighborhood built before 1940 is associated with higher median home values by about $\$80$, on average.
+
+  + Alternatively, given two otherwise similar neighborhoods (`lstat` and `chas`), the neighborhood with a larger percentage of homes built before 1940 is expected to have a higher median home value by about $\$80$ per percentage point, on average.
+
++ Holding all variables other than `chas` constant (controlling for them), median home values for neighborhoods on the Charles River are expected to be about $\$4,030$ higher, on average.
+
+  + Alternatively, given two otherwise similar (`age` and `lstat`) neighborhoods, the one on the Charles River is expected to have approximately $\$4,030$ higher median home values, on average, than the neighborhood away from the Charles River.
+
+Because the effect of `lstat` is split across multiple terms, we need some way to aggregate that effect. As a reminder, we are looking for *rate of change* in `medv` with respect to `lstat`. Those of you with a calculus background will recognize that we are interested in finding the derivative of our model with respect to `lstat`. For those of you without a calculus background, you'll just use the expression below:
+$$\text{Rate of Change in medv With Respect to lstat: }~~~~\beta_{\text{lstat}} + 2\beta_{\text{lstat}^2}\cdot \text{lstat} = -2.68 + 2\left(0.05\right)\cdot\text{lstat}$$
+
+The rate of change in median home values (`medv`) with respect to the percentage of residents with low socioeconomic status now depends on the level of the percentage of residents with low socioeconomic status. The associated drop in median home values is large for percentage point increases from relatively low prevalence of residents with low socioeconomic status, but then for neighborhoods with already high levels of residents with low socioeconomic status, the decrease in median home values is less. For example, the difference in median home values between a neighborhood with 10% of residents having low socioeconomic status and a neighborhood with 11% of residents having low socioeconomic status is expected to be about $-2.68 + 0.1\cdot 10$. That is, we expect lower median home values by about $\$1,680$, on average. The difference in expected median home values between a neighborhood with 20% of residents having low socioeconomic status and a neighborhood with 21% though is expected to be about $-2.68 + 0.1\cdot 20$, or about $\$680$ less, on average.
+
+The inclusion of these polynomial terms allows us to model more complex relationships and potentially build models with better predictive value! There are a few things to beware of though -- these models are more complicated to interpret and we risk tricking ourselves into believing our models are much more accurate than they will be in production (More on this later in our course).
+
+### Assessing Model Performance
+
+Before we move on, let's assess the performance of our new model. As a reminder, we had the following benchmarks from the *main effects* model.
+
+```{r}
+my_metrics <- metric_set(rsq, rmse)
+
+(main_reg_fit %>%
+    augment(boston_train) %>%
+    my_metrics(medv, .pred) %>%
+    mutate(type = "train")
+    ) %>%
+  bind_rows(
+    main_reg_fit %>%
+      augment(boston_test) %>%
+      my_metrics(medv, .pred) %>%
+      mutate(type = "test")
+    ) %>%
+  pivot_wider(id_cols = .metric,
+              names_from = type,
+              values_from = .estimate) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+We can compute the same metrics for our new model.
+
+```{r}
+(poly_reg_fit %>%
+    augment(boston_train) %>%
+    my_metrics(medv, .pred) %>%
+    mutate(type = "train")
+    ) %>%
+  bind_rows(
+    poly_reg_fit %>%
+      augment(boston_test) %>%
+      my_metrics(medv, .pred) %>%
+      mutate(type = "test")
+    ) %>%
+  pivot_wider(id_cols = .metric,
+              names_from = type,
+              values_from = .estimate) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+We are doing quite a bit better now! The R-Squared value for our new model on the training data is up to 70% (from 58% with the main effects model). We've also observed an improvement in R-Squared on the test data -- 62% versus 52%. Much more of the variation in median home values is being explained by our curvi-linear model than was explained with our main effects model. Similarly, we've observed improvements in the RMSE (*root mean squared error*). The test RMSE for our main effects model was approximately $6.4$, indicating that we could expect our predictions to be accurate to within about $\$12,800$ on average. The test RMSE for our curvi-linear model is approximately 5.8, indicating that we should expect our predictions to be accurate to within about $\$11,600$ on average.
+
+***
+
+THIS NOTEBOOK IS TOO LONG -- SPLIT IT HERE???
+
+***
+
+## Models Including Interaction (`step_interact()`)
+
+We can use interaction terms when we expect that the association between our response and one predictor depends on the value of a second predictor. There are three types of interactions:
+
++ Interactions between *two categorical predictors* result in a shift of intercept, associated with combinations of categories. This is very similar to what happened when we first introduced categorical predictors -- there we got a different intercept for each level of the categorical predictor. Now, we'll get an adjustment to the intercept for each combination of levels of the corresponding predictors.
+
+  + For example, if we allow `species` and `year` to interact in a model to predict penguin `body_mass_g`, we'll have potentially unique intercepts for each `species` and observed `year` combination. 
+
++ Interactions between *a categorical predictor and a numerical predictor* allow for different slopes/curvatures in the association between the response and corresponding predictor across different levels of the categorical variable.
+
+  + For example, if we allow `species` and `bill_depth_mm` to interact in a model to predict penguin `body_mass_g`, we'll allow for the association between `bill_depth_mm` and `body_mass_g` to be different across the three different `species` of penguin.
+
++ Interactions between two numerical variables allow for the association between the response ($y$) and a predictor ($x_1$) to depend on the value of a second predictor ($x_2$). 
+
+  + There is not necessarily a nice *slope* or *intercept* interpretation here, however, interactions between pairs of numerical predictors can introduce curvature to your regression model. Simply put, if a model includes an interaction term $\beta x_1 x_2$, in order to know the expected impact of a unit increase of $x_1$ on the response variable ($y$), we must decide which level of the variable $x_2$ we are interested in. 
+  + As an example, if we allow `bill_depth_mm` to interact with `bill_length_mm` in a model predicting penguin `body_mass_g`, then we are saying that the expected impact of a unit increase in `bill_length_mm` on `body_mass_g` will be different for penguins having different `bill_depth_mm` values.
+  
+### Interactions in Action!
+
+Let's see these different types of interactions in action with the penguins data. We'll look at the three scenarios above one-by-one and then we'll try pulling everything together.
+
+#### Interactions Between Two Categorical Variables
+
+Let's say that we propose a model which predicts penguin `body_mass_g` using `flipper_length_mm`, `species`, `year`, and an interaction between `species` and `year`. Such a model is of the following form:
+
+$\begin{align}{ll}\mathbb{E}\left[\text{body_mass_g}\right] = &\beta_0 + \beta_1 \cdot \text{flipper_length_mm} +\\ &\beta_2\cdot\text{Chinstrap} + \beta_3\cdot\text{Gentoo} +\\ &\beta_4\cdot\text{year\_08} + \beta_5\cdot\text{year\_09} +\\
+&\beta_6\cdot\left(\text{Chinstrap}\right)\left(\text{year\_08}\right) +\\ &\beta_7\cdot\left(\text{Chinstrap}\right)\left(\text{year\_09}\right) +\\ &\beta_8\cdot\left(\text{Gentoo}\right)\left(\text{year\_08}\right) +\\ &\beta_9\cdot\left(\text{Gentoo}\right)\left(\text{year\_09}\right)\end{align}$
+
+There's lots of coefficients in this model! Let's fit it and see what we actually end up with. In order to fit this model, we'll need to include some feature engineering `step_*()`s. First, we'll need to obtain *dummy* variables for the levels of the `species` and `island` predictors -- we'll use `step_dummy()` for that. Then, we'll want to allow those dummy variables to interact -- we'll use `step_interact()` with a few tricks.
+
++ `step_interact()` requires the use of a tilde (`~`) prior to defining the terms that should interact with one another. 
++ We'll denote terms that should interact with one another via the colon (`:`).
++ We replaced `species` and `island` with corresponding dummy variables when we used `step_dummy()`, so those columns will not be available in the transformed data being passed to `step_interact()`. Instead, we'll have a series of columns like `species_X`, `species_Y`, ... , and `island_A`, `island_B`,... -- rather than defining all of these individual interactions, we'll use the `starts_with()` selector function to obtain the groups of columns we want interacting with one another. 
+
+```{r}
+mass_cat_inter_spec <- linear_reg() %>%
+  set_engine("lm")
+
+mass_cat_inter_rec <- recipe(body_mass_g ~ flipper_length_mm + species + year, data = penguins_train) %>%
+  step_dummy(species) %>%
+  step_mutate(year = as.factor(year)) %>%
+  step_dummy(year) %>%
+  step_interact(~ starts_with("species"):starts_with("year"))
+
+mass_cat_wf <- workflow() %>%
+  add_model(mass_cat_inter_spec) %>%
+  add_recipe(mass_cat_inter_rec)
+
+mass_cat_fit <- mass_cat_wf %>%
+  fit(penguins_train)
+
+mass_cat_fit %>%
+  glance() %>% 
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+mass_cat_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+There are some interesting things happening here. Several of our model terms have large `p.value`s, indicating that they may not be significant predictors of penguin `body_mass_g`. However, if we look more closely, *some* of the terms are significant.
+
++ The `species_Gentoo` term is not significantly different from the base level (`species_Adelie`), but the `species_Chinstrap` term is significantly different from the base level.
++ Both year categories are significantly different from the base year (`year_2007`).
++ The interaction between `species` and `year` is significant for Gentoo penguins in the year $2009$, but not for any of the other combinations of `species` and `year`. 
+
+If all levels of a categorical predictor (or interaction) show insignificant `p.value`s, then we would drop that predictor (or the corresponding interaction) from the model. Since *some* of the terms resulting from the categorical predictor (or interaction) are statistically significant, then we'll keep all of the corresponding model terms. 
+
+  + ($\star$) There are some other things we *could* do here -- we can address some of them, as well as their benefits and drawbacks, in class.
+
+Okay, let's look at the models. The estimated model form is:
+
+$\begin{align}{ll}\mathbb{E}\left[\text{body_mass_g}\right] = &\beta_0 + \beta_1 \cdot \text{flipper_length_mm} +\\ &\beta_2\cdot\text{Chinstrap} + \beta_3\cdot\text{Gentoo} +\\ &\beta_4\cdot\text{year\_08} + \beta_5\cdot\text{year\_09} +\\
+&\beta_6\cdot\left(\text{Chinstrap}\right)\left(\text{year\_08}\right) +\\ &\beta_7\cdot\left(\text{Chinstrap}\right)\left(\text{year\_09}\right) +\\ &\beta_8\cdot\left(\text{Gentoo}\right)\left(\text{year\_08}\right) +\\ &\beta_9\cdot\left(\text{Gentoo}\right)\left(\text{year\_09}\right)\end{align}$
+
+The model including estimated $\beta$-coefficients is:
+
+$\begin{align}{ll}\mathbb{E}\left[\text{body_mass_g}\right] = &-4933.6 + 46.42\cdot \text{flipper_length_mm} +\\ &\left(-315.26\right)\cdot\text{Chinstrap} + 35.39\cdot\text{Gentoo} +\\ &\left(-186.53\right)\cdot\text{year_08} + \left(-330.23\right)\cdot\text{year_09} +\\
+&54.04\cdot\left(\text{Chinstrap}\right)\left(\text{year_08}\right) +\\ &104.69\cdot\left(\text{Chinstrap}\right)\left(\text{year_09}\right) +\\ &\left(-41.66\right)\cdot\left(\text{Gentoo}\right)\left(\text{year_08}\right) &+\\ 267.93\cdot\left(\text{Gentoo}\right)\left(\text{year_09}\right)\end{align}$
+
+From this, we can make interpretations as follows:
+
++ On average, controlling for `species` and observation `year`, a unit increase in penguin `flipper_length_mm` is associated with a penguin `body_mass_g` increase of about $46.42$ grams.
++ Controlling for `flipper_length_mm`, Chinstrap penguins are about $315.26$ grams less massive than Adelies, on average. The data used to fit the model doesn't seem to suggest significant changes in Chinstrap mass year over year.
++ Controlling for `flipper_length_mm`, the data used to fit the model doesn't seem to suggest that Gentoo penguins have significantly different `body_mass_g` than Adelie penguins. However, there does seem to be a change in the year $2009$ -- Gentoos observed during that year seem to be much more massive than Adelies in that year (by about $267.92 - \left(-330.23\right)\approx 590 grams).
++ Controlling for `flipper_length_mm`, Adelie penguins seem to have less mass year-over-year. Approximately $186.5$ grams lower than their average $2007$ `body_mass_g` in $2008$ and approximately $330.23$ grams lower than their average $2007$ `body_mass_g` in $2009$.
+
+Now, let's look at our model graphically!
+
+```{r}
+new_data <- crossing(flipper_length_mm = seq(min(penguins_train$flipper_length_mm, na.rm = TRUE),
+                                             max(penguins_train$flipper_length_mm, na.rm = TRUE),
+                                             by = 1),
+                     species = c("Adelie", "Chinstrap", "Gentoo"),
+                     year = c(2007, 2008, 2009)
+)
+
+new_data <- mass_cat_fit %>%
+  augment(new_data)
+
+p1 <- ggplot() +
+  geom_point(data = penguins_train,
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = species,
+                 shape = as.factor(year)),
+             alpha = 0.5) + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = .pred,
+                color = species, 
+                linetype = as.factor(year)))
+
+p2 <- ggplot() +
+  geom_point(data = penguins_train,
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = species),
+             alpha = 0.5,
+             show.legend = FALSE) + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = .pred,
+                color = species),
+            show.legend = FALSE) +
+  facet_grid(species ~ year)
+
+(p1 / p2)
+```
+
+The single plot above which shows the model with all of the varied intercepts may be difficult to read, but it is clear that the slope of each line is the same. That is, the estimated association between `flipper_length_mm` and `body_mass_g` is constant across each of the combinations of `species`/`year` category. The intercepts are all that were varied! The plot on the right is much more readable, but the impact of the categorical variables and the corresponding interactions is less obvious from that plot.
+
+#### Interaction Between a Categorical and Numerical Predictor
+
+Let's say that we propose a model which predicts penguin `body_mass_g` using `flipper_length_mm`, `species`, and an interaction between `species` and `flipper_length_mm`. Such a model is of the following form:
+
+$\begin{align}\mathbb{E}\left[\text{body_mass_g}\right] = &\beta_0 + \beta_1 \cdot \text{flipper_length_mm} + \beta_2\cdot\text{Chinstrap} + \beta_3\cdot\text{Gentoo} +\\ &\beta_4\cdot\left(\text{flipper_length_mm}\right)\left(\text{Chinstrap}\right) + \beta_5\cdot\left(\text{flipper_length_mm}\right)\left(\text{Gentoo}\right)\end{align}$
+
+We'll build this model similar to the previous one. We'll use `step_dummy()` to convert `species` to corresponding dummy variables and then we'll use `step_interact()` to obtain interactions between each level of the `species` variable and the `flipper_length_mm`.
+
+```{r}
+mass_catnum_spec <- linear_reg() %>%
+  set_engine("lm")
+
+mass_catnum_rec <- recipe(body_mass_g ~ flipper_length_mm + species, data = penguins_train) %>%
+  step_dummy(species) %>%
+  step_interact(~ starts_with("species"):flipper_length_mm)
+
+mass_catnum_wf <- workflow() %>%
+  add_model(mass_catnum_spec) %>%
+  add_recipe(mass_catnum_rec)
+
+mass_catnum_fit <- mass_catnum_wf %>%
+  fit(penguins_train)
+
+mass_catnum_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
+
+mass_catnum_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
+```
+
+We've obtained our estimated model, 
+
+$\begin{align}\mathbb{E}\left[\text{body_mass_g}\right] \approx &-2797.76 + 34.38 \cdot \text{flipper_length_mm} + \left(-129.71\right)\cdot\text{Chinstrap} + \left(-4216.6\right)\cdot\text{Gentoo} +\\ &\left(-0.37\right)\cdot\left(\text{flipper_length_mm}\right)\left(\text{Chinstrap}\right) + 21.39\cdot\left(\text{flipper_length_mm}\right)\left(\text{Gentoo}\right)\end{align}$
+
+Notice that this model allows for different slopes and intercepts for each species. For example:
+
+$$\begin{array}{lcl} \text{Adelie} & : & \mathbb{E}\left[\text{body_mass_g}\right] \approx -2797.76 + 34.28\cdot\text{flipper_length_mm}\\
+\text{Chinstrap} & : & \mathbb{E}\left[\text{body_mass_g}\right] \approx \left(-2797.76 -129.71\right) + \left(34.28 - 0.37\right)\cdot\text{flipper_length_mm}\\
+\text{Gentoo} & : & \mathbb{E}\left[\text{body_mass_g}\right] \approx \left(-2797.76 -4216.63\right) + \left(34.28 + 21.39\right)\cdot\text{flipper_length_mm}\end{array}$$
+
+From the three models above, we can make our usual interpretations. Let's see those models graphically.
+
+```{r}
+new_data <- crossing(flipper_length_mm = seq(min(penguins_train$flipper_length_mm, na.rm = TRUE),
+                                             max(penguins_train$flipper_length_mm, na.rm = TRUE),
+                                             by = 1),
+                     species = c("Adelie", "Chinstrap", "Gentoo")
+                     )
+
+new_data <- mass_catnum_fit %>%
+  augment(new_data)
+
+p1 <- ggplot() +
+  geom_point(data = penguins_train,
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = species),
+             alpha = 0.5) + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = .pred,
+                color = species))
+
+p2 <- ggplot() +
+  geom_point(data = penguins_train,
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = species),
+             alpha = 0.5,
+             show.legend = FALSE) + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = .pred,
+                color = species),
+            show.legend = FALSE) +
+  facet_wrap(~ species)
+
+(p1 / p2)
+```
+
+The visual shows what we see numerically in the model summary output -- the data do not provide convincing evidence that the association between body mass and flipper length is different (in either intercept or slope) between Adelie and Chinstrap penguins. The data do suggest, however, that both the slope and intercept in this model is different between Adelie and Gentoo penguins.
+
+#### Interaction Between Two Numerical Predictors
+
+Let's say that we propose a model which predicts penguin `body_mass_g` using `flipper_length_mm`, `bill_length_mm`, and an interaction between these two predictors. Such a model is of the following form:
+
+$$\mathbb{E}\left[\text{body_mass_g}\right] = \beta_0 + \beta_1 \cdot \text{flipper_length_mm} + \beta_2\cdot\text{bill_length_mm} + \beta_3\cdot\left(\text{flipper_length_mm}\right)\left(\text{bill_length_mm}\right)$$
+
+We'll build this model similar to the previous one. Since both of our variables are numerical, we no longer need `step_dummy()` and we'll go straight to `step_interact()`.
+
+```{r}
+mass_num_spec <- linear_reg() %>%
+  set_engine("lm")
+
+mass_num_rec <- recipe(body_mass_g ~ flipper_length_mm + bill_length_mm, data = penguins_train) %>%
+  step_interact(~ flipper_length_mm:bill_length_mm)
+
+mass_num_wf <- workflow() %>%
+  add_model(mass_num_spec) %>%
+  add_recipe(mass_num_rec)
+
+mass_num_fit <- mass_num_wf %>%
+  fit(penguins_train)
+
+mass_num_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
+
+mass_num_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
+```
+
+We've obtained our estimated model and the interaction between `flipper_length_mm` and `bill_length_mm` is statistically significant. The estimated mode is 
+
+$$\mathbb{E}\left[\text{body_mass_g}\right] \approx 5701.96 + \left(-10.29\right)\cdot \text{flipper_length_mm} + \left(-242.48\right)\cdot\text{bill_length_mm} + 1.26\cdot\left(\text{flipper_length_mm}\right)\left(\text{bill_length_mm}\right)$$
+
+Notice that this model allows for the expected increase in body mass due to an increased flipper length to depend on the bill length. Similarly, the expected increase in body mass due to an increased bill length depends on the flipper length in this model.
+
+It will be easiest to understand this phenomenon by calculating a few values or by plotting our models using various assumed levels for our predictors. EXPLAIN THIS BETTER!
+
+```{r}
+new_data_flipper <- crossing(flipper_length_mm = seq(min(penguins_train$flipper_length_mm, na.rm = TRUE),
+                                             max(penguins_train$flipper_length_mm, na.rm = TRUE),
+                                             by = 1),
+                     bill_length_mm = c(35, 40, 45, 50)
+                     )
+
+new_data_bill <- crossing(bill_length_mm = seq(min(penguins_train$bill_length_mm, na.rm = TRUE),
+                                             max(penguins_train$bill_length_mm, na.rm = TRUE),
+                                             length.out = 100),
+                     flipper_length_mm = c(175, 190, 200, 210, 220)
+                     )
+
+new_data_flipper <- mass_num_fit %>%
+  augment(new_data_flipper)
+
+new_data_bill <- mass_num_fit %>%
+  augment(new_data_bill)
+
+p1 <- ggplot() +
+  geom_point(data = penguins_train,
+             aes(x = flipper_length_mm,
+                 y = body_mass_g),
+             alpha = 0.5) + 
+  geom_line(data = new_data_flipper,
+            aes(x = flipper_length_mm,
+                y = .pred,
+                color = as.factor(bill_length_mm)))
+
+p2 <- ggplot() +
+  geom_point(data = penguins_train,
+             aes(x = bill_length_mm,
+                 y = body_mass_g),
+             alpha = 0.5,
+             show.legend = FALSE) + 
+  geom_line(data = new_data_bill,
+            aes(x = bill_length_mm,
+                y = .pred,
+                color = as.factor(flipper_length_mm)))
+
+(p1 / p2)
+```
+
+```{r}
+quantile(penguins_train$flipper_length_mm, c(0, 0.1, 0.25, 0.5, 0.75, 0.9, 1), na.rm = TRUE)
+```
+
+In each case, we can see that the slope of the modeled association between penguin body mass and the plotted predictor depends on the *level* (value) of the third variable.
+
+*** 
+
+## Your Task
+
+1. Use what you've learned to build a model to predict penguin `body_mass_g` using `bill_depth_mm`. 
+2. Update your model to include a *main effects* term for `species`.
+3. Update your model with an additional term allowing for interaction between `species` and `bill_depth_mm`. 
+4. Interpret what you just discovered!

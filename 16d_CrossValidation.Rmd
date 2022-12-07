@@ -1,0 +1,51 @@
+---
+title: "Cross-Validation and Reliable Performance Estimation"
+output:
+  html_document
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(patchwork)
+library(kableExtra)
+
+tidymodels_prefer()
+rm(list = ls())
+
+set.seed(123)
+penguins_split <- initial_split(penguins)
+penguins_train <- training(penguins_split)
+penguins_test <- testing(penguins_split)
+```
+
+## Recap
+
+In the previous notebook, we saw that adding flexibility to a model improves its ability to model complex relationships. Additional flexibility also increases the model's ability to fit the training data -- that is, more flexible models will generally have lower training error than less flexible models. Because training error continues to drop with additional flexibility, we need an additional data source which was unseen by the model during the training process in order to provide an unbiased estimate of future model performance. Ideally, this test error will decrease until the optimal level of model flexibility is reached but then the test error will increase once the model becomes *overfit* to the training data.
+
+At the end of the last notebook, we drew an *elbow plot*, showing how the *training* and *test errors* changed as model flexibility was increased. This visual technique allowed us to identify which models were likely *underfit* and what the threshold for an *overfit* model was. We can use these elbow plots in general, to identify an appropriate level of flexibility for our models.
+
+## Motivation
+
+We've placed a lot of faith in our *training* and *test* sets over the last few weeks. We've given the training data total power to determine our model coefficients and the test data sole power to determine our expected performance metrics (R-Squared, RMSE, etc.). Perhaps we should have some concern here -- especially given our most recent discussion about model flexibility and its relationship to *variance*. Different training data would result in differently estimated coefficients and different testing data would result in differently estimated performance estimates -- do we really want to believe that our random data splitting resulted in perfectly fair and representative training and test data? It is certainly possible that we, by chance, would generate a particularly "easy" training set and a particularly "difficult" test set (or vice-versa). Furthermore, if we are in the business of constructing models often, such an occurrence is guaranteed to occur eventually! We are putting lots of trust in our models, so it would be nice to have more certainty about our estimated coefficients, predictions, and error/performance estimates.
+
+## Objectives
+
+
+***
+
+## Summary
+
+
+
+
+
+
+
+
+
+
+
+
+

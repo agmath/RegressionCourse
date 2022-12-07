@@ -1,0 +1,698 @@
+---
+title: "The Bias-Variance TradeOff: Overfitting and Underfitting"
+output:
+  html_document
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(patchwork)
+library(kableExtra)
+
+tidymodels_prefer()
+rm(list = ls())
+
+set.seed(123)
+penguins_split <- initial_split(penguins)
+penguins_train <- training(penguins_split)
+penguins_test <- testing(penguins_split)
+```
+
+## Where We Stand
+
+We've spent the past few weeks hypothesizing, building, assessing, and interpreting multiple linear regression models. That is, models of the form:
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+
++ We began with simple and multiple linear regression models for which all of the predictors $x_1,~x_2,~\cdots,~x_k$ were *independent, numerical* predictors. In these cases, we were able to interpret each $\beta_i$ as the expected change in the response given a unit increase in the corresponding predictor $x_i$ -- that is, each $\beta_i$ was a *slope*.
++ We then considered models which used *categorical* predictors as well as numerical predictors. In these cases, we needed to convert our categorical variable into a set of *dummy variables* (taking values 0 or 1), so that they could be consumed by our multiple linear regression model. In these cases, we were able to interpret the $\beta_i$ belonging to a dummy variable $x_i$ as an adjustment on the *intercept* for the model -- that is, each $\beta_i$ attached to a dummy variable represents a *vertical shift* in the model.
++ Continuing to expand our ability to create models that fit data, we considered an ability to *engineer* higher-order terms. These terms were *polynomial terms* consisting of a single predictor raised to a positive integer exponent or *interaction terms* consisting of products of predictors.
+
+  + Introducing polynomial terms brings curvature to our model -- the more polynomial terms, and the higher the degree of the polynomial, the more *wiggly* our model can be.
+  + The effect of introducing interactions terms to our model depends on the types of the variables we are allowing to interact.
+  
+    + Interactions between pairs of categorical predictors results in more distinct intercepts.
+    + Interactions between a categorical predictor and a numerical predictor results in differently sloped models for different levels of the categorical variable.
+    + Interactions between pairs of numerical predictors results in a curved model, where the rate of change in the response variable with respect to one of the variables in the interaction depends on the level of the other interacting variable.
+    
+  + The introduction of these higher-order terms results in...
+  
+    + improved fit to training data.
+    + an ability to model more complex relationships.
+    + much more difficulty in interpreting our models.
+    
+In this notebook, we'll explore the dangers of these more flexible models.
+
+## Objectives
+
++ Identify that including additional predictors, and higher-order terms increases the *flexibility* of a model.
++ Identify and discuss that this additional flexibility increases the risk that our model *overfits* the training data.
++ Discuss the dangers associated with utilizing an overfit model.
++ Discuss the notions of *bias*/*variance*, *model flexibility*, *over-fitting*/*under-fitting*.
+
+***
+
+**Note:** In this notebook we'll be generating some fake data to illustrate and emphasize particular phenomena when modeling. If you'd like, you can watch [this video](https://youtu.be/LBG98Elk6SI), which covers all of the topics in this notebook. 
+
+## The Bias-Variance Tradeoff
+
+The level of *bias* in a model is a measure of how conservative it is. Models with *high bias* have low flexibility -- they are more rigid, "flatter" models. Models with *low bias* have high flexibility -- they can wiggle around a lot. There are several ways to decrease the *bias* in a model.
+
++ We can introduce more predictor variables to the model.
++ We can introduce higher-order terms
+
+Anything that allows the model more freedom to adapt to individual data points will lower the bias of that model.
+
+The level of *variance* for a model is a measure of how much that model's predictions would change if it was given new training data from the same population. One way to approximate this is to think about (or actually estimate) how the model would change if a new training observation was included in the training set. If the new training observation does not change the model, or its predictions, all that much then the model has *low variance*. If this new training observation can drastically change the model and its predictions, then that model has *high variance*.
+
+The *bias* and *variance* metrics go hand-in-hand.
+
++ Highly biased models have very low variance.
++ Models with very low bias have high variance.
++ When we decrease model bias, by allowing the model access to additional predictors, higher-order terms, etc. then we are also increasing model variance.
+
+Let's see some extreme examples below.
+
+```{r}
+#generate "toy" data
+num_pts <- 15
+x <- runif(num_pts, 0, 100)
+y <- 3*x + rnorm(num_pts, 0, 25)
+
+toy_data1 <- tibble(x = x, y = y)
+
+p1 <- toy_data1 %>%
+  ggplot() +
+  geom_point(aes(x = x,
+                 y = y)) +
+  labs(x = "x", 
+       y = "y",
+       title = "A Toy Data Set")
+
+high_bias_spec <- linear_reg() %>%
+  set_engine("lm")
+low_bias_spec <- linear_reg() %>%
+  set_engine("lm")
+
+high_bias_rec <- recipe(y ~ x, data = toy_data1)
+low_bias_rec <- recipe(y ~ x, data = toy_data1) %>%
+  step_poly(x, degree = 10, options = list(raw = TRUE))
+
+high_bias_wf <- workflow() %>%
+  add_model(high_bias_spec) %>%
+  add_recipe(high_bias_rec)
+low_bias_wf <- workflow() %>%
+  add_model(low_bias_spec) %>%
+  add_recipe(low_bias_rec)
+
+high_bias_fit <- high_bias_wf %>%
+  fit(toy_data1)
+low_bias_fit <- low_bias_wf %>%
+  fit(toy_data1)
+
+new_data <- tibble(x = seq(0, 100, length.out = 250))
+
+new_data <- high_bias_fit %>%
+  augment(new_data) %>%
+  rename(high_bias_pred = .pred)
+
+new_data <- low_bias_fit %>%
+  augment(new_data) %>%
+  rename(low_bias_pred = .pred)
+
+p2 <- ggplot() +
+  geom_point(data = toy_data1,
+             aes(x = x, y = y)) +
+  geom_line(data = new_data,
+            aes(x = x, y = high_bias_pred),
+            color = "blue") +
+  labs(x = "x",
+       y = "y",
+       title = "A High-Bias, Low-Variance Model")
+
+p3 <- ggplot() +
+  geom_point(data = toy_data1,
+             aes(x = x, y = y)) +
+  geom_line(data = new_data,
+            aes(x = x, y = low_bias_pred),
+            color = "blue") +
+  labs(x = "x",
+       y = "y",
+       title = "A Low-Bias, High-Variance Model") + 
+  ylim(c(-5, 350))
+
+p1 / (p2 + p3)
+```
+
+Let's see what happens if we add in one new training observation. We'll make that observation at $x = 50$, $y= 75$. We'll then refit the models with this new training observation and see how the new models compare to the old ones.
+
+```{r}
+toy_data2 <- toy_data1 %>%
+  bind_rows(
+    tibble(
+      x = 50,
+      y = 75
+    )
+  ) %>%
+  mutate(type = c(rep("orig", num_pts), "new"))
+
+high_bias_new_spec <- linear_reg() %>%
+  set_engine("lm")
+low_bias_new_spec <- linear_reg() %>%
+  set_engine("lm")
+
+high_bias_new_rec <- recipe(y ~ x, data = toy_data2)
+low_bias_new_rec <- recipe(y ~ x, data = toy_data2) %>%
+  step_poly(x, degree = 10, options = list(raw = TRUE))
+
+high_bias_new_wf <- workflow() %>%
+  add_model(high_bias_new_spec) %>%
+  add_recipe(high_bias_new_rec)
+low_bias_new_wf <- workflow() %>%
+  add_model(low_bias_new_spec) %>%
+  add_recipe(low_bias_new_rec)
+
+high_bias_new_fit <- high_bias_new_wf %>%
+  fit(toy_data2)
+low_bias_new_fit <- low_bias_new_wf %>%
+  fit(toy_data2)
+
+new_data <- high_bias_new_fit %>%
+  augment(new_data) %>%
+  rename(high_bias_new_pred = .pred)
+
+new_data <- low_bias_new_fit %>%
+  augment(new_data) %>%
+  rename(low_bias_new_pred = .pred)
+
+p4 <- ggplot() +
+  geom_point(data = toy_data2,
+             aes(x = x, y = y, color = type)) + 
+  scale_color_manual(values = c("red", "black"))
+
+p5 <- ggplot() +
+  geom_point(data = toy_data2,
+             aes(x = x, y = y, color = type)) +
+  geom_line(data = new_data,
+            aes(x = x, y = high_bias_pred),
+            color = "blue",
+            alpha = 0.75) +
+  geom_line(data = new_data,
+            aes(x = x, y = high_bias_new_pred),
+            color = "purple") +
+  labs(x = "x",
+       y = "y",
+       title = "A High-Bias, Low-Variance Model") + 
+  scale_color_manual(values = c("red", "black"))
+
+p6 <- ggplot() +
+  geom_point(data = toy_data2,
+             aes(x = x, y = y, color = type)) +
+  geom_line(data = new_data,
+            aes(x = x, y = low_bias_pred),
+            color = "blue",
+            alpha = 0.75) +
+  geom_line(data = new_data,
+            aes(x = x, y = low_bias_new_pred),
+            color = "purple") +
+  labs(x = "x",
+       y = "y",
+       title = "A Low-Bias, High-Variance Model") + 
+  ylim(c(-5, 350)) + 
+  scale_color_manual(values = c("red", "black"))
+
+p4 / (p5 + p6)
+```
+
+Notice that the high-bias, straight-line model has almost not changed at all. The low-bias model really has changed -- in fact, this single observation has impacted the models predictions even in locations far away from where that observation sits. This means that low-bias, high-variance models are less stable than higher-bias, lower variance models.
+
+### What's Going On Here?
+
+I've mentioned thinking about *training* data as a "practice test" for a model. With low-bias, high-variance models, we are letting our model really focus on that practice test and learn a lot from it. The lower the bias, the more our model will react to individual data points -- that is, the model will focus on really learning to do well on the practice test -- unfortunately, just because the model does well on the training observations (practice test), that doesn't necessarily mean that the model will do well in predicting the test or future observations (the actual test).
+
+Low-bias, high-variance models learn more about the training data. They are able to pick up more intricate relationships. This isn't necessarily a bad thing -- especially if the true association between the response and predictor(s) is well-modeled by a flexible relationship. However, these low-bias, high-variance models are at greater risk of learning *too much* about the training data and not generalizing well to the test data or to new data.
+
+## Overfitting and Underfitting
+
+A model is *overfit* if it has learned too much about the training data and doesn't perform as well as expected when applied to new or test data. A model is *underfit* if it is too biased and isn't flexible enough to model the true association between the response variable and the associated predictor(s). Luckily, we can take steps to identify whether models are likely overfit or could possibly be underfit. 
+
++ A model is **overfit** if its *training error* is much less than its *test error*.
++ A model *may* be **underfit** if a more flexible model out-performs it on unseen test data. 
+
+  + If the *test error* for a model is less than the *training error* for that model, then this may be an indicator that the model is *underfit*.
+  
+Let's see these ideas in action. We'll begin with another toy dataset. We'll build that dataset to have a cubic association between a single predictor `x` and a desired response `y`.
+
+```{r}
+num_points <- 30
+x <- runif(num_points, 0, 50)
+y <- (x - 20)*(x - 30)^2 + rnorm(num_points, 0, 1500)
+
+toy_data <- tibble(x = x, y = y)
+
+toy_split <- initial_split(toy_data, prop = 2/3)
+toy_train <- training(toy_split)
+toy_test <- testing(toy_split)
+
+toy_train %>%
+  ggplot() + 
+  geom_point(aes(x = x,
+                 y = y))
+```
+
+Now that we have our data, let's train a variety of models. We'll run a first-order model (straight-line), a second-order model (parabola), and third-order model (cubic), a fifth-order model, and an 11th-order model. We'll see how each model performs on both the training and test data!
+
+```{r}
+#First-Order (Straight Line)
+lr1_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr1_rec <- recipe(y ~ x, data = toy_train)
+
+lr1_wf <- workflow() %>%
+  add_model(lr1_spec) %>%
+  add_recipe(lr1_rec)
+
+lr1_fit <- lr1_wf %>%
+  fit(toy_train)
+
+#Second-Order (Parabola)
+lr2_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr2_rec <- recipe(y ~ x, data = toy_train) %>%
+  step_poly(x, degree = 2, options = list(raw = TRUE))
+
+lr2_wf <- workflow() %>%
+  add_model(lr2_spec) %>%
+  add_recipe(lr2_rec)
+
+lr2_fit <- lr2_wf %>%
+  fit(toy_train)
+
+#Third-Order (Cubic)
+lr3_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr3_rec <- recipe(y ~ x, data = toy_train) %>%
+  step_poly(x, degree = 3, options = list(raw = TRUE))
+
+lr3_wf <- workflow() %>%
+  add_model(lr3_spec) %>%
+  add_recipe(lr3_rec)
+
+lr3_fit <- lr3_wf %>%
+  fit(toy_train)
+
+#Fifth-Order
+lr4_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr4_rec <- recipe(y ~ x, data = toy_train) %>%
+  step_poly(x, degree = 5, options = list(raw = TRUE))
+
+lr4_wf <- workflow() %>%
+  add_model(lr4_spec) %>%
+  add_recipe(lr4_rec)
+
+lr4_fit <- lr4_wf %>%
+  fit(toy_train)
+
+#11th-Order
+lr5_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr5_rec <- recipe(y ~ x, data = toy_train) %>%
+  step_poly(x, degree = 11, options = list(raw = TRUE))
+
+lr5_wf <- workflow() %>%
+  add_model(lr5_spec) %>%
+  add_recipe(lr5_rec)
+
+lr5_fit <- lr5_wf %>%
+  fit(toy_train)
+```
+
+Now that we've fit all these models, we'll make three sets of predictions using each one. We'll make predictions on the training observation, predictions on the test observations, and finally predictions for lots of `x`-values between $0$ and $50$, which will allow us to draw the curves that our models define.
+
+```{r echo = FALSE, message = FALSE, warning = FALSE, fig.height = 20}
+#Add Predictions to Training Data
+toy_train <- lr1_fit %>%
+  augment(toy_train) %>%
+  rename(lr1_pred = .pred)
+toy_train <- lr2_fit %>%
+  augment(toy_train) %>%
+  rename(lr2_pred = .pred)
+toy_train <- lr3_fit %>%
+  augment(toy_train) %>%
+  rename(lr3_pred = .pred)
+toy_train <- lr4_fit %>%
+  augment(toy_train) %>%
+  rename(lr4_pred = .pred)
+toy_train <- lr5_fit %>%
+  augment(toy_train) %>%
+  rename(lr5_pred = .pred)
+
+#Add Predictions to Test Data
+toy_test <- lr1_fit %>%
+  augment(toy_test) %>%
+  rename(lr1_pred = .pred)
+toy_test <- lr2_fit %>%
+  augment(toy_test) %>%
+  rename(lr2_pred = .pred)
+toy_test <- lr3_fit %>%
+  augment(toy_test) %>%
+  rename(lr3_pred = .pred)
+toy_test <- lr4_fit %>%
+  augment(toy_test) %>%
+  rename(lr4_pred = .pred)
+toy_test <- lr5_fit %>%
+  augment(toy_test) %>%
+  rename(lr5_pred = .pred)
+
+#Build New Data and Add Predictions
+new_data <- tibble(x = seq(0, 50, length.out = 250))
+
+new_data <- lr1_fit %>%
+  augment(new_data) %>%
+  rename(lr1_pred = .pred)
+new_data <- lr2_fit %>%
+  augment(new_data) %>%
+  rename(lr2_pred = .pred)
+new_data <- lr3_fit %>%
+  augment(new_data) %>%
+  rename(lr3_pred = .pred)
+new_data <- lr4_fit %>%
+  augment(new_data) %>%
+  rename(lr4_pred = .pred)
+new_data <- lr5_fit %>%
+  augment(new_data) %>%
+  rename(lr5_pred = .pred)
+
+p1 <- ggplot() + 
+  geom_point(data = toy_train,
+             aes(x = x,
+                 y = y),
+             color = "black",
+             alpha = 0.5) +
+  geom_point(data = toy_train,
+             aes(x = x,
+                 y = lr1_pred),
+             color = "red",
+             alpha = 0.6) + 
+  geom_line(data = new_data,
+            aes(x = x,
+                y = lr1_pred),
+            color = "red")
+
+p1 <- ggplot() + 
+  geom_point(data = toy_train,
+             aes(x = x,
+                 y = y),
+             color = "black",
+             alpha = 0.5) +
+  geom_point(data = toy_train,
+             aes(x = x,
+                 y = lr1_pred),
+             color = "red",
+             alpha = 0.6) + 
+  geom_line(data = new_data,
+            aes(x = x,
+                y = lr1_pred),
+            color = "red")
+
+p2 <- ggplot() + 
+  geom_point(data = toy_train,
+             aes(x = x,
+                 y = y),
+             color = "black",
+             alpha = 0.5) +
+  geom_point(data = toy_train,
+             aes(x = x,
+                 y = lr2_pred),
+             color = "red",
+             alpha = 0.6) + 
+  geom_line(data = new_data,
+            aes(x = x,
+                y = lr2_pred),
+            color = "red")
+
+p3 <- ggplot() + 
+  geom_point(data = toy_train,
+             aes(x = x,
+                 y = y),
+             color = "black",
+             alpha = 0.5) +
+  geom_point(data = toy_train,
+             aes(x = x,
+                 y = lr3_pred),
+             color = "red",
+             alpha = 0.6) + 
+  geom_line(data = new_data,
+            aes(x = x,
+                y = lr3_pred),
+            color = "red")
+
+p4 <- ggplot() + 
+  geom_point(data = toy_train,
+             aes(x = x,
+                 y = y),
+             color = "black",
+             alpha = 0.5) +
+  geom_point(data = toy_train,
+             aes(x = x,
+                 y = lr4_pred),
+             color = "red",
+             alpha = 0.6) + 
+  geom_line(data = new_data,
+            aes(x = x,
+                y = lr4_pred),
+            color = "red")
+
+p5 <- ggplot() + 
+  geom_point(data = toy_train,
+             aes(x = x,
+                 y = y),
+             color = "black",
+             alpha = 0.5) +
+  geom_point(data = toy_train,
+             aes(x = x,
+                 y = lr5_pred),
+             color = "red",
+             alpha = 0.6) + 
+  geom_line(data = new_data,
+            aes(x = x,
+                y = lr5_pred),
+            color = "red")
+
+p6 <- ggplot() + 
+  geom_point(data = toy_test,
+             aes(x = x,
+                 y = y),
+             color = "black",
+             alpha = 0.5) +
+  geom_point(data = toy_test,
+             aes(x = x,
+                 y = lr1_pred),
+             color = "red",
+             alpha = 0.6) + 
+  geom_line(data = new_data,
+            aes(x = x,
+                y = lr1_pred),
+            color = "red")
+
+p7 <- ggplot() + 
+  geom_point(data = toy_test,
+             aes(x = x,
+                 y = y),
+             color = "black",
+             alpha = 0.5) +
+  geom_point(data = toy_test,
+             aes(x = x,
+                 y = lr2_pred),
+             color = "red",
+             alpha = 0.6) + 
+  geom_line(data = new_data,
+            aes(x = x,
+                y = lr2_pred),
+            color = "red")
+
+p8 <- ggplot() + 
+  geom_point(data = toy_test,
+             aes(x = x,
+                 y = y),
+             color = "black",
+             alpha = 0.5) +
+  geom_point(data = toy_test,
+             aes(x = x,
+                 y = lr3_pred),
+             color = "red",
+             alpha = 0.6) + 
+  geom_line(data = new_data,
+            aes(x = x,
+                y = lr3_pred),
+            color = "red")
+
+p9 <- ggplot() + 
+  geom_point(data = toy_test,
+             aes(x = x,
+                 y = y),
+             color = "black",
+             alpha = 0.5) +
+  geom_point(data = toy_test,
+             aes(x = x,
+                 y = lr4_pred),
+             color = "red",
+             alpha = 0.6) + 
+  geom_line(data = new_data,
+            aes(x = x,
+                y = lr4_pred),
+            color = "red")
+
+p10 <- ggplot() + 
+  geom_point(data = toy_test,
+             aes(x = x,
+                 y = y),
+             color = "black",
+             alpha = 0.5) +
+  geom_point(data = toy_test,
+             aes(x = x,
+                 y = lr5_pred),
+             color = "red",
+             alpha = 0.6) + 
+  geom_line(data = new_data,
+            aes(x = x,
+                y = lr5_pred),
+            color = "red")
+
+(p1 + p6) / (p2 + p7) / (p3 + p8) / (p4 + p9) / (p5 + p10)
+```
+
+For each model, the R-squared and RMSE values appear in the two tables below. The first table gives the metrics associated with the training data, while the second table gives the metrics associated with the test data. Notice that, for the training data, the metrics improve as the flexibility of the model increases. With the unseen test data, however, there is a point at which the error metrics indicate that the model becomes overfit. Again, this is the importance of unseen data providing an unbiased estimate for model performance on new data!
+
+```{r echo = FALSE}
+my_metrics <- metric_set(rsq, rmse)
+
+train_results <- (toy_train %>%
+  my_metrics(y, lr1_pred) %>% 
+  mutate(model = "straight-line",
+         type = "training")) %>%
+  bind_rows(
+    toy_train %>%
+      my_metrics(y, lr2_pred) %>%
+      mutate(model = "quadratic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    toy_train %>%
+      my_metrics(y, lr3_pred) %>%
+      mutate(model = "cubic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    toy_train %>%
+      my_metrics(y, lr4_pred) %>%
+      mutate(model = "5th-Order",
+             type = "training")
+  ) %>%
+  bind_rows(
+    toy_train %>%
+      my_metrics(y, lr5_pred) %>%
+      mutate(model = "11th-order",
+             type = "training")
+  ) %>%
+  pivot_wider(id_cols = model, names_from = .metric, values_from = .estimate) %>%
+  mutate(degree = c(1, 2, 3, 5, 11), .after = model)
+
+train_results %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
+```
+
+On the training data, the metrics keep getting better and better! Let's check out if the same is true with the unseen test data...
+
+```{r echo = FALSE}
+test_results <- (toy_test %>%
+  my_metrics(y, lr1_pred) %>% 
+  mutate(model = "straight-line",
+         type = "training")) %>%
+  bind_rows(
+    toy_test %>%
+      my_metrics(y, lr2_pred) %>%
+      mutate(model = "quadratic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    toy_test %>%
+      my_metrics(y, lr3_pred) %>%
+      mutate(model = "cubic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    toy_test %>%
+      my_metrics(y, lr4_pred) %>%
+      mutate(model = "5th-Order",
+             type = "training")
+  ) %>%
+  bind_rows(
+    toy_test %>%
+      my_metrics(y, lr5_pred) %>%
+      mutate(model = "11th-order",
+             type = "training")
+  ) %>%
+  pivot_wider(id_cols = model, names_from = .metric, values_from = .estimate) %>%
+  mutate(degree = c(1, 2, 3, 5, 11), .after = model)
+
+test_results %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
+```
+
+Nope! What we are seeing here is evidence of overfitting. The training performance metrics continue to improve, while the test metrics improve with some additional flexibility, but then get much worse. We can see this visually below.
+
+```{r}
+ggplot() + 
+  geom_point(data = train_results, 
+             aes(x = degree,
+                 y = rmse),
+             color = "red",
+             shape = "X",
+             size = 3) + 
+  geom_line(data = train_results, 
+             aes(x = degree,
+                 y = rmse),
+             color = "red") +
+  geom_point(data = test_results, 
+             aes(x = degree,
+                 y = rmse),
+             color = "black") + 
+  geom_line(data = test_results, 
+             aes(x = degree,
+                 y = rmse),
+             color = "black") +
+  labs(title = "Model Flexibility and RMSE",
+       x = "Degree of Model",
+       y = "RMSE") +
+  scale_y_log10()
+  
+```
+
+We can identify from the table of test error metrics or from the *elbow plot* above, that the model becomes overfit once we include polynomial terms above degree $3$. The cubic model is the model that performs best when responses are not known ahead of time. That is, the cubic model is the model that is expected to provide the best predictions on new data! Because it is expected to provide the best predictions, it is also the form of the model that we should be most confident extracting inferences from. 
+
+***
+
+## Summary
+
+
+
+
+
+
+
+
+
+
+
+
+

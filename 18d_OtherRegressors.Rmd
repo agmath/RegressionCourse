@@ -1,0 +1,196 @@
+---
+title: "Beyond Linear Regression"
+output:
+  html_document
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+library(modeldata)
+
+tidymodels_prefer()
+rm(list = ls())
+
+ames <- read_csv("https://raw.githubusercontent.com/koalaverse/homlr/master/data/ames.csv")
+```
+
+## Note: Unfinished Draft
+
+This set of notes remains a work in progress. The following items remain to be completed.
+
++ Discuss the importance of knowing your chosen tool -- assumptions, performance, available interpretations, etc.
++ Add details around fitting a workflow set.
+
+## Recap
+
+Up to this point, we've spent our time building, assessing, and interpreting models of the form $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$. We began with simple linear regressors which included a single predictor variable. We then moved to multiple linear regressors including several terms containing [assumedly] independent predictors. We relaxed this assumption slightly to allow for *higher-order terms* -- terms with a single variable raised to a higher power or terms containing an interaction (product) between two or more predictors. Most recently, we encountered the notion of *regularization*, which is a term for a technique to constrain our models and reduce the likelihood that a model becomes overfit. While they utilize a slightly different fitting procedure, the Ridge Regression and LASSO models took the form of our familiar linear regression model -- a linear combination of the available predictors.
+
+## Motivation
+
+There's no need to be tied to models of the form $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$. Indeed, any "model" which outputs a numeric prediction can be considered a *regression model*. Regression simply eludes to the fact that we are predicting a numerical response. There are many classes of model which can be built for this end. Two of the most accessible model classes appear below.
+
++ **KNN Regressors:** $k$-nearest neighbors (KNN) regressors assume that observations are *most like* those observations which are "*closest*" to them. Such models depend on computing distance between observations such that they can *aggregate* the responses on those near neighbors to compute a predicted response for any new obervations.
+
+  + KNN models are very sensitive to the parameter $k$, which determines the number of nearest neighbors the model allows to *vote* on the predicted response. 
+  
++ **Decision-Tree Regressors:** are regression models which are built using a *decision-tree* structure (If this, then that...Otherwise...). Since they mimic our own decision-making processes, these decision tree models are *very* interpretable, even for those people without a technical background. 
+
+  + Decision-tree models are very prone to overfitting, so we need to use *regularization* to constrain them.
+
+In tackling regression problems, we aren't even limited to using a single model. We can build several models for use in either *parallel* or *sequential* arrangements.
+
++ **Random-Forest Regressors:** are collections of trees which, individually may make poor predictions, however, when aggregated (averaged), make much stronger predictions. The intuition behind this idea is commonly referred to as [*the Wisdom of the Crowd*](https://youtu.be/iOucwX7Z1HU).
+
+  + There are some tricks required for a random-forest regressor to be effective. The prediction errors made by individual trees must be uncorrelated. In order to make this happen, we do two things:
+  
+    + Each tree is trained on a slightly different dataset, obtained using a procedure called *bootstrapping*.
+    + For each tree, and at each juncture, only a randomly selected subset of the predictors are available for the tree to ask questions about.
+
++ **Boosted Models:** are a class of models in which a sequence of very weak learners is trained (these weak learners may be simple linear regression models, single question decision trees, or other highly biased models). The first model in the sequence predicts the value of the response variable. The second model predicts the residual error (the prediction error) made by the first model. The third model predicts the remaining bit of error and so on...
+
+  + These models are very sensitive to the number of *boosting* iterations. Too many rounds of boosting results in an overfit model while too few can result in a model which is underfit.
+
+Due to the nature of these *ensembles* of models, interpretation can be difficult (or impossible). That being said, they can have excellent predictive value!
+
+## Objectives
+
+In this notebook, we'll accomplish the following:
+
++ See how to create a variety of regression model specifications using the `tidymodels` framework.
++ Combine model specifications and their corresponding recipes into a `workflow_set()`.
++ Use cross-validation to estimate the predictive value for each of the model classes under consideration.
++ Analyze cross-validation performance metrics to identify a "*best*" model from those considered in the workflow set.
++ Fit that best model and use it to make predictions on new data.
+
+## The Data
+
+Choose a dataset to use...I'm using `ames` as a placeholder for now.
+
+```{r}
+ames_known_price <- ames %>%
+  filter(!is.na(Sale_Price))
+ames_split <- initial_split(ames_known_price, prop = 0.9)
+ames_train <- training(ames_split)
+ames_test <- testing(ames_split)
+
+ames_folds <- vfold_cv(ames_train, v = 10)
+```
+
+## Specifying New Classes of Model
+
+The beautiful thing about the `tidymodels` framework that we've been utilizing is that it is standardized across all model types. Regardless of the model class, we'll
+
++ select a model specification and set its fitting engine as well as any hyperparameter values.
++ create a recipe including a formula and any necessary feature engineering steps
+
+To see a list of many available model classes, check out the [`parsnip` model finder](https://www.tidymodels.org/find/parsnip/). The `parsnip` package is what `tidymodels` is using for model definitions.
+
+Let's create four new model specifications below. We'll use `linear_reg()`, `decision_tree()`, `nearest_neighbor()`, and `rand_forest()` to create a linear regressor, decision tree, $k$-nearest neighbor, and random forest regressor respectively. Each of the latter three models can be utilized for *regression* or *classification*, so we'll need to `set_mode()` to `"regression"` for each of those specifications.
+
+```{r}
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+
+tree_reg_spec <- decision_tree(tree_depth = 10, min_n = 3) %>%
+  set_engine("rpart") %>%
+  set_mode("regression")
+
+knn_reg_spec <- nearest_neighbor(neighbors = 5) %>%
+  set_engine("kknn") %>%
+  set_mode("regression")
+
+rf_reg_spec <- rand_forest(mtry = 9, trees = 50, min_n = 3) %>%
+  set_engine("ranger") %>%
+  set_mode("regression")
+```
+
+You can see the *engines* available for each model from the `parsnip` model finder from above.
+
+## Model-Specific Recipes
+
+Sometimes you can get away with a single `recipe()` that will work across all of your model classes. Be careful though -- each model class functions differently and makes different assumptions about your data. For example, a *$k$-nearest neighbors* model is distance-based, so categorical predictors are not natively meaningful for such a model and your predictors must be scaled so that distances in each feature dimension are comparable to one another (an `age` difference of $50$ years is a much larger distinction/*distance* between individuals than a salary difference of $\$1,000$). Decision tree and random forest models can handle categorical variables in their raw forms, so we don't need to obtain dummy variables via `step_dummy()` in order to fit those models.
+
+For the reasons cited above, let's construct three recipes -- one for the linear regressor, one for the nearest neighbor model and one for the trees.
+
+```{r}
+lr_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_impute_median(all_numeric_predictors()) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+knn_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_impute_median(all_numeric_predictors()) %>%
+  step_rm(all_nominal_predictors()) %>%
+  step_normalize(all_numeric_predictors())
+
+tree_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_impute_median(all_numeric_predictors()) %>%
+  step_other(all_nominal_predictors())
+
+# knn_rec %>%
+#   prep() %>%
+#   bake(ames_train) %>%
+#   summarize_all(~ sum(is.na(.))) %>%
+#   pivot_longer(cols = everything(), names_to = "term", values_to = "missing") %>%
+#   summarize(total_missing = sum(missing))
+```
+
+## Workflow Sets Rather than Single-Model Workflows
+
+Rather than packaging each model specification and recipe into its own unique `workflow()`, we'll utilize a `workflow_set()` which allows for multiple models to be trained and compared all at once. This is much more efficient than building four separate workflows and comparing the results pairwise.
+
+```{r}
+rec_list <- list(
+  lr = lr_rec, 
+  knn = knn_rec,
+  tree1 = tree_rec,
+  tree2 = tree_rec
+)
+
+model_list <- list(
+  lr = lr_spec,
+  knn = knn_reg_spec,
+  tree = tree_reg_spec,
+  rf = rf_reg_spec
+)
+
+my_models_wfs <- workflow_set(rec_list, model_list, cross = FALSE)
+my_models_wfs
+```
+
+## Fitting and Assessing a Workflow Set
+
+```{r}
+grid_ctrl <- control_grid(
+  save_pred = TRUE,
+  parallel_over = "everything",
+  save_workflow = TRUE
+)
+
+grid_results <- my_models_wfs %>%
+  workflow_map(
+    seed = 123,
+    resamples = ames_folds,
+    control = grid_ctrl)
+
+grid_results %>%
+  autoplot()
+```
+
+## Summary
+
+
+
+
+
+
+
+
+
+
+
+
+

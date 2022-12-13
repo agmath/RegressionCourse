@@ -1,0 +1,202 @@
+---
+title: "Variable Selection Methods: Regularization with Ridge and LASSO"
+output:
+  html_document
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+library(modeldata)
+
+tidymodels_prefer()
+rm(list = ls())
+
+ames <- read_csv("https://raw.githubusercontent.com/koalaverse/homlr/master/data/ames.csv")
+
+```
+
+## Note: Unfinished Draft
+
+This set of notes remains a work in progress. The following items remain to be completed.
+
++ Proofread discussion
++ Find a data set that is more responsive to the `penalty` for Ridge Regression and LASSO to illustrate how these techniques *can* sometimes result in improved model performance.
++ **Question:** Should these notes simply introduce the techniques and the `penalty` parameter as a parameter that must be chosen by the modeler? On `Day 19` we are scheduled to discuss hyperparameter tuning and other use-cases for *cross-validation*, so I am leaning towards this!
+
+## Recap
+
+With Cross-Validation, we've supercharged our modeling powers. We've made our model performance estimates much more reliable, which gives us greater confidence in understanding the predictive power (or lack-thereof) in our models. We've become much more responsible modelers. We'll see again soon that cross-validation can actually do much more for us than just provide more reliable performance estimates than the validation-set approach did. For now though, we shift focus slightly to the question -- *how do we know which predictors should be included in our model*?
+
+## Motivation
+
+When we first introduced multiple linear regression, we took an approach in which we built a "large" model -- a model that included most/all of our available predictors. Once we had that model, we used a procedure called *backward elimination* to eliminate terms from our model if they were associated with $p$-values above the 5% significance threshold. We could have taken the opposite approach, starting with an empty model, adding predictors/terms one at a time -- a process called *forward selection*. 
+
+With both of these methods, we're allowing our model to be quite greedy. It may be helpful to think of these processes as allowing our model to go "shopping" for predictors -- in the *backward selection* paradigm, the model begins by adding every item in the store to its shopping cart, and then carefully places the ones it doesn't want back on the shelves -- in the *forward selection* paradigm, the model begins with an empty cart and adds its favorite items one-by-one into its shopping cart. This seems quite reasonable at first, but we're engaging in quite risky behavior.
+
+From a purely statistical standpoint, we're evaluating lots of $t$-tests in determining whether model terms are statistically significant or not. The likelihood of making at least one Type I Error (saying that a model term is statistically significant, when it is not so in the population) becomes very large in these processes. From a model-fit perspective, the more predictor variables a model has, the more flexible it is -- the more flexible a model is, the better it will fit the *training data* and the more likely it is to become overfit. By allowing our model to "shop" freely for its predictors, we are enticing our model to overfit the training data -- giving our model a "budget" to spend on its shopping trip would be a really nice way to lower the likelihood that our model "buys" too many predictors and overfits the training data.
+
+**Note 1:** All of the models we've fit so far in our course use *Ordinary Least Squares* as the underlying fitting procedure -- we are moving to new waters now. Ridge Regression and LASSO models belong to a class of model called *Generalized Linear Models*, although their fitting procedures under the hood will be different, the consistency of the `tidymodels` framework allows us to make this change quite simply.
+
+**Note 2:** The process of applying an additional constraint such as a *budget* is commonly called *regularization*. Regularization techniques are utilized with lots of model classes to help prevent those models from overfitting our training data.
+
+## Objectives
+
+After working through this notebook you should be able to:
+
++ Articulate the *backward selection* approach and how it relates to the multiple linear regression models we've constructed and analyzed so far in our course. 
++ Discuss *forward selection* as an alternative to the backward selection process.
++ Discuss and implement *Ridge Regression* and the *LASSO* as alternatives to Ordinary Least Squares within the `tidymodels` framework. 
++ Discuss the benefits and drawbacks for forward- and backward-selection, Ridge Regression, and the LASSO relative to one another.
+
+***
+
+## Ordinary Least Squares
+
+The process of fitting a model using ordinary least squares is an *optimization* problem. Simply put, to fit a model of the form 
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+we minimize the residual sum of squares:
+
+$$\text{Minimize:}~~\sum_{\text{training data}}{\left(y_{\text{observed}} - y_{\text{predicted}}\right)^2} = \sum_{\text{training data}}{\left(y_{\text{observed}} - \left(\beta_0 + \sum_{i = 1}^{k}{\beta_i x_i}\right)\right)^2}$$
+
+This process of choosing values for $\beta_0,~\beta_1,~\beta_2,~\cdots,~\beta_k$ is called *Ordinary Least Squares* (OLS), and it's what we've been using (or, rather R has been using) all semester long to fit our models.
+
+In OLS, the optimization procedure can freely choose those $\beta$ values, without any constraint (OLS is shopping without a budget). Ridge Regression and the LASSO introduce extra constraints on this optimization problem.
+
+## Ridge Regression
+
+The process of fitting a model using Ridge Regression is similar to that of using OLS, except that a constraint on the chosen $\beta$ coefficients is imposed. That is, using Ridge Regression to fit a model of the form
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+Solves the following optimization problem:
+$$\begin{array}{ll}\text{Minimize:} & \displaystyle{\sum_{\text{training data}}{\left(y_{\text{observed}} - \left(\beta_0 + \sum_{i = 1}^{k}{\beta_i x_i}\right)\right)^2}}\\
+\text{Subject To:} & \displaystyle{\sum_{i=1}^{k}{\left|\beta_i\right|} \leq C}\end{array}$$
+
+Where $C$ can be thought of as a total coefficient budget. That is, it becomes very expensive for the model to assign lots of non-zero coefficients.
+
+## Least Absolute Shrinkage and Selection Operator (LASSO)
+
+The difference between Ridge Regression and the LASSO is in how "spent budget" is calculated. Instead of summing the absolute values of the $\beta$ coefficients, we'll sum their squares. That is, using LASSO to fit a model of the form
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+Solves the following optimization problem:
+$$\begin{array}{ll}\text{Minimize:} & \displaystyle{\sum_{\text{training data}}{\left(y_{\text{observed}} - \left(\beta_0 + \sum_{i = 1}^{k}{\beta_i x_i}\right)\right)^2}}\\
+\text{Subject To:} & \displaystyle{\sum_{i=1}^{k}{\beta_i^2} \leq C}\end{array}$$
+
+Where $C$ can again be thought of as a total coefficient budget. Because it squares the $\beta$ coefficients in the calculation of "budget used", the LASSO penalizes large coefficients more than Ridge Regression does. Furthermore, due to the mathematics behind these algorithms, models fit using the LASSO result in small coefficients being sent to $0$. That is, the LASSO can be used as a *variable selection procedure*. Models fit with Ridge Regression often leave several predictors having very small coefficients so, while they don't have much influence in the overall model predictions, they do still remain in the model.
+
+### Some Feature PreProcessing Concerns
+
+If we are going to utilize Ridge Regression or the LASSO, we need to ensure that all of our predictors are on a standardized scale. Otherwise, predictors/features whose observed values are large are superficially *cheaper* for the model to use (because we can attach small coefficients to them) than features whose observed values are already small. Similarly, features whose observed values are very small are artificially made *more expensive* for the model to use because they demand larger coefficients in order to have influence over model predictions. There are two very common scaling methods:
+
++ Min/Max scaling projects a variable onto the interval $\left[0, 1\right]$, where the minimum observed value is sent to $0$ and the maximum observed value is sent to $1$.
+
+  + Min/Max scaling for the variable $x$ is done using the formula: $\displaystyle{\frac{x - \min\left(x\right)}{\max\left(x\right) - \min\left(x\right)}}$.
+  + We can add `step_range()` to a `recipe()` to min/max scale a feature.
+  
++ Standardization converts a variables raw measurements into standard deviations ($z$-scores), where the mean of the transformed variable is $0$ and the standard deviation of the transformed variable is $1$.
+
+  + Standardized scaling for the variable $x$ is done using the formula: $\displaystyle{\frac{x - \text{mean}\left(x\right)}{\text{sd}(x)}}$
+  + We can add `step_scale()` to a `recipe()` to standardize the values of a feature.
+  
+### Fitting a Model Using Ridge Regression or the LASSO
+
+The `tidymodels` framework provides us with a standardized structure for defining and fitting models. Everything we've learned about the syntax and workflow for fitting a linear regression model using OLS can be used to fit these Generalized Linear Models. We'll just need to `set_engine()` to something other than `"lm"` -- specifically, an engine which can fit models using the constraints defined in the Ridge Regression and LASSO sections above. We'll use `"glmnet"`, which requires two additional arguments `mixture` and `penalty`.
+
++ The `mixture` argument is a number between $0$ and $1$. Setting `mixture = 1` results in a LASSO model, while setting `mixture = 0` results in a Ridge Regression model. Values in between $0$ and $1$ result in a *mixed* LASSO/Ridge approach, where the penalty is partially determined by the Ridge Regression constraint and partially by the LASSO constraint.
++ The `penalty` argument corresponds to the amount of *regularization* being applied -- that is, the `penalty` is related to the *budget* parameter we've described earlier.
+
+### Ummm...Great -- So What Do I Use and When Do I Use It?
+
+There is some really good news coming -- just bear with me! 
+
+The choice between Ridge Regression and LASSO depends on your goals. If you are looking for a tool to help with *variable selection*, then the LASSO is your choice, since it will result in less valuable predictors being assigned coefficients of exactly $0$. If you are building a predictive model, you might try both and see which one performs better for your specific use-case.
+
+How do I choose a `penalty`? As I understand it, there's no great science to choosing a penalty. People will typically try values and see what the best ones are for their particular use-case.
+
+So basically I've told you about these two new classes of model that help prevent overfitting. They each require a `penalty` parameter and I've given you no real guidance on how to choose it. From here on out, however, we'll have a *mantra*: *"Keep Calm and Cross-Validate"*.
+
+We saw in our most recent notebook that cross-validation can help with selecting an appropriate level of model flexibility (the degree of the model). Cross-validation is a super-power which can help us select any *hyperparameter* (an aspect of a model which must be set prior to the model seeing the data). We can signal to `tidymodels` that we'd like cross-validation to identify an optimal hyperparameter value for us by setting its value to `tune()` in the workflow (model definition, recipe, etc.). That is -- if you don't know what want, set `mixture = tune()` and `penalty = tune()`.
+
+\* This is oversimplifying a bit -- the more hyperparameters we ask *cross-validation* to `tune()` the more models we need to fit. In fact, the growth in the number of models fit is exponential (...it grows very quickly). There are a few strategies, beyond simply reducing the number of hyperparameters to be tuned, that we can use to combat this though.
+
+## Implementing Ridge Regression and the LASSO
+
+There are a few additional concerns with fitting Ridge Regression and LASSO models that we haven't needed to deal with prior.
+
++ The `glmnet` engine requires that no missing values are included in any fold.
+
+  + We can *omit* rows with missing data. (drawback: we are throwing away observations and we may be drastically reducing the size of our available data)
+  + We can *omit* features with missing data. (drawback: we are sacrificing potentially valuable predictors by omitting them from our model)
+  + We can *impute* missing values using a `step_impute_*()` feature engineering step in our recipe. (drawback: we are making our best guess at what the missing value should be, but we are introducing additional uncertainty to our model)
+
++ Because the `penalty` parameter imposes a *budget* on coefficients, all of our predictors must be on the same scale -- otherwise, some predictors are artificially *cheaper* or *more expensive* than others to include in our model.
+
+  + We can use `step_range()`, `step_scale()`, or `step_normalize()` on `all_numerical_predictors()` to achieve this.
+  
+We'll filter out the observations with an unknown response (`body_mass_g`), and we'll use `step_impute_knn()` to use a $k$-nearest neighbors imputation scheme for any missing values in our predictor columns. Finally, we'll use `step_normalize()` to center and scale our numerical predictors. Then we'll proceed as usual.
+
+```{r}
+set.seed(123)
+ames_known_price <- ames %>%
+  filter(!(is.na(Sale_Price)))
+ames_split <- initial_split(ames_known_price, prop = 0.9)
+ames_train <- training(ames_split)
+ames_test <- testing(ames_split)
+
+ames_folds <- vfold_cv(ames_train, v = 5)
+
+ridge_reg_spec <- linear_reg(mixture = 1, penalty = tune()) %>%
+  set_engine("glmnet")
+
+# tree_reg <- rand_forest(mtry = tune(), trees = 50, min_n = tune()) %>%
+#   set_engine("ranger") %>%
+#   set_mode("regression")
+
+ridge_reg_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_normalize(all_numeric()) %>%
+  step_impute_knn(all_predictors()) %>%
+  step_scale(all_numeric_predictors()) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+# tree_reg_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+#   step_impute_knn(all_predictors()) %>%
+#   step_other(all_nominal_predictors()) %>%
+#   step_impute_knn(all_predictors())
+
+ridge_reg_wf <- workflow() %>%
+ add_model(ridge_reg_spec) %>%
+ add_recipe(ridge_reg_rec)
+
+# tree_reg_wf <- workflow() %>%
+#   add_model(tree_reg) %>%
+#   add_recipe(tree_reg_rec)
+
+
+grid_search_results <- ridge_reg_wf %>%
+  tune_grid(resamples = ames_folds,
+            grid = 10)
+
+# grid_search_results <- tree_reg_wf %>%
+#   tune_grid(resamples = ames_folds,
+#             grid = 10)
+
+grid_search_results %>%
+  autoplot()
+```
+
+## Summary
+
+
+
+
+
+
+
+
+
+
+
+
+

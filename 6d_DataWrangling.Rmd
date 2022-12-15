@@ -22,10 +22,10 @@ items <- ikea %>%
   sample_n(5) %>%
   pull(category)
 
-items <- items %>%
-  append(c("Outdoor Furniture", "tv and media furniture"))
+items_dup <- items %>%
+  append(c("Outdoor Furniture", "Nursary Furnature"))
 
-products <- tibble(items = items, prices = c("$125", "$675", "$1,350", "$475", "$725", "$725", "$475"))
+products <- tibble(items = items_dup, prices = c("$125", "$675", "$1,350", "$475", "$725", "$675", "$475"))
 
 clients <- tibble(client_id = seq(1, 10, 1), 
                   name = randomNames(10),
@@ -38,7 +38,7 @@ clients <- tibble(client_id = seq(1, 10, 1),
 
 numRows <- 126735
 
-orders <- tibble(client_id = sample(1:10, size = numRows, replace = TRUE), product = sample(products$items, size = numRows, replace = TRUE), quantity = 1 + rpois(numRows, lambda = 2))
+orders <- tibble(client_id = sample(1:10, size = numRows, replace = TRUE), product = sample(items, size = numRows, replace = TRUE), quantity = 1 + rpois(numRows, lambda = 2))
 
 purchase_history <- crossing(client_id = clients$client_id, items = products$items, year = c("2018", "2019", "2020", "2021")) %>%
   mutate(quantity = 150 + (-1)^(sample(0:1, 280, replace = TRUE))*rpois(280, 50)) %>%
@@ -83,7 +83,7 @@ The code generates several tables of data, exhibiting some common challenges whe
 
 ### Challenge 1: Inconsistent Data Recording
 
-Take a look at the `products` data frame. The data frame only has seven rows, but among those rows are seemingly duplicated records. Luckily, while the item categories are duplicated (with different capitalization), the prices are consistent. We have several options available:
+Take a look at the `products` data frame. The data frame only has seven rows, but among those rows are seemingly duplicated records. Luckily, while the item categories are duplicated (with different spelling and capitalization), the prices are consistent. We have several options available:
 
 ```{r}
 products
@@ -101,13 +101,13 @@ There are certainly other things we could do as well. These three approaches are
 ```{r}
 #Filter out the duplicated rows
 products %>%
-  filter(!(items %in% c("Outdoor Furniture", "tv and media furniture")))
+  filter(!(items %in% c("Outdoor Furniture", "Nursary Furnature")))
 
 #Use Case/When to overwrite values and then filter to distinct rows
 products %>%
   mutate(items = case_when(
     items == "Outdoor Furniture" ~ "Outdoor furniture",
-    items == "tv and media furniture" ~ "TV & media furniture",
+    items == "Nursary Furnature" ~ "Nursery furniture",
     TRUE ~ items
   )) %>%
   distinct()

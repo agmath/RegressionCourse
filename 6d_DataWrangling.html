@@ -393,8 +393,8 @@ to understand these data frames.</p>
 <p>Take a look at the <code>products</code> data frame. The data frame
 only has seven rows, but among those rows are seemingly duplicated
 records. Luckily, while the item categories are duplicated (with
-different capitalization), the prices are consistent. We have several
-options available:</p>
+different spelling and capitalization), the prices are consistent. We
+have several options available:</p>
 <pre class="r"><code>products</code></pre>
 <pre><code>## # A tibble: 7 × 2
 ##   items                                prices
@@ -404,8 +404,8 @@ options available:</p>
 ## 3 Beds                                 $1,350
 ## 4 Nursery furniture                    $475  
 ## 5 Sideboards, buffets &amp; console tables $725  
-## 6 Outdoor Furniture                    $725  
-## 7 tv and media furniture               $475</code></pre>
+## 6 Outdoor Furniture                    $675  
+## 7 Nursary Furnature                    $475</code></pre>
 <ul>
 <li><p>Manually drop the duplicated rows</p>
 <ul>
@@ -421,7 +421,7 @@ values in some cells.</p></li>
 approaches are shown below.</p>
 <pre class="r"><code>#Filter out the duplicated rows
 products %&gt;%
-  filter(!(items %in% c(&quot;Outdoor Furniture&quot;, &quot;tv and media furniture&quot;)))</code></pre>
+  filter(!(items %in% c(&quot;Outdoor Furniture&quot;, &quot;Nursary Furnature&quot;)))</code></pre>
 <pre><code>## # A tibble: 5 × 2
 ##   items                                prices
 ##   &lt;chr&gt;                                &lt;chr&gt; 
@@ -434,20 +434,18 @@ products %&gt;%
 products %&gt;%
   mutate(items = case_when(
     items == &quot;Outdoor Furniture&quot; ~ &quot;Outdoor furniture&quot;,
-    items == &quot;tv and media furniture&quot; ~ &quot;TV &amp; media furniture&quot;,
+    items == &quot;Nursary Furnature&quot; ~ &quot;Nursery furniture&quot;,
     TRUE ~ items
   )) %&gt;%
   distinct()</code></pre>
-<pre><code>## # A tibble: 7 × 2
+<pre><code>## # A tibble: 5 × 2
 ##   items                                prices
 ##   &lt;chr&gt;                                &lt;chr&gt; 
 ## 1 Tables &amp; desks                       $125  
 ## 2 Outdoor furniture                    $675  
 ## 3 Beds                                 $1,350
 ## 4 Nursery furniture                    $475  
-## 5 Sideboards, buffets &amp; console tables $725  
-## 6 Outdoor furniture                    $725  
-## 7 TV &amp; media furniture                 $475</code></pre>
+## 5 Sideboards, buffets &amp; console tables $725</code></pre>
 <p>The <code>case_when()</code> approach is more applicable than simply
 removing the rows, because it isn’t often that we would actually like to
 remove rows. That is the case here, though. Choose your favorite method
@@ -473,8 +471,8 @@ the column to a numeric value.</p>
 ## 3 Beds                                 $1,350
 ## 4 Nursery furniture                    $475  
 ## 5 Sideboards, buffets &amp; console tables $725  
-## 6 Outdoor Furniture                    $725  
-## 7 tv and media furniture               $475</code></pre>
+## 6 Outdoor Furniture                    $675  
+## 7 Nursary Furnature                    $475</code></pre>
 <p>We’ll make use of the <code>str_replace()</code> function for this.
 This function allows us to search for a sub-string and, if it is found,
 replace it with a new substring. We’ll replace any found dollar signs
@@ -496,8 +494,8 @@ we’ll make use of <code>mutate()</code>.</p>
 ## 3 Beds                                   1350
 ## 4 Nursery furniture                       475
 ## 5 Sideboards, buffets &amp; console tables    725
-## 6 Outdoor Furniture                       725
-## 7 tv and media furniture                  475</code></pre>
+## 6 Outdoor Furniture                       675
+## 7 Nursary Furnature                       475</code></pre>
 <p>The dollar sign is a special character in <code>R</code>, so we
 needed to escape it with <code>\\$</code> to convey that we want to
 match a literal dollar sign. Edit the code cell above so that the
@@ -568,16 +566,16 @@ frame.</p>
 <pre><code>## # A tibble: 10 × 5
 ##    client_id `2018` `2019` `2020` `2021`
 ##        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-##  1         1 705050 549975 812350 826900
-##  2         2 534675 775425 647450 825250
-##  3         3 572075 693100 822850 578325
-##  4         4 764675 766700 599150 709175
-##  5         5 702325 670025 642150 478950
-##  6         6 893900 728475 778725 856950
-##  7         7 692725 713550 687325 644950
-##  8         8 786100 740250 610525 693850
-##  9         9 620775 732075 467550 600475
-## 10        10 906750 615975 737050 529075</code></pre>
+##  1         1 833875 791600 673325 640800
+##  2         2 713725 800850 566900 662300
+##  3         3 662375 575775 514150 597475
+##  4         4 563050 814400 615950 645775
+##  5         5 684500 708400 604825 835100
+##  6         6 644025 734475 809775 759575
+##  7         7 759025 556975 734250 773275
+##  8         8 626100 594625 662200 715150
+##  9         9 716350 630225 761675 634100
+## 10        10 537425 433850 575950 735050</code></pre>
 <p>That data frame contains purchase totals for each client across
 multiple years. The data is in <em>wide</em> format because, for example
 <code>&quot;2018&quot;</code> is not a variable we can measure for each
@@ -590,16 +588,16 @@ value of a hidden <code>year</code> variable. We’ll use
 <pre><code>## # A tibble: 40 × 3
 ##    client_id year  total_purchases
 ##        &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;
-##  1         1 2018           705050
-##  2         1 2019           549975
-##  3         1 2020           812350
-##  4         1 2021           826900
-##  5         2 2018           534675
-##  6         2 2019           775425
-##  7         2 2020           647450
-##  8         2 2021           825250
-##  9         3 2018           572075
-## 10         3 2019           693100
+##  1         1 2018           833875
+##  2         1 2019           791600
+##  3         1 2020           673325
+##  4         1 2021           640800
+##  5         2 2018           713725
+##  6         2 2019           800850
+##  7         2 2020           566900
+##  8         2 2021           662300
+##  9         3 2018           662375
+## 10         3 2019           575775
 ## # … with 30 more rows</code></pre>
 <p>Now our data frame has become <em>longer</em>! The <code>year</code>
 variable is currently stored as a character, we can convert it to a
@@ -610,16 +608,16 @@ number using <code>mutate()</code> and <code>as.numeric()</code>.</p>
 <pre><code>## # A tibble: 40 × 3
 ##    client_id  year total_purchases
 ##        &lt;dbl&gt; &lt;dbl&gt;           &lt;dbl&gt;
-##  1         1  2018          705050
-##  2         1  2019          549975
-##  3         1  2020          812350
-##  4         1  2021          826900
-##  5         2  2018          534675
-##  6         2  2019          775425
-##  7         2  2020          647450
-##  8         2  2021          825250
-##  9         3  2018          572075
-## 10         3  2019          693100
+##  1         1  2018          833875
+##  2         1  2019          791600
+##  3         1  2020          673325
+##  4         1  2021          640800
+##  5         2  2018          713725
+##  6         2  2019          800850
+##  7         2  2020          566900
+##  8         2  2021          662300
+##  9         3  2018          662375
+## 10         3  2019          575775
 ## # … with 30 more rows</code></pre>
 <p>Just so you can see how <code>pivot_wider()</code> works, let’s pivot
 this tidy data frame back to a wide format, but include a column for
@@ -631,10 +629,10 @@ each <code>client_id</code> rather than <code>year</code>.</p>
 <pre><code>## # A tibble: 4 × 11
 ##    year    `1`    `2`    `3`    `4`    `5`    `6`    `7`    `8`    `9`   `10`
 ##   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-## 1  2018 705050 534675 572075 764675 702325 893900 692725 786100 620775 906750
-## 2  2019 549975 775425 693100 766700 670025 728475 713550 740250 732075 615975
-## 3  2020 812350 647450 822850 599150 642150 778725 687325 610525 467550 737050
-## 4  2021 826900 825250 578325 709175 478950 856950 644950 693850 600475 529075</code></pre>
+## 1  2018 833875 713725 662375 563050 684500 644025 759025 626100 716350 537425
+## 2  2019 791600 800850 575775 814400 708400 734475 556975 594625 630225 433850
+## 3  2020 673325 566900 514150 615950 604825 809775 734250 662200 761675 575950
+## 4  2021 640800 662300 597475 645775 835100 759575 773275 715150 634100 735050</code></pre>
 <p>Moving between wide and long formats is a pretty useful skill. I use
 it often when I am summarizing data and would like to dispay a summary
 table in a report. These summary tables sometimes look more pleasing and
@@ -668,14 +666,14 @@ they made. The data we need is spread across the <code>orders</code>,
 <pre class="r"><code>orders %&gt;%
   head()</code></pre>
 <pre><code>## # A tibble: 6 × 3
-##   client_id product                quantity
-##       &lt;int&gt; &lt;chr&gt;                     &lt;dbl&gt;
-## 1         1 tv and media furniture        3
-## 2         2 Outdoor Furniture             2
-## 3         9 tv and media furniture        2
-## 4         4 Outdoor furniture             4
-## 5         3 Outdoor furniture             2
-## 6         5 tv and media furniture        3</code></pre>
+##   client_id product           quantity
+##       &lt;int&gt; &lt;chr&gt;                &lt;dbl&gt;
+## 1         1 Outdoor furniture        2
+## 2         2 Outdoor furniture        4
+## 3         9 Tables &amp; desks           4
+## 4         4 Beds                     2
+## 5         3 Tables &amp; desks           2
+## 6         5 Outdoor furniture        2</code></pre>
 <pre class="r"><code>clients</code></pre>
 <pre><code>## # A tibble: 10 × 3
 ##    client_id name                 phone_number  
@@ -699,8 +697,8 @@ they made. The data we need is spread across the <code>orders</code>,
 ## 3 Beds                                 $1,350
 ## 4 Nursery furniture                    $475  
 ## 5 Sideboards, buffets &amp; console tables $725  
-## 6 Outdoor Furniture                    $725  
-## 7 tv and media furniture               $475</code></pre>
+## 6 Outdoor Furniture                    $675  
+## 7 Nursary Furnature                    $475</code></pre>
 <p>We can use “joins” to bring all of this information into a single
 table using the following steps.</p>
 <ul>
@@ -725,19 +723,19 @@ as shared via the <code>by</code> argument).</p>
   left_join(products, by = c(&quot;product&quot; = &quot;items&quot;))</code></pre>
 <pre><code>## Joining, by = &quot;client_id&quot;</code></pre>
 <pre><code>## # A tibble: 126,735 × 6
-##    client_id product                quantity name             phone_num…¹ prices
-##        &lt;dbl&gt; &lt;chr&gt;                     &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;       &lt;chr&gt; 
-##  1         1 tv and media furniture        3 Taylor, Trevor   (284) 350-… $475  
-##  2         2 Outdoor Furniture             2 Silva, Jonathan  (768) 647-… $725  
-##  3         9 tv and media furniture        2 Schell, Jakob    (332) 722-… $475  
-##  4         4 Outdoor furniture             4 Knobel, Justin   (699) 237-… $675  
-##  5         3 Outdoor furniture             2 De Lara, Maria   (249) 478-… $675  
-##  6         5 tv and media furniture        3 Weber, Kevin     (243) 263-… $475  
-##  7         3 Tables &amp; desks                4 De Lara, Maria   (249) 478-… $125  
-##  8         6 Beds                          3 el-Mattar, Najma (738) 441-… $1,350
-##  9         9 tv and media furniture        2 Schell, Jakob    (332) 722-… $475  
-## 10         7 Outdoor Furniture             2 Campbell, Justin (750) 177-… $725  
-## # … with 126,725 more rows, and abbreviated variable name ¹​phone_number</code></pre>
+##    client_id product           quantity name             phone_number   prices
+##        &lt;dbl&gt; &lt;chr&gt;                &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;          &lt;chr&gt; 
+##  1         1 Outdoor furniture        2 Taylor, Trevor   (284) 350-2197 $675  
+##  2         2 Outdoor furniture        4 Silva, Jonathan  (768) 647-3338 $675  
+##  3         9 Tables &amp; desks           4 Schell, Jakob    (332) 722-4831 $125  
+##  4         4 Beds                     2 Knobel, Justin   (699) 237-5637 $1,350
+##  5         3 Tables &amp; desks           2 De Lara, Maria   (249) 478-2990 $125  
+##  6         5 Outdoor furniture        2 Weber, Kevin     (243) 263-2235 $675  
+##  7         3 Outdoor furniture        4 De Lara, Maria   (249) 478-2990 $675  
+##  8         6 Outdoor furniture        4 el-Mattar, Najma (738) 441-7703 $675  
+##  9         9 Beds                     2 Schell, Jakob    (332) 722-4831 $1,350
+## 10         7 Beds                     3 Campbell, Justin (750) 177-2744 $1,350
+## # … with 126,725 more rows</code></pre>
 <p>When using joins, it is important to verify that everything has
 worked as you expected. While not fool-proof, I usually check to ensure
 that the number of columns and number of rows in the resulting data

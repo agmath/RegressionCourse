@@ -1,0 +1,59 @@
+---
+title: "Hyperparameters and Model Tuning"
+output:
+  html_document
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+library(modeldata)
+
+tidymodels_prefer()
+rm(list = ls())
+
+ames <- read_csv("https://raw.githubusercontent.com/koalaverse/homlr/master/data/ames.csv")
+```
+
+## Note: Unfinished Draft
+
+This set of notes remains a work in progress. The following items remain to be completed.
+
++ Define and discuss hyperparameters
++ Using cross-validation to tune hyperparameters
++ Pay attention to the number of models you are trying to fit...
++ Space-filling grids versus sequential searches -- implement space-filling grids only here...
++ Show a single model with a single hyperparameter...
++ A single model with several hyperparameters...
++ A workflow set with multiple different hyperparameters from disparate recipes...
++ Introduce *racing* to speed up model selection???
+
+## Recap
+
+
+
+## Motivation
+
+
+
+## Objectives
+
+In this notebook, we'll accomplish the following:
+
+
+## Summary
+
+
+
+
+
+
+
+
+
+
+
+
+

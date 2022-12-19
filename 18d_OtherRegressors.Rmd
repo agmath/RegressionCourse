@@ -163,6 +163,8 @@ my_models_wfs
 
 ## Fitting and Assessing a Workflow Set
 
+In order to fit and assess a workflow set, we'll need to do just a bit more work than simply calling `fit()` or `fit_resamples()`. This is because a `workflow_set()` is a special objects which requires a fit to be run for each combination of *model* and *recipe* (preprocessor). We'll begin by setting the `grid_control()` -- a set of common options for each *fit*. Here, we'll select to save the predictions made by each model/preprocessor, use parallel processing wherever possible in order to speed up the fitting and assessing process, and to save the resulting workflows so that we don't need to refit from scratch if we find a model and preprocessor combination that we like. Once we have these *grid control* settings, then we'll use `workflow_map()` to fit an assess our model/preprocessor combinations. The arguments we're using for `workflow_map()` are a `seed` (for reproducibility), the `resamples` we are fitting over (our cross-validation folds), and then the `control` which is our *grid control object*.
+
 ```{r}
 grid_ctrl <- control_grid(
   save_pred = TRUE,
@@ -178,6 +180,31 @@ grid_results <- my_models_wfs %>%
 
 grid_results %>%
   autoplot()
+```
+
+Passing the result of fitting the models in the workflow set to the `autoplot()` method allows us to quickly compare the performance of each model and preprocessor combination. We can see from the plot that the decision tree regressor is confidently the worst model out of the group -- it has the highest RMSE and lowest R-Squared value. The Random Forest regressor seems to be outperforming the the nearest neighbor model and the linear regressor, although the confidence bounds on performance for the random forest and linear model overlap quite a bit. For this reason, we may keep the random forest and linear regression models in the running for "*best model*".
+
+We'll extract that workflow and and select the best parameters (more on this next time) according to the RMSE metric. We'll finalize the workflow and complete a last fit on the full set of training data. Once we've done that, we'll collect the predictions made for our test observations and then plot a comparison of our predictions versus the true observed Sale Prices for homes.
+
+```{r}
+best_results <- grid_results %>%
+  extract_workflow_set_result("tree2_rf") %>%
+  select_best(metric = "rmse")
+
+rf_test_results <- grid_results %>%
+  extract_workflow("tree2_rf") %>%
+  finalize_workflow(best_results) %>%
+  last_fit(split = ames_split)
+
+collect_metrics(rf_test_results)
+
+rf_test_results %>%
+  collect_predictions() %>%
+  ggplot() + 
+  geom_abline(slope = 1, intercept = 0, color = "gray50", lty = "dashed") +
+  geom_point(aes(x = Sale_Price, y = .pred), alpha = 0.5) +
+  coord_obs_pred() +
+  labs(x = "observed", y = "predicted")
 ```
 
 ## Summary

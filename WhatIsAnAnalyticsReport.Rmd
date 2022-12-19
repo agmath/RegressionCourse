@@ -1,0 +1,50 @@
+---
+title: "Analytics Report Outline"
+output:
+  html_document
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(tidyverse)
+library(kableExtra)
+```
+
+## Statement of Purpose
+
+This section is a very short, 2 - 3 sentence synopsis of the problem that the analytics report seeks to solve. The Statement of Purpose should help the reader know whether they need to know the contents of the report or if they should pass it along to a colleague. You might think of the Statement of Purpose as an *abstract*, without including any of the results.
+
+## Executive Summary
+
+While it comes second, this is the last section of the Analytics Report that you'll write. This section should be between a half page and a full page in length. It is designed as a very quick summary for top-level decision-makers. This section should answer three questions as simply as possible, but with enough detail to provide the decision-maker(s) the information they need as well as the confidence to act on it.
+
++ What did you do? (a reiteration of the problem statement, with a bit more detail) 
++ How did you do it? (detail the information used -- for us a dataset or datasets, and make a brief mention of the techniques used -- for us, the construction of several predictive and/or descriptive models) 
++ What did you conclude? (a description of the answer to your main question)
+
+These first two sections are likely the only two that the final decision-makers will read. They need to strike a balance between containing enough information while not being too dense or too technical. A good rule of thumb is that a non-technical reader should be able to read and comprehend your Executive Summary in no more than 5 minutes. The remaining sections will be detailed and should target a more technical audience (analysts, scientists, IT professionals, and project managers).
+
+## Introduction
+
+This section is a much more detailed expansion of the problem laid out in the Statement of Purpose. It contains the background for that problem, its importance to the firm/target audience, as well as the resources available for solving that problem. It is possible that the problem, as originally stated, could not be solved with the resources available. In this case, the problem appearing in the Statement of Purpose is an edited version of the originally posed
+question. This section should outline choices that had to be made (and rationale for why) to refine the original problem and arrive at the problem statement in its current form. For example, maybe we wanted to predict hourly demand ( count ) for Bike Share companies across all of North America, but we only had data for a particular Bike Share in the Washington DC Metro Area. How does the restricted form of the problem statement differ from the original? Why is the solution to this related question still valuable to the firm/target audience? Are there any significant limitations or concerns about the refined questions versus the original?
+
+## Exploratory Data Analysis
+  
+This section uses the training data to build intuition about the answer to our question(s) of interest. For us, this means understanding which features may be most relevant in predicting or explaining our response variable. This section includes summary statistics and data visualization as well as a narrative to walk the reader through it all. This section should seek to tell a story about how the available predictors may (or may not) influence our response variable. This section can also include information about how and why new features may have been engineered. For example, maybe one of our plots exhibits a curved relationship between the corresponding predictor and response, so we add a new column to our dataset corresponding to the square of that predictor.
+
+## Model Construction
+
+This section describes construction and validation of the models used to address the main purpose(s) for the report. You'll detail all of the models you constructed as well as how you tested their performance to arrive at a final model or ensemble of models. You should clearly identify performance expectations in this section as well, using error metrics from the test or safe datasets (or even better, from using cross-validation). This section is mostly present for the head of the analytics team, project manager, or other scientists/analysts. It is used to justify your approach and to provide support for the validity of the inferences and/or predictions made in the next section.
+
+## Model Interpretation and Inference
+
+It isn't often the case that our sole purpose in constructing a model is for prediction. We typically seek to uncover and understand relationships that might exist between our predictors and response variable as well. These relationships can inform decision-making too. In this section, the final models are analyzed and interpreted. If applicable, predictions are made and the appropriate measures of performance and uncertainty are discussed. Most of your findings and recommendations will come from this section of your report.
+
+## Conclusion
+
+This is a detailed summary of your findings and limitations. More of the technical details are contained here than in the Executive Summary, but these two sections will likely be similar.
+
+## References
+
+This section contains any references utilized in the creation of the report. Specifically, this will include any external data sources utilized in the report's creation.

@@ -6,7 +6,6 @@ output:
 
 ```{r global-options, include=FALSE}
 library(tidyverse)
-library(MASS)
 library(tidymodels)
 library(patchwork)
 library(palmerpenguins)
@@ -71,8 +70,8 @@ p2 <- penguins_train %>%
   geom_point(aes(x = flipper_length_mm, y = body_mass_g)) +
   geom_smooth(aes(x = flipper_length_mm, y = body_mass_g), 
               method = "lm", se = FALSE, color = "red") +
-  labs(x = "Body Mass (g)",
-       y = "Flipper Length (mm)",
+  labs(x = "Flipper Length (mm)",
+       y = "Body Mass (g)",
        title = "Predicting Body Mass \nwith Flipper Length")
 
 p1 / p2

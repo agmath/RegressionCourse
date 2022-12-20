@@ -7,6 +7,7 @@ output:
 ```{r global-options, include=FALSE}
 library(tidyverse)
 library(tidymodels)
+library(kableExtra)
 tidymodels_prefer()
 ```
 
@@ -31,7 +32,10 @@ We'll run through an example to see how the components of a `tidymodels` `workfl
 
 ```{r}
 library(palmerpenguins)
-penguins
+penguins %>%
+  head()  %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 Perhaps a reasonable thing to do might be to try predicting `body_mass_g` of a penguin using their `bill_length_mm`. 
@@ -64,7 +68,11 @@ Now we've got our two data sets. Lock up that *test* data and keep it hidden. We
 Now that we have our training data, we can look at it. In particular, we may want to know if there is visual evidence of a relationship between `bill_length_mm` and `body_mass_g`.
 
 ```{r}
-penguins_train
+penguins_train %>%
+  head() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
+
 penguins_train %>%
   ggplot() +
   geom_point(aes(x = bill_length_mm, y = body_mass_g)) +
@@ -130,7 +138,9 @@ Now that we have a fitted model, let's check out what it looks like! We'll first
 
 ```{r}
 mass_length_fit %>%
-  glance()
+  glance() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 We'll talk more about these model metrics in our next class meeting. We can also see information about the individual terms in our model by piping our fitted model object to `extract_fit_engine()` and to `tidy()`, giving us a data frame of metrics for the individual model terms.
@@ -138,7 +148,9 @@ We'll talk more about these model metrics in our next class meeting. We can also
 ```{r}
 mass_length_fit %>% 
   extract_fit_engine() %>%
-  tidy()
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 Great! We've accessed the model coefficients, and some statistical measures on those estimated values. More on those in our next class meeting as well!
@@ -151,17 +163,23 @@ Since our model is fit, we can also use it to make predictions on new data. Perh
 new_data <- tibble(bill_length_mm = c(38, 45))
 
 mass_length_fit %>%
-  predict(new_data)
+  predict(new_data) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 We get a predicted body mass for each penguin! We know, almost surely, that these predictions are wrong. We can gain some confidence in our predictions by obtaining an interval of plausible body masses rather than a single point prediction.
 
 ```{r}
 mass_length_fit %>%
-  predict(new_data, type = "conf_int")
+  predict(new_data, type = "conf_int") %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 
 mass_length_fit %>%
-  predict(new_data, type = "pred_int")
+  predict(new_data, type = "pred_int") %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 Perhaps you've noticed that `type = "conf_int"` and `type = "pred_int"` led to different intervals. This is because the *confidence intervals* (`"conf_int"`) attempt to predict the *average* `body_mass_g` for *all* penguins whose `bill_length_mm` is $38$ and $45$ millimeters, respectively. The *prediction intervals* (`"pred_int"`) are much wider. This is because they attempt to predict the `body_mass_g` for a *single* penguin whose `bill_length_mm` is $38$ and $45$ millimeters, respectively. It is important to note whether your goal is to predict an *average* response or an *individual* response, and to use the appropriate interval.
@@ -173,7 +191,10 @@ If we are ready to give our model one final test, then we can assess the model's
 ```{r}
 mass_length_fit %>%
   augment(penguins_test) %>%
-  select(bill_length_mm, body_mass_g, .pred)
+  select(bill_length_mm, body_mass_g, .pred) %>%
+  head() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 In the code cell above, we used `augment()` rather than `predict()`, which is a special function that appends a `.pred` column (or the corresponding interval columns) to the data frame containing our new data. We then selected only the relevant columns for our small model.
@@ -184,17 +205,23 @@ Using this new data frame, we can compare the *truth* (know, actual `body_mass_g
 mass_length_fit %>%
   augment(penguins_test) %>%
   select(bill_length_mm, body_mass_g, .pred) %>%
-  rmse(body_mass_g, .pred)
+  rmse(body_mass_g, .pred) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 
 mass_length_fit %>%
   augment(penguins_test) %>%
   select(bill_length_mm, body_mass_g, .pred) %>%
-  rsq(body_mass_g, .pred)
+  rsq(body_mass_g, .pred) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 
 mass_length_fit %>%
   augment(penguins_test) %>%
   select(bill_length_mm, body_mass_g, .pred) %>%
-  mae(body_mass_g, .pred)
+  mae(body_mass_g, .pred) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 There are lots of metrics we could use. If we are interested in multiple metrics, we can collect them all at once by creating a `metric_set()`.
@@ -205,7 +232,9 @@ my_metrics <- metric_set(rmse, mae, rsq)
 mass_length_fit %>%
   augment(penguins_test) %>%
   select(bill_length_mm, body_mass_g, .pred) %>%
-  my_metrics(body_mass_g, .pred)
+  my_metrics(body_mass_g, .pred) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 #### Summary
@@ -242,14 +271,20 @@ We can also use our fitted workflow to make predictions on new data.
 
 ```{r echo = TRUE, eval = FALSE}
 lin_reg_fit %>%
-  predict(new_data)
+  predict(new_data) %>%
+  head() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 We can append predictions to an existing data frame of new records.
 
 ```{r echo = TRUE, eval = FALSE}
 lin_reg_fit %>%
-  augment(new_data)
+  augment(new_data) %>%
+  head() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 #### Extra Ideas: Visualizing Model Coefficients
@@ -323,3 +358,16 @@ p3 <- mass_length_fit %>%
   
 (p1 / p2 / p3)
 ```
+
+**Note:** There are several concerning take-aways of the previous three plots. 
+
++ In the first and third plots, we see evidence that the spread of the residuals widens for lengthier bills and for heavier body masses. 
+
+  + This means that any confidence or prediction intervals we build using our models will be unreliable! 
+  
+  + The intervals we construct will be *too optimistic* for penguins with above average bill lengths or body mass. Those confidence and prediction intervals smaller penguins will also not be narrow enough.
+
++ In the second plot, we see a clear linear trend in the relationship between our prediction errors and the true penguin body mass.
+
+  + This indicates that the our model is *over-predicting* (predicting body masses that are too high) for penguins whose actual body mass is below average, and *underpredicting* (predicting body masses that are too low) for penguins whose actual body mass is above average.
+  + This means that our model's prediction's are not to be trusted -- if we obtain a prediction of low body mass then we know it is likely not low enough, while we know that obtaining a prediction of high body mass is not likely a high enough prediction. Hopefully we can improve the model.

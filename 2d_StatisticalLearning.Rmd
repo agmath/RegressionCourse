@@ -11,7 +11,7 @@ library(tidyverse)
 library(patchwork)
 ```
 
-<div id = "boxedtext"> **Objectives**: After today, you should be able to answer...
+**Objectives**: After today, you should be able to answer...
   
   + What is statistical learning in terms of regression?
   + Why try to build models (estimate $f$)?
@@ -20,11 +20,10 @@ library(patchwork)
   + What are parametric and non-parametric models?
   + How do I identify regression versus classification problems?
   + What is the difference between supervised and unsupervised learning?
-</div>
 
 ## What is Statistical Learning?
 
-<div id = "boxedtext"> Consider some phenomenon which is measured by a variable $Y$. If we think that $Y$ is influenced by or related to some set of predictior variables $X = \left(X_1,~X_2,~...,~X_p\right)$, then we are hypothesizing that
+Consider some phenomenon which is measured by a variable $Y$. If we think that $Y$ is influenced by or related to some set of predictior variables $X = \left(X_1,~X_2,~...,~X_p\right)$, then we are hypothesizing that
 $$\displaystyle{Y~=~f\left(X\right) + \varepsilon}$$
 That is, $Y$ is explained by the predictors in $X$ along with some random error, $\varepsilon$ (noise).
 
@@ -34,9 +33,8 @@ That is, $Y$ is explained by the predictors in $X$ along with some random error,
     + Note also that we are assuming that $\sigma$ is constant. That is, $\sigma$ does not depend on the values of any predictors or the response.
 
 These assumptions are crucial to constructing appropriate confidence intervals for predictions.
-</div>
 
-<div id = "boxedtext"> **Our Regression Models**: The models we fit in regression will be of the form:
+**Our Regression Models**: The models we fit in regression will be of the form:
 $$\mathbb{E}\left[Y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ...$$
 this is called a *parametric* model. because we are estimating the parameters $\beta_0,~\beta_1,~\beta_2,...$. 
 
@@ -44,9 +42,8 @@ this is called a *parametric* model. because we are estimating the parameters $\
   + Regression models involving higher-order ($x_i^k$) or mixed ($x_ix_j$) terms are still *linear regression models*.
 
 We may see some examples of *nonparametric* models later in our course. They typically involve fitting lots of pieces of functions together (step functions, splines, etc.). Nonparametric models have little value for interpretation.
-</div>
 
-<div id = "boxedtext"> **Some Simple [Single Predictor] Examples**: Consider the following examples:
+**Some Simple [Single Predictor] Examples**: Consider the following examples:
 
 ```{r echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE, results = FALSE}
 par(mfrow = c(2,3))
@@ -94,9 +91,8 @@ p6 <- ggplot(data = dat) + geom_point(mapping = aes(x = x3, y = y3), size = 2) +
 
 (p1 + p2 + p3)/(p4 + p5 + p6)
 ```
-</div>
 
-<div id = "boxedtext"> **Overfitting (an aside)**: More complicated models will always fit the training data more closely, but are likely to overfit. That is, complicated models run a higher risk of trying to fit noise.
+**Overfitting (an aside)**: More complicated models will always fit the training data more closely, but are likely to overfit. That is, complicated models run a higher risk of trying to fit noise.
 
 ```{r echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE, results = FALSE}
 
@@ -127,19 +123,17 @@ p6 <- ggplot(data = dat2) + geom_point(mapping = aes(x = xc, y = yc), size = 2) 
 
 (p1 + p2 + p3)/(p4 + p5 + p6)
 ```
-</div>
 
-<div id = "boxedtext"> **Training and Test (Validation) Sets**: One way we will try to avoid overfitting is by taking our data and splitting it into a *training set* used for exploratory analyses and model fitting, and a *test set* (or validation set) used to see how the fitted model performs on new, unseen data. The following rule of thumb is a good starting point.
+**Training and Test (Validation) Sets**: One way we will try to avoid overfitting is by taking our data and splitting it into a *training set* used for exploratory analyses and model fitting, and a *test set* (or validation set) used to see how the fitted model performs on new, unseen data. The following rule of thumb is a good starting point.
 
   + Training sets should contain about 75% of observations
   + Test sets should contain the remaining observations
 
 The training and test sets should be the result of a random sampling of your data *units*. This may be a random sample of the rows in your data frame or, if we have repeated measurements of the same individual over time, may result from a random sample of individuals.
-</div>
 
 ## Errors in Prediction
 
-<div id = "boxedtext"> **Reducible and Irreducible Errors**: The error in approximating the relationship 
+**Reducible and Irreducible Errors**: The error in approximating the relationship 
 $$Y = f\left(X\right) + \varepsilon$$
 by 
 $$\hat{Y} = \hat{f}\left(X\right)$$
@@ -155,21 +149,18 @@ comes in two pieces:
   
 ## Regression Vesus Classification
 
-<div id = "boxedtext"> When the response variable is numerical, we use regression models. When the response variable is categorical, we use classification. Note that regression problems can always be turned into classification problems, but classification problems cannot [in general] be converted to regression problems.
-</div>
+When the response variable is numerical, we use regression models. When the response variable is categorical, we use classification. Note that regression problems can always be turned into classification problems, but classification problems cannot [in general] be converted to regression problems.
 
 ## Supervised Versus Unsupervised Learning
 
-<div id = "boxedtext"> An application of statistical learning is *supervised* if the dataset contains a response variable that we are trying to predict or explain. Sometimes there is no response variable, and we would like to do something like identify observations which seem to be similar and to group them together (called clustering). If there is no response being predicted, then we have an *unsupervised* scenario. 
+An application of statistical learning is *supervised* if the dataset contains a response variable that we are trying to predict or explain. Sometimes there is no response variable, and we would like to do something like identify observations which seem to be similar and to group them together (called clustering). If there is no response being predicted, then we have an *unsupervised* scenario. 
 
-  + Regression problems must be supervised.
-</div>
+  + **Note:** Regression problems must be supervised.
 
 ## Closing...
 
-<div id = "boxedtext"> **Homework**: Please do the following for homework before our next meeting:
+**Homework**: Please do the following for homework before our next meeting:
 
   + Chapter 2, problems 1, 2, and 4
   + Download the `AnalyticsReportShell.rmd` file from BrightSpace and open it in RStudio. Use it to complete `Competition Assignment 1`.
-</div>
 

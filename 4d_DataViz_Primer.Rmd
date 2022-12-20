@@ -11,6 +11,7 @@ output:
 ```{r global-options, include=FALSE}
 #knitr::opts_chunk$set(eval = FALSE)
 library(tidyverse)
+library(kableExtra)
 ```
 
 ## Data Visualization and the Grammar of Graphics
@@ -21,11 +22,14 @@ In R, we have access to an extremely popular an easy-to-use plotting library, ca
 
 ## The Anatomy of `ggplot()`
 
-In this introduction to data visualization, we will be using `ggplot2`, which is part of the `tidyverse` package. To begin, we will use a pipe to feed a dataset into `ggplot()`. As a sandbox, we will use the `penguins` dataset, which is part of the `palmerpenguins` library. Don't forget to run `install.packages("palmerpenguins")` if you have not installed this package before. The `penguins` dataset contains measurements from different types of penguins that were collected by Gorman, Williams, and Fraser in 2014:
+In this introduction to data visualization, we will be using `ggplot2`, which is part of the `tidyverse` package. To begin, we will use a pipe to feed a dataset into `ggplot()`. As a sandbox, we will use the `penguins` dataset, which is part of the `palmerpenguins` library. Don't forget to run `install.packages("palmerpenguins")` if you have not installed this package before. The `penguins` dataset contains measurements from different types of penguins that were collected by Gorman, Williams, and Fraser that were published in 2014:
 
 ```{r echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
 library(palmerpenguins)
-penguins
+penguins %>%
+  head() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ``` 
 
 Recall from our introduction to the `tidyverse` that we can read the pipe below as saying "plug the `penguins` dataset into the `ggplot()` function".
@@ -69,12 +73,14 @@ penguins %>%
   count(year) %>%
   #Recall that the count() function makes a new column named n which contains the 
   #number of observations for each year
-  ggplot(aes(year, n)) +
-  geom_line() +
-  geom_point() 
+  ggplot() +
+  geom_line(aes(year, n)) +
+  geom_point(aes(year, n)) 
 ```
 
 In the visualization above, two layers were added- a scatter plot which created the points, and a line graph which created the lines that connect the points. Notice that all we needed to do was "add" the layers with the `+` symbol.
+
+If we wanted to save a bit of typing, because both plotting layers map the same *aesthetics* to the same types of objects, we can pass `aes(year, n))` to once to `ggplot()` rather than to the individual plot layers. 
 
 ## Choosing Effective Data Visualizations
 

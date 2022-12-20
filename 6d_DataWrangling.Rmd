@@ -10,6 +10,7 @@ library(tidyverse)
 library(tidymodels)
 #install.packages("randomNames")
 library(randomNames)
+library(kableExtra)
 
 ikea <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-11-03/ikea.csv')
 
@@ -86,7 +87,9 @@ The code generates several tables of data, exhibiting some common challenges whe
 Take a look at the `products` data frame. The data frame only has seven rows, but among those rows are seemingly duplicated records. Luckily, while the item categories are duplicated (with different spelling and capitalization), the prices are consistent. We have several options available:
 
 ```{r}
-products
+products %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 + Manually drop the duplicated rows
@@ -101,7 +104,9 @@ There are certainly other things we could do as well. These three approaches are
 ```{r}
 #Filter out the duplicated rows
 products %>%
-  filter(!(items %in% c("Outdoor Furniture", "Nursary Furnature")))
+  filter(!(items %in% c("Outdoor Furniture", "Nursary Furnature"))) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 
 #Use Case/When to overwrite values and then filter to distinct rows
 products %>%
@@ -110,7 +115,9 @@ products %>%
     items == "Nursary Furnature" ~ "Nursery furniture",
     TRUE ~ items
   )) %>%
-  distinct()
+  distinct() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 The `case_when()` approach is more applicable than simply removing the rows, because it isn't often that we would actually like to remove rows. That is the case here, though. Choose your favorite method and overwrite the `products` data frame with a version of itself that does not have the duplicated rows.
@@ -125,7 +132,9 @@ The `case_when()` approach is more applicable than simply removing the rows, bec
 Perhaps you've noticed that the `prices` column in the `products` data frame, is being interpreted as a *character* data type. We would prefer for that column to be a numeric variable so that we can run computations with it. There are two issues causing the `prices` to be characters -- the dollar sign ($) and the comma separator. We'll need to remove those and convert the column to a numeric value.
 
 ```{r}
-products
+products %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 We'll make use of the `str_replace()` function for this. This function allows us to search for a sub-string and, if it is found, replace it with a new substring. We'll replace any found dollar signs and commas with nothing...effectively erasing them. Once this is done, we'll use `as.numeric()` to change the data type. As a reminder, we are changing an existing column in our data frame here, so we'll make use of `mutate()`.
@@ -136,7 +145,9 @@ products %>%
     prices = str_replace(prices, "\\$", ""),
     prices = str_replace(prices, ",", ""),
     prices = as.numeric(prices)
-  )
+  )  %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 The dollar sign is a special character in `R`, so we needed to escape it with `\\$` to convey that we want to match a literal dollar sign. Edit the code cell above so that the changes you made to the `prices` column are saved and the `products` data frame is updated.
@@ -146,14 +157,18 @@ The dollar sign is a special character in `R`, so we needed to escape it with `\
 We'll take a look at the `clients` data frame. The `name` column contains `lastName, firstName` for each client. 
 
 ```{r}
-clients
+clients %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 Perhaps we'd like to have separate columns for `first_name` and `last_name`. We can use the `separate()` function for this.
 
 ```{r}
 clients %>%
-  separate(name, into = c("last_name", "first_name"), sep = ", ")
+  separate(name, into = c("last_name", "first_name"), sep = ", ") %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 This function will separate over all instances of the separator, so we'll need a new column name for each of the resulting parts. As a reminder, we use `c()` in `R` when providing a list of values.
@@ -170,14 +185,20 @@ Data is said to be in a wide format if columns aren't necessarily measured varia
 Let's take a look at the `historical_purchases` data frame. 
 
 ```{r}
-historical_purchases
+historical_purchases %>%
+  head()  %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 That data frame contains purchase totals for each client across multiple years. The data is in *wide* format because, for example `"2018"` is not a variable we can measure for each `client_id`. That column name, `"2018"` is the value of a hidden `year` variable. We'll use `pivot_longer()` to transform our data, creating a `year` column and `total_purchases` column.
 
 ```{r}
 historical_purchases %>%
-  pivot_longer(-client_id, names_to = "year", values_to = "total_purchases")
+  pivot_longer(-client_id, names_to = "year", values_to = "total_purchases") %>%
+  head()  %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 Now our data frame has become *longer*! The `year` variable is currently stored as a character, we can convert it to a number using `mutate()` and `as.numeric()`.
@@ -185,7 +206,10 @@ Now our data frame has become *longer*! The `year` variable is currently stored 
 ```{r}
 historical_purchases %>%
   pivot_longer(-client_id, names_to = "year", values_to = "total_purchases") %>%
-  mutate(year = as.numeric(year))
+  mutate(year = as.numeric(year)) %>%
+  head()  %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 Just so you can see how `pivot_wider()` works, let's pivot this tidy data frame back to a wide format, but include a column for each `client_id` rather than `year`.
@@ -194,7 +218,9 @@ Just so you can see how `pivot_wider()` works, let's pivot this tidy data frame 
 historical_purchases %>%
   pivot_longer(-client_id, names_to = "year", values_to = "total_purchases") %>%
   mutate(year = as.numeric(year)) %>%
-  pivot_wider(id_cols = year, names_from = client_id, values_from = total_purchases)
+  pivot_wider(id_cols = year, names_from = client_id, values_from = total_purchases) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 Moving between wide and long formats is a pretty useful skill. I use it often when I am summarizing data and would like to dispay a summary table in a report. These summary tables sometimes look more pleasing and are easier to digest in a wide format.
@@ -210,11 +236,17 @@ The drawback to working with data stored this way is that we'll need to pull inf
 
 ```{r}
 orders %>%
-  head()
+  head() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 
-clients
+clients  %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 
-products
+products %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 We can use "joins" to bring all of this information into a single table using the following steps.
@@ -229,7 +261,10 @@ There are lots of different types of joins that can be made between data frames.
 ```{r}
 orders %>%
   left_join(clients) %>%
-  left_join(products, by = c("product" = "items"))
+  left_join(products, by = c("product" = "items")) %>%
+  head()  %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 When using joins, it is important to verify that everything has worked as you expected. While not fool-proof, I usually check to ensure that the number of columns and number of rows in the resulting data frame are what I expected.

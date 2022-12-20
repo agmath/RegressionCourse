@@ -676,17 +676,17 @@ then we’ll try pulling everything together.</p>
 <code>species</code>, <code>year</code>, and an interaction between
 <code>species</code> and <code>year</code>. Such a model is of the
 following form:</p>
-<p><span class="math inline">\(\begin{align}{ll}\mathbb{E}\left[\text{body_mass_g}\right]
+<p><span class="math inline">\(\begin{align}\mathbb{E}\left[\text{body_mass_g}\right]
 = &amp;\beta_0 + \beta_1 \cdot \text{flipper_length_mm} +\\
 &amp;\beta_2\cdot\text{Chinstrap} + \beta_3\cdot\text{Gentoo} +\\
-&amp;\beta_4\cdot\text{year\_08} + \beta_5\cdot\text{year\_09} +\\
-&amp;\beta_6\cdot\left(\text{Chinstrap}\right)\left(\text{year\_08}\right)
+&amp;\beta_4\cdot\text{year_08} + \beta_5\cdot\text{year_09} +\\
+&amp;\beta_6\cdot\left(\text{Chinstrap}\right)\left(\text{year_08}\right)
 +\\
-&amp;\beta_7\cdot\left(\text{Chinstrap}\right)\left(\text{year\_09}\right)
+&amp;\beta_7\cdot\left(\text{Chinstrap}\right)\left(\text{year_09}\right)
 +\\
-&amp;\beta_8\cdot\left(\text{Gentoo}\right)\left(\text{year\_08}\right)
+&amp;\beta_8\cdot\left(\text{Gentoo}\right)\left(\text{year_08}\right)
 +\\
-&amp;\beta_9\cdot\left(\text{Gentoo}\right)\left(\text{year\_09}\right)\end{align}\)</span></p>
+&amp;\beta_9\cdot\left(\text{Gentoo}\right)\left(\text{year_09}\right)\end{align}\)</span></p>
 <p>There’s lots of coefficients in this model! Let’s fit it and see what
 we actually end up with. In order to fit this model, we’ll need to
 include some feature engineering <code>step_*()</code>s. First, we’ll
@@ -1039,19 +1039,19 @@ things we <em>could</em> do here – we can address some of them, as well
 as their benefits and drawbacks, in class.</li>
 </ul>
 <p>Okay, let’s look at the models. The estimated model form is:</p>
-<p><span class="math inline">\(\begin{align}{ll}\mathbb{E}\left[\text{body_mass_g}\right]
+<p><span class="math inline">\(\begin{align}\mathbb{E}\left[\text{body_mass_g}\right]
 = &amp;\beta_0 + \beta_1 \cdot \text{flipper_length_mm} +\\
 &amp;\beta_2\cdot\text{Chinstrap} + \beta_3\cdot\text{Gentoo} +\\
-&amp;\beta_4\cdot\text{year\_08} + \beta_5\cdot\text{year\_09} +\\
-&amp;\beta_6\cdot\left(\text{Chinstrap}\right)\left(\text{year\_08}\right)
+&amp;\beta_4\cdot\text{year_08} + \beta_5\cdot\text{year_09} +\\
+&amp;\beta_6\cdot\left(\text{Chinstrap}\right)\left(\text{year_08}\right)
 +\\
-&amp;\beta_7\cdot\left(\text{Chinstrap}\right)\left(\text{year\_09}\right)
+&amp;\beta_7\cdot\left(\text{Chinstrap}\right)\left(\text{year_09}\right)
 +\\
-&amp;\beta_8\cdot\left(\text{Gentoo}\right)\left(\text{year\_08}\right)
+&amp;\beta_8\cdot\left(\text{Gentoo}\right)\left(\text{year_08}\right)
 +\\
-&amp;\beta_9\cdot\left(\text{Gentoo}\right)\left(\text{year\_09}\right)\end{align}\)</span></p>
+&amp;\beta_9\cdot\left(\text{Gentoo}\right)\left(\text{year_09}\right)\end{align}\)</span></p>
 <p>The model including estimated <span class="math inline">\(\beta\)</span>-coefficients is:</p>
-<p><span class="math inline">\(\begin{align}{ll}\mathbb{E}\left[\text{body_mass_g}\right]
+<p><span class="math inline">\(\begin{align}\mathbb{E}\left[\text{body_mass_g}\right]
 = &amp;-4933.6 + 46.42\cdot \text{flipper_length_mm} +\\
 &amp;\left(-315.26\right)\cdot\text{Chinstrap} + 35.39\cdot\text{Gentoo}
 +\\ &amp;\left(-186.53\right)\cdot\text{year_08} +

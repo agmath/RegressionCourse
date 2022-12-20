@@ -9,6 +9,7 @@ library(tidyverse)
 library(tidymodels)
 library(palmerpenguins)
 library(patchwork)
+library(kableExtra)
 tidymodels_prefer()
 rm(list = ls())
 
@@ -58,7 +59,9 @@ penguins_train %>%
   select(species) %>%
   mutate(species_gentoo = ifelse(species == "Gentoo", 1, 0),
          species_adelie = ifelse(species == "Adelie", 1, 0),
-         species_chinstrap = ifelse(species == "Chinstrap", 1, 0))
+         species_chinstrap = ifelse(species == "Chinstrap", 1, 0)) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 Notice that the `species_gentoo` column indicates via a $1$ that the penguin is a `Gentoo`, or uses a $0$ to indicate that the penguin is not a `Gentoo`. The other columns are similar. Because no penguin can be of more than one `species`, and each penguin is exactly one of `Gentoo`, `Adelie`, or `Chinstrap`, this encoding does exactly what we want. We can plug $0$s and $1$s into our regression model. Furthermore, we don't need *all* of these new dummy variables, since knowing that a penguin is not a `Gentoo` and is not an `Adelie` guarantees that the penguin *is* a `Chinstrap`. We can see this below.
@@ -68,7 +71,9 @@ penguins_train %>%
   head() %>%
   select(species) %>%
   mutate(species_gentoo = ifelse(species == "Gentoo", 1, 0),
-         species_chinstrap = ifelse(species == "Chinstrap", 1, 0))
+         species_chinstrap = ifelse(species == "Chinstrap", 1, 0)) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 I've removed the `Adelie` category, but the idea is the same. That penguin in the second row is not a `Gentoo` and is not a `Chinstrap`, so it must be an `Adelie`. We don't need the original `species` column to recover that information. 
@@ -106,7 +111,9 @@ Now that we have our fitted model, let's assess it and reduce the model if neces
 
 ```{r}
 mass_reg_fit %>%
-  glance()
+  glance() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 The `p.value` for our *global test of model utility* is very small, indicating that at least one of the variables in our model is a statistically significant predictor of `body_mass_g`. Now let's move to a term-by-term analysis.
@@ -114,7 +121,9 @@ The `p.value` for our *global test of model utility* is very small, indicating t
 ```{r}
 mass_reg_fit %>%
   extract_fit_engine() %>%
-  tidy()
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 When accounting for different baseline body mass per species, all of the other available features are statistically significant! This highlights an important idea -- just because a predictor is not statistically significant doesn't mean that it is unrelated to the response variable or is not useful in making predictions. A visual representation of confidence intervals for our fitted model coefficients appears below.
@@ -151,7 +160,9 @@ Since we've got our model now and all of the predictors are statistically signif
 ```{r}
 mass_reg_fit %>%
   extract_fit_engine() %>%
-  tidy()
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 We can write our estimated model as follows:
@@ -187,7 +198,9 @@ my_metrics <- metric_set(rsq, rmse)
   ) %>%
   pivot_wider(id_cols = .metric,
               names_from = type,
-              values_from = .estimate)
+              values_from = .estimate) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 We can see that the R Squared metric is similar across the training and test sets. As we noted in the multiple linear regression notebook, the *test* RMSE is slightly lower than the *training* RMSE. Again, this is due to our test set containing mainly typical penguins, and fewer difficult penguins to predict body mass for.

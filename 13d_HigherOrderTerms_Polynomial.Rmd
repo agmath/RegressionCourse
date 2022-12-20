@@ -371,7 +371,9 @@ poly_reg_fit %>%
   labs(x = "Proportion of Residents with Low Socioeconomic Status",
        y = "Predicted Median Home Value",
        title = "Estimated Median Home Values",
-       subtitle = "(by prevalence of low socioeconomic status)")
+       subtitle = "(by prevalence of low socioeconomic status)",
+       color = "% Homes Built \nPrior to 1940",
+       linetype = "On Charles River")
 ```
 
 

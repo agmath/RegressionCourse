@@ -9,6 +9,7 @@ library(tidyverse)
 library(tidymodels)
 library(palmerpenguins)
 library(patchwork)
+library(kableExtra)
 tidymodels_prefer()
 rm(list = ls())
 ```
@@ -56,7 +57,9 @@ As a reminder, here's the first few rows of our training data.
 
 ```{r}
 penguins_train %>%
-  head()
+  head() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 ### EDA with Numerical Features
@@ -150,7 +153,9 @@ Let's use `glance()` to get some very high-level metrics about our overall model
 
 ```{r}
 mass_multi_fit %>%
-  glance()
+  glance() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
   
 First, we can conduct the *global test for model utility*. Since this is the first time we've really done such a test, a reminder of the hypotheses appears below.
@@ -170,7 +175,9 @@ We'll pipe our fitted model to `extract_fit_engine()` and `tidy()` to obtain the
 ```{r}
 mass_multi_fit %>%
   extract_fit_engine() %>%
-  tidy()
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 The first thing we should do is look at the `p.value`s associated with the individual model terms. At this stage, if any model terms are not statistically significant we should remove them one-by-one. We'll do so by removing the predictor with the highest `p.value` first. 
@@ -214,7 +221,9 @@ mass_multi_fit <- mass_multi_wf %>%
 
 mass_multi_fit %>%
   extract_fit_engine() %>%
-  tidy()
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 Bill length in millimeters is still just above the threshold for statistical significance. We'll drop it from our model and refit.
@@ -236,7 +245,9 @@ coef_df <- mass_multi_fit %>%
   extract_fit_engine() %>%
   tidy()
 
-coef_df
+coef_df %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 Okay, both of the remaining predictors, `flipper_length_mm` and `year` are statistically significant. This gives us our "*final*" model form of $\mathbb{E}\left[\text{body_mass_g}\right] = \beta_0 + \beta_1 \cdot\text{flipper_length_mm} + \beta_2\cdot\text{year}$, where the estimated model has $\beta_0\approx$`r round((coef_df %>% filter(term == "(Intercept)") %>% pull(estimate)), 2)`, $\beta_1\approx$`r round((coef_df %>% filter(term == "flipper_length_mm") %>% pull(estimate)), 2)`, and $\beta_2\approx$`r round((coef_df %>% filter(term == "year") %>% pull(estimate)), 2)`.
@@ -252,7 +263,9 @@ Since our model form has changed, we need to reassess our global model metrics. 
 
 ```{r}
 mass_multi_fit %>%
-  glance()
+  glance() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 It is no surprise that our model as a whole still has a significant `p.value`. We removed those predictors which we we were not confident had non-zero coefficients.
@@ -275,7 +288,9 @@ my_metrics <- metric_set(rmse, rsq)
 mass_multi_fit %>%
   augment(penguins_test) %>%
   select(body_mass_g, .pred) %>%
-  my_metrics(body_mass_g, .pred)
+  my_metrics(body_mass_g, .pred) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 We see that the R Squared value is slightly lower on the test data than it was on the training data. As a reminder, a lower R Squared value indicates that a lower proportion of the variation in the response is explained by our model -- that is, the model performs slightly worse on the test data according to the R Squared metric.
@@ -299,7 +314,9 @@ Note that *root mean squared error* is comparable to the *residual standard erro
   ) %>%
   pivot_wider(id_cols = type, 
               names_from = .metric, 
-              values_from = .estimate)
+              values_from = .estimate) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
 ***

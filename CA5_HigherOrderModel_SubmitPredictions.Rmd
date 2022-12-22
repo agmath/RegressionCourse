@@ -1,0 +1,29 @@
+---
+title: "Competition Assignment 5"
+author: "You, Analyst"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+There's no surprises now -- your goal is simply to build a model which best utilizes your available predictors in order to predict/explain your *response*. Most recently, you've learned some advanced techniques to improve model fit -- adding curvature and including interactions between predictors. You'll explore those techniques here to see if higher-order associations exist between your available predictors and the *response*.
+
+1. Re-open the R Markdown Notebook that contains your work from all the competition assignments so far. Run all of the code from that notebook -- again, you may want to comment out the line where you are writing out the csv file -- there's no need to do that again just yet.
+
+2. Return to your *Exploratory Data Analysis* section and conduct additional exploratory analyses to try and identify evidence of higher-order associations between your predictors and *response*. Be sure to discuss your findings to help the reader of your report follow your line of inquiry and to highlight what you are seeing.
+
+3. Return to your *Model Construction* section and build a third model which includes higher-order terms and interactions. Assess that model using the model assessment strategies you've learned throughout our course.
+
+4. Use your model to `augment()` the competition data with predictions just like you did in previous competition assignments. Write those predictions out to a csv file and submit your new model's predictions for scoring on our In-Class Kaggle Competition site. 
+
+5. Navigate to our competition site on Kaggle and use the *Submission* button to make your first submission for scoring on Kaggle. You'll upload your csv file and then see where you fall on the leaderboard. Your position on the leaderboard is in no way related to your score on these assignments, but I hope that you are motivated to work your way towards the top of the leaderboard as our semester progresses.
+
+6. Return to your notebook and add interpretations of your new model to the *Model Interpretations and Inference* section of your report. In addition to your existing interpretations, it is time to compare and contrast each of your models as well. Do you have any models that are clearly out-performing (or under-performing) others? Why do you think that is? What have you learned about the true association between your available predictors and the *response*?
+
+7. Knit your notebook and submit the HTML and rmd files as usual on BrightSpace using the Competition Assignment 5 folder.
+
+<center>As always, reach out on Slack with questions.<br/>
+-- Dr. G</center>

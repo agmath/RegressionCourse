@@ -1,0 +1,33 @@
+---
+title: "Competition Assignment 6"
+author: "You, Analyst"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Linear regressors are not the only class of regression model. In class, we mentioned tree-based regressors and ensembles of models. There are many more classes; you can find many of them [here](https://www.tidymodels.org/find/parsnip/). In this final Competition Assignment, you'll explore at least one more class of model and see whether it outperforms your existing models.
+
+1. Re-open the R Markdown Notebook that contains your work from all the competition assignments so far. As usual, run all of the code from that notebook.
+
+2. You've been using your training data to both build and assess your models throughout this series of competition assignments. When you uploaded predictions to Kaggle, you've likely been surprised about the difference between the model performance you estimated on the training data and what your leaderboard scores have been on Kaggle. Go back and refit each of your models using cross-validation.
+
+3. Provide updated interpretations of your model performance assessments now that you have performance estimates that you can be more confident in. 
+
+4. Add at least one new model to your analytics report -- that model should be of a new class. You may choose one of the model classes that we've discussed in class or something brand new to you. Whatever model class you choose, be sure that you can explain what that model is doing -- what you gain, but also what you lose, with this new model class.
+
+5. Fit this new model using cross-validation and provide an assessment of this newest model's performance. 
+
+6. Use your model to `augment()` the competition data with predictions just like you did in previous competition assignments. Write those predictions out to a csv file and submit your new model's predictions for scoring on our In-Class Kaggle Competition site. 
+
+7. Return to your notebook and add interpretations of your new model to the *Model Interpretations and Inference* section of your report. Be sure to compare and contrast this model with your others as well.
+
+8. You are now ready to choose a "best" model or models. Identify the model(s) you'd like to move forward with and add a new section to your analytics report with the heading *Conclusions*. Use this section to summarize your findings including the model(s) you've settled on, their advantages and disadvantages, as well as their interpretations. What insights have you gleaned into the association between predictors and *response*?
+
+9. Knit your notebook and submit the HTML and rmd files as usual on BrightSpace using the Competition Assignment 6 folder.
+
+<center>As always, reach out on Slack with questions.<br/>
+-- Dr. G</center>

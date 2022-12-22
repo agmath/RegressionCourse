@@ -1,0 +1,52 @@
+---
+title: "Competition Assignment 3"
+author: "You, Analyst"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In your first two competition assignments, you got familiar with our competition and the related data. You wrote a Statement of Purpose and began an exploratory analysis to find associations between your available predictors and response. You'll add to that work here by building your first linear regression model and submitting your first set of predictions to Kaggle for scoring.
+
+1. Re-open the R Markdown Notebook that contains your Statement of Purpose and Exploratory Data Analysis from Competition Assignments 1 and 2.
+
+2. Add `library(tidymodels)` to your `setup` chunk to make the `tidymodels` functionality accessible to you in your R Session.
+
+3. Re-run all of the code in your `setup` chunk as well as your code from the previous two competition assignments.
+
+4. Add a new section to your analytics report called *Model Construction*. In it, discuss the simple linear regression model you are choosing to build (and why).
+
+5. Build a simple linear regression model using what you've learned about the `tidymodels` framework.
+
+6. Assess your model's performance using what you've learned about model assessment so far. Please do not open the `test` data yet -- we will be building more models and don't want any knowledge of the `test` data to infect our modeling decisions.
+
+7. Return to the `setup` chunk and load the `comp.csv` data set into your Notebook. Be sure to store this data into a named variable so that you can access it later.
+
+  + This dataset contains new observations but is missing the *response* column. Your goal in the competition is to predict those missing *responses* -- Kaggle will keep us informed about how we are doing.
+  
+8. Use your model to `augment()` the competition data with predictions. Be sure to store the resulting data frame in a named variable -- you may want to use a new variable name so that you don't overwrite your competition data altogether. Additionally, the only columns you'll need now are the `ID` and `.pred` columns. We'll also want to `rename()` the `.pred` column to match the name of the *response* column that Kaggle is expecting. The chain of commands below may be helpful.
+
+```{r echo = TRUE, eval = FALSE}
+slr_preds <- slr_fit %>%
+  augment(comp) %>%
+  select(ID, .pred) %>%
+  rename(response = .pred)
+```
+
+9. Now we'll need to extract our predictions from R so that we can submit them to Kaggle for scoring. We can do this with the `write.csv()` function. That function takes the data frame that we would like to write out as a csv file, the path and filename we'd like to save the csv file to on our computer, and we set `row.names = FALSE` to prevent R from adding an extra column of row numbers to the csv file. Below is what that command would look like on my computer.
+
+```{r echo = TRUE, eval = FALSE}
+write.csv(slr_preds, 
+          "C:/users/agilb/Desktop/MAT300_Competition/slr_preds.csv", 
+          row.names = FALSE)
+```
+
+10. Navigate to our competition site on Kaggle and use the *Submission* button to make your first submission for scoring on Kaggle. You'll upload your csv file and then see where you fall on the leaderboard. Your position on the leaderboard is in no way related to your score on these assignments, but I hope that you are motivated to work your way towards the top of the leaderboard as our semester progresses.
+
+11. Knit your notebook and submit the HTML and rmd files as usual on BrightSpace using the Competition Assignment 3 folder.
+
+<center>As always, reach out on Slack with questions.<br/>
+-- Dr. G</center>

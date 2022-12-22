@@ -1,0 +1,35 @@
+---
+title: "Competition Assignment 4"
+author: "You, Analyst"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Your first three competition assignments culminated in the construction of a simple linear regression model and the submission of your first set of predictions to Kaggle. In recent class meetings, you've learned about how to construct and interpret multiple linear regression models, including those with categorical predictors. You'll be improving your first model in this assignment and submitting an updated set of predictions.
+
+1. Re-open the R Markdown Notebook that contains your work from the first three competition assignments. Run all of the code from that notebook -- you may want to comment out the line where you are writing out the csv file -- there's no need to do that again (for now).
+
+2. Add a new section to your analytics report titled *Model Interpretation and Inference*. Add an interpretation of the association between your predictor variable and the response to this section of your notebook.
+
+3. Return to your *Model Construction* section and discuss the limitations/shortcomings of your simple linear regression model.
+
+4. Identify and discuss additional predictors which could be added to your model to improve its performance.
+
+5. Use the `tidymodels` framework to build a multiple linear regression model to predict your *response* variable using the predictors you've chosen. Include at least one of the categorical predictors available to you.
+
+6. Assess your model's performance using what you've learned about model assessment techniques. Again, please leave the `test` set untouched. 
+
+7. Use your model to `augment()` the competition data with predictions just like you did in Competition Assignment 3. Write those predictions out to a csv file and submit your new model's predictions for scoring on our In-Class Kaggle Competition site. 
+
+8. Navigate to our competition site on Kaggle and use the *Submission* button to make your first submission for scoring on Kaggle. You'll upload your csv file and then see where you fall on the leaderboard. Your position on the leaderboard is in no way related to your score on these assignments, but I hope that you are motivated to work your way towards the top of the leaderboard as our semester progresses.
+
+9. Return to your notebook and add interpretations of your new model to the *Model Interpretations and Inference* section of your report.
+
+10. Knit your notebook and submit the HTML and rmd files as usual on BrightSpace using the Competition Assignment 4 folder.
+
+<center>As always, reach out on Slack with questions.<br/>
+-- Dr. G</center>

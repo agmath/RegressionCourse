@@ -15,16 +15,7 @@ tidymodels_prefer()
 rm(list = ls())
 
 ames <- read_csv("https://raw.githubusercontent.com/koalaverse/homlr/master/data/ames.csv")
-
 ```
-
-## Note: Unfinished Draft
-
-This set of notes remains a work in progress. The following items remain to be completed.
-
-+ Proofread discussion
-+ Find a data set that is more responsive to the `penalty` for Ridge Regression and LASSO to illustrate how these techniques *can* sometimes result in improved model performance.
-+ **Question:** Should these notes simply introduce the techniques and the `penalty` parameter as a parameter that must be chosen by the modeler? On `Day 19` we are scheduled to discuss hyperparameter tuning and other use-cases for *cross-validation*, so I am leaning towards this!
 
 ## Recap
 
@@ -114,11 +105,7 @@ The choice between Ridge Regression and LASSO depends on your goals. If you are 
 
 How do I choose a `penalty`? As I understand it, there's no great science to choosing a penalty. People will typically try values and see what the best ones are for their particular use-case.
 
-So basically I've told you about these two new classes of model that help prevent overfitting. They each require a `penalty` parameter and I've given you no real guidance on how to choose it. From here on out, however, we'll have a *mantra*: *"Keep Calm and Cross-Validate"*.
-
-We saw in our most recent notebook that cross-validation can help with selecting an appropriate level of model flexibility (the degree of the model). Cross-validation is a super-power which can help us select any *hyperparameter* (an aspect of a model which must be set prior to the model seeing the data). We can signal to `tidymodels` that we'd like cross-validation to identify an optimal hyperparameter value for us by setting its value to `tune()` in the workflow (model definition, recipe, etc.). That is -- if you don't know what want, set `mixture = tune()` and `penalty = tune()`.
-
-\* This is oversimplifying a bit -- the more hyperparameters we ask *cross-validation* to `tune()` the more models we need to fit. In fact, the growth in the number of models fit is exponential (...it grows very quickly). There are a few strategies, beyond simply reducing the number of hyperparameters to be tuned, that we can use to combat this though.
+So basically I've told you about these two new classes of model that help prevent overfitting. They each require a `penalty` parameter and I've given you no real guidance on how to choose it. For now, we'll simply choose a `penalty` parameter and mention what we could build several models with different `penalty` values to try and find one that performs best. I'll give you a much better method when we talk about hyperparameter tuning.
 
 ## Implementing Ridge Regression and the LASSO
 
@@ -134,7 +121,7 @@ There are a few additional concerns with fitting Ridge Regression and LASSO mode
 
   + We can use `step_range()`, `step_scale()`, or `step_normalize()` on `all_numerical_predictors()` to achieve this.
   
-We'll filter out the observations with an unknown response (`body_mass_g`), and we'll use `step_impute_knn()` to use a $k$-nearest neighbors imputation scheme for any missing values in our predictor columns. Finally, we'll use `step_normalize()` to center and scale our numerical predictors. Then we'll proceed as usual.
+We'll filter out the observations with an unknown response (`Sale_Price`), and we'll use `step_impute_knn()` to use a $k$-nearest neighbors imputation scheme for any missing values in our predictor columns. Finally, we'll use `step_normalize()` to center and scale our numerical predictors. Then we'll proceed as usual. We'll build and assess a Ridge Regression model first.
 
 ```{r}
 set.seed(123)
@@ -146,49 +133,80 @@ ames_test <- testing(ames_split)
 
 ames_folds <- vfold_cv(ames_train, v = 5)
 
-ridge_reg_spec <- linear_reg(mixture = 1, penalty = tune()) %>%
+ridge_reg_spec <- linear_reg(mixture = 0, penalty = 0.1) %>%
   set_engine("glmnet")
 
-# tree_reg <- rand_forest(mtry = tune(), trees = 50, min_n = tune()) %>%
-#   set_engine("ranger") %>%
-#   set_mode("regression")
-
-ridge_reg_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+reg_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
   step_normalize(all_numeric()) %>%
   step_impute_knn(all_predictors()) %>%
   step_scale(all_numeric_predictors()) %>%
   step_other(all_nominal_predictors()) %>%
   step_dummy(all_nominal_predictors())
 
-# tree_reg_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
-#   step_impute_knn(all_predictors()) %>%
-#   step_other(all_nominal_predictors()) %>%
-#   step_impute_knn(all_predictors())
-
 ridge_reg_wf <- workflow() %>%
  add_model(ridge_reg_spec) %>%
- add_recipe(ridge_reg_rec)
+ add_recipe(reg_rec)
 
-# tree_reg_wf <- workflow() %>%
-#   add_model(tree_reg) %>%
-#   add_recipe(tree_reg_rec)
+ridge_reg_cv <- ridge_reg_wf %>%
+  fit_resamples(ames_folds)
 
+ridge_reg_cv %>%
+  collect_metrics() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
 
-grid_search_results <- ridge_reg_wf %>%
-  tune_grid(resamples = ames_folds,
-            grid = 10)
+ridge_reg_cv %>%
+  collect_metrics(summarize = FALSE) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
 
-# grid_search_results <- tree_reg_wf %>%
-#   tune_grid(resamples = ames_folds,
-#             grid = 10)
+ridge_reg_fit <- ridge_reg_wf %>%
+  fit(ames_train)
 
-grid_search_results %>%
-  autoplot()
+ridge_reg_fit %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+
+The work required to construct a LASSO model is nearly identical. We simply use `mixture = 1` in the model specification to signal that we want to use the LASSO constraint instead of the ridge constraint. 
+
+```{r}
+lasso_reg_spec <- linear_reg(mixture = 1, penalty = 0.1) %>%
+  set_engine("glmnet")
+
+lasso_reg_wf <- workflow() %>%
+ add_model(lasso_reg_spec) %>%
+ add_recipe(reg_rec)
+
+lasso_reg_cv <- lasso_reg_wf %>%
+  fit_resamples(ames_folds)
+
+lasso_reg_cv %>%
+  collect_metrics() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+lasso_reg_cv %>%
+  collect_metrics(summarize = FALSE) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+lasso_reg_fit <- lasso_reg_wf %>%
+  fit(ames_train)
+
+lasso_reg_fit %>%
+  tidy() %>%
+  filter(estimate != 0) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+We can see in the LASSO model that many of the predictors were assigned coefficients of $0$. The LASSO procedure identified that those predictors weren't worth "buying", so it left them out and only included the most useful predictors!
 
 ## Summary
 
-
+In this notebook, we introduced two new regression models: *Ridge Regression* and the *LASSO*. These models are of the familiar form $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$, but are fit using a *constrained* optimization procedure rather than *ordinary least squares*. When we implement Ridge and the LASSO, we are reducing the likelihood that the resulting model is overfit. With these models, however, we must remember that all numerical predictors need to be *scaled* and no missing data can be present in the training data.
 
 
 

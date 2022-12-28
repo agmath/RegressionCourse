@@ -17,13 +17,6 @@ rm(list = ls())
 ames <- read_csv("https://raw.githubusercontent.com/koalaverse/homlr/master/data/ames.csv")
 ```
 
-## Note: Unfinished Draft
-
-This set of notes remains a work in progress. The following items remain to be completed.
-
-+ Discuss the importance of knowing your chosen tool -- assumptions, performance, available interpretations, etc.
-+ Add details around fitting a workflow set.
-
 ## Recap
 
 Up to this point, we've spent our time building, assessing, and interpreting models of the form $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$. We began with simple linear regressors which included a single predictor variable. We then moved to multiple linear regressors including several terms containing [assumedly] independent predictors. We relaxed this assumption slightly to allow for *higher-order terms* -- terms with a single variable raised to a higher power or terms containing an interaction (product) between two or more predictors. Most recently, we encountered the notion of *regularization*, which is a term for a technique to constrain our models and reduce the likelihood that a model becomes overfit. While they utilize a slightly different fitting procedure, the Ridge Regression and LASSO models took the form of our familiar linear regression model -- a linear combination of the available predictors.
@@ -129,13 +122,6 @@ knn_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
 tree_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
   step_impute_median(all_numeric_predictors()) %>%
   step_other(all_nominal_predictors())
-
-# knn_rec %>%
-#   prep() %>%
-#   bake(ames_train) %>%
-#   summarize_all(~ sum(is.na(.))) %>%
-#   pivot_longer(cols = everything(), names_to = "term", values_to = "missing") %>%
-#   summarize(total_missing = sum(missing))
 ```
 
 ## Workflow Sets Rather than Single-Model Workflows
@@ -209,11 +195,23 @@ rf_test_results %>%
 
 ## Summary
 
+In this notebook we introduced a few new classes of regression model -- in particular, *k nearest neighbors* and *decision trees*. We also introduced the notion of an *ensemble* of models and highlighted that these ensembles can consist of models in series (like the gradient boosting model) or in parallel (like the random forest). We saw how to utilize a `workflow_set()` in conjunction with `grid_controls()` and a `workflow_map()` in order to fit and compare a collection of models.
 
+## A Look Ahead
 
+For all of our models, we've made decisions about the model before it ever saw the training data.
 
++ For *linear regressors*, we need to decide on which predictors to utilize, and how to utilize them. Should we include higher-order polynomial terms, interactions, etc?
 
++ For the *k nearest neighbors* regressor, we needed to choose the number of closest neighbors given *voting* privileges (`neighbors`) in order to make a prediction.
 
++ For the *decision tree regressor*, we needed to decide on a *maximum depth* (`tree_depth`) and a *minimum number of records to qualify for splitting* (`min_n`).
+
++ For the *random forest regressor*, we needed to decide on the *number of trees* (`trees`), the *number of predictors available for each split decision* (`mtry`), and the *minimum number of records to qualify for splitting* (`min_n`).
+
++ While we didn't utilize *ridge regression* or the *LASSO* in this notebook, the `penalty` and `mixture` parameters needed to be chosen before we trained our models in the previous notebook.
+
+These parameters, which must be set prior to model training, are called *hyperparameters*. You can see the list of available hyperparameters for each model class from the [`parsnip` model finder](https://www.tidymodels.org/find/parsnip/). How do we know that we've selected the right values for these model-tuning hyperparameters? We don't -- however, we should *keep calm, and cross-validate*. We'll discuss more about this in the next set of notes. See you there!
 
 
 

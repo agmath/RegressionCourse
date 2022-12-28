@@ -17,35 +17,186 @@ rm(list = ls())
 ames <- read_csv("https://raw.githubusercontent.com/koalaverse/homlr/master/data/ames.csv")
 ```
 
-## Note: Unfinished Draft
-
-This set of notes remains a work in progress. The following items remain to be completed.
-
-+ Define and discuss hyperparameters
-+ Using cross-validation to tune hyperparameters
-+ Pay attention to the number of models you are trying to fit...
-+ Space-filling grids versus sequential searches -- implement space-filling grids only here...
-+ Show a single model with a single hyperparameter...
-+ A single model with several hyperparameters...
-+ A workflow set with multiple different hyperparameters from disparate recipes...
-+ Introduce *racing* to speed up model selection???
-
 ## Recap
 
-
-
-## Motivation
-
-
+In our most recent notebooks, we've gone beyond *Ordinary Least Squares* and explored additional classes of model. We began with *penalized* least squares models like Ridge Regression and the LASSO. We extended our knowledge of model classes to *nearest neighbor* and *tree-based models* as well as *ensembles* of models in the previous notebook. We ended that notebook with a short discussion on parameter choices that must be made prior to model training -- such parameters are known as *hyperparameters*. In this notebook, we learn how to use *cross-validation* to *tune* our model *hyperparameters*.
 
 ## Objectives
 
 In this notebook, we'll accomplish the following:
 
++ Use `tune()` for model parameters as well as in feature engineering steps to identify hyperparameters that we want to tune through cross-validation.
++ Use cross-validation and `tune_grid()` to tune the hyperparameters for a single model, identify the best hyperparameter choices, and fit the model using those best choices.
++ Build a `workflow_set()`, choose hyperparameters that must be tuned for each model and recipe, use *cross-validation* to tune models and select "optimal" hyperparameter values, and compare the models in the workflow set.
+
+## Tuning Hyperparameters for a Single Model
+
+Let's start with a decision tree model and we'll tune the tree depth parameter. We'll work with the `ames` data again for now.
+
+```{r}
+ames_known_prices <- ames %>%
+  filter(!is.na(Sale_Price))
+
+ames_split <- initial_split(ames_known_prices, prop = 0.9)
+ames_train <- training(ames_split)
+ames_test <- testing(ames_split)
+
+ames_folds <- vfold_cv(ames_train, v = 5)
+
+tree_spec <- decision_tree(tree_depth = tune()) %>%
+  set_engine("rpart") %>%
+  set_mode("regression")
+
+tree_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_unknown(all_nominal_predictors()) %>%
+  step_impute_median(all_numeric_predictors())
+
+tree_wf <- workflow() %>%
+  add_model(tree_spec) %>%
+  add_recipe(tree_rec)
+
+set.seed(123)
+tree_results <- tree_wf %>%
+  tune_grid(ames_folds, grid =12)
+
+tree_results %>%
+  autoplot()
+```
+
+We see from the plots above that deeper trees seemed to perform better than shallow trees. We don't observe much improvement in performance after a depth of 5. The risk of overfitting increases with deeper trees. We do seem to get some benefit by increasing the depth of the tree beyond 4. For this reason, I'll choose a tree depth of 5. The output of `show_best()` below shows our best-performing depths in terms of RMSE.
+
+```{r}
+tree_results %>%
+  show_best(n = 10)
+```
+
+We can now build a final fit using this depth.
+
+```{r}
+best_params <- tibble(tree_depth = 5)
+
+tree_wf_final <- tree_wf %>%
+  finalize_workflow(best_params)
+
+tree_fit <- tree_wf_final %>%
+  fit(ames_train)
+
+tree_fit
+```
+
+We can see the tree as well, using `rpart.plot()`.
+
+```{r}
+library(rpart.plot)
+
+tree_fit_for_plot <- tree_fit %>%
+  extract_fit_engine()
+
+rpart.plot(tree_fit_for_plot, tweak = 1.5)
+```
+
+The model we built above can be interpreted and can also be utilized to make predictions on new data just like out previous models. Next, let's look at how we can tune multiple models with a variety of hyperparameters in a `workflow_set()`. We'll fit a *LASSO*, a *random forest*, and a *gradient boosted* model.
+
+## Tuning Hyperparameters Across a Workflow Set
+
+Let's create model specifications and recipes for each of the models mentioned previously.
+
+```{r}
+doParallel::registerDoParallel()
+
+lasso_spec <- linear_reg(penalty = tune(), mixture = 1) %>%
+  set_engine("glmnet")
+
+rf_spec <- rand_forest(mtry = tune(), trees = 100) %>%
+  set_engine("ranger") %>%
+  set_mode("regression")
+
+gb_spec <- boost_tree(mtry = tune(), trees = 100, learn_rate = tune()) %>%
+  set_engine("xgboost") %>%
+  set_mode("regression")
+  
+rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_impute_knn(all_predictors()) %>%
+  step_other(all_nominal_predictors(), threshold = 0.10) %>%
+  step_dummy(all_nominal_predictors())
+
+rec_list = list(rec = rec)
+model_list = list(lasso = lasso_spec, rf = rf_spec, gb_tree = gb_spec)
+
+model_wfs <- workflow_set(rec_list, model_list, cross = TRUE)
+
+grid_ctrl <- control_grid(
+  save_pred = TRUE,
+  parallel_over = "everything",
+  save_workflow = TRUE
+)
+
+grid_results <- model_wfs %>%
+  workflow_map(
+    seed = 123,
+    resamples = ames_folds,
+    grid = 5,
+    control = grid_ctrl)
+
+grid_results %>%
+  autoplot()
+```
+
+Now let's see what the best models were!
+
+```{r}
+grid_results %>%
+  rank_results()
+```
+
+The model performing the best was the *gradient boosted tree ensemble*. Let's see what hyperparameter choices led to the best performance.
+
+```{r}
+grid_results %>%
+  autoplot(metric = "rmse", id = "rec_gb_tree")
+```
+
+It seems that a number of randomly selected parameters of near 30 gave the best performance and learning rates near 0.1 did as well. We'll construct this model and fit it to our training data.
+
+```{r}  
+gb_tree_spec <- boost_tree(mtry = 30, trees = 100, learn_rate = 0.1) %>%
+  set_engine("xgboost") %>%
+  set_mode("regression")
+
+gb_tree_wf <- workflow() %>%
+  add_model(gb_tree_spec) %>%
+  add_recipe(rec)
+
+gb_tree_fit <- gb_tree_wf %>%
+  fit(ames_train)
+```
+
+Such a model doesn't have much interpretive value but can make very good predictions. We can identify the predictors which were most important within the ensemble by using `var_imp()`.
+
+```{r}
+library(vip)
+gb_tree_fit %>%
+  extract_fit_engine() %>%
+  vip()
+```
+
+From the plot above, we can see that the *living area* (`Gr_Liv_Area`), *year of construction*, and the number of cars the *garage* is designed to hold were the most important predictors of *selling price*. Before we close this notebook, let's take a look at how well this model predicts the selling prices of homes in our *test* set.
+
+```{r}
+gb_tree_fit %>%
+  augment(ames_test) %>%
+  select(Sale_Price, .pred) %>%
+  rmse(Sale_Price, .pred) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+This final ensemble of models predicted selling prices of homes with an root mean squared error of \$21,680.86. 
 
 ## Summary
 
-
+In this notebook, we saw how to build a workflow set consisting of several models with tunable hyperparameters. We explored a *space-filling grid* of hyperparameter combinations with a `workflow_map()`. After identifying a best model and optimal(\*) hyperparameter choices, we fit the corresponding model to our training data and then assessed that model's performance on our test data.
 
 
 

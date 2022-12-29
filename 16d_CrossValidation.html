@@ -1167,6 +1167,30 @@ the case when we used the <em>validation-set approach</em>.</p>
 </div>
 <div id="summary" class="section level2">
 <h2>Summary</h2>
+<p>In this notebook we saw that different test sets result in different
+model performance estimates. In fact, those model performance estimates
+can vary quite wildly from one choice of test set to another. For this
+reason, we’ve developed the notion of <em>cross-validation</em>, a
+powerful tool for producing stable and more reliable performance
+estimates than what we get from the <em>validation-set approach</em>
+alone.</p>
+<p>In <em>cross-validation</em>, our training data is split into several
+folds. Each fold takes one turn being left out of model training and
+serves as the validation set for a model fit on the remaining folds. In
+doing this, we obtain several model performance estimates which can be
+averaged to obtain a more stable performance estimate along with an
+estimate for the standard error of that performance estimate.</p>
+<ul>
+<li>To split our training data into cross-validation folds, we use
+<code>vfold_cv()</code></li>
+<li>To fit our data using cross-validation we use
+<code>fit_resamples()</code> in place of the <code>fit()</code> function
+we have been using up to this point.</li>
+<li>We obtain cross-validation performance metrics by calling
+<code>collect_metrics()</code> on our “fitted” model.</li>
+</ul>
+<p>Cross-validation is a very powerful tool and we’ll continue to use it
+in a variety of ways throughout the remainder of our course.</p>
 </div>
 
 

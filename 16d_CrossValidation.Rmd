@@ -193,7 +193,15 @@ In summary, we can be confident that the R-Squared value for this model is aroun
 
 ## Summary
 
+In this notebook we saw that different test sets result in different model performance estimates. In fact, those model performance estimates can vary quite wildly from one choice of test set to another. For this reason, we've developed the notion of *cross-validation*, a powerful tool for producing stable and more reliable performance estimates than what we get from the *validation-set approach* alone.
 
+In *cross-validation*, our training data is split into several folds. Each fold takes one turn being left out of model training and serves as the validation set for a model fit on the remaining folds. In doing this, we obtain several model performance estimates which can be averaged to obtain a more stable performance estimate along with an estimate for the standard error of that performance estimate.
+
++ To split our training data into cross-validation folds, we use `vfold_cv()`
++ To fit our data using cross-validation we use `fit_resamples()` in place of the `fit()` function we have been using up to this point.
++ We obtain cross-validation performance metrics by calling `collect_metrics()` on our "fitted" model.
+
+Cross-validation is a very powerful tool and we'll continue to use it in a variety of ways throughout the remainder of our course.
 
 
 

@@ -324,3 +324,4 @@ There are also some others that we will discuss later in the course.
 + Interpret and use the model (make inferences)
 + Check for reproducibility
 
+We'll be engaged in all of these aspects of the statistical modeling process except for data collection and checking for reproducibility. Additionally, since we'll be using existing and publicly available data sets, we'll be limited in the types of questions we can ask.

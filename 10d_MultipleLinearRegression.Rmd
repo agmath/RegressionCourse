@@ -250,7 +250,7 @@ coef_df %>%
   kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
-Okay, both of the remaining predictors, `flipper_length_mm` and `year` are statistically significant. This gives us our "*final*" model form of $\mathbb{E}\left[\text{body_mass_g}\right] = \beta_0 + \beta_1 \cdot\text{flipper_length_mm} + \beta_2\cdot\text{year}$, where the estimated model has $\beta_0\approx$`r round((coef_df %>% filter(term == "(Intercept)") %>% pull(estimate)), 2)`, $\beta_1\approx$`r round((coef_df %>% filter(term == "flipper_length_mm") %>% pull(estimate)), 2)`, and $\beta_2\approx$`r round((coef_df %>% filter(term == "year") %>% pull(estimate)), 2)`.
+Okay, both of the remaining predictors, `flipper_length_mm` and `year` are statistically significant. This gives us our "*final*" model form of $\mathbb{E}\left[\text{body_mass_g}\right] = \beta_0 + \beta_1 \cdot\text{flipper_length_mm} + \beta_2\cdot\text{year}$, where the estimated model has $\beta_0\approx$ `r format(round((coef_df %>% filter(term == "(Intercept)") %>% pull(estimate)), 2))`, $\beta_1\approx$ `r round((coef_df %>% filter(term == "flipper_length_mm") %>% pull(estimate)), 2)`, and $\beta_2\approx$ `r round((coef_df %>% filter(term == "year") %>% pull(estimate)), 2)`.
 
 At this point, we have a model that we can make predictions and interpretations with. In terms of the model coefficients,
 
@@ -272,7 +272,7 @@ It is no surprise that our model as a whole still has a significant `p.value`. W
 
 Our `adj.r.squared` value has changed slightly, and out final model explains approximately `r round(100*(mass_multi_fit %>% glance() %>% pull(adj.r.squared)), 2)`% of the variability in penguin body mass.
 
-Finally, our *residual standard error* has also changed slightly. We now expect our predictions to be accurate to within about $\pm$`r round(2*(mass_multi_fit %>% glance() %>% pull(sigma)), 2)`g.
+Finally, our *residual standard error* has also changed slightly. We now expect our predictions to be accurate to within about $\pm$ `r round(2*(mass_multi_fit %>% glance() %>% pull(sigma)), 2)`g.
 
 #### Assessing Model Performance on Unseen (Test) Observations
 

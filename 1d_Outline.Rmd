@@ -49,7 +49,7 @@ Brightspace will contain much of our course material. The following sections wil
   + **Notes**: It won't be extremely often that we have formal notes, but I'll post important synopses of our discussions here. You'll also be able to find the course notes [here](https://agmath.github.io/RegressionCourse/) if you prefer.
   + **Datasets**: The notes that I've prepared for use in our class use a fairly famous, but small dataset on *penguins*. While that dataset was really convenient to use for showing you the course material, it will be beneficial to try applying the techniques introduced on your own to some new data. I'll typically use a dataset on San Francisco Apartment rentals in class, but I invite you to choose something you are interested in -- I'm also happy to work with different datasets that the class shows interest in.
   + **Homework**: I'll post homework assignments and solutions here.
-  + **Projects**: Get generic information about the projects will go here.
+  + **Projects**: Generic information about the projects will go here.
 
 ## Day-to-Day Activity
 
@@ -59,7 +59,7 @@ Here's what you can expect to see in class:
   + **Workshop / Lab Days** - We'll use some of our class meetings to slow down, work with a new data set, and make sure that we are comfortable implementing techniques learned in class with this new data.
   + **Lecture Days** - I honestly hope to have none of these. I think that most of the material can be delivered and uncovered via activities and our discussions. I'll spend time explaining the more technical portions of the course material as needed though.
 
-As with every one of my courses, I am absolutely open to changing the structure of course delivery. If the structure of this course isn't working for you, please reach out to me and we can make changes. My goal in this course is for all of you to learn as much about regression and statistical modeling as possible -- we can't achieve that if you don't feel like you are learning.
+As with every one of my courses, I am absolutely open to changing the structure of course delivery. If the structure of this course isn't working for you, please reach out to me and we can make changes. My goal in this course is for all of you to learn as much about regression and statistical modeling as possible -- we can't achieve that if you don't feel like you are benefiting from our class meetings.
 
 ## The Big Picture
 
@@ -101,11 +101,9 @@ We'll be discussing a lot of material in MAT 300. Here is a very generic road ma
 
 **Homework**: Please do the following for homework before our next meeting:
 
-  + Read Chapter 1 (pages 1 - 14) of the [Introduction to Statistical Learning (ISLR)](https://hastie.su.domains/ISLR2/ISLRv2_website.pdf) book.
+  + Read Chapter 1 (pages 1 - 14) of the [Introduction to Statistical Learning (ISLR)](https://hastie.su.domains/ISLR2/ISLRv2_website.pdf) book, or watch the corresponding videos from the textbook authors.
   
     + The chapter discusses three arenas where statistical learning is applied (regression, classification, and unsupervised learning). We will only discuss regression and a tiny snippet of classification in this course, but reading those example scenarios will give you a better grasp on what it is we are doing in this class.
-  
-  + Download the `HW1.rmd` homework file from BrightSpace and open it in RStudio. Complete the tasks, render the document as an HTML file, and submit both your `HW1.rmd` and `HW1.html` files to the Homework 1 Assignment Folder in BrightSpace.
 
 **Next time**: we will discuss...
   

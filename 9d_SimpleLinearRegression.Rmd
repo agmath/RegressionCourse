@@ -139,7 +139,7 @@ mass_flipper_fit %>%
   kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
-Our flipper length model is superior in every way! This model also has a statistically significant $p$-value, indicating that it has some value in predicting/explaining penguin body mass. The `r.squared` value indicates that "*approximately 76.37% of the variation in penguin body mass is explained by our model*". The *residual standard error* (`sigma`) indicates that we can expect this models predictions, on average, to be accurate to within about $\pm 796$g. 
+Our flipper length model is superior in every way! This model also has a statistically significant $p$-value, indicating that it has some value in predicting/explaining penguin body mass. The `r.squared` value indicates that "*approximately 76.37% of the variation in penguin body mass is explained by our model*". The *residual standard error* (`sigma`) indicates that we can expect this models predictions, on average, to be accurate to within about $\pm 797$g. 
 
 Now let's move to assessing the individual model terms.
 

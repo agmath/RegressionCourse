@@ -1,8 +1,8 @@
 ---
 title: "Analytics Report Shell"
 author: "You, Analyst"
-output:
-  html_document
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: html_document
 ---
 
 ```{r global-options, include=FALSE}

@@ -684,6 +684,9 @@ We can identify from the table of test error metrics or from the *elbow plot* ab
 
 ## Summary
 
+In this notebook, we discussed and saw the *bias/variance trade-off*. This trade-off is associated with the level of *flexibility* of a model -- models which are very rigid (unflexible) are said to have *high bias*, while models which are very flexible are said to have *low bias*. Models with *high bias* have *low variance* -- they change relatively little when given different training data. Models with *low bias* have *high variance* -- they are very responsive to the data they were trained on and can change quite drastically if provided different training data. Models with *high bias* and *low variance* are stable models but they can risk *underfitting* (not capturing the general trend between the response and predictors). Models with *low bias* and *high variance* can fit more complex trends between the response and predictors but they risk *overfitting* (learning too much about the training data and not generalizing well).
+
+In this notebook we saw that increasing the level of model flexibility allows for improved fit to the *training data*. Since we are typically interested in models which fit new, unseen data, we need some way to detect the point at which a model becomes overfit. That is, the threshold for level of model flexibility where any additional flexibility is associated with negative impacts on model performance for unseen validation data. We'll see a reliable method for this in the next notebook.
 
 
 

@@ -1216,6 +1216,30 @@ confident extracting inferences from.</p>
 </div>
 <div id="summary" class="section level2">
 <h2>Summary</h2>
+<p>In this notebook, we discussed and saw the <em>bias/variance
+trade-off</em>. This trade-off is associated with the level of
+<em>flexibility</em> of a model – models which are very rigid
+(unflexible) are said to have <em>high bias</em>, while models which are
+very flexible are said to have <em>low bias</em>. Models with <em>high
+bias</em> have <em>low variance</em> – they change relatively little
+when given different training data. Models with <em>low bias</em> have
+<em>high variance</em> – they are very responsive to the data they were
+trained on and can change quite drastically if provided different
+training data. Models with <em>high bias</em> and <em>low variance</em>
+are stable models but they can risk <em>underfitting</em> (not capturing
+the general trend between the response and predictors). Models with
+<em>low bias</em> and <em>high variance</em> can fit more complex trends
+between the response and predictors but they risk <em>overfitting</em>
+(learning too much about the training data and not generalizing
+well).</p>
+<p>In this notebook we saw that increasing the level of model
+flexibility allows for improved fit to the <em>training data</em>. Since
+we are typically interested in models which fit new, unseen data, we
+need some way to detect the point at which a model becomes overfit. That
+is, the threshold for level of model flexibility where any additional
+flexibility is associated with negative impacts on model performance for
+unseen validation data. We’ll see a reliable method for this in the next
+notebook.</p>
 </div>
 
 

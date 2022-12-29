@@ -77,11 +77,11 @@ pred.pm1 <- predict(pm1, newdata = dat)
 pred.pm2 <- predict(pm2, newdata = dat)
 pred.pm3 <- predict(pm3, newdata = dat)
 
-p1 <- ggplot(data = dat) + geom_point(mapping = aes(x = x1, y = y1), size = 2) + geom_line(mapping = aes(x = x1, y = pred.lm1), color = "purple", alpha = 0.6, se = FALSE, lwd = 2)
+p1 <- ggplot(data = dat) + geom_point(mapping = aes(x = x1, y = y1), size = 2) + geom_line(mapping = aes(x = x1, y = pred.lm1), color = "purple", alpha = 0.6, lwd = 2)
 
-p2 <- ggplot(data = dat) + geom_point(mapping = aes(x = x2, y = y2), size = 2) + geom_line(mapping = aes(x = x2, y = pred.lm2), color = "purple", alpha = 0.6, se = FALSE, lwd = 2)
+p2 <- ggplot(data = dat) + geom_point(mapping = aes(x = x2, y = y2), size = 2) + geom_line(mapping = aes(x = x2, y = pred.lm2), color = "purple", alpha = 0.6, lwd = 2)
 
-p3 <- ggplot(data = dat) + geom_point(mapping = aes(x = x3, y = y3), size = 2) + geom_line(mapping = aes(x = x3, y = pred.lm3), color = "purple", alpha = 0.6, se = FALSE, lwd = 2)
+p3 <- ggplot(data = dat) + geom_point(mapping = aes(x = x3, y = y3), size = 2) + geom_line(mapping = aes(x = x3, y = pred.lm3), color = "purple", alpha = 0.6, lwd = 2)
 
 p4 <- ggplot(data = dat) + geom_point(mapping = aes(x = x1, y = y1), size = 2) + geom_line(mapping = aes(x = x1, y = pred.pm1), color = "orange", alpha = 0.6, size = 2)
 
@@ -109,11 +109,11 @@ yc <- -0.05*(xc-75)^2 + 50 + rnorm(100, 0, 20)
 
 dat2 <- data.frame(xa, yb, xc, ya, xb, yc)
 
-p1 <- ggplot(data = dat2) + geom_point(mapping = aes(x = xa, y = ya), size = 2) + geom_line(mapping = aes(x = x1, y = pred.lm1), color = "purple", alpha = 0.6, se = FALSE, lwd = 2)
+p1 <- ggplot(data = dat2) + geom_point(mapping = aes(x = xa, y = ya), size = 2) + geom_line(mapping = aes(x = x1, y = pred.lm1), color = "purple", alpha = 0.6, lwd = 2)
 
-p2 <- ggplot(data = dat2) + geom_point(mapping = aes(x = xb, y = yb), size = 2) + geom_line(mapping = aes(x = x2, y = pred.lm2), color = "purple", alpha = 0.6, se = FALSE, lwd = 2)
+p2 <- ggplot(data = dat2) + geom_point(mapping = aes(x = xb, y = yb), size = 2) + geom_line(mapping = aes(x = x2, y = pred.lm2), color = "purple", alpha = 0.6, lwd = 2)
 
-p3 <- ggplot(data = dat2) + geom_point(mapping = aes(x = xc, y = yc), size = 2) + geom_line(mapping = aes(x = x3, y = pred.lm3), color = "purple", alpha = 0.6, se = FALSE, lwd = 2)
+p3 <- ggplot(data = dat2) + geom_point(mapping = aes(x = xc, y = yc), size = 2) + geom_line(mapping = aes(x = x3, y = pred.lm3), color = "purple", alpha = 0.6, lwd = 2)
 
 p4 <- ggplot(data = dat2) + geom_point(mapping = aes(x = xa, y = ya), size = 2) + geom_line(mapping = aes(x = x1, y = pred.pm1), color = "orange", alpha = 0.6, size = 2)
 
@@ -161,6 +161,6 @@ An application of statistical learning is *supervised* if the dataset contains a
 
 **Homework**: Please do the following for homework before our next meeting:
 
-  + Chapter 2, problems 1, 2, and 4
-  + Download the `AnalyticsReportShell.rmd` file from BrightSpace and open it in RStudio. Use it to complete `Competition Assignment 1`.
+  + **Optional:** Chapter 2, problems 1, 2, and 4
+  + **Required:** Download the `AnalyticsReportShell.rmd` file from our course webpage and open it in RStudio. Use it to complete `Competition Assignment 1`. Check BrightSpace for the due date.
 

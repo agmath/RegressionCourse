@@ -1,0 +1,45 @@
+---
+title: "Analytics Report Shell"
+author: "You, Analyst"
+output:
+  html_document
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(tidyverse)
+library(tidymodels)
+library(kableExtra)
+```
+
+## Statement of Purpose
+
+
+
+## Executive Summary
+
+
+
+## Introduction
+
+
+
+## Exploratory Data Analysis
+  
+
+
+## Model Construction
+
+
+
+## Model Interpretation and Inference
+
+
+
+## Conclusion
+
+
+
+## References
+
+

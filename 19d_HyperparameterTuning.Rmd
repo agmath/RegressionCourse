@@ -159,7 +159,8 @@ grid_results %>%
 
 It seems that a number of randomly selected parameters of near 30 gave the best performance and learning rates near 0.1 did as well. We'll construct this model and fit it to our training data.
 
-```{r}  
+```{r}
+set.seed(123)
 gb_tree_spec <- boost_tree(mtry = 30, trees = 100, learn_rate = 0.1) %>%
   set_engine("xgboost") %>%
   set_mode("regression")
@@ -181,18 +182,20 @@ gb_tree_fit %>%
   vip()
 ```
 
-From the plot above, we can see that the *living area* (`Gr_Liv_Area`), *year of construction*, and the number of cars the *garage* is designed to hold were the most important predictors of *selling price*. Before we close this notebook, let's take a look at how well this model predicts the selling prices of homes in our *test* set.
+From the plot above, we can see the features that were most the important predictors of *selling price* within the ensemble. Note that the important predictors will shuffle around slightly each time you re-run the ensemble. Before we close this notebook, let's take a look at how well this model predicts the selling prices of homes in our *test* set.
 
 ```{r}
-gb_tree_fit %>%
+gb_results <- gb_tree_fit %>%
   augment(ames_test) %>%
   select(Sale_Price, .pred) %>%
-  rmse(Sale_Price, .pred) %>%
+  rmse(Sale_Price, .pred) 
+
+gb_results %>%
   kable() %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-This final ensemble of models predicted selling prices of homes with an root mean squared error of \$21,680.86. 
+This final ensemble of models predicted selling prices of homes with an root mean squared error of \$ `r format(round(gb_results %>% pull(.estimate), 2), big.mark = ",")`. 
 
 ## Summary
 

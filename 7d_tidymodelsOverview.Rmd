@@ -16,15 +16,16 @@ tidymodels_prefer()
 This notebook gives an overview of the `tidymodels` modeling framework. After reviewing this notebook, you should be able to:
 
 + Split data into training and testing sets using `initial_split()`
-+ Identify, construct, and utilize the major components of a modeling `workflow()` in the `tidymodels` framework.
++ Identify, construct, and utilize the major components of a modeling `workflow()` in the `tidymodels` framework
 
   + Initialize a model specification for a linear regression model with `linear_reg() %>% set_engine("lm")`
   + Initialize a model recipe with `recipe(response ~ predictors, data)`
   + Package a `model` and `recipe` into a `workflow()`
   + Fit a workflow to training data with `fit()`
+  + See global model performance metrics using `glance()`
   + Extract the fitted model summary using `extract_fit_engine() %>% tidy()`
-  + Use a fitted workflow to make predictions on new data with `predict()`.
-  + Use metrics to evaluate the performance of a model.
+  + Use a fitted workflow to make predictions on new data with `predict()`
+  + Use metrics to evaluate the performance of a model
   
 ## `tidymodels` in Action
 

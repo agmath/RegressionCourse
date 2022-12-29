@@ -341,10 +341,6 @@ p2 <- ggplot() +
 (p1 / p2)
 ```
 
-```{r}
-quantile(penguins_train$flipper_length_mm, c(0, 0.1, 0.25, 0.5, 0.75, 0.9, 1), na.rm = TRUE)
-```
-
 In each case, we can see that the slope of the modeled association between penguin body mass and the plotted predictor depends on the *level* (value) of the third variable.
 
 *** 

@@ -24,14 +24,14 @@ penguins_test <- testing(penguins_split)
 ## Confidence Intervals
 
 **Confidence Intervals**: Confidence intervals are used to capture a population parameter (population mean, population proportion, etc.) with some chosen degree of confidence. The general form for a confidence interval is given by:
-$$\left(point~estimate\right)\pm\left(critical~value\right)\left(standard~error\right)$$
+$$\left(\text{point estimate}\right)\pm\left(\text{critical value}\right)\left(\text{standard error}\right)$$
 
   + The *point estimate* is the sample statistic (sample mean, sample proportion, etc.) corresponding to the desired population parameter.
   + The *critical value* is determined by the desired confidence level.
   + The *standard error* is a measure quantifying variability in the estimate.
 
 **Approximate 95% Confidence Interval**: We'll often use an approximate 95% confidence interval. In this case we replace the critical value by 2, so the form is given by:
-$$\left(point~estimate\right)\pm 2\left(standard~error\right)$$
+$$\left(\text{point estimate}\right)\pm 2\left(\text{standard error}\right)$$
 We can interpret the interval by stating: "We are about 95% confident that [population parameter] is between [lower bound] and [upper bound]."
 
 **An Example**: A study to determine whether the appearance of adverse side effects from a drug is dependent on gender looked at the frequency of these side effects appearing in males and females. A point estimate for the difference in proportions ($p_{males} - p_{females}$) resulted in a point estimate of $0.075$ with a standard error of $0.04$. Use an approximate 95% confidence interval to determine if there is evidence to suggest that negative side effects from this drug occur more often in males.

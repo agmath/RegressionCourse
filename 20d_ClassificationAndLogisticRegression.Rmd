@@ -1,0 +1,404 @@
+---
+title: "Classification and Logistic Regression"
+output:
+  html_document
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+library(modeldata)
+
+tidymodels_prefer()
+rm(list = ls())
+
+loans <- read_csv("https://raw.githubusercontent.com/shrikant-temburwar/Loan-Prediction-Dataset/master/train.csv")
+```
+
+## Motivation
+
+All semester long we've been working with *regression* models. These are models designed to output a *numeric* response. It is also possible to construct models which will predict a *categorical* response. That is the topic of MAT434: Statistical Learning and Classification, but we'll introduce the idea here.
+
+## Objectives
+
+In this notebook, we'll accomplish the following:
+
++ Distinguish between *regression* tasks and *classification* tasks.
++ Use the `tidymodels` framework to fit and assess a classifier.
+
+### The Loans Dataset
+
+We'll be working with a dataset on loans and attempting to build a model which will predict whether a loan is approved or denied. The first few rows of that dataset can be seen below.
+
+```{r}
+loans %>%
+  head() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
+```
+
+The `Loan_Status` variable is the one we'd like to predict.
+
+### A New Model Class
+
+There are two major types of classification model. One simply outputs a class membership prediction, while the other outputs the *propensity* or *likelihood* of a model belonging to a paraticular class of interest. We'll focus on the latter here because outputting a *propensity* is similar to a regression task -- we are building a model whose output can be interpreted as a probability. Unfortunately, our linear regression models can't be used for this purpose though because they are *polynomial* models. All polynomials which are not constant are unbounded -- that is, we can't construct a linear regression model which will only output responses between 0 and 1. Instead, we'll use a new class of model called *logistic regressors*. A logistic regression model is useful for differentiating between two classes (*binary classification*), and takes the following form:
+
+$$\displaystyle{\mathbb{P}\left[y = 1\right] = \frac{e^{\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k}}{1 + e^{\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k}}}$$
+
+The output of a logistic regressor can be interpreted as the probability that the corresponding observation belongs to the class whose label is encoded by 1.
+
+### Building, Reducing, and Interpreting a Logistic Regressor
+
+As usual, we'll begin by splitting our data into a training and test set and then further splitting our training data into cross-validation folds. We'll stratify by `Loan_Status` to ensure that there is proportional representation of approved and denied loans in each of our sets.
+
+```{r}
+set.seed(123)
+loans_split <- initial_split(loans, prop = 0.9, strata = Loan_Status)
+
+loans_train <- training(loans_split)
+loans_test <- testing(loans_split)
+
+loans_folds <- vfold_cv(loans_train, v = 5, strata = Loan_Status)
+```
+
+Now we'll build a *logistic regression* model specification and a corresponding recipe. We'll package the model and recipe together into a workflow, and then fit the workflow.
+
+```{r}
+log_clf <- logistic_reg() %>%
+  set_engine("glm") %>%
+  set_mode("classification")
+
+log_rec <- recipe(Loan_Status ~ ., data = loans_train) %>%
+  step_rm(Loan_ID) %>%
+  step_unknown(all_nominal_predictors()) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+log_wf <- workflow() %>%
+  add_model(log_clf) %>%
+  add_recipe(log_rec)
+
+log_clf_cv <- log_wf %>%
+  fit_resamples(loans_folds)
+
+log_clf_cv %>%
+  collect_metrics() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+log_clf_cv %>%
+  collect_metrics(summarize = FALSE) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+The accuracy of the model is hovering at around 80%. Let's fit the model to our training data and interpret the model coefficients.
+
+```{r}
+log_clf_fit <- log_wf %>%
+  fit(loans_train)
+
+log_clf_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+log_clf_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+Like linear regression, we get a $p$-value associated with each model term. We can use this information to remove predictors from the model if there is not statistically significant evidence to suggest that they are useful. In the output above, we can see that `ApplicantIncome` has a high $p$-value -- we'll take care of that one first since the $p$-values which are higher are each attached to a single level of a categorical variable.
+
+```{r}
+log_rec <- recipe(Loan_Status ~ ., data = loans_train) %>%
+  step_rm(Loan_ID) %>%
+  step_unknown(all_nominal_predictors()) %>%
+  step_rm(ApplicantIncome) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+log_wf <- workflow() %>%
+  add_model(log_clf) %>%
+  add_recipe(log_rec)
+
+log_clf_fit <- log_wf %>%
+  fit(loans_train)
+
+log_clf_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+We'll now remove `LoanAmount` due to its high $p$-value.
+
+```{r}
+log_rec <- recipe(Loan_Status ~ ., data = loans_train) %>%
+  step_rm(Loan_ID) %>%
+  step_unknown(all_nominal_predictors()) %>%
+  step_rm(ApplicantIncome) %>%
+  step_rm(LoanAmount) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+log_wf <- workflow() %>%
+  add_model(log_clf) %>%
+  add_recipe(log_rec)
+
+log_clf_fit <- log_wf %>%
+  fit(loans_train)
+
+log_clf_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+And now we'll remove the `Loan_Amount_Term` predictor.
+
+```{r}
+log_rec <- recipe(Loan_Status ~ ., data = loans_train) %>%
+  step_rm(Loan_ID) %>%
+  step_unknown(all_nominal_predictors()) %>%
+  step_rm(ApplicantIncome) %>%
+  step_rm(LoanAmount) %>%
+  step_rm(Loan_Amount_Term) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+log_wf <- workflow() %>%
+  add_model(log_clf) %>%
+  add_recipe(log_rec)
+
+log_clf_fit <- log_wf %>%
+  fit(loans_train)
+
+log_clf_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+Now `Gender` gets removed.
+
+```{r}
+log_rec <- recipe(Loan_Status ~ ., data = loans_train) %>%
+  step_rm(Loan_ID) %>%
+  step_unknown(all_nominal_predictors()) %>%
+  step_rm(ApplicantIncome) %>%
+  step_rm(LoanAmount) %>%
+  step_rm(Loan_Amount_Term) %>%
+  step_rm(Gender) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+log_wf <- workflow() %>%
+  add_model(log_clf) %>%
+  add_recipe(log_rec)
+
+log_clf_fit <- log_wf %>%
+  fit(loans_train)
+
+log_clf_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+And now the `CoapplicantIncome`.
+
+```{r}
+log_rec <- recipe(Loan_Status ~ ., data = loans_train) %>%
+  step_rm(Loan_ID) %>%
+  step_unknown(all_nominal_predictors()) %>%
+  step_rm(ApplicantIncome) %>%
+  step_rm(LoanAmount) %>%
+  step_rm(Loan_Amount_Term) %>%
+  step_rm(Gender) %>%
+  step_rm(CoapplicantIncome) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+log_wf <- workflow() %>%
+  add_model(log_clf) %>%
+  add_recipe(log_rec)
+
+log_clf_fit <- log_wf %>%
+  fit(loans_train)
+
+log_clf_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+Now the `Dependents` variable should be removed since all of its levels have $p$-values higher than the other model terms.
+
+```{r}
+log_rec <- recipe(Loan_Status ~ ., data = loans_train) %>%
+  step_rm(Loan_ID) %>%
+  step_unknown(all_nominal_predictors()) %>%
+  step_rm(ApplicantIncome) %>%
+  step_rm(LoanAmount) %>%
+  step_rm(Loan_Amount_Term) %>%
+  step_rm(Gender) %>%
+  step_rm(CoapplicantIncome) %>%
+  step_rm(Dependents) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+log_wf <- workflow() %>%
+  add_model(log_clf) %>%
+  add_recipe(log_rec)
+
+log_clf_fit <- log_wf %>%
+  fit(loans_train)
+
+log_clf_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+And now `Education`.
+
+```{r}
+log_rec <- recipe(Loan_Status ~ ., data = loans_train) %>%
+  step_rm(Loan_ID) %>%
+  step_unknown(all_nominal_predictors()) %>%
+  step_rm(ApplicantIncome) %>%
+  step_rm(LoanAmount) %>%
+  step_rm(Loan_Amount_Term) %>%
+  step_rm(Gender) %>%
+  step_rm(CoapplicantIncome) %>%
+  step_rm(Dependents) %>%
+  step_rm(Education) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+log_wf <- workflow() %>%
+  add_model(log_clf) %>%
+  add_recipe(log_rec)
+
+log_clf_fit <- log_wf %>%
+  fit(loans_train)
+
+log_clf_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+Next we'll remove the `Self_Employed` variable.
+
+```{r}
+log_rec <- recipe(Loan_Status ~ ., data = loans_train) %>%
+  step_rm(Loan_ID) %>%
+  step_unknown(all_nominal_predictors()) %>%
+  step_rm(ApplicantIncome) %>%
+  step_rm(LoanAmount) %>%
+  step_rm(Loan_Amount_Term) %>%
+  step_rm(Gender) %>%
+  step_rm(CoapplicantIncome) %>%
+  step_rm(Dependents) %>%
+  step_rm(Education) %>%
+  step_rm(Self_Employed) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+log_wf <- workflow() %>%
+  add_model(log_clf) %>%
+  add_recipe(log_rec)
+
+log_clf_fit <- log_wf %>%
+  fit(loans_train)
+
+log_clf_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+Now, all of the predictors are attached to $p$-values below the 5% threshold for statistical significance. Note that the high $p$-value attached to `Property_Area_Urban` indicates no evidence for that particular level of the `Property_Area` having a different effect on loan approval or denial than the base level of `Rural`. The property area being *semiurban* though is associated with a higher likelihood of loan approval, which we can tell because its coefficient is *positive*. We were unable to estimate the impact of having a *missing* property area because there were so few observations in this category. We can similarly interpret the other coefficients.
+
++ Better (higher) `Credit_History` is associated with a higher likelihood of loan approval.
++ Applicants who are `Married` have a higher likelihood of loan approval than those who were not married or those whose marital status was unknown.
++ The coefficient fit for loan applications in an *Urban* `Property_Area` indicates a higher likelihood of loan approval than applicants in a *Rural* `Property_Area` -- the high $p$-value, however, indicates no statistical evidence to support this.
++ The coefficient fit for loan applications in an *Semiurban* `Property_Area` indicates a higher likelihood of loan approval than applicants in a *Rural* `Property_Area`.
++ No coefficient could be fit for loan applications whose `Property_Area` was unlisted because there were `r loans_train %>% summarize(missing_area = sum(is.na(Property_Area))) %>% pull(missing_area)` records missing this information in the training set.
+
+Since there are no observations with missing `Property_Area`, we'll refit the model by removing that predictor.
+
+```{r}
+log_rec <- recipe(Loan_Status ~ ., data = loans_train) %>%
+  step_rm(Loan_ID) %>%
+  step_unknown(all_nominal_predictors()) %>%
+  step_rm(ApplicantIncome) %>%
+  step_rm(LoanAmount) %>%
+  step_rm(Loan_Amount_Term) %>%
+  step_rm(Gender) %>%
+  step_rm(CoapplicantIncome) %>%
+  step_rm(Dependents) %>%
+  step_rm(Education) %>%
+  step_rm(Self_Employed) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_rm(Property_Area_other)
+
+log_wf <- workflow() %>%
+  add_model(log_clf) %>%
+  add_recipe(log_rec)
+
+log_clf_fit <- log_wf %>%
+  fit(loans_train)
+
+log_clf_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+### Assessing Classifier performance
+
+The metrics we've been depending on, R-Squared and the Root Mean Squared Error, are meaningless for classification. There are lots of classification performance metrics, but we'll focus on the simplest one here -- *accuracy*. This metric is exactly what it sounds like -- out of all the predictions we made, what proportion were correct? Let's assess our model's accuracy on the test data below.
+
+```{r}
+log_clf_fit %>%
+  augment(loans_test) %>%
+  select(Loan_Status, .pred_class) %>%
+  filter(!is.na(.pred_class)) %>%
+  summarize(accuracy = sum(Loan_Status == .pred_class)/ n()) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("hover", "striped"))
+```
+
+Our model achieved 85.7% accuracy on the unseen test data! We won't know whether this is good or bad until we try building other models to beat this one. For now, since `r round(loans_test %>% count(Loan_Status) %>% mutate(pct = 100*n/sum(n)) %>% filter(Loan_Status == "Y") %>% pull(pct), 1)`% of all loans were approved, our model is doing better than just  naively guessing that every loan will be approved.
+
+## Summary
+
+This notebook introduced the notion of classification -- building models to predict a categorical outcome (such as whether or not a loan will be approved). We saw that the same `tidymodels` framework we've utilized to approach *regression* tasks was also useful for *classification* tasks. If you'd like to learn more about classification, I'd love to see you in *MAT434: Statistical Learning and Classification* next semester!
+
+
+
+
+
+
+
+
+
+
+

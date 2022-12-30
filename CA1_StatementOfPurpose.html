@@ -11,7 +11,7 @@
 
 <meta name="author" content="You, Analyst" />
 
-<meta name="date" content="2022-12-28" />
+<meta name="date" content="2022-12-30" />
 
 <title>Competition Assignment 1</title>
 
@@ -358,7 +358,7 @@ display: none;
 
 <h1 class="title toc-ignore">Competition Assignment 1</h1>
 <h4 class="author">You, Analyst</h4>
-<h4 class="date">2022-12-28</h4>
+<h4 class="date">December 30, 2022</h4>
 
 </div>
 
@@ -370,20 +370,21 @@ of an Analytics Report. Your efforts here will serve you well once we
 move to the the final projects you’ll be completing during the last
 three weeks of our course.</p>
 <ol style="list-style-type: decimal">
-<li><p>Navigate to <a href>our competition site at Kaggle</a>. Either
-sign in with Facebook, Google, or create an account using an e-mail
-address.</p></li>
+<li><p>Navigate to our competition site at Kaggle – you can find the
+link in the <code>#competition-discussion</code> of our Slack Workgroup.
+Either sign in with Facebook, Google, or create an account using an
+e-mail address.</p></li>
 <li><p>Click the button to <strong>Join Competition</strong> – you’ll be
 asked to confirm that you accept the rules (they are to: have fun, be
 respectful, learn new things, and not to cheat).</p></li>
 <li><p>Read the information on the various tabs of the competition page
 to get familiar with the task at hand.</p></li>
-<li><p>Download the three data sets – you’ll need <code>data.csv</code>
-for this assignment, <code>comp.csv</code> contains the actual
-competition data and will be used once we learn how to construct models,
-and <code>sample.csv</code> just gives you an example of what your
-submission file should look like when you go to submit predictions for
-scoring later in our semester.</p></li>
+<li><p>Download the three data sets – you’ll need
+<code>dataSP23.csv</code> for this assignment, <code>compSP23.csv</code>
+contains the actual competition data and will be used once we learn how
+to construct models, and <code>sampSP23.csv</code> just gives you an
+example of what your submission file should look like when you go to
+submit predictions for scoring later in our semester.</p></li>
 </ol>
 <ul>
 <li>Move these files from your <code>Downloads</code> folder to a
@@ -391,18 +392,12 @@ convenient location on your computer. You’ll be accessing these files
 often.</li>
 </ul>
 <ol start="5" style="list-style-type: decimal">
-<li>Create a new R Markdown Notebook which will serve as your codebook
-and analytics report for the competition. You can do this as
-follows:</li>
+<li>Download and open the R Markdown version of the
+<code>AnalyticsReportShell</code> in RStudio.</li>
 </ol>
 <ul>
-<li>Open RStudio</li>
-<li>Click on <code>File -&gt; New File -&gt; R Markdown</code></li>
-<li>In the popup window, add the title <em>Competition and Analytics
-Report</em> and add yourself as the author. Check the box to <em>use the
-current date when rendering the document</em> and leave the <em>default
-output format</em> set to <code>HTML</code>. Finally, click
-<em>Okay</em> to create the document.</li>
+<li>Edit the <code>author</code> line in the YAML header to be your
+name.</li>
 </ul>
 <ol start="6" style="list-style-type: decimal">
 <li>In that notebook, do the following to load the data.</li>
@@ -414,9 +409,9 @@ functionality. Run that line with <code>ctrl+Enter</code> or
 <code>cmd+Enter</code> to load the <code>tidyverse</code> into your R
 Session.</li>
 <li>Use <code>read_csv()</code> along with the path to the
-<code>data.csv</code> file on your computer to read that file into your
-notebook. Don’t forget to store your data into a named variable so that
-you can continue to access it.</li>
+<code>dataSP23.csv</code> file on your computer to read that file into
+your notebook. Don’t forget to store your data into a named variable so
+that you can continue to access it.</li>
 <li>Use the <code>head()</code> function on your data to print out the
 first six rows of your data set. Remember to use <code>ctrl+Enter</code>
 or <code>cmd+Enter</code> to run your code.</li>

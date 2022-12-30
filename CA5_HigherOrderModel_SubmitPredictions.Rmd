@@ -1,7 +1,7 @@
 ---
 title: "Competition Assignment 5"
 author: "You, Analyst"
-date: "`r Sys.Date()`"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output: html_document
 ---
 
@@ -19,7 +19,7 @@ There's no surprises now -- your goal is simply to build a model which best util
 
 4. Use your model to `augment()` the competition data with predictions just like you did in previous competition assignments. Write those predictions out to a csv file and submit your new model's predictions for scoring on our In-Class Kaggle Competition site. 
 
-5. Navigate to our competition site on Kaggle and use the *Submission* button to make your first submission for scoring on Kaggle. You'll upload your csv file and then see where you fall on the leaderboard. Your position on the leaderboard is in no way related to your score on these assignments, but I hope that you are motivated to work your way towards the top of the leaderboard as our semester progresses.
+5. Navigate to our competition site on Kaggle and use the *Submission* button to make your third submission for scoring on Kaggle. I hope you'll be motivated to try additional models beyond only the one submission required as part of this assignment -- modeling is an iterative process; now is a great opportunity to practice!
 
 6. Return to your notebook and add interpretations of your new model to the *Model Interpretations and Inference* section of your report. In addition to your existing interpretations, it is time to compare and contrast each of your models as well. Do you have any models that are clearly out-performing (or under-performing) others? Why do you think that is? What have you learned about the true association between your available predictors and the *response*?
 

@@ -1,7 +1,7 @@
 ---
 title: "Competition Assignment 6"
 author: "You, Analyst"
-date: "`r Sys.Date()`"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output: html_document
 ---
 
@@ -28,6 +28,8 @@ Linear regressors are not the only class of regression model. In class, we menti
 8. You are now ready to choose a "best" model or models. Identify the model(s) you'd like to move forward with and add a new section to your analytics report with the heading *Conclusions*. Use this section to summarize your findings including the model(s) you've settled on, their advantages and disadvantages, as well as their interpretations. What insights have you gleaned into the association between predictors and *response*?
 
 9. Knit your notebook and submit the HTML and rmd files as usual on BrightSpace using the Competition Assignment 6 folder.
+
+**Note:** While this is our final Competition Assignment for the semester, I hope you'll continue trying to improve your models. The Competition closes at 11:59PM on April 16 -- bragging rights, and perhaps a prize, await the winner!
 
 <center>As always, reach out on Slack with questions.<br/>
 -- Dr. G</center>

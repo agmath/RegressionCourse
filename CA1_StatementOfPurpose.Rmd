@@ -1,7 +1,7 @@
 ---
 title: "Competition Assignment 1"
 author: "You, Analyst"
-date: "`r Sys.Date()`"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output: html_document
 ---
 
@@ -11,26 +11,24 @@ knitr::opts_chunk$set(echo = TRUE)
 
 This is your first of six (6) assignments associated with our in-class competition. These assignments will give you practice working with real data in R as well as practice writing the various components of an Analytics Report. Your efforts here will serve you well once we move to the the final projects you'll be completing during the last three weeks of our course.
 
-1. Navigate to [our competition site at Kaggle](). Either sign in with Facebook, Google, or create an account using an e-mail address.
+1. Navigate to our competition site at Kaggle -- you can find the link in the `#competition-discussion` of our Slack Workgroup. Either sign in with Facebook, Google, or create an account using an e-mail address.
 
 2. Click the button to **Join Competition** -- you'll be asked to confirm that you accept the rules (they are to: have fun, be respectful, learn new things, and not to cheat).
 
 3. Read the information on the various tabs of the competition page to get familiar with the task at hand.
 
-4. Download the three data sets -- you'll need `data.csv` for this assignment, `comp.csv` contains the actual competition data and will be used once we learn how to construct models, and `sample.csv` just gives you an example of what your submission file should look like when you go to submit predictions for scoring later in our semester.
+4. Download the three data sets -- you'll need `dataSP23.csv` for this assignment, `compSP23.csv` contains the actual competition data and will be used once we learn how to construct models, and `sampSP23.csv` just gives you an example of what your submission file should look like when you go to submit predictions for scoring later in our semester.
 
   + Move these files from your `Downloads` folder to a convenient location on your computer. You'll be accessing these files often.
 
-5. Create a new R Markdown Notebook which will serve as your codebook and analytics report for the competition. You can do this as follows:
+5. Download and open the R Markdown version of the `AnalyticsReportShell` in RStudio.
 
-  + Open RStudio
-  + Click on `File -> New File -> R Markdown`
-  + In the popup window, add the title *Competition and Analytics Report* and add yourself as the author. Check the box to *use the current date when rendering the document* and leave the *default output format* set to `HTML`. Finally, click *Okay* to create the document. 
+  + Edit the `author` line in the YAML header to be your name.
 
 6. In that notebook, do the following to load the data.
 
   + In the `setup` chunk at the top of the notebook, use `library(tidyverse)` to load the `tidyverse` functionality. Run that line with `ctrl+Enter` or `cmd+Enter` to load the `tidyverse` into your R Session.
-  + Use `read_csv()` along with the path to the `data.csv` file on your computer to read that file into your notebook. Don't forget to store your data into a named variable so that you can continue to access it. 
+  + Use `read_csv()` along with the path to the `dataSP23.csv` file on your computer to read that file into your notebook. Don't forget to store your data into a named variable so that you can continue to access it. 
   + Use the `head()` function on your data to print out the first six rows of your data set. Remember to use `ctrl+Enter` or `cmd+Enter` to run your code.
 
 You should see the first six rows of data printed out below your code chunk. 

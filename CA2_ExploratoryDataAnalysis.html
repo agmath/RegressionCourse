@@ -11,7 +11,7 @@
 
 <meta name="author" content="You, Analyst" />
 
-<meta name="date" content="2022-12-22" />
+<meta name="date" content="2022-12-30" />
 
 <title>Competition Assignment 2</title>
 
@@ -358,7 +358,7 @@ display: none;
 
 <h1 class="title toc-ignore">Competition Assignment 2</h1>
 <h4 class="author">You, Analyst</h4>
-<h4 class="date">2022-12-22</h4>
+<h4 class="date">December 30, 2022</h4>
 
 </div>
 
@@ -371,11 +371,20 @@ an analytics project. You’ll add to that work here.</p>
 <li><p>Re-open the R Markdown Notebook that contains your Statement of
 Purpose from Competition Assignment 1.</p></li>
 <li><p>Re-run the code necessary to read in your data files.</p></li>
-<li><p>Write code to split the data coming from data.csv into two sets:
-<code>train</code> and <code>test</code>.</p></li>
-<li><p>Remember that the <code>test</code> set should stay hidden until
-later parts of the analytics project. Conduct an exploratory analysis on
-the training data (<code>train</code>).</p></li>
+<li><p>Write code to split the data coming from
+<code>dataSP23.csv</code> into three sets: <code>train</code>,
+<code>validation</code> and <code>test</code>. You’ll need two separate
+calls to <code>initial_split()</code> for this. Be sure to set a seed,
+with <code>set.seed()</code> before each call.</p></li>
+</ol>
+<ul>
+<li>Reach out on Slack if you have any questions about how to do
+this!</li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li>Remember that the <code>validation</code> and <code>test</code> sets
+should stay hidden until later parts of the analytics project. Conduct
+an exploratory analysis on the training data (<code>train</code>).</li>
 </ol>
 <ul>
 <li><p>Similar to what you’ve been seeing and doing in class, your

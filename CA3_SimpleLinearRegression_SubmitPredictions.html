@@ -11,7 +11,7 @@
 
 <meta name="author" content="You, Analyst" />
 
-<meta name="date" content="2022-12-22" />
+<meta name="date" content="2022-12-30" />
 
 <title>Competition Assignment 3</title>
 
@@ -358,7 +358,7 @@ display: none;
 
 <h1 class="title toc-ignore">Competition Assignment 3</h1>
 <h4 class="author">You, Analyst</h4>
-<h4 class="date">2022-12-22</h4>
+<h4 class="date">December 30, 2022</h4>
 
 </div>
 
@@ -373,23 +373,24 @@ set of predictions to Kaggle for scoring.</p>
 <li><p>Re-open the R Markdown Notebook that contains your Statement of
 Purpose and Exploratory Data Analysis from Competition Assignments 1 and
 2.</p></li>
-<li><p>Add <code>library(tidymodels)</code> to your <code>setup</code>
-chunk to make the <code>tidymodels</code> functionality accessible to
-you in your R Session.</p></li>
 <li><p>Re-run all of the code in your <code>setup</code> chunk as well
 as your code from the previous two competition assignments.</p></li>
 <li><p>Add a new section to your analytics report called <em>Model
 Construction</em>. In it, discuss the simple linear regression model you
 are choosing to build (and why).</p></li>
 <li><p>Build a simple linear regression model using what you’ve learned
-about the <code>tidymodels</code> framework.</p></li>
+about the <code>tidymodels</code> framework. Be sure to use the single
+predictor that you think is most important in predicting the booking
+<code>price</code> for an AirBnB in New York City.</p></li>
 <li><p>Assess your model’s performance using what you’ve learned about
-model assessment so far. Please do not open the <code>test</code> data
-yet – we will be building more models and don’t want any knowledge of
-the <code>test</code> data to infect our modeling decisions.</p></li>
+model assessment so far. You should use the <code>validation</code> data
+for this purpose, but please do not open the <code>test</code> data yet
+– we will be building more models and don’t want any knowledge of the
+<code>test</code> data to infect our modeling decisions.</p></li>
 <li><p>Return to the <code>setup</code> chunk and load the
-<code>comp.csv</code> data set into your Notebook. Be sure to store this
-data into a named variable so that you can access it later.</p></li>
+<code>compSP23.csv</code> data set into your Notebook. Be sure to store
+this data into a named variable so that you can access it
+later.</p></li>
 </ol>
 <ul>
 <li>This dataset contains new observations but is missing the
@@ -402,15 +403,16 @@ how we are doing.</li>
 predictions. Be sure to store the resulting data frame in a named
 variable – you may want to use a new variable name so that you don’t
 overwrite your competition data altogether. Additionally, the only
-columns you’ll need now are the <code>ID</code> and <code>.pred</code>
-columns. We’ll also want to <code>rename()</code> the <code>.pred</code>
-column to match the name of the <em>response</em> column that Kaggle is
-expecting. The chain of commands below may be helpful.</li>
+columns you’ll need now are the <code>ID</code> and <code>price</code>
+columns. Remember that you can use <code>rename()</code> to rename the
+<code>.pred</code> column to match the name of the <em>response</em>
+column that Kaggle is expecting. The chain of commands below may be
+helpful.</li>
 </ol>
 <pre class="r"><code>slr_preds &lt;- slr_fit %&gt;%
   augment(comp) %&gt;%
   select(ID, .pred) %&gt;%
-  rename(response = .pred)</code></pre>
+  rename(price = .pred)</code></pre>
 <ol start="9" style="list-style-type: decimal">
 <li>Now we’ll need to extract our predictions from R so that we can
 submit them to Kaggle for scoring. We can do this with the
@@ -419,7 +421,8 @@ that we would like to write out as a csv file, the path and filename
 we’d like to save the csv file to on our computer, and we set
 <code>row.names = FALSE</code> to prevent R from adding an extra column
 of row numbers to the csv file. Below is what that command would look
-like on my computer.</li>
+like on my computer, if I wanted to save my model’s predictions to a
+<code>MAT300_Competition</code> folder on my <code>Desktop</code>.</li>
 </ol>
 <pre class="r"><code>write.csv(slr_preds, 
           &quot;C:/users/agilb/Desktop/MAT300_Competition/slr_preds.csv&quot;, 
@@ -428,10 +431,14 @@ like on my computer.</li>
 <li><p>Navigate to our competition site on Kaggle and use the
 <em>Submission</em> button to make your first submission for scoring on
 Kaggle. You’ll upload your csv file and then see where you fall on the
-leaderboard. Your position on the leaderboard is in no way related to
-your score on these assignments, but I hope that you are motivated to
-work your way towards the top of the leaderboard as our semester
-progresses.</p></li>
+leaderboard. This <em>public</em> leaderboard is scored using only 50%
+of the listings in our competition data set. The final, <em>private</em>
+leaderboard will be scored on the remaining 50% of those hidden listings
+– that is, your position on the leaderboard may change slightly when the
+competition closes on April 17. <strong>Note:</strong> Your position on
+the leaderboard is in no way related to your score on these assignments,
+but I hope that you are motivated to work your way towards the top of
+the leaderboard as our semester progresses.</p></li>
 <li><p>Knit your notebook and submit the HTML and rmd files as usual on
 BrightSpace using the Competition Assignment 3 folder.</p></li>
 </ol>

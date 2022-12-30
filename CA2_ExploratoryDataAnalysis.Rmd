@@ -1,7 +1,7 @@
 ---
 title: "Competition Assignment 2"
 author: "You, Analyst"
-date: "`r Sys.Date()`"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output: html_document
 ---
 
@@ -15,9 +15,11 @@ In your first competition assignment, you joined our In-Class Kaggle Competition
 
 2. Re-run the code necessary to read in your data files.
 
-3. Write code to split the data coming from data.csv into two sets: `train` and `test`.
+3. Write code to split the data coming from `dataSP23.csv` into three sets: `train`, `validation` and `test`. You'll need two separate calls to `initial_split()` for this. Be sure to set a seed, with `set.seed()` before each call.
 
-4. Remember that the `test` set should stay hidden until later parts of the analytics project. Conduct an exploratory analysis on the training data (`train`).
+  + Reach out on Slack if you have any questions about how to do this!
+
+4. Remember that the `validation` and `test` sets should stay hidden until later parts of the analytics project. Conduct an exploratory analysis on the training data (`train`).
 
   + Similar to what you've been seeing and doing in class, your exploratory analysis should mix both code and text. I encourage you to look at previous notebooks for examples of how to do this as well as for examples of different data visualization techniques. In building your submission, it is important to keep only working code in your R Markdown Notebook, and to keep only relevant plots and summary statistics. Remember, your goal in this project is to build a model to predict a variable of interest. The majority of your explorations should be attempts at finding predictors which are associated with that response variable.
 

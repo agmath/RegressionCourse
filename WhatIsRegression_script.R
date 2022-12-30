@@ -3,10 +3,11 @@ rm(list=ls())
 library(tidyverse)
 
 x <- runif(50, 0, 100)
-y <- 5*x + rnorm(50, 0, 75)
+y <- 5*x
+#y <- 5*x + rnorm(50, 0, 75)
 
 ggplot() +
-  geom_point(aes(x = x, y = y))
+  geom_point(aes(x = x, y = y), color = "black")
 
 slopes <- rnorm(75, 0, 8)
 intercepts <- mean(y) - slopes*mean(x) + rnorm(75, 0, 7)

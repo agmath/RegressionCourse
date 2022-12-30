@@ -1,0 +1,66 @@
+---
+title: "Homework 2: Understanding Assumptions"
+author: "You, Analyst"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: html_document
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(tidyverse)
+library(tidymodels)
+library(kableExtra)
+```
+
+**Description and Purpose:** In this homework assignment, you'll build your own *toy* data set. You'll fit a linear regressor to this toy data set using code provided to you. You'll compute and plot residuals for your model and interpret the residual plots to identify shortcomings for your model. Understanding how your model performs and the types of errors it makes are important aspects of using that model responsibly.
+
+## Your Tasks
+
+1. Build a *toy* dataset by completing the following: 
+
++ Choose 50 `x` values randomly and uniformly over the interval $\left[0, 100\right]$. The function `runif()` will be useful here.
++ Construct an associated variable `y`, whose values are associated with `x` via at least a [quadratic](https://www.itl.nist.gov/div898/handbook/eda/section3/eda33q5.htm) relationship. Your error term should be normally distributed with mean $0$ and a constant standard deviation. The function `rnorm()` will be useful.
++ Use the command `toydata <- tibble(x = x, y = y)` to package your data into a data frame.
++ Use `ggplot()` to plot the association between `x` and `y`.
+
+  + Smaller standard deviations will make your regression task "easier", which larger standard deviations will make it more "difficult". You may want to play around with a variety of standard deviation values until you get a data set that you like.
+
+2. Use the code cell below to fit a model to your data and attach predictions to your `toydata` set. The code utilized should be familiar from our introduction to `tidymodels` notebook. You'll want to delete `eval = FALSE` from the curly brackets in the code chunk to ensure that this code is run when you knit your notebook.
+
+```{r eval = FALSE}
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr_rec <- recipe(y ~ x, data = toydata)
+
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf %>%
+  fit(toydata)
+
+toydata <- lr_fit %>%
+  augment(toydata)
+```
+
+3. Use `ggplot()` to plot your original `x` and `y` pairs from your `toydata` set in "black" and add another layer to plot your model's predictions in a different color. What do you notice?
+
+4. Use `mutate()` to add another new column to your `toydata` set. That column should contain your model's *residuals* -- the true observed reponses minus your model's predictions.
+
+5. Use `ggplot()` to plot your model's residuals against the true responses (`y`). What do you notice?
+
+6. Use `ggplot()` to plot your model's residuals against the value of your predictor variable (`x`). What do you notice?
+
+7. Run the code below to obtain the *Root Mean Squared Error* for your model, and describe what it means. Again, you'll want to remove `eval = FALSE` from the chunk settings to ensure the code runs when you knit your document.
+
+```{r eval = FALSE}
+toydata %>%
+  rmse(y, .pred)
+```
+
+8. Use your response from part (7) and your plots from parts (5) and (6) to discuss a severe shortcoming of this model. What assumptions are not being satisfied and how does that impact the confidence intervals we build for model predictions?
+
+9. (Optional) Use the `predict()` function with the `type = "conf_int"` argument to generate lower and upper bounds on a confidence interval for model predictions. Build a single plot which includes your original `x` and `y` values from the `toydata` set, your model's predictions in a different color, and the lower and upper bounds for a confidence interval for your model's predictions. Use this plot as supporting evidence for your conclusion in part (8).
+
+10. When you are done, knit your notebook to an HTML document and submit both your HTML output and RMD file to BrightSpace using the Homework 2 submission folder.

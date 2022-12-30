@@ -1,0 +1,79 @@
+---
+title: "Homework 1: Data Wrangling"
+author: "You, Analyst"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: html_document
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(tidyverse)
+library(tidymodels)
+library(kableExtra)
+```
+
+**Description and Purpose:** In this homework assignment, you'll work with data sets from the `nycflights13` package. These data sets contain information about flights departing airports in the vicinity of New York City during 2013. The goal is to get practice with wrangling data to answer questions of interest.
+
+## Your Tasks
+
+1. Install and load the `nycflights13` package.
+
+```{r}
+#use this code cell
+
+```
+
+2. The package you've loaded contains five datasets: `airlines`, `airports`, `flights`, `planes`, and `weather`. Use the basic exploratory functions you've learned about to explore the `airlines`, `airports`, and `flights` datasets. In particular, you should answer the following for each dataset:
+
++ How many variables are contained in each data set?
++ How many observations are contained in each data set?
++ What does each observation represent?
+
+```{r}
+#use this code cell
+
+```
+
+3. Compute the average departure delay `dep_delay` for flights out of NYC airports in 2013. *Hint:* `NA` values are contagious.
+
+```{r}
+#Use this code cell
+
+```
+
+4. Compute the average departure delay `dep_delay` for each individual airport in NYC in 2013. **Note:** It would be nice to have the names of the airports rather than the FAA airport code.
+
+```{r}
+#Use this code cell
+
+```
+
+5. How many flights out of NYC airports arrived more than an hour late to their destination?
+
+```{r}
+#Use this code cell
+
+```
+
+6. How many flights out of NYC airports arrived more than an hour late to their destination but did not depart late?
+
+```{r}
+#Use this code cell
+
+```
+
+7. Compute the number of flights out of NYC airports arriving more than an hour late to their destination but not departing late, for each airline. Print out the name of the origin airport (not FAA code), airline name (not carrier code), and the counts ordered by the count in descending order.
+
+```{r}
+#Use this code cell
+
+```
+
+8. Use the columns in the `flights` data frame to mutate a new variable called `speed` (in miles per hour). Use your new variable to find the fastest flight in 2013.
+
+```{r}
+#Use this code cell
+
+```
+
+9. When you are done, knit your notebook to an HTML file and submit both your HTML output and RMD file to BrightSpace using the Homework 1 submission folder.

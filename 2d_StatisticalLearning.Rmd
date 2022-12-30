@@ -156,11 +156,3 @@ When the response variable is numerical, we use regression models. When the resp
 An application of statistical learning is *supervised* if the dataset contains a response variable that we are trying to predict or explain. Sometimes there is no response variable, and we would like to do something like identify observations which seem to be similar and to group them together (called clustering). If there is no response being predicted, then we have an *unsupervised* scenario. 
 
   + **Note:** Regression problems must be supervised.
-
-## Closing...
-
-**Homework**: Please do the following for homework before our next meeting:
-
-  + **Optional:** Chapter 2, problems 1, 2, and 4
-  + **Required:** Download the `AnalyticsReportShell.rmd` file from our course webpage and open it in RStudio. Use it to complete `Competition Assignment 1`. Check BrightSpace for the due date.
-

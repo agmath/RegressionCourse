@@ -32,7 +32,6 @@ This notebook gives an overview of the `tidymodels` modeling framework. After re
 We'll run through an example to see how the components of a `tidymodels` `workflow()` fit together. We'll use the `palmerpenguins` data set since we've already seen that one before. 
 
 ```{r}
-library(palmerpenguins)
 penguins %>%
   head()  %>%
   kable() %>%
@@ -200,7 +199,7 @@ mass_length_fit %>%
 
 In the code cell above, we used `augment()` rather than `predict()`, which is a special function that appends a `.pred` column (or the corresponding interval columns) to the data frame containing our new data. We then selected only the relevant columns for our small model.
 
-Using this new data frame, we can compare the *truth* (know, actual `body_mass_g`) to our *predictions* (`.pred`) to assess the quality of predictions.
+Using this new data frame, we can compare the *truth* (known, actual `body_mass_g`) to our *predictions* (`.pred`) to assess the quality of predictions.
 
 ```{r}
 mass_length_fit %>%

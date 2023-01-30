@@ -11,9 +11,9 @@
 
 <meta name="author" content="You, Analyst" />
 
-<meta name="date" content="2023-01-05" />
+<meta name="date" content="2023-01-10" />
 
-<title>Analytics Report Shell</title>
+<title>Intro to R (In Class)</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -356,36 +356,93 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Analytics Report Shell</h1>
+<h1 class="title toc-ignore">Intro to R (In Class)</h1>
 <h4 class="author">You, Analyst</h4>
-<h4 class="date">January 05, 2023</h4>
+<h4 class="date">January 10, 2023</h4>
 
 </div>
 
 
-<div id="statement-of-purpose" class="section level2">
-<h2>Statement of Purpose</h2>
+<p><strong>Note:</strong> This notebook is an <em>in-class</em> version
+of the <code>EnterTheTidyverse</code> notebook that I prepared for you.
+As a reminder, that notebook is available on the <a href="https://agmath.github.io/RegressionCourse.html">class
+webpage</a>.</p>
+<p><strong>Objectives:</strong> This notebook addresses the following
+items.</p>
+<ul>
+<li>How do I install and load packages in R?</li>
+<li>How do I read data into R from both local and remote sources?</li>
+<li>How do I interact with, and manipulate, data using the tools and
+principles of the tidyverse?</li>
+</ul>
+<div id="installing-and-loading-packages" class="section level2">
+<h2>Installing and Loading Packages</h2>
+<p>We can install R packages using the command
+<code>install.packages(&quot;PACKAGE_NAME&quot;)</code>. Once packages are
+installed, we can load them into an R Session by running
+<code>library(PACKAGE_NAME)</code>. While packages only need to be
+installed once, they must be loaded in each R Session you intend to use
+them in (note: an R Session begins when R/RStudio are opened and ends
+when they are closed or terminated). You’ve installed several packages
+already – use the code block below to install and load the
+<code>kableExtra</code> package.</p>
+<pre class="r"><code>#install and load kableExtra</code></pre>
+<p>With the <code>kableExtra</code> package, we can append
+<code>%&gt;% kable() %&gt;% kable_styling(bootstrap_options = c(&quot;hover&quot;, &quot;striped&quot;))</code>
+to any command outputting a table (data frame) so that the data frame
+formats nicely in our html document.</p>
 </div>
-<div id="executive-summary" class="section level2">
-<h2>Executive Summary</h2>
+<div id="loading-data" class="section level2">
+<h2>Loading Data</h2>
+<pre class="r"><code>#Read the MAT241 sheet from the grades.xls file in 
+#the Spring 2021 folder on my computer&#39;s desktop
+grades &lt;- read_excel(&quot;C:/Users/agilb/Desktop/Spring 2021/grades.xls&quot;, sheet = &quot;MAT241&quot;)
+
+#Read in data from a csv file of Tate Gallery Artists housed 
+#in a public github repository on the web
+tate_artists &lt;- read_csv(&quot;https://github.com/tategallery/collection/raw/master/artist_data.csv&quot;)
+
+#Read in data from a csv file of Tate Gallery Artworks housed
+#in a public github repository on the web
+#*Note* that read_csv() would have worked just fine here too
+tate_works &lt;- read_delim(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-12/artwork.csv&quot;, delim = &quot;,&quot;)</code></pre>
+<p>Use the code block below to read in the San Francisco Rentals
+dataset. The URL is provided in a comment in the code block.</p>
+<pre class="r"><code>#https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-07-05/rent.csv</code></pre>
 </div>
-<div id="introduction" class="section level2">
-<h2>Introduction</h2>
+<div id="viewing-data" class="section level2">
+<h2>Viewing Data</h2>
+<p>The <code>head()</code>, <code>tail()</code>, and
+<code>glimpse()</code> functions are really commonly used to get an
+initial feel for your data set. Let’s try using them below.</p>
+<pre class="r"><code>#&quot;Pipe&quot; your data set into the head() function and view the output. Then pipe your data set into tail() and glimpse() as well. What do the outputs &quot;mean&quot;?</code></pre>
+<p>The <code>skimr</code> package provides a really useful function
+called <code>skim()</code> which gives a surface-level summary of your
+data. Use the code block below to install the <code>skimr</code> package
+and load it, then pipe your data set into <code>skim()</code> and view
+the results.</p>
 </div>
-<div id="exploratory-data-analysis" class="section level2">
-<h2>Exploratory Data Analysis</h2>
+<div id="manipulating-data" class="section level2">
+<h2>Manipulating Data</h2>
+<div id="filtering-rows" class="section level3">
+<h3><code>filter()</code>ing Rows</h3>
 </div>
-<div id="model-construction" class="section level2">
-<h2>Model Construction</h2>
+<div id="selecting-columns" class="section level3">
+<h3><code>select()</code>ing Columns</h3>
 </div>
-<div id="model-interpretation-and-inference" class="section level2">
-<h2>Model Interpretation and Inference</h2>
+<div id="summarizing-data" class="section level3">
+<h3>Summarizing Data</h3>
 </div>
-<div id="conclusion" class="section level2">
-<h2>Conclusion</h2>
+<div id="grouping-data-and-summarizing-it" class="section level3">
+<h3>Grouping Data and Summarizing It</h3>
 </div>
-<div id="references" class="section level2">
-<h2>References</h2>
+<div id="mutateing-new-columns" class="section level3">
+<h3><code>mutate()</code>ing New Columns</h3>
+</div>
+<div id="converting-numerical-variables-to-categorical-variables-with-if_else-or-case_when." class="section level3">
+<h3>Converting Numerical Variables to Categorical Variables with
+<code>if_else()</code> or <code>case_when()</code>.</h3>
+</div>
 </div>
 
 

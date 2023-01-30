@@ -1,0 +1,89 @@
+---
+title: "Intro to R (In Class)"
+author: "You, Analyst"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#We'll load the tidyverse since it includes the majority of packages we'll want
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+```
+
+**Note:** This notebook is an *in-class* version of the `EnterTheTidyverse` notebook that I prepared for you. As a reminder, that notebook is available on the [class webpage](https://agmath.github.io/RegressionCourse.html).
+
+**Objectives:** This notebook addresses the following items.
+
+-   How do I install and load packages in R?
+-   How do I read data into R from both local and remote sources?
+-   How do I interact with, and manipulate, data using the tools and principles of the tidyverse?
+
+## Installing and Loading Packages
+
+We can install R packages using the command `install.packages("PACKAGE_NAME")`. Once packages are installed, we can load them into an R Session by running `library(PACKAGE_NAME)`. While packages only need to be installed once, they must be loaded in each R Session you intend to use them in (note: an R Session begins when R/RStudio are opened and ends when they are closed or terminated). You've installed several packages already -- use the code block below to install and load the `kableExtra` package.
+
+```{r}
+#install and load kableExtra
+
+``` 
+
+With the `kableExtra` package, we can append `%>% kable() %>% kable_styling(bootstrap_options = c("hover", "striped"))` to any command outputting a table (data frame) so that the data frame formats nicely in our html document.
+
+## Loading Data
+
+```{r echo = TRUE, eval = FALSE}
+#Read the MAT241 sheet from the grades.xls file in 
+#the Spring 2021 folder on my computer's desktop
+grades <- read_excel("C:/Users/agilb/Desktop/Spring 2021/grades.xls", sheet = "MAT241")
+
+#Read in data from a csv file of Tate Gallery Artists housed 
+#in a public github repository on the web
+tate_artists <- read_csv("https://github.com/tategallery/collection/raw/master/artist_data.csv")
+
+#Read in data from a csv file of Tate Gallery Artworks housed
+#in a public github repository on the web
+#*Note* that read_csv() would have worked just fine here too
+tate_works <- read_delim("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-12/artwork.csv", delim = ",")
+```
+
+Use the code block below to read in the San Francisco Rentals dataset. The URL is provided in a comment in the code block.
+
+```{r}
+#https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-07-05/rent.csv
+
+```
+
+## Viewing Data
+
+The `head()`, `tail()`, and `glimpse()` functions are really commonly used to get an initial feel for your data set. Let's try using them below.
+
+```{r}
+#"Pipe" your data set into the head() function and view the output. Then pipe your data set into tail() and glimpse() as well. What do the outputs "mean"?
+
+```
+
+The `skimr` package provides a really useful function called `skim()` which gives a surface-level summary of your data. Use the code block below to install the `skimr` package and load it, then pipe your data set into `skim()` and view the results.
+
+```{r}
+
+```
+
+## Manipulating Data
+
+### `filter()`ing Rows
+
+
+
+### `select()`ing Columns
+
+
+
+### Summarizing Data
+
+### Grouping Data and Summarizing It
+
+### `mutate()`ing New Columns
+
+### Converting Numerical Variables to Categorical Variables with `if_else()` or `case_when()`.

@@ -1,0 +1,201 @@
+---
+title: "What is Statistical Learning?"
+author: "You, Analyst"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#We'll load the tidyverse since it includes the majority of packages we'll want
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+```
+
+**Objectives:** In this notebook, we'll use *toy data* to explore what statistical learning is. We'll gain some insights into the types of models we'll be building, the phenomena we'd like to understand/explain/predict, and the benefits as well as drawbacks of complicated models.
+
+**Note:** This is another notebook where you'll largely be running code that I've pre-built for you. You'll be encouraged to make changes to the code and see how your changes impact the data we work with and the models being constructed. We'll have a formal introduction to `R` in Weeks 2 - 4. You'll be able to write all of this code on your own after that.
+
+## Generating Toy Data
+
+We'll be using *synthetic* (fake) data in this notebook. Let's generate some initial data now.
+
+```{r}
+num_points <- 15
+
+set.seed(300)
+x <- runif(n = num_points, min = 0, max = 100)
+y <- 2*x + 8 + rnorm(num_points, mean = 0, sd = 20)
+
+ggplot() +
+  geom_point(aes(x = x, y = y)) +
+  labs(title = "My Toy Data",
+       x = "x",
+       y = "y")
+```
+
+Now that we have our *toy data*, let's draw the true association between `x` and `y` as a graph on top of our scatterplot.
+
+```{r}
+x_plot <- seq(from = 0, to = 100, length.out = 250)
+y_plot <- 2*x_plot + 8
+
+ggplot() +
+  geom_point(aes(x = x, y = y)) +
+  geom_line(aes(x = x_plot, y = y_plot), 
+            color = "forestgreen",
+            alpha = 0.6,
+            lwd = 1.5,
+            linetype = "dashed") +
+  labs(title = "My Toy Data",
+       x = "x",
+       y = "y")
+```
+
+The *random noise*  (generated using `rnrorm()`) in the data generating process prevents the linear model from exactly predicting each `y` value given the corresponding `x`.
+
+## Building and Using a Model
+
+We'll pick apart the code being used below when we formally introduce `tidymodels` in Week 4. For now, let's play with the code and see what types of models we can build and how well regression can pick up on the true association between our response, `y`, and our single predictor variable, `x`.
+
+```{r}
+toy_data <- tibble("x" = x, "y" = y)
+
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr_rec <- recipe(y ~ x, data = toy_data)
+
+#Recipe to allow for curvature
+# lr_rec <- recipe(y ~ x, data = toy_data) %>%
+#   step_poly(x, degree = 3, options = list(raw = TRUE))
+
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf %>%
+  fit(toy_data)
+
+preds <- lr_fit %>%
+  predict(toy_data) %>%
+  pull(.pred)
+plot_preds <- lr_fit %>%
+  predict(tibble("x" = x_plot)) %>%
+  pull(.pred)
+
+ggplot() +
+  geom_point(aes(x = x, y = y),
+             alpha = 0.4) +
+  geom_point(aes(x = x, y = preds),
+             color = "purple",
+             size = 2) +
+  geom_line(aes(x = x_plot, y = plot_preds),
+            color = "purple") +
+  geom_line(aes(x = x_plot, y = y_plot), 
+            color = "forestgreen",
+            alpha = 0.6,
+            lwd = 1.5,
+            linetype = "dashed") +
+  labs(title = "My Toy Data",
+       x = "x",
+       y = "y")
+```
+
+## My Model's Errors
+
+Now that we have predictions (`preds`) and the true responses (`y`), we can compute "prediction errors" for our models. These prediction errors are called *residuals*, and we compute them as the *observed response* minus the *predicted response*. That is, our `residuals = y - preds`.
+
+```{r}
+ggplot() +
+  geom_point(aes(x = x, y = y),
+             alpha = 0.4) +
+  geom_point(aes(x = x, y = preds),
+             color = "purple",
+             size = 2) +
+  geom_line(aes(x = x_plot, y = plot_preds),
+            color = "purple") +
+  geom_line(aes(x = x_plot, y = y_plot), 
+            color = "forestgreen",
+            alpha = 0.6,
+            lwd = 1.5,
+            linetype = "dashed") +
+  geom_segment(aes(x = x, y = y, xend = x, yend = preds),
+               color = "red",
+               lwd = 2,
+               alpha = 0.5) +
+  labs(title = "My Toy Data",
+       x = "x",
+       y = "y")
+```
+
+**Regression Assumption 1:** A major assumption we make with regression models is that our *residuals* are normally distributed with a mean of 0 and a constant standard deviation. The *residuals* should also be uncorrelated with the magnitude of the response itself or with the magnitude of any predictor variables. Some residual plots are below:
+
+```{r}
+residuals <- y - preds
+mean_resid <- mean(residuals)
+sd_resid <- sd(residuals)
+x_dens_plot <- seq(1.1*min(residuals), 1.1*max(residuals), length.out = 500)
+
+p1 <- ggplot() +
+  geom_histogram(aes(x = residuals,
+                     y = ..density..)) +
+  geom_vline(xintercept = 0,
+             linetype = "dashed",
+             alpha = 0.75) +
+  geom_line(aes(x = x_dens_plot, 
+                y = dnorm(x_dens_plot, 
+                          mean = mean_resid,
+                          sd = sd_resid)),
+            color = "blue",
+            alpha = 0.8) +
+  labs(x = "residual",
+       y = "")
+
+p2 <- ggplot() + 
+  geom_point(aes(x = x, y = residuals)) + 
+  geom_hline(yintercept = 0,
+             color = "blue",
+             linetype = "dashed",
+             lwd = 1.5,
+             alpha = 0.7) +
+  labs(x = "x",
+       y = "residual",
+       title = "Residuals versus Predictor (x)")
+
+p3 <- ggplot() + 
+  geom_point(aes(x = y, y = residuals)) + 
+  geom_hline(yintercept = 0,
+             color = "blue",
+             linetype = "dashed",
+             lwd = 1.5,
+             alpha = 0.7) +
+  labs(x = "y",
+       y = "residual",
+       title = "Residuals versus Response")
+
+p1 / (p2 + p3)
+```
+
+What do you notice?
+
+## Questions
+
+Let's make some changes and re-run our analysis.
+
+1. What happens if you change the *standard deviation* (`sd`) in the call to `runif()` where we originally generated our `y` values and then re-run all the code so far? Try a few different values -- how do you think these changes impact the "difficulty" of the modeling (regression) problem?
+
+2. What happens if you change the *number of training observations* (`num_points`) and then re-run all the code so far? How does this impact the "difficulty" of the modeling (regression) problem?
+
+3. Comment out the original recipe (`lr_rec`) using a hashtag (`#`) and uncomment the second recipe (`lr_rec`). Change the `degree` argument (any positive integer can\* be used) and re-run all of the code so far. How does changing the `degree` change the fit of the model? What are you noticing? Does this raise any concerns?
+
+4. Generate some new "future" data `x_future` and `y_future`, using the same data generating process as we used initially, but don't bother with setting a seed again. Add this "future" data to your plot as a new *scatterplot* (points) layer. Repeat this process for a variety of `degree`s, as in part (3). What are you noticing? Does this raise any concerns?
+
+5. Change the association between `x` and `y` and then re-run the entire notebook (you'll want to also change the way `y_plot` is computed in our second code block).
+
+## Summary
+
+
+
+
+

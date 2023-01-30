@@ -618,8 +618,7 @@ framework</p>
 <code>tidymodels</code> <code>workflow()</code> fit together. We’ll use
 the <code>palmerpenguins</code> data set since we’ve already seen that
 one before.</p>
-<pre class="r"><code>library(palmerpenguins)
-penguins %&gt;%
+<pre class="r"><code>penguins %&gt;%
   head()  %&gt;%
   kable() %&gt;%
   kable_styling(bootstrap_options = c(&quot;hover&quot;, &quot;striped&quot;))</code></pre>
@@ -647,9 +646,6 @@ body_mass_g
 <th style="text-align:left;">
 sex
 </th>
-<th style="text-align:right;">
-year
-</th>
 </tr>
 </thead>
 <tbody>
@@ -675,9 +671,6 @@ Torgersen
 <td style="text-align:left;">
 male
 </td>
-<td style="text-align:right;">
-2007
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -700,9 +693,6 @@ Torgersen
 </td>
 <td style="text-align:left;">
 female
-</td>
-<td style="text-align:right;">
-2007
 </td>
 </tr>
 <tr>
@@ -727,9 +717,6 @@ Torgersen
 <td style="text-align:left;">
 female
 </td>
-<td style="text-align:right;">
-2007
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -752,9 +739,6 @@ NA
 </td>
 <td style="text-align:left;">
 NA
-</td>
-<td style="text-align:right;">
-2007
 </td>
 </tr>
 <tr>
@@ -779,9 +763,6 @@ Torgersen
 <td style="text-align:left;">
 female
 </td>
-<td style="text-align:right;">
-2007
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -804,9 +785,6 @@ Torgersen
 </td>
 <td style="text-align:left;">
 male
-</td>
-<td style="text-align:right;">
-2007
 </td>
 </tr>
 </tbody>
@@ -885,9 +863,6 @@ body_mass_g
 <th style="text-align:left;">
 sex
 </th>
-<th style="text-align:right;">
-year
-</th>
 </tr>
 </thead>
 <tbody>
@@ -913,9 +888,6 @@ Torgersen
 <td style="text-align:left;">
 male
 </td>
-<td style="text-align:right;">
-2008
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -938,9 +910,6 @@ Biscoe
 </td>
 <td style="text-align:left;">
 male
-</td>
-<td style="text-align:right;">
-2008
 </td>
 </tr>
 <tr>
@@ -965,9 +934,6 @@ Biscoe
 <td style="text-align:left;">
 male
 </td>
-<td style="text-align:right;">
-2007
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -990,9 +956,6 @@ Dream
 </td>
 <td style="text-align:left;">
 female
-</td>
-<td style="text-align:right;">
-2007
 </td>
 </tr>
 <tr>
@@ -1017,9 +980,6 @@ Dream
 <td style="text-align:left;">
 female
 </td>
-<td style="text-align:right;">
-2007
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1042,9 +1002,6 @@ Dream
 </td>
 <td style="text-align:left;">
 female
-</td>
-<td style="text-align:right;">
-2009
 </td>
 </tr>
 </tbody>
@@ -1504,7 +1461,7 @@ body_mass_g
 <code>.pred</code> column (or the corresponding interval columns) to the
 data frame containing our new data. We then selected only the relevant
 columns for our small model.</p>
-<p>Using this new data frame, we can compare the <em>truth</em> (know,
+<p>Using this new data frame, we can compare the <em>truth</em> (known,
 actual <code>body_mass_g</code>) to our <em>predictions</em>
 (<code>.pred</code>) to assess the quality of predictions.</p>
 <pre class="r"><code>mass_length_fit %&gt;%

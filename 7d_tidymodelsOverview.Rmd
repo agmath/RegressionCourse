@@ -259,7 +259,14 @@ lin_reg_fit <- lin_reg_wf %>%
   fit(training_data)
 ```
 
-Once we have a fitted workflow, there's lots we can do with it. We can see the structure of the fitted model.
+Once we have a fitted workflow, there's lots we can do with it. We can see global model-utility and performance metrics.
+
+```{r echo = TRUE, eval = FALSE}
+lin_reg_fit %>%
+  glance()
+```
+
+We can see the structure of the fitted model.
 
 ```{r echo = TRUE, eval = FALSE}
 lin_reg_fit %>%

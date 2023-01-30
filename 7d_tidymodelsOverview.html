@@ -1649,7 +1649,10 @@ lin_reg_wf &lt;- workflow() %&gt;%
 lin_reg_fit &lt;- lin_reg_wf %&gt;%
   fit(training_data)</code></pre>
 <p>Once we have a fitted workflow, there’s lots we can do with it. We
-can see the structure of the fitted model.</p>
+can see global model-utility and performance metrics.</p>
+<pre class="r"><code>lin_reg_fit %&gt;%
+  glance()</code></pre>
+<p>We can see the structure of the fitted model.</p>
 <pre class="r"><code>lin_reg_fit %&gt;%
   extract_fit_engine() %&gt;%
   tidy()</code></pre>

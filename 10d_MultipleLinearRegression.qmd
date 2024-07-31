@@ -1,7 +1,10 @@
 ---
 title: "Multiple Linear Regression"
-output:
-  html_document
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
 ```{r global-options, include=FALSE}
@@ -11,7 +14,12 @@ library(palmerpenguins)
 library(patchwork)
 library(kableExtra)
 tidymodels_prefer()
-rm(list = ls())
+
+penguins <- palmerpenguins::penguins
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 14))
 ```
 
 ## Objectives
@@ -40,6 +48,16 @@ In a simple linear regression model, we could interpret the coefficient on the t
 
 For multiple linear regression models, we have similar interpretations as long as the model terms are independent of one another (we'll encounter scenarios where they are not when we look at higher-order terms later in our course). That is, the interpretation of $\beta_i$, the coefficient on $x_i$ in our model is *the expected change in the response variable associated with a unit change in $x_i$, while all other predictors are held constant*.
 
+:::{.callout-tip}
+## Model Coefficients as Slopes
+For simple and multiple linear regression models where each model term contains a single numerical predictor, we can interpret the corresponding $\beta$-coefficient as a slope, holding all other predictors constant. 
+
+That is, for the multiple linear regression model 
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$ 
+holding all other predictors constant, we expect a unit increase in $x_i$ to be associated with an increase of about $\beta_i$ in the expected value of $y$ as long as $x_1$ through $x_k$ are independent, numerical predictors. 
+:::
+
 Let's move forward and see how to build, assess, and interpret a multiple linear regression model. For simplicity and continuity, we'll continue working with the `palmerpenguins` data and try to predict `body_mass_g` using the other numerical *features* in the data set.
 
 ### Training and Test Data
@@ -59,7 +77,7 @@ As a reminder, here's the first few rows of our training data.
 penguins_train %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 ### EDA with Numerical Features
@@ -94,11 +112,11 @@ p4 <- penguins_train %>%
 (p1 + p2 + p3)/p4
 ```
 
-It looks like there are positive associations between penguin body mass and the bill measurements as well as the flipper measurement. The plot with the year variable is difficult to read (which we'll return to in a new notebook) -- for now, we'll include the year variable in our model as another numerical predictor.
+It looks like there are positive associations between penguin body mass and the bill measurements as well as the flipper measurement. The plot with the year variable is difficult to read (which we'll return to later) -- for now, we'll include the year variable in our model as another numerical predictor.
 
 ### Building a Multiple Linear Regression Model
 
-The strategy for building a multiple linear regression model in `tidymodels` is exactly the same as the strategy for building a simple linear regression.
+The strategy for building a multiple linear regression model in `{tidymodels}` is exactly the same as the strategy for building a simple linear regression.
 
 + Create a model *specification* using `linear_reg()` and set its fitting engine to `"lm"`.
 + Create a model *recipe* by passing the model formula and data to the `recipe()` function.
@@ -166,7 +184,7 @@ The `p.value` for this test is extremely small, so we have evidence to suggest t
 
 We can see from the `adj.r.squared` value that *approximately `r round(100*(mass_multi_fit %>% glance() %>% pull(adj.r.squared)), 2)`% of the variation in penguin body mass is explained by this model*. 
 
-Finally, we can assess the *residual standard error* (`sigma`) for the model. This value helps us estimate how accurate we should expect our predictions to be. At approximately 95% confidence, we can expect our predictions to be accurate to within about $\pm$`r round(2*(mass_multi_fit %>% glance() %>% pull(sigma)), 2)` grams. As a reminder, however, this estimate is biased and may be *too optimistic* about the errors our model will make in the future. We should recalculate this metric (and the adjusted R squared metric) using unseen data, such as the *test* data.
+Finally, we can assess the *residual standard error* (`sigma`) for the model. This value helps us estimate how accurate we should expect our predictions to be. At approximately 95% confidence, we can expect our predictions to be accurate to within about $\pm$ `r round(2*(mass_multi_fit %>% glance() %>% pull(sigma)), 2)` grams. As a reminder, however, this estimate is biased and may be *too optimistic* about the errors our model will make in the future. We should recalculate this metric (and the adjusted R squared metric) using unseen data, such as the *test* data.
 
 #### Assessment of Individual Model Terms
 
@@ -177,7 +195,7 @@ mass_multi_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 The first thing we should do is look at the `p.value`s associated with the individual model terms. At this stage, if any model terms are not statistically significant we should remove them one-by-one. We'll do so by removing the predictor with the highest `p.value` first. 
@@ -223,7 +241,7 @@ mass_multi_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Bill length in millimeters is still just above the threshold for statistical significance. We'll drop it from our model and refit.
@@ -247,15 +265,53 @@ coef_df <- mass_multi_fit %>%
 
 coef_df %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
-Okay, both of the remaining predictors, `flipper_length_mm` and `year` are statistically significant. This gives us our "*final*" model form of $\mathbb{E}\left[\text{body_mass_g}\right] = \beta_0 + \beta_1 \cdot\text{flipper_length_mm} + \beta_2\cdot\text{year}$, where the estimated model has $\beta_0\approx$ `r format(round((coef_df %>% filter(term == "(Intercept)") %>% pull(estimate)), 2))`, $\beta_1\approx$ `r round((coef_df %>% filter(term == "flipper_length_mm") %>% pull(estimate)), 2)`, and $\beta_2\approx$ `r round((coef_df %>% filter(term == "year") %>% pull(estimate)), 2)`.
+Okay, both of the remaining predictors, `flipper_length_mm` and `year` are statistically significant. This gives us our "*final*" model form of $\mathbb{E}\left[\text{body\_mass\_g}\right] = \beta_0 + \beta_1 \cdot\text{flipper\_length\_mm} + \beta_2\cdot\text{year}$, where the estimated model has $\beta_0\approx$ `r format(round((coef_df %>% filter(term == "(Intercept)") %>% pull(estimate)), 2))`, $\beta_1\approx$ `r round((coef_df %>% filter(term == "flipper_length_mm") %>% pull(estimate)), 2)`, and $\beta_2\approx$ `r round((coef_df %>% filter(term == "year") %>% pull(estimate)), 2)`.
 
 At this point, we have a model that we can make predictions and interpretations with. In terms of the model coefficients,
 
 + We expect penguins with longer flippers to have greater mass. On average, with year being held constant, we expect a unit increase in flipper length to be associated with approximately $50.87$g additional mass.
 + We expect penguins to have lower body mass with each passing year. On average, holding the flipper length constant, similar penguins from one year to the next are expected to have approximately $116.5$g less body mass.
+
+##### Interpreting Marginal Effects with `{marginaleffects}`
+
+So far, we have been able to interpret each model coefficient as a slope. This is relatively straight forward. However, as we explore more complex models -- particularly those with mixed effects and higher order terms -- the interpretation of the impact of a predictor on the response is more difficult to extract. This is particularly true for those without a calculus background. 
+
+Fortunately, the `{marginaleffects}` package can help us. We'll introduce it now because this is a simple case and this early exposure will make it easier for us to use the functionality later.
+
+```{r}
+library(marginaleffects)
+
+counterfactual_flipper_df <- tibble(flipper_length_mm = seq(170, 235, length.out = 500),
+                                    year = 2019)
+
+mfx <- mass_multi_fit %>% 
+  extract_fit_engine() %>%
+  slopes(newdata = counterfactual_flipper_df,
+         variables = "flipper_length_mm",
+         conf_level = 0.95) %>%
+  tibble()
+
+mfx %>%
+  select(term, flipper_length_mm, estimate, conf.low, conf.high, std.error) %>%
+  head(n = 10) %>%
+  kable() %>%
+  kable_styling()
+
+mfx %>%
+  select(flipper_length_mm, estimate, conf.low, conf.high) %>% 
+  ggplot() +
+  geom_line(aes(x = flipper_length_mm, y = estimate), color = "purple", lty = "dashed", lwd = 1.5) +
+  geom_ribbon(aes(x = flipper_length_mm, ymin = conf.low, ymax = conf.high),
+              fill = "grey", alpha = 0.5) +
+  labs(x = "Flipper Length (mm)",
+       y = "Marginal Effect",
+       title = "Marginal Effects of Unit Increase in Flipper Length")
+```
+
+Reading off of the graph, we can see that the estimated marginal effect of an increase of 1mm in flipper length is associated with an estimated increase of just under 50g, and that this expected increase is independent of the current flipper length. Furthermore, we can see that we are 95% confident that the marginal effect of a unit increase in flipper length on expected body mass is somewhere between 47.5g/mm and 54.25g/mm. These estimates agree with the values we calculated from the tabular output of the regression model above.
 
 #### Returning to Global Performance Metrics
 
@@ -270,7 +326,7 @@ mass_multi_fit %>%
 
 It is no surprise that our model as a whole still has a significant `p.value`. We removed those predictors which we we were not confident had non-zero coefficients.
 
-Our `adj.r.squared` value has changed slightly, and out final model explains approximately `r round(100*(mass_multi_fit %>% glance() %>% pull(adj.r.squared)), 2)`% of the variability in penguin body mass.
+Our `adj.r.squared` value has changed slightly, and our final model explains approximately `r round(100*(mass_multi_fit %>% glance() %>% pull(adj.r.squared)), 2)`% of the variability in penguin body mass.
 
 Finally, our *residual standard error* has also changed slightly. We now expect our predictions to be accurate to within about $\pm$ `r round(2*(mass_multi_fit %>% glance() %>% pull(sigma)), 2)`g.
 
@@ -295,7 +351,7 @@ mass_multi_fit %>%
 
 We see that the R Squared value is slightly lower on the test data than it was on the training data. As a reminder, a lower R Squared value indicates that a lower proportion of the variation in the response is explained by our model -- that is, the model performs slightly worse on the test data according to the R Squared metric.
 
-Note that *root mean squared error* is comparable to the *residual standard error* (`sigma`), as it measures the average prediction error. Similarly, we see a slightly lower `rmse` on the test data than we saw on the training data. As a reminder, lower `rmse` indicates better predictive performance, so this model performs slightly *better& on the test data according to the `rmse` metric. More on this later in our course as well.
+Note that *root mean squared error* is comparable to the *residual standard error* (`sigma`), as it measures the average prediction error. Similarly, we see a slightly lower `rmse` on the test data than we saw on the training data. As a reminder, lower `rmse` indicates better predictive performance, so this model performs slightly *better* on the test data according to the `rmse` metric. More on this later in our course as well.
 
 **A Note on Comparing Model Metrics:** The *residual standard error* (`sigma`) from the `glance()` function and the `rmse` metric we've computed just now utilize slightly different formulas, so they aren't directly comparable (particularly in cases with very small data). One thing we can do is to use `glance()` for the *global test of model utility* only (interpreting that `p.value`), and then we can compute `rsq` and `rmse` for both the training and test sets and compare those to one another.
 

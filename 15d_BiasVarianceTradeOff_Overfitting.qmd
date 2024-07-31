@@ -1,7 +1,13 @@
 ---
 title: "The Bias-Variance TradeOff: Overfitting and Underfitting"
-output:
-  html_document
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
+code-fold: true
+warning: false
+message: false
 ---
 
 ```{r global-options, include=FALSE}
@@ -12,7 +18,12 @@ library(patchwork)
 library(kableExtra)
 
 tidymodels_prefer()
-rm(list = ls())
+
+penguins <- palmerpenguins::penguins
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 14))
 
 set.seed(123)
 penguins_split <- initial_split(penguins)
@@ -72,7 +83,7 @@ The *bias* and *variance* metrics go hand-in-hand.
 + Models with very low bias have high variance.
 + When we decrease model bias, by allowing the model access to additional predictors, higher-order terms, etc. then we are also increasing model variance.
 
-Let's see some extreme examples below.
+Let's see some extreme examples below. We'll create a *high-bias, low-variance* model on the left (it is a straight-line model) and a *low-bias, high-variance* model on the right (it has degree 10). 
 
 ```{r}
 #generate "toy" data
@@ -129,7 +140,8 @@ p2 <- ggplot() +
             color = "blue") +
   labs(x = "x",
        y = "y",
-       title = "A High-Bias, Low-Variance Model")
+       title = "High-Bias, Low-Variance") +
+    ylim(-5, 400)
 
 p3 <- ggplot() +
   geom_point(data = toy_data1,
@@ -139,8 +151,8 @@ p3 <- ggplot() +
             color = "blue") +
   labs(x = "x",
        y = "y",
-       title = "A Low-Bias, High-Variance Model") + 
-  ylim(c(-5, 350))
+       title = "Low-Bias, High-Variance") + 
+  ylim(c(-5, 400))
 
 p1 / (p2 + p3)
 ```
@@ -203,8 +215,10 @@ p5 <- ggplot() +
             color = "purple") +
   labs(x = "x",
        y = "y",
-       title = "A High-Bias, Low-Variance Model") + 
-  scale_color_manual(values = c("red", "black"))
+       title = "High-Bias, Low-Variance") + 
+  scale_color_manual(values = c("red", "black")) +
+  ylim(c(-5, 400)) +
+  theme(legend.position = "None")
 
 p6 <- ggplot() +
   geom_point(data = toy_data2,
@@ -218,9 +232,10 @@ p6 <- ggplot() +
             color = "purple") +
   labs(x = "x",
        y = "y",
-       title = "A Low-Bias, High-Variance Model") + 
-  ylim(c(-5, 350)) + 
-  scale_color_manual(values = c("red", "black"))
+       title = "Low-Bias, High-Variance") + 
+  ylim(c(-5, 400)) + 
+  scale_color_manual(values = c("red", "black")) + 
+  theme(legend.position = "None")
 
 p4 / (p5 + p6)
 ```
@@ -607,7 +622,7 @@ train_results <- (toy_train %>%
 
 train_results %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 On the training data, the metrics keep getting better and better! Let's check out if the same is true with the unseen test data...
@@ -646,34 +661,39 @@ test_results <- (toy_test %>%
 
 test_results %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Nope! What we are seeing here is evidence of overfitting. The training performance metrics continue to improve, while the test metrics improve with some additional flexibility, but then get much worse. We can see this visually below.
 
 ```{r}
+colors <- c("training" = "red", "testing" = "black")
+
 ggplot() + 
   geom_point(data = train_results, 
              aes(x = degree,
-                 y = rmse),
-             color = "red",
+                 y = rmse,
+                 color = "training"),
              shape = "X",
              size = 3) + 
   geom_line(data = train_results, 
              aes(x = degree,
-                 y = rmse),
-             color = "red") +
+                 y = rmse,
+                 color = "training")) +
   geom_point(data = test_results, 
              aes(x = degree,
-                 y = rmse),
-             color = "black") + 
+                 y = rmse,
+                 color = "testing")) + 
   geom_line(data = test_results, 
              aes(x = degree,
-                 y = rmse),
-             color = "black") +
+                 y = rmse,
+                 color = "testing")) +
+  scale_color_manual(values = colors) + 
+  scale_x_continuous(breaks = seq(1, 11, by = 1)) + 
   labs(title = "Model Flexibility and RMSE",
        x = "Degree of Model",
-       y = "RMSE") +
+       y = "RMSE",
+       color = "Error Type") +
   scale_y_log10()
   
 ```

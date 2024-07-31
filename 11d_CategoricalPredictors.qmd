@@ -1,7 +1,10 @@
 ---
-title: "Utilizing Categorical Predictors"
-output:
-  html_document
+title: Utilizing Categorical Predictors
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
 ```{r global-options, message = FALSE, warning = FALSE}
@@ -11,7 +14,12 @@ library(palmerpenguins)
 library(patchwork)
 library(kableExtra)
 tidymodels_prefer()
-rm(list = ls())
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 14))
+
+penguins <- palmerpenguins::penguins
 
 set.seed(123)
 penguins_split <- initial_split(penguins)
@@ -61,7 +69,7 @@ penguins_train %>%
          species_adelie = ifelse(species == "Adelie", 1, 0),
          species_chinstrap = ifelse(species == "Chinstrap", 1, 0)) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Notice that the `species_gentoo` column indicates via a $1$ that the penguin is a `Gentoo`, or uses a $0$ to indicate that the penguin is not a `Gentoo`. The other columns are similar. Because no penguin can be of more than one `species`, and each penguin is exactly one of `Gentoo`, `Adelie`, or `Chinstrap`, this encoding does exactly what we want. We can plug $0$s and $1$s into our regression model. Furthermore, we don't need *all* of these new dummy variables, since knowing that a penguin is not a `Gentoo` and is not an `Adelie` guarantees that the penguin *is* a `Chinstrap`. We can see this below.
@@ -73,7 +81,7 @@ penguins_train %>%
   mutate(species_gentoo = ifelse(species == "Gentoo", 1, 0),
          species_chinstrap = ifelse(species == "Chinstrap", 1, 0)) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 I've removed the `Adelie` category, but the idea is the same. That penguin in the second row is not a `Gentoo` and is not a `Chinstrap`, so it must be an `Adelie`. We don't need the original `species` column to recover that information. 
@@ -113,7 +121,7 @@ Now that we have our fitted model, let's assess it and reduce the model if neces
 mass_reg_fit %>%
   glance() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 The `p.value` for our *global test of model utility* is very small, indicating that at least one of the variables in our model is a statistically significant predictor of `body_mass_g`. Now let's move to a term-by-term analysis.
@@ -123,7 +131,7 @@ mass_reg_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 When accounting for different baseline body mass per species, all of the other available features are statistically significant! This highlights an important idea -- just because a predictor is not statistically significant doesn't mean that it is unrelated to the response variable or is not useful in making predictions. A visual representation of confidence intervals for our fitted model coefficients appears below.
@@ -151,7 +159,7 @@ mass_reg_fit %>%
        y = "")
 ```
 
-All of our predictors were useful were useful, we just needed to account for the differences in species to see that.
+All of our predictors were useful were useful, we just needed to account for the differences in species to see that!
 
 ### Interpreting Our Model
 
@@ -162,11 +170,11 @@ mass_reg_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 We can write our estimated model as follows:
-$$\begin{align}\mathbb{E}\left[\text{body_mass_g}\right] \approx &117741.35 + 45.69\left(\text{bill_length_mm}\right) + 116.34\left(\text{bill_depth_mm}\right) +\\ &24.73\left(\text{flipper_length_mm}\right) - 61.07\left(\text{year}\right) - 611.87\left(\text{species_Chinstrap}\right) +\\ &674.46\left(\text{species_Gentoo}\right)\end{align}$$
+$$\begin{align}\mathbb{E}\left[\text{body\_mass\_g}\right] \approx &117741.35 + 45.69\left(\text{bill\_length\_mm}\right) + 116.34\left(\text{bill\_depth\_mm}\right) +\\ &24.73\left(\text{flipper\_length\_mm}\right) - 61.07\left(\text{year}\right) - 611.87\left(\text{species\_Chinstrap}\right) +\\ &674.46\left(\text{species\_Gentoo}\right)\end{align}$$
 
 We can interpret each of these terms just like in our simple or multiple linear regression models. For example, *holding all other variables constant, an increase in flipper length by $1$ millimeter is associated with an expected additional $24.73$ grams of penguin body mass, on average*. The new thing here is how we'll interpret the coefficients on those dummy variables for species.
 

@@ -13,41 +13,65 @@ toc: true
 #| message: false
 
 library(tidyverse)
+library(tidymodels)
 library(kableExtra)
 library(palmerpenguins)
-library(tidymodels)
-
-penguins <- palmerpenguins::penguins
 
 options(kable_styling_bootstrap_options = c("hover", "striped"))
 
 theme_set(theme_bw())
 ```
 
-Here's our data...
+## Data Visualization and the Grammar of Graphics
+
+Data visualization is an extremely important part of any analysis. As a researcher or analyst, data visualization will likely bookend your work, serving as a reservoir for idea and hypothesis generation at the beginning of a project as well as becoming a vehicle for conveying important takeaways as you summarize and disseminate your results upon completion. 
+
+## Our Data
+
+We'll make use of a relatively famous data set on penguins from the Palmer Archipelago, in Antarctica. This data was collected by Dr. Kristen Gorman. Both the `{tidymodels}` and `{palmerpenguins}` packages have versions of the `penguins` data frame, but we'll want to use the version from `{palmerpenguins}`. For this reason, we'll explicitly store that version of the data set into our *environment*.
 
 ```{r}
+penguins <- palmerpenguins::penguins
+
 penguins %>%
   head() %>%
   kable() %>%
-  kable_styling(c("hover", "striped"))
+  kable_styling()
 ```
+
+:::{.callout-note}
+## Learning from Training Data
+Remember that we need an unbiased set of observations in order to be able to test our models. We need to be "blind" to those observations in order for our assessment to be truly unbiased. This means that we should only be learning from our training data -- this includes any initial exploratory data analysis.
+
+We'll split into training and validation data below.
+:::
+
+```{r}
+set.seed(300)
+data_splits <- initial_split(penguins, prop = 0.75)
+
+train <- training(data_splits)
+test <- testing(data_splits)
+
+train %>%
+  head() %>%
+  kable() %>%
+  kable_styling()
+```
+
+Notice that in creating our training/testing split, our observations were randomly shuffled and then put into the training and testing sets. We'll work with our training data from here on.
+
+Let's move on to plotting!
 
 ## Data Visualization and the Grammar of Graphics
 
 Data visualization is an extremely important part of any analysis. As a researcher or analyst, data visualization will likely bookend your work, serving as a reservoir for idea and hypothesis generation at the beginning of a project as well as becoming a vehicle for conveying important takeaways as you summarize and disseminate your results upon completion. 
 
-In R, we have access to an extremely popular an easy-to-use plotting library, called `ggplot2`. The main philosophy behind `ggplot2` is that data visualization should follow a layered [*grammar of graphics*](https://vita.had.co.nz/papers/layered-grammar.html). The grammar of graphics is a notion first introduced by Leland Wilkinson in 2006, and the layering functionality is a convenient implementation in `ggplot2`.
-
 ## The Anatomy of `ggplot()`
 
-In this introduction to data visualization, we will be using `ggplot2`, which is part of the `tidyverse` package. To begin, we will use a pipe to feed a dataset into `ggplot()`. As a sandbox, we will use the `penguins` dataset, which is part of the `palmerpenguins` library. Don't forget to run `install.packages("palmerpenguins")` if you have not installed this package before. The `penguins` dataset contains measurements from different types of penguins that were collected by Gorman, Williams, and Fraser that were published in 2014:
+In R, we have access to an extremely popular an easy-to-use plotting library, called `{ggplot2}`. The main philosophy behind `{ggplot2}` is that data visualization should follow a layered [*grammar of graphics*](https://vita.had.co.nz/papers/layered-grammar.html). The grammar of graphics is a notion first introduced by Leland Wilkinson in 2006, and the layering functionality is a convenient implementation in `{ggplot2}`.
 
-```{r echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE}
-
-``` 
-
-Recall from our introduction to the `tidyverse` that we can read the pipe below as saying "start with the `penguins` dataset and then create a `ggplot()`".
+Recall from our introduction to the `tidyverse` that we can read the pipe below as saying "start with the `train` dataset and then create a `ggplot()`".
 
 ```{r echo = TRUE, eval = FALSE, warning = FALSE, message = FALSE, fig.align = "center"}
 train %>%
@@ -106,18 +130,18 @@ A single numerical variable can be visualized using a histogram, a box plot, or 
 Often, we would like to see how close a histogram is to a Normal distribution (the bell-shaped curve). To do this, we will add a `stat_function` layer which draws a Normal curve with mean and standard deviation equal to the mean and standard deviation of the data set. In this case, we will let the y-coordinate be `..density..` which measures the proportion of penguins which lie in each bin, rather than the number of penguins. The arguments of the `stat_function()` layer are `fun =`, which tells R what type of distribution to draw and `args =`, which provides R with the mean and standard deviation of the distribution.
 
 ```{r warning = FALSE, message = FALSE, fig.align = "center"}
-penguins %>%
+train %>%
   filter(!is.na(bill_length_mm),
          species == "Gentoo") %>%
   ggplot() +
   geom_histogram(aes(x = bill_length_mm, y = ..density..), bins = 20) + 
   stat_function(fun = dnorm, 
-                args = list(mean = penguins %>%
+                args = list(mean = train %>%
                               filter(!is.na(bill_length_mm),
                                      species == "Gentoo") %>%
                               pull(bill_length_mm) %>%
                               mean(), 
-                            sd = penguins %>%
+                            sd = train %>%
                               filter(!is.na(bill_length_mm),
                                      species == "Gentoo") %>%
                               pull(bill_length_mm) %>%
@@ -193,7 +217,7 @@ A mosaic plot creates largely the same graphic, but makes it easier to see the p
 
 ```{r warning = FALSE, message = FALSE, fig.align = "center"}
 library(ggmosaic)
-penguins %>%
+train %>%
   filter(!is.na(sex)) %>% 
   ggplot() +
   geom_mosaic(aes(product(sex,species), fill = sex))
@@ -204,20 +228,20 @@ penguins %>%
 It is certainly not the end of the world if you choose a type of plot that is not appropriate for the variables that you are considering, but it is an important skill to be able to identify when an inappropriate plot has been created. I would like to give you some examples of poorly chosen plots, where the plots do not provide the reader with very much (or any) information:
 
 ```{r warning = FALSE, message = FALSE, fig.align = "center"}
-penguins %>%
+train %>%
   filter(!is.na(species)) %>% 
   ggplot() +
   geom_point(aes(x = bill_length_mm, y = species)) 
 ```
 
 ```{r warning = FALSE, message = FALSE, fig.align = "center"}
-penguins %>%
+train %>%
   ggplot() +
   geom_bar(aes(x = bill_length_mm)) 
 ```
 
 ```{r warning = FALSE, message = FALSE, fig.align = "center"}
-penguins %>%
+train %>%
   filter(!is.na(sex)) %>% 
   ggplot() +
   geom_point(aes(x = sex, y = species)) 
@@ -230,7 +254,7 @@ From the examples above, you should see that understanding the type of variable 
 There are many options for plot customization! One of the most common customizations is in the axis labels and plot title, which can be controlled with the `labs()` layer. Additionally, if you are building a plot with multiple layers, and those layers share common aesthetics, you can place the aesthetics into the original `ggplot()` call rather than duplicating them across the geometry layers.
 
 ```{r warning = FALSE, message = FALSE, fig.align = "center"}
-penguins %>%
+train %>%
   count(year) %>%
   ggplot(aes(x = year, y = n)) +
   geom_line() +
@@ -248,7 +272,7 @@ The tick marks in this plot are not great, since it doesn't make (from an animal
 It is also easy to make a plot that separates each of the species of penguin, using the `color` aesthetic,
 
 ```{r warning = FALSE, message = FALSE, fig.align = "center"}
-penguins %>%
+train %>%
   count(year, species) %>%
   ggplot(aes(year, n, color = species)) +
   geom_line() +
@@ -264,7 +288,7 @@ penguins %>%
 or by the sex of the penguin. In this case, I used a `scale_color_discrete()` layer to adjust the labels of the levels of the `sex` variable to capitalize them, and change `NA` to "Unknown". Notice that we passed two columns to the `count()` function here, indicating that we wanted counts computed for each unique combination of `sex` and `year`.
 
 ```{r warning = FALSE, message = FALSE, fig.align = "center"}
-penguins %>%
+train %>%
   count(year, sex) %>%
   ggplot(aes(year, n, color = sex)) +
   geom_line() +
@@ -281,7 +305,7 @@ penguins %>%
 It is also possible to make separate plots for each level of a categorical variable, using a `facet_wrap()` layer.
 
 ```{r warning = FALSE, message = FALSE, fig.align = "center"}
-penguins %>%
+train %>%
   count(year, sex) %>%
   ggplot(aes(year, n, color = sex)) +
   geom_line(show.legend = FALSE) +

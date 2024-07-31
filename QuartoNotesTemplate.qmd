@@ -1,0 +1,47 @@
+---
+title: "MAT300 Regression Analysis: Simple R Markdown Notebook Template"
+author: "Me, Scientist"
+date: today
+date-format: long
+theme: flatly
+toc: true
+---
+
+## Purpose
+
+The purpose of this template is to introduce Quarto as a method for constructing reproducible research involving data analysis. Quarto allows us to mix free-form text and executable code, among other things (html and $\LaTeX$). Be sure to view this document via the `qmd` source file in RStudio rather than as the rendered `html` file so that you can see the structure of the Quarto Markdown file. 
+
+You can download the source file [here](https://agmath.github.io/RegressionCourse/QuartoNotesTemplate.qmd). If the file downloads directly to your downloads folder you can just move it to a convenient location and then open it in RStudio using $\tt{File~\to~Open~File}$. Otherwise, if you see a page of text, you can create a new Quarto file in RStudio using $\tt{File~\to~New~File~\to~Quarto~Document}$ and then click the button in the lower left to $\tt{Create~Empty~Document}$ -- now you can copy and paste the text into the blank markdown editor. Now you can see and edit the source code for this document.
+
+## Structure
+
+### YAML Header
+
+R Markdown documents begin with a YAML ("yet another markdown language", or "YAML ain't markdown language"...nobody really knows) header, specifying the output document type and properties. The YAML header is positioned between two sets of three hyphens (fences) and accommodates lots of customization options. If you want to learn more about the YAML header for various document types, check out the documentation for the output `format` you are planning to produce [here, at the Quarto Documentation](https://quarto.org/docs/output-formats/all-formats.html).
+
+### Document Body
+
+If you are viewing the source code for this template, you've seen what the YAML header looks like, you've also seen that the syntax for creating headings uses the hashtag symbol (\#). You've also noticed that the more hashtags you provide, the lower-level the heading. Finally, you've seen free text and a couple of other tricks like creating a hyperlink and typesetting special characters like the hashtag, which need to be escaped with the backslash \\.
+
+If you want stylized text, you can feel free to use most HTML tags, or you can surround text with a single asterisk (\*) on each side for *italics*, or two asterisks on each side for **bold**.
+
+In addition to free text, you can typeset R code by surrounding it with backticks. For example, R has a function called `median()` which can be used to compute the median of a set of values. You can use similar code to actually execute R code inline by placing an r as the first character inside of the backticks. That is, the median of the values 2, 6, 9, 1, 18, 4, 750 is: `r median(c(2, 6, 9, 1, 18, 4, 750))` while the mean is `r mean(c(2, 6, 9, 1, 18, 4, 750))`.
+
+Often times you'll want more R code than is reasonable to write inline. When this happens, we can use R chunks. These chunks sit on their own sets of lines, and begin/end with triple backticks (\`\`\`). There are lots of customization options for R chunks and you can see those options in [the Quarto Documentation for Code Chunk Execution](https://quarto.org/docs/computations/execution-options.html). For now, here is a sample R chunk and its corresponding output.
+
+```{{r}}
+#| label: my_first_chunk
+#| echo: true
+#| eval: true
+
+#Here is a comment in my chunk
+2*(3 + 5)
+```
+
+## Rendering Your Quarto File
+
+When working with an R Markdown file in RStudio, you should have a blue arrow icon at the top of your script editor labeled *Render*. To render your output, just click that Render button.
+
+## Closing
+
+That's it for now. You'll likely want to keep some notes from our class meetings in these Quarto notebooks because of the ability to include and execute code. If you have questions about markdown or encounter rendering errors, check out [the Quarto Guide](https://quarto.org/docs/guide/) and [this Quarto Cheatsheet](https://rstudio.github.io/cheatsheets/quarto.pdf), or reach out to Dr. G.

@@ -1,8 +1,11 @@
 ---
 title: "Intro to R (In Class)"
-author: "You, Analyst"
-date: "`r format(Sys.Date(), '%B %d, %Y')`"
-output: html_document
+author: "Me, Scientist"
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -10,6 +13,11 @@ output: html_document
 library(tidyverse)
 library(tidymodels)
 library(patchwork)
+
+#options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 14))
 ```
 
 **Note:** This notebook is an *in-class* version of the `EnterTheTidyverse` notebook that I prepared for you. As a reminder, that notebook is available on the [class webpage](https://agmath.github.io/RegressionCourse.html).
@@ -29,7 +37,7 @@ We can install R packages using the command `install.packages("PACKAGE_NAME")`. 
 
 ``` 
 
-With the `kableExtra` package, we can append `%>% kable() %>% kable_styling(bootstrap_options = c("hover", "striped"))` to any command outputting a table (data frame) so that the data frame formats nicely in our html document.
+With the `kableExtra` package, we can append `%>% kable() %>% kable_styling(bootstrap_options = c("hover", "striped"))` to any command outputting a table (data frame) so that the data frame formats nicely in our html document. We could also set kable's printing options globally, so that we don't need to pass the styling options to `kable_styling()` every time we print a table. Check out the code I commented out in the initial code cell and paste it here (without the hashtag, so that it isn't a comment).
 
 ## Loading Data
 

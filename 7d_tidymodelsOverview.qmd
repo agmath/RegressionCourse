@@ -1,22 +1,37 @@
 ---
-title: "Overview of `tidymodels`"
-output:
-  html_document
+title: "Overview of `{tidymodels}`"
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
-```{r global-options, include=FALSE}
+```{r}
+#| label: setup
+#| code-fold: true
+#| message: false
+#| warning: false
+
 library(tidyverse)
 library(tidymodels)
 library(kableExtra)
+library(patchwork)
 tidymodels_prefer()
+
+penguins <- palmerpenguins::penguins
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 14))
 ```
 
 ## Objectives
 
-This notebook gives an overview of the `tidymodels` modeling framework. After reviewing this notebook, you should be able to:
+This notebook gives an overview of the `{tidymodels}` modeling framework. After reviewing this notebook, you should be able to:
 
 + Split data into training and testing sets using `initial_split()`
-+ Identify, construct, and utilize the major components of a modeling `workflow()` in the `tidymodels` framework
++ Identify, construct, and utilize the major components of a modeling `workflow()` in the `{tidymodels}` framework
 
   + Initialize a model specification for a linear regression model with `linear_reg() %>% set_engine("lm")`
   + Initialize a model recipe with `recipe(response ~ predictors, data)`
@@ -27,9 +42,9 @@ This notebook gives an overview of the `tidymodels` modeling framework. After re
   + Use a fitted workflow to make predictions on new data with `predict()`
   + Use metrics to evaluate the performance of a model
   
-## `tidymodels` in Action
+## `{tidymodels}` in Action
 
-We'll run through an example to see how the components of a `tidymodels` `workflow()` fit together. We'll use the `palmerpenguins` data set since we've already seen that one before. 
+We'll run through an example to see how the components of a `{tidymodels}` `workflow()` fit together. We'll use the `palmerpenguins` data set since we've already seen that one before. 
 
 ```{r}
 penguins %>%
@@ -46,7 +61,7 @@ We don't want to snoop for relationships, so let's start by splitting our data i
 
 ```{r}
 set.seed(300)
-penguin_splits <- initial_split(penguins, prop = 3/4)
+penguin_splits <- initial_split(penguins, prop = 0.75)
 penguins_train <- training(penguin_splits)
 penguins_test <- testing(penguin_splits)
 ```
@@ -71,7 +86,7 @@ Now that we have our training data, we can look at it. In particular, we may wan
 penguins_train %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 
 penguins_train %>%
   ggplot() +
@@ -84,7 +99,7 @@ Okay. It looks like there might be a relationship here!
 
 #### Specifying a Model Class
 
-For the majority of the semester we'll be working with linear regression models. This means that we'll see the `linear_reg()` model being specified quite often. The great thing about `tidymodels` is that everything we do with `linear_reg()` is transferable to other model classes. We'll see that later on in our course.
+For the majority of the semester we'll be working with linear regression models. This means that we'll see the `linear_reg()` model being specified quite often. The great thing about `{tidymodels}` is that everything we do with `linear_reg()` is transferable to other model classes. We'll see that later on in our course.
 
 ```{r}
 mass_length_spec <- linear_reg() %>%
@@ -140,7 +155,7 @@ Now that we have a fitted model, let's check out what it looks like! We'll first
 mass_length_fit %>%
   glance() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 We'll talk more about these model metrics in our next class meeting. We can also see information about the individual terms in our model by piping our fitted model object to `extract_fit_engine()` and to `tidy()`, giving us a data frame of metrics for the individual model terms.
@@ -150,7 +165,7 @@ mass_length_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Great! We've accessed the model coefficients, and some statistical measures on those estimated values. More on those in our next class meeting as well!
@@ -194,7 +209,7 @@ mass_length_fit %>%
   select(bill_length_mm, body_mass_g, .pred) %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 In the code cell above, we used `augment()` rather than `predict()`, which is a special function that appends a `.pred` column (or the corresponding interval columns) to the data frame containing our new data. We then selected only the relevant columns for our small model.
@@ -207,21 +222,21 @@ mass_length_fit %>%
   select(bill_length_mm, body_mass_g, .pred) %>%
   rmse(body_mass_g, .pred) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 
 mass_length_fit %>%
   augment(penguins_test) %>%
   select(bill_length_mm, body_mass_g, .pred) %>%
   rsq(body_mass_g, .pred) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 
 mass_length_fit %>%
   augment(penguins_test) %>%
   select(bill_length_mm, body_mass_g, .pred) %>%
   mae(body_mass_g, .pred) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 There are lots of metrics we could use. If we are interested in multiple metrics, we can collect them all at once by creating a `metric_set()`.
@@ -234,14 +249,17 @@ mass_length_fit %>%
   select(bill_length_mm, body_mass_g, .pred) %>%
   my_metrics(body_mass_g, .pred) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 #### Summary
 
-The following summary shows the basic steps for using the `tidymodels` framework for fitting a statistical model to data.
+The following summary shows the basic steps for using the `{tidymodels}` framework for fitting a statistical model to data.
 
-```{r echo = TRUE, eval = FALSE}
+```{r}
+#| echo: true
+#| eval: false
+
 #create the model specification
 lin_reg_spec <- linear_reg() %>%
   set_engine("lm")
@@ -261,37 +279,51 @@ lin_reg_fit <- lin_reg_wf %>%
 
 Once we have a fitted workflow, there's lots we can do with it. We can see global model-utility and performance metrics.
 
-```{r echo = TRUE, eval = FALSE}
+```{r}
+#| echo: true
+#| eval: false
+
 lin_reg_fit %>%
   glance()
 ```
 
 We can see the structure of the fitted model.
 
-```{r echo = TRUE, eval = FALSE}
+```{r}
+#| echo: true
+#| eval: false
+
 lin_reg_fit %>%
   extract_fit_engine() %>%
-  tidy()
+  tidy() %>%
+  kable() %>%
+  kable_styling()
 ```
 
 We can also use our fitted workflow to make predictions on new data.
 
-```{r echo = TRUE, eval = FALSE}
+```{r}
+#| echo: true
+#| eval: false
+
 lin_reg_fit %>%
   predict(new_data) %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 We can append predictions to an existing data frame of new records.
 
-```{r echo = TRUE, eval = FALSE}
+```{r}
+#| echo: true
+#| eval: false
+
 lin_reg_fit %>%
   augment(new_data) %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 #### Extra Ideas: Visualizing Model Coefficients
@@ -322,14 +354,14 @@ From the plot above, we can see that the range of plausible coefficients on the 
 It is important not to treat our models as black boxes or to follow them blindly. The error metrics we compute tell us only part of the story. To understand fully how well our model performs and where/if the model should be trusted, we must understand the types of errors our models make. Building confidence and prediction intervals using our models assumes that the residuals (prediction errors) are distributed randomly, with mean $0$ and constant standard deviation. If these assumptions are not satisfied, then our intervals cannot be trusted!
 
 ```{r}
-library(patchwork)
-
 p1 <- mass_length_fit %>%
   augment(penguins_train) %>%
   select(bill_length_mm, body_mass_g, .pred) %>%
   mutate(residual = body_mass_g - .pred) %>%
   ggplot() + 
   geom_point(aes(x = bill_length_mm, y = residual)) +
+  geom_smooth(aes(x = bill_length_mm, y = residual),
+              color = "red") +
   geom_hline(yintercept = 0, 
              linetype = "dashed",
              color = "blue") +
@@ -343,6 +375,8 @@ p2 <- mass_length_fit %>%
   mutate(residual = body_mass_g - .pred) %>%
   ggplot() + 
   geom_point(aes(x = body_mass_g, y = residual)) +
+  geom_smooth(aes(x = body_mass_g, y = residual),
+              color = "red") +
   geom_hline(yintercept = 0, 
              linetype = "dashed",
              color = "blue") +
@@ -356,6 +390,8 @@ p3 <- mass_length_fit %>%
   mutate(residual = body_mass_g - .pred) %>%
   ggplot() + 
   geom_point(aes(x = .pred, y = residual)) +
+  geom_smooth(aes(x = .pred, y = residual),
+              color = "red") +
   geom_hline(yintercept = 0, 
              linetype = "dashed",
              color = "blue") +

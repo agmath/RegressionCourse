@@ -1,0 +1,55 @@
+---
+title: Analytics Report Shell
+author: 
+  - name: Me, Scientist
+    email: my.name@snhu.edu
+    affiliations: 
+      - name: Southern New Hampshire University
+date: today
+date-format: long
+theme: flatly
+toc: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 14))
+```
+
+## Statement of Purpose
+
+
+
+## Executive Summary
+
+
+
+## Introduction
+
+
+
+## Exploratory Data Analysis
+  
+
+
+## Model Construction
+
+
+
+## Model Interpretation and Inference
+
+
+
+## Conclusion
+
+
+
+## References
+
+

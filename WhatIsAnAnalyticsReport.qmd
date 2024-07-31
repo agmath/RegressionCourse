@@ -1,13 +1,21 @@
 ---
 title: "Analytics Report Outline"
-output:
-  html_document
+author: "Me, Scientist"
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
 ```{r global-options, include=FALSE}
-#knitr::opts_chunk$set(eval = FALSE)
 library(tidyverse)
+library(tidymodels)
+library(patchwork)
 library(kableExtra)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 14))
 ```
 
 ## Statement of Purpose

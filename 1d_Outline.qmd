@@ -1,7 +1,10 @@
 ---
 title: "MAT 300: Introduction and What to Expect"
-output:
-  html_document
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
 ```{r global-options, include=FALSE}
@@ -17,8 +20,8 @@ library(tidyverse)
   + Instructor: Dr. Adam Gilbert
   
     + e-mail address: [a.gilbert1@snhu.edu](mailto:a.gilbert1@snhu.edu)
-    + Office: Robert Frost Hall, Room 215
-    + Office Hours: Mondays 11am - 1pm, Tuesdays 9am - 10am, Thursdays 11am - 1pm
+    + Office: Robert Frost Hall, Room 311
+    + Office Hours: Tuesdays 9am - 11am, Thursdays 2pm - 3pm, Fridays 10am - noon
   
   + Books and software are all freely available, see the syllabus for links.
   + Grading Scheme:
@@ -33,9 +36,9 @@ library(tidyverse)
   
   + The tentative course outline is truly tentative. Use this as a loose agenda, but expect that it will change as we go more quickly or slowly through particular topics.
 
-**About the Competition**: The best way to learn regression is by doing regression. I've created a Kaggle competition that is private for students in our class as well as students in a similar class at another college. You'll be in a friendly competition with your classmates and those students from St. Vincent College in Pennsylvania this semester. Your task is to predict the price of an AirBnB rental in New York City and provide insight into what factors most greatly influence these booking prices. Your goal is to *construct the best performing predictive model* (the scoring metric used is root mean square prediction error on the evaluation set with hidden booking price)
+**About the Competition**: The best way to learn regression is by doing regression. I've created a Kaggle competition that is private for students in our class. You'll be in a friendly competition with your classmates this semester. Your task is to predict the time between order and delivery of a *Door Dash* order. Your goal is to *construct the best performing predictive model* (the scoring metric used is root mean square prediction error on the evaluation set with hidden delivery times).
 
-You'll need to create a free [Kaggle](https://www.kaggle.com) account before gaining access to the competition. Once you are logged into your Kagge account, you can access the competition information and data using the link posted to the `#competition-discussion` channel of our Slack Workgroup. I hope that you'll find this friendly competition to be fun and motivating.
+You'll need to create a free [Kaggle](https://www.kaggle.com) account before gaining access to the competition. Once you are logged into your Kaggle account, you can access the competition information and data using the link posted to the `#competition-discussion` channel of our Slack Workgroup. I hope that you'll find this friendly competition to be fun and motivating.
 
 **Project**: Students in MAT300 will complete a large-scale project at the end of the semester. That project will include a full *analytics report*. We'll discuss this in greater detail towards the final month of our semester.
 
@@ -45,16 +48,16 @@ You'll need to create a free [Kaggle](https://www.kaggle.com) account before gai
 Brightspace will contain much of our course material. The following sections will be used:
 
   + **Syllabus**: Our class syllabus will always be available here
-  + **Notes**: This section of our BrightSpace course will simply link you back to this webpage.
-  + **Datasets**: The notes that I've prepared for use in our class use fairly famous, but small datasets on *penguins* and another on *home sales*. While these datasets are really convenient to use for showing you the course material, it will be beneficial to try applying the techniques introduced on your own to some new data. I'll typically use a dataset on San Francisco Apartment rentals in class, but I invite you to choose something you are interested in -- I'm also happy to work with different datasets that the class shows interest in. I'll post some links to data sets in this section of BrightSpace.
+  + **Notes**: This section of our BrightSpace course will simply link you back to the webpage I built for this course.
+  + **Datasets**: The notes that I've prepared for use in our class use a fairly famous, but small datasets on *penguins* and another on *home sales*. While these datasets are really convenient to use for showing you the course material, it will be beneficial to try applying the techniques introduced on your own to some new data. I'll typically use a dataset on San Francisco Apartment rentals in class, but I invite you to choose something you are interested in -- I'm also happy to work with different datasets that the class shows interest in. I'll post some links to data sets in this section of BrightSpace.
   + **Homework**: I'll post homework assignments and solutions here.
   + **Projects**: Generic information about the projects will go here.
 
-## Day-to-Day Activity
+## Day-to-Day Activities
 
 Here's what you can expect to see in class:
 
-  + **Discussion Days** - This course will be infinitely better if we all contribute ideas. I've prepared a complete(\*) and very detailed set of notes for you ahead of time, but I'd like to spend class time working discussing and working through the completed analysis on a *different* data set. I'll provide you a skeleton for taking your own class notes and conducting analysis in R Markdown -- you can find it on the course webpage and it is also available [here](https://agmath.github.io/RegressionCourse/StudentNotesTemplate.Rmd). The way you utilize the prepared notes is up to your own discretion.
+  + **Discussion Days** - This course will be infinitely better if we all contribute ideas. I've prepared a complete(\*) and very detailed set of notes for you ahead of time, but I'd like to spend class time working discussing and working through the completed analysis on a *different* data set. I'll provide you a skeleton for taking your own class notes and conducting analysis in Quarto -- you can find it on the course webpage and it is also available [here](https://agmath.github.io/RegressionCourse/StudentNotesTemplate.qmd). The way you utilize the prepared notes is up to your own discretion.
   + **Workshop / Lab Days** - We'll use some of our class meetings to slow down, work with a new data set, and make sure that we are comfortable implementing techniques learned in class with this new data.
   + **Lecture Days** - I honestly hope to have none of these. I think that most of the material can be delivered and uncovered via activities and our discussions. I'll spend time explaining the more technical portions of the course material as needed though.
 

@@ -1,11 +1,10 @@
 ---
 title: 'Enter the Tidyverse: An Introduction to Tidy Data Analysis in R'
-output:
-  html_document:
-    theme: cerulean
-    highlight: pygments
-    css: lab.css
-    keep-md: true
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
 ```{r global-options, include=FALSE}
@@ -102,7 +101,9 @@ You can read the code above as saying "take the `mpg` dataset, and plug it into 
 
 The most common methods for restricting data deal with filtering out rows or columns so that we are only working with a subset of our original data set.
 
-#### Filtering Rows (`filter()`)
+:::{.panel-tabset}
+
+## Filtering Rows (`filter()`)
 
 Sometimes we are not interested in all of the observations in a particular dataset, but only those satisfying certain criteria. For example, maybe we only want to see vehicles falling into the class of *subcompact* cars. The `filter()` function will allow us to get rid of all other classes of vehicle.
 
@@ -124,7 +125,7 @@ mpg %>%
   kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
-#### Selecting Columns (`select()`)
+## Selecting Columns (`select()`)
 
 Similarly to the way we can filter rows, we can select only those columns we are interested in. We can pass the names of the columns we are interested in to R's `select()` function so that we only see those selected columns returned.
 
@@ -156,6 +157,8 @@ mpg %>%
   kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
+## Combining the Two
+
 We can combine `filter()` and `select()` through the pipe as well. For any pipe, the result of the "upstream" code (the code before the pipe) is passed into the function that follows the pipe.
 
 ```{r echo = TRUE, eval = TRUE}
@@ -167,6 +170,8 @@ mpg %>%
   kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
+:::
+
 **A Note on Pipes:** The advantage to the pipe operator is probably pretty clear by now. The code we just wrote says *take the `mpg` data set, filter it so that we only see cars manufactured since 2005, show me only the few columns I am interested in, and just let me see the first six rows for now*. The alternative to this would be writing code that looks a lot less readable:
 
 ```{r echo = TRUE, eval = FALSE}
@@ -177,7 +182,9 @@ head(select(filter(mpg, year >= 2005), manufacturer, model, year, cty, hwy, clas
 
 There are lots of ways we can summarize our data. We can provide simple counts, compute averages, even build out our own summary functions.
 
-#### Computing Counts
+:::{.panel-tabset}
+
+## Summarizing Categorical Data with Counts
 
 We can start with a simple question like, *how many cars from each manufacturer are contained in this dataset?* To answer this, we simply pipe the `mpg` data frame into the `count()` function, identifying the `manufacturer` column as the column we wish to count.
 
@@ -214,7 +221,7 @@ mpg %>%
   kable_styling(bootstrap_options = c("hover", "striped"))
 ```
 
-#### Summarizing Numerical Data
+## Summarizing Numerical Data
 
 Summarizing categorical data is most often done with counts, but we've got many more choices when we are working with numerical data. We have several measures of center or spread that we could choose from -- we could even define our own metrics. Let's say we wanted to know the median highway mile per gallon rating across all vehicles in our dataset. We'll need the help of R's `summarize()` function as well as the `median()` function for this.
 
@@ -256,6 +263,7 @@ mpg %>%
 ```
 
 That's pretty informative although not totally surprising. Subcompact cars seem to have a high level of variation in their mpg ratings though!
+:::
 
 ### Transforming Data
 

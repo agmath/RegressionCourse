@@ -1,10 +1,10 @@
 ---
 title: "Accessing R and RStudio"
-output:
-  html_document:
-    theme: cerulean
-    highlight: pygments
-    keep-md: true
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
 ```{r global-options, include=FALSE}

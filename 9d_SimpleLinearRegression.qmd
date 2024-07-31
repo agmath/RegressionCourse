@@ -1,7 +1,10 @@
 ---
-title: "Simple Linear Regression`"
-output:
-  html_document
+title: "Simple Linear Regression"
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
 ```{r global-options, include=FALSE}
@@ -11,7 +14,13 @@ library(palmerpenguins)
 library(patchwork)
 library(kableExtra)
 tidymodels_prefer()
-rm(list = ls())
+
+penguins <- palmerpenguins::penguins
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 14))
 ```
 
 ## Objectives
@@ -65,7 +74,7 @@ It seems like there are associations between `body_mass_g` and both `bill_length
 
 ### Build our Models
 
-We'll use our `tidymodels` framework to build our linear regression models. We'll do the following for each model:
+We'll use our `{tidymodels}` framework to build our linear regression models. We'll do the following for each model:
 
 + Specify a linear regression model and set its engine.
 + Build a recipe including the appropriate model formula.
@@ -125,7 +134,7 @@ We'll pipe our fitted models to `glance()` and will assess our model using the `
 mass_bill_fit %>%
   glance() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Firstly, we see that the $p$-value for the overall model is very small. This indicates that our model has *some* utility in predicting/explaining penguin body mass. Since we are assessing a *simple* linear regression model, we'll look at the `r.squared` value instead of `adj.r.squared`. From `r.squared`, we see that "*Approximately 35.94% of the variation in penguin body mass is explained by bill length*". Finally, we see that the *residual standard error* (`sigma`) on the training data is about $658$g. This residual standard error tells us that we should expect our predictions, on average, to be within about $\pm 1,316$g.
@@ -136,7 +145,7 @@ Now let's look at our model using `flipper_length_mm` as the sole predictor and 
 mass_flipper_fit %>%
   glance() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Our flipper length model is superior in every way! This model also has a statistically significant $p$-value, indicating that it has some value in predicting/explaining penguin body mass. The `r.squared` value indicates that "*approximately 76.37% of the variation in penguin body mass is explained by our model*". The *residual standard error* (`sigma`) indicates that we can expect this models predictions, on average, to be accurate to within about $\pm 797$g. 
@@ -152,10 +161,10 @@ mass_bill_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
-From the data frame above, we have several takeaways. First, the fitted model is $\mathbb{E}\left[\text{body_mass_g}\right] \approx 320.35 + 88.58\cdot\text{bill_length_mm}$. Since the $p$-value on the `bill_length_mm` predictor is low, this indicates that `bill_length_mm` is a *statistically significant* predictor of `body_mass_g`. This means we can use this model to make predictions about the body mass of a new penguin (as long as we remain aware of the expected prediction error, $\pm 2$`sigma`), and we can also interpret the effect of `bill_length_mm` on `body_mass_g` (we'll see this in the Model Interpretations section of this notebook). We shouldn't overlook the `std.error` column. This gives us the standard error in the coefficient estimates. We can use that standard error to compute confidence intervals for the coefficient estimate -- that is, *we can be about 95% certain that the coefficient on `bill_length_mm` is somewhere between $88.58 - 2\left(7.42\right)$ and $88.58 + 2\left(7.42\right)$. 
+From the data frame above, we have several takeaways. First, the fitted model is $\mathbb{E}\left[\text{body\_mass\_g}\right] \approx 320.35 + 88.58\cdot\text{bill\_length\_mm}$. Since the $p$-value on the `bill_length_mm` predictor is low, this indicates that `bill_length_mm` is a *statistically significant* predictor of `body_mass_g`. This means we can use this model to make predictions about the body mass of a new penguin (as long as we remain aware of the expected prediction error, $\pm 2$`sigma`), and we can also interpret the effect of `bill_length_mm` on `body_mass_g` (we'll see this in the Model Interpretations section of this notebook). We shouldn't overlook the `std.error` column. This gives us the standard error in the coefficient estimates. We can use that standard error to compute confidence intervals for the coefficient estimate -- that is, *we can be about 95% certain that the coefficient on `bill_length_mm` is somewhere between $88.58 - 2\left(7.42\right)$ and $88.58 + 2\left(7.42\right)$*. 
 
 We can discover similar information about our model which uses `flipper_length_mm` as the sole predictor of penguin body mass.
 
@@ -164,10 +173,10 @@ mass_flipper_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
-From here, we note that the `flipper_length_mm` model term is statistically significant, given the very small $p$-value. The estimated model is $\mathbb{E}\left[\text{body_mass_g}\right] \approx -5768.76 + 49.67\cdot\text{flipper_length_mm}$. Again, we can identify from the `std.error` column that *we are approximately 95% certain that the coefficient on `flipper_length_mm` is somewhere between about $46.21$ and $53.13$.
+From here, we note that the `flipper_length_mm` model term is statistically significant, given the very small $p$-value. The estimated model is $\mathbb{E}\left[\text{body\_mass\_g}\right] \approx -5768.76 + 49.67\cdot\text{flipper\_length\_mm}$. Again, we can identify from the `std.error` column that *we are approximately 95% certain that the coefficient on `flipper_length_mm` is somewhere between about $46.21$ and $53.13$*.
 
 We now have two separate models that we can utilize to predict penguin body mass as well as to interpret, in the case that we are interested in making inferential claims about how penguin *bill length* or *flipper length* is associated with penguin *body mass*. The global model metrics indicate that the model using *flipper length* to predict *body mass* is a better overall model.
 
@@ -187,7 +196,7 @@ mass_bill_fit %>%
   select(body_mass_g, .pred) %>%
   my_metrics(body_mass_g, .pred) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 The model using `bill_length_mm` as the sole predictor of `body_mass_g` seems to have done slightly better on the test set than it did on the training data. This is interesting and we'll discuss it more in the coming weeks! For now, this output indicates that we should expect our model's predictions to be accurate to within about $\pm 1214$g.
@@ -202,7 +211,7 @@ mass_flipper_fit %>%
   select(body_mass_g, .pred) %>%
   my_metrics(body_mass_g, .pred) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Again, the model using `flipper_length_mm` to predict penguin body mass has performed slightly better than expected on the *test* data. Perhaps we've gotten an *easy* test set -- we'll need to find a better way to control for this! We want our performance estimates to be truly unbiased. While the model hadn't seen these *test* penguins during the training process, it does seem that these penguins may be more "typical" than some of the penguins in the training set.
@@ -218,10 +227,10 @@ mass_bill_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
-From the table above, we obtain our estimated model: $\mathbb{E}\left[\text{body_mass_g}\right] \approx 320.35 + 88.58\cdot\text{bill_length_mm}$. From this model, we can see that the slope coefficient on `bill_length_mm` is positive, so longer bills are associated with more massive penguins. There are a couple of ways we can interpret the magnitude of the coefficient (the effect size) as well:
+From the table above, we obtain our estimated model: $\mathbb{E}\left[\text{body\_mass\_g}\right] \approx 320.35 + 88.58\cdot\text{bill\_length\_mm}$. From this model, we can see that the slope coefficient on `bill_length_mm` is positive, so longer bills are associated with more massive penguins. There are a couple of ways we can interpret the magnitude of the coefficient (the effect size) as well:
 
 + **Using the Estimate:** Given two penguins, one whose bill length is one millimeter longer than the other, we would expect the penguin with the longer bill to be about $88.58$g more massive, on average.
 + **Using the Estimate:** For each additional millimeter of bill length, we expect a penguin to have about $88.58$g more mass, on average.

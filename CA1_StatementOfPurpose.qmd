@@ -1,13 +1,12 @@
 ---
 title: "Competition Assignment 1"
-author: "You, Analyst"
-date: "`r format(Sys.Date(), '%B %d, %Y')`"
-output: html_document
+author: Me, Scientist
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 This is your first of six (6) assignments associated with our in-class competition. These assignments will give you practice working with real data in R as well as practice writing the various components of an Analytics Report. Your efforts here will serve you well once we move to the the final projects you'll be completing during the last three weeks of our course.
 
@@ -17,18 +16,18 @@ This is your first of six (6) assignments associated with our in-class competiti
 
 3. Read the information on the various tabs of the competition page to get familiar with the task at hand.
 
-4. Download the three data sets -- you'll need `dataSP23.csv` for this assignment, `compSP23.csv` contains the actual competition data and will be used once we learn how to construct models, and `sampSP23.csv` just gives you an example of what your submission file should look like when you go to submit predictions for scoring later in our semester.
+4. Download the three data sets -- you'll need `dataFA24.csv` for this assignment, `compFA24.csv` contains the actual competition data and will be used once we learn how to construct models, and `sampFA24.csv` just gives you an example of what your submission file should look like when you go to submit predictions for scoring later in our semester.
 
   + Move these files from your `Downloads` folder to a convenient location on your computer. You'll be accessing these files often.
 
-5. Download and open the R Markdown version of the `AnalyticsReportShell` in RStudio.
+5. Download and open the Quarto (`qmd`) version of the `AnalyticsReportShell` in RStudio.
 
   + Edit the `author` line in the YAML header to be your name.
 
 6. In that notebook, do the following to load the data.
 
   + In the `setup` chunk at the top of the notebook, use `library(tidyverse)` to load the `tidyverse` functionality. Run that line with `ctrl+Enter` or `cmd+Enter` to load the `tidyverse` into your R Session.
-  + Use `read_csv()` along with the path to the `dataSP23.csv` file on your computer to read that file into your notebook. Don't forget to store your data into a named variable so that you can continue to access it. 
+  + Use `read_csv()` along with the path to the `dataFA24.csv` file on your computer to read that file into your notebook. Don't forget to store your data into a named variable so that you can continue to access it. 
   + Use the `head()` function on your data to print out the first six rows of your data set. Remember to use `ctrl+Enter` or `cmd+Enter` to run your code.
 
 You should see the first six rows of data printed out below your code chunk. 
@@ -37,5 +36,5 @@ You'll need to load your libraries and data every time you open your notebook to
 
 7. Now that your data is loaded into the notebook, write a Statement of Purpose associated with the Kaggle Competition. Your Statement of Purpose should be a paragraph, 2 - 5 sentences in length, describing the problem that the notebook (ultimately a report) seeks to solve. Think about what the objective of our competition is as well as who might benefit from the insights your models provide and also how they might use that insight as you build out this paragraph. You'll receive feedback on your Statement of Purpose which will be helpful when you are writing the analytics reports associated with your final course projects at the end of our semester.
 
-8. Once you are done, *knit* your R Markdown document using the blue knit button.
-Submit both your R Markdown file and the html document you created to BrightSpace using the Competition Assignment 1 submission folder.
+8. Once you are done, *render* your Quarto document using the blue arrow button.
+Submit both your Quarto file and the html document you created to BrightSpace using the Competition Assignment 1 submission folder.

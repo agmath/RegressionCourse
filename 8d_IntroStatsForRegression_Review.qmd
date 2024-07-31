@@ -1,7 +1,10 @@
 ---
-title: "MAT 240 Review"
-output:
-  html_document
+title: "Introductory Statistics Review"
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
 ```{r global-options, include=FALSE}
@@ -10,6 +13,13 @@ library(tidymodels)
 library(patchwork)
 library(palmerpenguins)
 library(kableExtra)
+
+penguins <- palmerpenguins::penguins
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 14))
 
 set.seed(123)
 penguins_split <- initial_split(penguins)
@@ -42,7 +52,7 @@ We can interpret the interval by stating: "We are about 95% confident that [popu
 <center> $\begin{array}{ll} H_0: & \beta_1 = \beta_2 = ... = \beta_k = 0\\ H_a: & \text{at least one }\beta_i\text{ is non-zero}\end{array} \hspace{1in} \begin{array}{ll} H_0: & \beta_i=0\\ H_a: & \beta_i\neq 0\end{array}$</center>
 
 The hypotheses on the left reflect a *Global Test for Model Utility* (to determine whether the model has any utility at all), while the hypotheses on the right reflect *tests for significance of individual predictors*.
-The result of a hypothesis test depends on a *p*-value. If $p<\alpha$, then we reject $H_0$ and accept $H_a$. If $p\geq \alpha$, then we do not have enough evidence to reject $H_0$. We usually use $\alpha=.05$, but we can set different thresholds for different applications.
+The result of a hypothesis test depends on a *p*-value. If $p < \alpha$, then we reject $H_0$ and accept $H_a$. If $p\geq \alpha$, then we do not have enough evidence to reject $H_0$. We usually use $\alpha=.05$, but we can set different thresholds for different applications.
 
 For us, rejecting the null hypothesis will typically mean that a model, or particular predictor, has some value.
 
@@ -97,13 +107,13 @@ mass_flipper_fit <- mass_flipper_wf %>%
 mass_flipper_fit %>%
   glance() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 
 mass_flipper_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 **Testing For Model Utility:** Proposed form of the model,
@@ -122,7 +132,6 @@ We can find the $p$-value given for the model as a whole from the results of `gl
 3. Give an interpretation of the coefficient on `flipper_length_mm`.
 
 What if we wanted to use more than one predictor simultaneously to predict body mass? Could we find a "better" model?
-
 
 ## Multiple Regression Models
 
@@ -154,13 +163,13 @@ mass_multi_fit <- mass_multi_wf %>%
 mass_multi_fit %>%
   glance() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 
 mass_multi_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 **Analyzing Multiple Regression Results:** We would like to analyze our models on two levels: (i) global model metrics, and (ii) efficacy/significance of individual predictors and model terms. We can obtain global measures of model performance by piping our fitted model to `glance()`, while we can obtain measures related to individual model terms by piping our fitted model to `extract_fit_engine()` and `tidy()`. We'll go through the results below.
@@ -191,7 +200,7 @@ mass_multi_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 + Model Term Metrics with `mass_multi_fit %>% extract_fit_engine() %>% tidy()`
@@ -211,13 +220,13 @@ where $\beta_i$ is the coefficient attached to the corresponding predictor.
 mass_multi_fit %>%
   glance() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 
 mass_multi_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 **Analyzing the Regression Output:** We evaluate the regression model using the steps below:
@@ -250,13 +259,13 @@ mass_multi_fit <- mass_multi_wf %>%
 mass_multi_fit %>%
   glance() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 
 mass_multi_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Our new model has a slightly improved `adj.r.squared` value. This estimate tells us that "*approximately 77.8% of the variation in penguin body mass is explained by our model*". The $p$-value for the global test of model utility has remained significant as well. Now, looking at the model term metrics, we see that the $p$-value for `bill_depth_mm` has remained insignificant while all the other predictors are statistically significant, so we'll drop it as well.
@@ -277,13 +286,13 @@ mass_multi_fit <- mass_multi_wf %>%
 mass_multi_fit %>%
   glance() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 
 mass_multi_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Now that all of the model terms are statistically significant, we can consider this our "final" model. From the output, we can see that this "final" model is of the form: 

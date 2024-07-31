@@ -1,31 +1,30 @@
 ---
-title: "Competition Assignment 3"
-author: "You, Analyst"
-date: "`r format(Sys.Date(), '%B %d, %Y')`"
-output: html_document
+title: Competition Assignment 3
+author: Me, Scientist
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 In your first two competition assignments, you got familiar with our competition and the related data. You wrote a Statement of Purpose and began an exploratory analysis to find associations between your available predictors and response. You'll add to that work here by building your first linear regression model and submitting your first set of predictions to Kaggle for scoring.
 
-1. Re-open the R Markdown Notebook that contains your Statement of Purpose and Exploratory Data Analysis from Competition Assignments 1 and 2.
+1. Re-open the Quarto Notebook that contains your Statement of Purpose and Exploratory Data Analysis from Competition Assignments 1 and 2.
 
 2. Re-run all of the code in your `setup` chunk as well as your code from the previous two competition assignments.
 
 3. Add a new section to your analytics report called *Model Construction*. In it, discuss the simple linear regression model you are choosing to build (and why).
 
-4. Build a simple linear regression model using what you've learned about the `tidymodels` framework. Be sure to use the single predictor that you think is most important in predicting the booking `price` for an AirBnB in New York City.
+4. Build a simple linear regression model using what you've learned about the `{tidymodels}` framework. Be sure to use the single predictor that you think is most important in predicting the time to deliver a Door Dash order.
 
 5. Assess your model's performance using what you've learned about model assessment so far. You should use the `validation` data for this purpose, but please do not open the `test` data yet -- we will be building more models and don't want any knowledge of the `test` data to infect our modeling decisions.
 
-7. Return to the `setup` chunk and load the `compSP23.csv` data set into your Notebook. Be sure to store this data into a named variable so that you can access it later.
+7. Return to the `setup` chunk and load the `compFA24.csv` data set into your Notebook. Be sure to store this data into a named variable so that you can access it later.
 
   + This dataset contains new observations but is missing the *response* column. Your goal in the competition is to predict those missing *responses* -- Kaggle will keep us informed about how we are doing.
   
-8. Use your model to `augment()` the competition data with predictions. Be sure to store the resulting data frame in a named variable -- you may want to use a new variable name so that you don't overwrite your competition data altogether. Additionally, the only columns you'll need now are the `ID` and `price` columns. Remember that you can use `rename()` to rename the `.pred` column to match the name of the *response* column that Kaggle is expecting. The chain of commands below may be helpful.
+8. Use your model to `augment()` the competition data with predictions. Be sure to store the resulting data frame in a named variable -- you may want to use a new variable name so that you don't overwrite your competition data altogether. Additionally, the only columns you'll need now are the `ID` and `elapsed_time` columns. Remember that you can use `rename()` to rename the `.pred` column to match the name of the *response* column that Kaggle is expecting. The chain of commands below may be helpful.
 
 ```{r echo = TRUE, eval = FALSE}
 slr_preds <- slr_fit %>%
@@ -44,7 +43,7 @@ write.csv(slr_preds,
 
 10. Navigate to our competition site on Kaggle and use the *Submission* button to make your first submission for scoring on Kaggle. You'll upload your csv file and then see where you fall on the leaderboard. This *public* leaderboard is scored using only 50% of the listings in our competition data set. The final, *private* leaderboard will be scored on the remaining 50% of those hidden listings -- that is, your position on the leaderboard may change slightly when the competition closes on April 17. **Note:** Your position on the leaderboard is in no way related to your score on these assignments, but I hope that you are motivated to work your way towards the top of the leaderboard as our semester progresses.
 
-11. Knit your notebook and submit the HTML and rmd files as usual on BrightSpace using the Competition Assignment 3 folder.
+11. Knit your notebook and submit the HTML and qmd files as usual on BrightSpace using the Competition Assignment 3 folder.
 
 <center>As always, reach out on Slack with questions.<br/>
 -- Dr. G</center>

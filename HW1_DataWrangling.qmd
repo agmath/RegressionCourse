@@ -1,8 +1,11 @@
 ---
 title: "Homework 1: Data Wrangling"
-author: "You, Analyst"
-date: "`r format(Sys.Date(), '%B %d, %Y')`"
-output: html_document
+author: "Me, Scientist"
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
 ```{r global-options, include=FALSE}
@@ -10,13 +13,17 @@ output: html_document
 library(tidyverse)
 library(tidymodels)
 library(kableExtra)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 14))
 ```
 
-**Description and Purpose:** In this homework assignment, you'll work with data sets from the `nycflights13` package. These data sets contain information about flights departing airports in the vicinity of New York City during 2013. The goal is to get practice with wrangling data to answer questions of interest.
+**Description and Purpose:** In this homework assignment, you'll work with data sets from the `{nycflights13}` package. These data sets contain information about flights departing airports in the vicinity of New York City during 2013. The goal is to get practice with wrangling data to answer questions of interest.
 
 ## Your Tasks
 
-1. Install and load the `nycflights13` package.
+1. Install and load the `{nycflights13}` package.
 
 ```{r}
 #use this code cell
@@ -34,7 +41,7 @@ library(kableExtra)
 
 ```
 
-3. Compute the average departure delay `dep_delay` for flights out of NYC airports in 2013. *Hint:* `NA` values are contagious.
+3. Compute the average departure delay `dep_delay` for flights out of NYC airports in 2013. *Hint:* missing (`NA`) values are contagious.
 
 ```{r}
 #Use this code cell
@@ -76,4 +83,4 @@ library(kableExtra)
 
 ```
 
-9. When you are done, knit your notebook to an HTML file and submit both your HTML output and RMD file to BrightSpace using the Homework 1 submission folder.
+9. When you are done, knit your notebook to an HTML file and submit both your HTML output and QMD file to BrightSpace using the Homework 1 submission folder.

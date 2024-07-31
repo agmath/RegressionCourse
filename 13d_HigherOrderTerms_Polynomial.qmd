@@ -1,7 +1,10 @@
 ---
 title: "Using Higher-Order Terms: Curvi-Linear (Polynomial) Terms"
-output:
-  html_document
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
 ```{r global-options, include=FALSE}
@@ -9,10 +12,16 @@ library(tidyverse)
 library(tidymodels)
 library(palmerpenguins)
 library(patchwork)
+library(marginaleffects)
 library(kableExtra)
 
 tidymodels_prefer()
-rm(list = ls())
+
+penguins <- palmerpenguins::penguins
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 14))
 
 set.seed(123)
 penguins_split <- initial_split(penguins)
@@ -33,7 +42,7 @@ We've come a long way over the past few weeks. We've followed the trajectory bel
 
   + *General Assumption*: We can predict the response, $y$, using knowledge of other variables, $x_1,~x_2,~\cdots,~x_k$.
     
-    + For any of the $x_i$ which are numerical, the association between $y$ and $x_i$ is a straight line relationship, with slope independent of all other predictors $x_j$.
+    + For any of the $x_i$ which are numerical, the association between $y$ and $x_i$ is a straight line relationship, with slope ($\beta_i$) independent of all other predictors $x_j$.
     + For any of the $x_i$ which are dummy variables corresponding to a categorical predictor, the impact of including $x_i$ in the model is a vertical shift. That is, a change in *intercept* specific to that particular level of the categorical variable.
     + All other fluctuation in $y$ is random noise (irreducible error).
   
@@ -148,10 +157,10 @@ boston <- read_csv("https://raw.githubusercontent.com/selva86/datasets/master/Bo
 boston %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
-This Boston housing dataset is quite famous, and includes features on each neighborhood and the corresponding median home value in that neighborhood. You can see a data dictionary [here](https://www.kaggle.com/code/prasadperera/the-boston-housing-dataset). The data set has many interesting features and even allows us some ability to explore structural racism in property valuation in 1970s Boston.
+This Boston housing dataset is quite famous ([and problematic](https://fairlearn.org/main/user_guide/datasets/boston_housing_data.html)), and includes features on each neighborhood and the corresponding median home value in that neighborhood. You can see a data dictionary [here](https://www.kaggle.com/code/prasadperera/the-boston-housing-dataset). The data set has many interesting features and even allows us some ability to explore structural racism in property valuation in 1970s Boston.
 
 We'll assume that `medv`, the median home value in thousands of dollars, is our response variable and we'll focus on the `age`, `lstat`, and `chas` predictors.
 
@@ -167,7 +176,7 @@ boston_test <- testing(boston_split)
 boston_test %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Now let's do some visualization.
@@ -216,7 +225,7 @@ These *mixed effects* are interaction terms in our model, so we'll wait until th
 
 ## Starting with a Main-Effects Model
 
-Let's start out with a basic model which uses `age`, `lstat`, and `chas` as predictors of median home values. 
+Let's start out with a basic model which uses `age`, `lstat`, and `chas` as straight-line predictors of median home values. 
 
 ```{r}
 main_reg_spec <- linear_reg() %>%
@@ -235,7 +244,7 @@ main_reg_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 Let's compute our performance metrics for our main effects model so that we have a benchmark to try improving from.
@@ -258,10 +267,10 @@ my_metrics <- metric_set(rsq, rmse)
               names_from = type,
               values_from = .estimate) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
-Okay, now that we've got those benchmark metrics, let's see if we can improve on them by using higher-order or interaction terms.
+Okay, now that we've got those benchmark metrics, let's see if we can improve on them by using higher-order terms.
 
 ## Building a Model Including Curvature (`step_poly()`)
 
@@ -275,9 +284,9 @@ Before we build our model, there are just a few comments about `step_poly()` tha
 
   + The default degree for `step_poly()` is degree $2$, allowing a single bend in the association between your predictor(s) and the response. You can override this default by setting `degree = 6`, for example. This would allow up to five bends in the association.
 
-+ Maintain your ability to interpret by setting `options = list(raw = TRUE)`
++ Maintain your ability to interpret the relationship between predictor and response by setting `options = list(raw = TRUE)`
 
-  + There is some *linear algebra* that can be done to try and reduce the correlation between our polynomial terms and their corresponding lower-order terms. You can think of this as squeezing all of the predictive juice out of the predictor. The `step_poly()` function does this by default, but results in a model which is more difficult to interpret. I recommend overriding this any time you intend to interpret your models. You can do this by setting `options = list(raw = TRUE)`.
+  + There is some *linear algebra* that can be done to try and reduce the correlation between our polynomial terms and their corresponding lower-order terms. You can think of this as squeezing all of the predictive juice out of the predictor. The `step_poly()` function does this by default, but results in a model which is more difficult to interpret. I recommend overriding this any time you intend to interpret your models. You can do this by setting `options = list(raw = TRUE)` within `step_poly()`.
 
 ```{r}
 poly_reg_spec <- linear_reg() %>%
@@ -297,13 +306,13 @@ poly_reg_fit <- poly_reg_wf %>%
 poly_reg_fit %>%
   glance() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 
 poly_reg_fit %>%
   extract_fit_engine() %>%
   tidy()  %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 Note that the term for `age_poly_2` is not statistically significant. We'll drop it from the model and re-run the regression.
@@ -325,13 +334,13 @@ poly_reg_fit <- poly_reg_wf %>%
 poly_reg_fit %>%
   glance() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 
 poly_reg_fit %>%
   extract_fit_engine() %>%
   tidy()  %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 There; now all of our model terms are statistically significant. Let's see what that model looks like!
@@ -389,7 +398,7 @@ poly_reg_fit %>%
   extract_fit_engine() %>%
   tidy() %>% 
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 Now that we have estimated coefficients, we can write down the estimated model form:
@@ -405,12 +414,50 @@ From here, we see that older neighborhoods tend to have slightly higher median h
 
   + Alternatively, given two otherwise similar (`age` and `lstat`) neighborhoods, the one on the Charles River is expected to have approximately $\$4,030$ higher median home values, on average, than the neighborhood away from the Charles River.
 
-Because the effect of `lstat` is split across multiple terms, we need some way to aggregate that effect. As a reminder, we are looking for *rate of change* in `medv` with respect to `lstat`. Those of you with a calculus background will recognize that we are interested in finding the derivative of our model with respect to `lstat`. For those of you without a calculus background, you'll just use the expression below:
-$$\begin{align} &\text{Rate of Change in medv With Respect to lstat: }\\ &~~~~\beta_{\text{lstat}} + 2\beta_{\text{lstat}^2}\cdot \text{lstat} = -2.68 + 2\left(0.05\right)\cdot\text{lstat}\end{align}$$
+Because the effect of `lstat` is split across multiple terms, we need some way to aggregate that effect. As a reminder, we are looking for *rate of change* in `medv` with respect to `lstat`. Those of you with a calculus background will recognize that we are interested in finding the partial derivative of our model with respect to `lstat`. For those of you without a calculus background, you'll just use the expression below:
+
+\begin{align} &\text{Rate of Change in medv With Respect to lstat: }\\ &~~~~\beta_{\text{lstat}} + 2\beta_{\text{lstat}^2}\cdot \text{lstat} = -2.68 + 2\left(0.05\right)\cdot\text{lstat}\end{align}
 
 The rate of change in median home values (`medv`) with respect to the percentage of residents with low socioeconomic status now depends on the level of the percentage of residents with low socioeconomic status. The associated drop in median home values is large for percentage point increases from relatively low prevalence of residents with low socioeconomic status, but then for neighborhoods with already high levels of residents with low socioeconomic status, the decrease in median home values is less. For example, the difference in median home values between a neighborhood with 10% of residents having low socioeconomic status and a neighborhood with 11% of residents having low socioeconomic status is expected to be about $-2.68 + 0.1\cdot 10$. That is, we expect lower median home values by about $\$1,680$, on average. The difference in expected median home values between a neighborhood with 20% of residents having low socioeconomic status and a neighborhood with 21% though is expected to be about $-2.68 + 0.1\cdot 20$, or about $\$680$ less, on average.
 
 The inclusion of these polynomial terms allows us to model more complex relationships and potentially build models with better predictive value! There are a few things to beware of though -- these models are more complicated to interpret and we risk tricking ourselves into believing our models are much more accurate than they will be in production (More on this later in our course).
+
+#### Interpretation with `{marginaleffects}`
+
+As we saw in an earlier notebook, we can use the `{marginaleffects}` package to estimate the marginal effect of a unit increase in `lstat` on median home values at different levels of the `lstat` variable. We can also obtain confidence interval estimates in these effects as well.
+
+```{r}
+counterfactual_lstat_df <- tibble(lstat = seq(0, 40, length.out = 500),
+                                  age = 50,
+                                  chas = 1)
+
+mfx <- poly_reg_fit %>% 
+  slopes(newdata = counterfactual_lstat_df,
+         variables = "lstat") %>%
+  tibble() %>%
+  #Not sure why, but slopes() is obliterating lstat values
+  mutate(lstat = seq(0, 40, length.out = 500))
+
+mfx %>%
+  select(term, lstat, estimate, conf.low, conf.high, std.error) %>%
+  head(n = 10) %>%
+  kable() %>%
+  kable_styling()
+
+mfx %>%
+  select(lstat, estimate, conf.low, conf.high) %>%
+  mutate(lstat = seq(0, 40, length.out = 500)) %>%
+  ggplot() +
+  geom_line(aes(x = lstat, y = estimate), 
+            color = "purple", lty = "dashed", lwd = 1.5) +
+  geom_ribbon(aes(x = lstat, ymin = conf.low, ymax = conf.high),
+              fill = "grey", alpha = 0.5) +
+  labs(x = "Pct Low Socioeconomic Status",
+       y = "Marginal Effect",
+       title = "Marginal Effects of Unit Increase in lstat")
+```
+
+As we can see from the plot above, the marginal effect of a unit increase in the percentage of residents with low socioeconomic status is expected to be a decrease in median home values up until low socioeconomic status residents make up about 27% of the neighborhood population. After this point, we expect the marginal effect to be an increase in median home values. We see this also from our earlier plot of estimated median home values by prevalence of low socioeconomic status, plotted at different thresholds of the `age` and `chas` variables.
 
 ### Assessing Model Performance
 

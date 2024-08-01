@@ -1,10 +1,17 @@
 ---
 title: "Cross-Validation and Reliable Performance Estimation"
-output:
-  html_document
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
-```{r global-options, include=FALSE}
+```{r}
+#| code-fold: true
+#| message: false
+#| warning: false
+
 library(tidyverse)
 library(tidymodels)
 library(palmerpenguins)
@@ -12,7 +19,12 @@ library(patchwork)
 library(kableExtra)
 
 tidymodels_prefer()
-rm(list = ls())
+
+penguins <- palmerpenguins::penguins
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 14))
 
 set.seed(123)
 penguins_split <- initial_split(penguins)
@@ -32,7 +44,10 @@ We've placed a lot of faith in our *training* and *test* sets over the last few 
 
 To highlight how much influence our training and test sets can have on our models and the expectations we develop about them, each plot below corresponds to the RMSE for models of degree $1$, $2$, $3$, and $5$ for a single data set but using a different training/testing splits. To produce the plots below, I've generated a toy dataset and am constructing/analyzing the performance of a variety of models (linear, quadratic, cubic, fifth-degree) for 10 different training/test set combinations below. Interpret the elbow plots to see how the estimated performance metrics change for each different training and test set.
 
-```{r echo = FALSE, message = FALSE}
+```{r}
+#| code-fold: true
+#| message: false
+
 set.seed(345)
 num_points <- 100
 x <- runif(num_points, 0, 50)
@@ -95,19 +110,25 @@ for(i in 1:10){
 
 collected_metrics_df %>%
   filter(!is.na(.metric)) %>%
-  pivot_wider(id_cols = c(flexibility, trial, type), names_from = .metric, values_from = .estimate) %>%
+  pivot_wider(id_cols = c(flexibility, trial, type), 
+              names_from = .metric, values_from = .estimate) %>%
   ggplot() + 
   geom_point(aes(x = flexibility, y = rmse, shape = type, color = type)) +
   geom_line(aes(x = flexibility, y = rmse, color = type)) +
+  labs(x = "Flexibility (Degree)",
+       y = "RMSE",
+       color = "Error Type",
+       shape = "Error Type") +
   facet_wrap(~trial)
 
 collected_metrics_df %>%
   filter(!is.na(.metric),
          flexibility == 2,
          type == "test") %>%
-  pivot_wider(id_cols = c(flexibility, trial, type), names_from = .metric, values_from = .estimate) %>%
+  pivot_wider(id_cols = c(flexibility, trial, type), 
+              names_from = .metric, values_from = .estimate) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 The elbow plots pretty reliably identify the appropriate level of model flexibility. In the toy data set I generated, the true association between $x$ and $y$ was quadratic. However, the *test RMSE*, which we utilize in estimating the "accuracy" of our model's predictions fluctuates quite wildly -- between a low of below $115$ for the first training/test set combination, and a high of nearly $190$ for the sixth training/test combination. There is a big difference between claiming our model's predictions are accurate to within $\pm 230$ units and within $\pm 380$ units. These discrepancies should be worrisome. We are putting lots of trust in our models, so it would be nice to have more certainty about our estimated coefficients, predictions, and error/performance estimates.
@@ -120,7 +141,7 @@ After working through this notebook you should be able to:
 
 + Describe the pitfalls associated with the *validation set approach* we've been using up to this point in our course.
 + Describe how *cross-validation* works as well as how it mitigates the issues associated with a single validation set.
-+ Implement *cross-validation* using `vfold_cv()` in conjunction with `fit_resamples()` from `tidymodels` to fit and assess models using cross-validation.
++ Implement *cross-validation* using `vfold_cv()` in conjunction with `fit_resamples()` from `{tidymodels}` to fit and assess models using cross-validation.
 + Observe and interpret individual performance metrics on each cross-validation *fold* as well as to aggregate those metrics to a more stable performance estimate along with an estimate for our uncertainty in this metric.
 
 ## Cross-Validation
@@ -129,7 +150,7 @@ In cross-validation, rather thank breaking our data set into a single training a
 
 The most commonly utilized number of folds are $5$ and $10$. In the special case where you utilize $n$ folds, each observation belongs to its own fold -- this is often called *Leave-One-Out Cross-Validation* -- it is very computationally expensive. The greater the number of folds, the more models need to be fit.
 
-### Implementing Cross-Validation in `tidymodels`
+### Implementing Cross-Validation in `{tidymodels}`
 
 It's been a bit since we worked with the `palmerpenguins` data, but let's bring that data set back. If you remember, we built several linear regression models using that data set. Our most successful model was a model which included [DESCRIBE MODEL HERE] and which had an estimated test RMSE of [INSERT TEST RMSE HERE]. For several of the models we built with the penguins data, our test RMSE was actually lower than our training RMSE. In this case, random splitting had obtained an *easy* test set for us. Knowing what we do now, we should be skeptical of using that test RMSE number to estimate future model performance. Cross-validation is a way to protect against just getting an "easy" or "difficult" test set by chance.
 
@@ -137,10 +158,12 @@ We'll update our workflow as follows:
 
 1. Split data into training and validation sets using `initial_split()`, `training()`, and `testing()` as usual, but with a larger proportion of data belonging to the "training" set. We'll use `prop = 0.9` for the penguins data -- this will leave about $34$ penguins in our holdout set.
 
-  + We'll reserve this smaller *test* set as a final sanity check for our model before we push it to production.
+    + We'll reserve this smaller *test* set as a final sanity check for our model before we "push it to production".
 2. We'll use `vfold_cv()` to split the *training* data into *cross-validation folds*.
 3. We'll build our model(s) as usual (create a model specification, build a recipe, package the model and recipe into a workflow) and then use `fit_resamples()` rather than `fit()` to fit and assess our model on our cross-validation folds.
 4. Once we've fit our models on the folds (the resamples), we'll collect the performance metrics on them using `collect_metrics()`.
+
+We'll take care of the first three steps below.
 
 ```{r}
 penguins_split <- initial_split(penguins, prop = 0.9)
@@ -173,7 +196,7 @@ lr_results %>%
   collect_metrics(summarize = FALSE) %>%
   pivot_wider(id_cols = id, names_from = .metric, values_from = .estimate) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 or a single set of metrics summarized across all of the folds:
@@ -182,12 +205,12 @@ or a single set of metrics summarized across all of the folds:
 lr_results %>%
   collect_metrics() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Seeing the results on the individual folds gives us an idea about how our performance metrics fluctuate from one set to the next. Are the performance metrics relatively stable or do they vary wildly from one fold to the next? Seeing the aggregated results gives us a more trustworthy estimate for each of our performance metrics and also reports a standard error for each metric. That standard error measures the average fluctuation in the performance estimate from one fold to the next.
 
-In summary, we can be confident that the R-Squared value for this model is around $86.2\% \pm 4\%$. Similarly, we can be confident that the predictions our model makes will be accurate to within about $\pm 2\left(287.64 \pm 2\cdot 12.98\right)$ grams. Check with the other students in the class -- we should all have similar estimates for the Cross-Validation RMSE, even when we don't set a seed. This was not the case when we used the *validation-set approach*.
+In summary, we can be confident that the R-Squared value for this model is around $86.2\% \pm 4\%$. Similarly, we can be confident that the predictions our model makes will be accurate to within about $\pm 2\left(287.64 \pm 2\cdot 12.98\right)$ grams. Check with the other students in the class -- we should all have similar estimates for the Cross-Validation RMSE, even when we don't set the same seed. This was not the case when we used the *validation-set approach*.
 
 ***
 
@@ -197,9 +220,9 @@ In this notebook we saw that different test sets result in different model perfo
 
 In *cross-validation*, our training data is split into several folds. Each fold takes one turn being left out of model training and serves as the validation set for a model fit on the remaining folds. In doing this, we obtain several model performance estimates which can be averaged to obtain a more stable performance estimate along with an estimate for the standard error of that performance estimate.
 
-+ To split our training data into cross-validation folds, we use `vfold_cv()`
-+ To fit our data using cross-validation we use `fit_resamples()` in place of the `fit()` function we have been using up to this point.
-+ We obtain cross-validation performance metrics by calling `collect_metrics()` on our "fitted" model.
++ To split our training data into cross-validation folds, we use `vfold_cv()` on the training set.
++ To assess our model using cross-validation we use `fit_resamples()` in place of the `fit()` function we have been using up to this point.
++ We obtain and aggregate the cross-validation performance metrics by calling `collect_metrics()` on our "fitted" model.
 
 Cross-validation is a very powerful tool and we'll continue to use it in a variety of ways throughout the remainder of our course.
 

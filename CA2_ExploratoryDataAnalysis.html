@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.43">
+<meta name="generator" content="quarto-1.4.555">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Me, Scientist">
-<meta name="dcterms.date" content="2024-07-31">
+<meta name="dcterms.date" content="2024-08-01">
 
 <title>Competition Assignment 2</title>
 <style>
@@ -42,7 +42,7 @@ ul.task-list li input[type="checkbox"] {
 <body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
   
 </div>
 <main class="content" id="quarto-document-content">
@@ -66,7 +66,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 31, 2024</p>
+      <p class="date">August 1, 2024</p>
     </div>
   </div>
   
@@ -95,7 +95,7 @@ ul.task-list li input[type="checkbox"] {
 <li><p>Focus your efforts here on summary statistics and data visualization. You may also look for issues such as missing data. You do not, however, need to do any feature engineering at this point (although, to win the competition, you’ll almost certainly need utilize those techniques).</p></li>
 </ul>
 <ol start="5" type="1">
-<li>Once you are done, knit your Quarto document to HTML and submit both your Quarto and HTML file using the Competition Assignment 2 folder in BrightSpace. As a reminder, your submission should look like a partial report, including only the Statement of Purpose and Exploratory Data Analysis sections. Your report will mix text and code like you’ve seen, and built, in our class notebooks. All of your code should come with context. Be sure to answer the questions “What do the outputs mean and why do we care?”.</li>
+<li>Once you are done, render your Quarto document to HTML and submit both your Quarto and HTML file using the Competition Assignment 2 folder in BrightSpace. As a reminder, your submission should look like a partial report, including only the Statement of Purpose and Exploratory Data Analysis sections. Your report will mix text and code like you’ve seen, and built, in our class notebooks. All of your code should come with context. Be sure to answer the questions “What do the outputs mean and why do we care?”.</li>
 </ol>
 <center>
 As always, reach out on Slack with questions.<br> – Dr.&nbsp;G
@@ -138,7 +138,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const onCopySuccess = function(e) {
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -170,29 +181,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
   });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -200,7 +189,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {

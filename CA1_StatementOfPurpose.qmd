@@ -26,7 +26,7 @@ This is your first of six (6) assignments associated with our in-class competiti
 
 6. In that notebook, do the following to load the data.
 
-  + In the `setup` chunk at the top of the notebook, use `library(tidyverse)` to load the `tidyverse` functionality. Run that line with `ctrl+Enter` or `cmd+Enter` to load the `tidyverse` into your R Session.
+  + In the `setup` chunk at the top of the notebook, use `library(tidyverse)` to load the `{tidyverse}` functionality. Run that line with `ctrl+Enter` or `cmd+Enter` to load the `{tidyverse}` into your R Session.
   + Use `read_csv()` along with the path to the `dataFA24.csv` file on your computer to read that file into your notebook. Don't forget to store your data into a named variable so that you can continue to access it. 
   + Use the `head()` function on your data to print out the first six rows of your data set. Remember to use `ctrl+Enter` or `cmd+Enter` to run your code.
 

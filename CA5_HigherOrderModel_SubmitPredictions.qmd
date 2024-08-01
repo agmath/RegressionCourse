@@ -1,17 +1,16 @@
 ---
 title: "Competition Assignment 5"
-author: "You, Analyst"
-date: "`r format(Sys.Date(), '%B %d, %Y')`"
-output: html_document
+author: Me, Scientist
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 There's no surprises now -- your goal is simply to build a model which best utilizes your available predictors in order to predict/explain your *response*. Most recently, you've learned some advanced techniques to improve model fit -- adding curvature and including interactions between predictors. You'll explore those techniques here to see if higher-order associations exist between your available predictors and the *response*.
 
-1. Re-open the R Markdown Notebook that contains your work from all the competition assignments so far. Run all of the code from that notebook -- again, you may want to comment out the line where you are writing out the csv file -- there's no need to do that again just yet.
+1. Re-open the Quarto Notebook that contains your work from all the competition assignments so far. Run all of the code from that notebook -- again, you may want to comment out the line where you are writing out the csv file -- there's no need to do that again just yet.
 
 2. Return to your *Exploratory Data Analysis* section and conduct additional exploratory analyses to try and identify evidence of higher-order associations between your predictors and *response*. Be sure to discuss your findings to help the reader of your report follow your line of inquiry and to highlight what you are seeing.
 
@@ -23,7 +22,7 @@ There's no surprises now -- your goal is simply to build a model which best util
 
 6. Return to your notebook and add interpretations of your new model to the *Model Interpretations and Inference* section of your report. In addition to your existing interpretations, it is time to compare and contrast each of your models as well. Do you have any models that are clearly out-performing (or under-performing) others? Why do you think that is? What have you learned about the true association between your available predictors and the *response*?
 
-7. Knit your notebook and submit the HTML and rmd files as usual on BrightSpace using the Competition Assignment 5 folder.
+7. Render your notebook and submit the HTML and qmd files as usual on BrightSpace using the Competition Assignment 5 folder.
 
 <center>As always, reach out on Slack with questions.<br/>
 -- Dr. G</center>

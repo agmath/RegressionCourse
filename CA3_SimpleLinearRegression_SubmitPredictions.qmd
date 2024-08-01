@@ -43,7 +43,7 @@ write.csv(slr_preds,
 
 10. Navigate to our competition site on Kaggle and use the *Submission* button to make your first submission for scoring on Kaggle. You'll upload your csv file and then see where you fall on the leaderboard. This *public* leaderboard is scored using only 50% of the listings in our competition data set. The final, *private* leaderboard will be scored on the remaining 50% of those hidden listings -- that is, your position on the leaderboard may change slightly when the competition closes on April 17. **Note:** Your position on the leaderboard is in no way related to your score on these assignments, but I hope that you are motivated to work your way towards the top of the leaderboard as our semester progresses.
 
-11. Knit your notebook and submit the HTML and qmd files as usual on BrightSpace using the Competition Assignment 3 folder.
+11. Render your notebook and submit the HTML and qmd files as usual on BrightSpace using the Competition Assignment 3 folder.
 
 <center>As always, reach out on Slack with questions.<br/>
 -- Dr. G</center>

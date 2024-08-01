@@ -24,7 +24,7 @@ In your first competition assignment, you joined our In-Class Kaggle Competition
 
   + Focus your efforts here on summary statistics and data visualization. You may also look for issues such as missing data. You do not, however, need to do any feature engineering at this point (although, to win the competition, you'll almost certainly need utilize those techniques).
 
-5. Once you are done, knit your Quarto document to HTML and submit both your Quarto and HTML file using the Competition Assignment 2 folder in BrightSpace. As a reminder, your submission should look like a partial report, including only the Statement of Purpose and Exploratory Data Analysis sections. Your report will mix text and code like you've seen, and built, in our class notebooks. All of your code should come with context. Be sure to answer the questions "What do the outputs mean and why do we care?".
+5. Once you are done, render your Quarto document to HTML and submit both your Quarto and HTML file using the Competition Assignment 2 folder in BrightSpace. As a reminder, your submission should look like a partial report, including only the Statement of Purpose and Exploratory Data Analysis sections. Your report will mix text and code like you've seen, and built, in our class notebooks. All of your code should come with context. Be sure to answer the questions "What do the outputs mean and why do we care?".
 
 <center>As always, reach out on Slack with questions.<br/>
 -- Dr. G</center>

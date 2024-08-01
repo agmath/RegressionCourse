@@ -1,5 +1,6 @@
 ---
 title: "Competition Assignment 4"
+author: Me, Scientist
 format: html
 date: today
 date-format: long

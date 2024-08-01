@@ -29,8 +29,8 @@ library(tidyverse)
   Grade Item                     | Value
   -------------------------------|-----------
   Participation                  | 10%
-  Homework/Quizzes/Labs          | 10%
-  Competition Assignments        | 40%
+  Homework (~3)                  | 10%
+  Competition Assignments (~6)   | 40%
   Project                        | 40%
   </center>
   

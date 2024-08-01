@@ -1,10 +1,18 @@
 ---
 title: "Hyperparameters and Model Tuning"
-output:
-  html_document
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
-```{r global-options, include=FALSE}
+```{r}
+#| code-fold: true
+#| message: false
+#| warning: false
+
+#install.packages("xgboost")
 library(tidyverse)
 library(tidymodels)
 library(patchwork)
@@ -12,7 +20,11 @@ library(kableExtra)
 library(modeldata)
 
 tidymodels_prefer()
-rm(list = ls())
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 14))
 
 ames <- read_csv("https://raw.githubusercontent.com/koalaverse/homlr/master/data/ames.csv")
 ```
@@ -68,7 +80,9 @@ We see from the plots above that deeper trees seemed to perform better than shal
 
 ```{r}
 tree_results %>%
-  show_best(n = 10)
+  show_best(n = 10) %>%
+  kable() %>%
+  kable_styling()
 ```
 
 We can now build a final fit using this depth.
@@ -100,7 +114,7 @@ The model we built above can be interpreted and can also be utilized to make pre
 
 ## Tuning Hyperparameters Across a Workflow Set
 
-Let's create model specifications and recipes for each of the models mentioned previously.
+Let's create model specifications and recipes for each of the models mentioned in earlier notebooks.
 
 ```{r}
 doParallel::registerDoParallel()
@@ -147,7 +161,9 @@ Now let's see what the best models were!
 
 ```{r}
 grid_results %>%
-  rank_results()
+  rank_results() %>%
+  kable() %>%
+  kable_styling()
 ```
 
 The model performing the best was the *gradient boosted tree ensemble*. Let's see what hyperparameter choices led to the best performance.

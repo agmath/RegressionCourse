@@ -1,10 +1,14 @@
 ---
 title: "Variable Selection Methods: Regularization with Ridge and LASSO"
-output:
-  html_document
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
 ```{r global-options, include=FALSE}
+#install.packages("glmnet")
 library(tidyverse)
 library(tidymodels)
 library(patchwork)
@@ -12,14 +16,15 @@ library(kableExtra)
 library(modeldata)
 
 tidymodels_prefer()
-rm(list = ls())
+
+penguins <- palmerpenguins::penguins
 
 ames <- read_csv("https://raw.githubusercontent.com/koalaverse/homlr/master/data/ames.csv")
 ```
 
 ## Recap
 
-With Cross-Validation, we've supercharged our modeling powers. We've made our model performance estimates much more reliable, which gives us greater confidence in understanding the predictive power (or lack-thereof) in our models. We've become much more responsible modelers. We'll see again soon that cross-validation can actually do much more for us than just provide more reliable performance estimates than the validation-set approach did. For now though, we shift focus slightly to the question -- *how do we know which predictors should be included in our model*?
+With Cross-Validation, we've supercharged our modeling powers. We've made our model performance estimates much more reliable, which gives us greater confidence in understanding the predictive power (or lack-thereof) in our models. We've become much more responsible modelers, in this sense. We'll see again soon that cross-validation can actually do much more for us than just provide more reliable performance estimates than the validation-set approach did. For now though, we shift focus slightly to the question -- *how do we know which predictors should be included in our model*?
 
 ## Motivation
 
@@ -27,11 +32,20 @@ When we first introduced multiple linear regression, we took an approach in whic
 
 With both of these methods, we're allowing our model to be quite greedy. It may be helpful to think of these processes as allowing our model to go "shopping" for predictors -- in the *backward selection* paradigm, the model begins by adding every item in the store to its shopping cart, and then carefully places the ones it doesn't want back on the shelves -- in the *forward selection* paradigm, the model begins with an empty cart and adds its favorite items one-by-one into its shopping cart. This seems quite reasonable at first, but we're engaging in quite risky behavior.
 
-From a purely statistical standpoint, we're evaluating lots of $t$-tests in determining whether model terms are statistically significant or not. The likelihood of making at least one Type I Error (saying that a model term is statistically significant, when it is not so in the population) becomes very large in these processes. From a model-fit perspective, the more predictor variables a model has, the more flexible it is -- the more flexible a model is, the better it will fit the *training data* and the more likely it is to become overfit. By allowing our model to "shop" freely for its predictors, we are enticing our model to overfit the training data -- giving our model a "budget" to spend on its shopping trip would be a really nice way to lower the likelihood that our model "buys" too many predictors and overfits the training data.
++ From a purely statistical standpoint, we're evaluating lots of $t$-tests in determining whether model terms are statistically significant or not. The likelihood of making at least one Type I Error (saying that a model term is statistically significant, when it is not so in the population) becomes very large in these processes. 
++ From a model-fit perspective, the more predictor variables a model has, the more flexible it is -- the more flexible a model is, the better it will fit the *training data* and the more likely it is to become overfit. 
 
-**Note 1:** All of the models we've fit so far in our course use *Ordinary Least Squares* as the underlying fitting procedure -- we are moving to new waters now. Ridge Regression and LASSO models belong to a class of model called *Generalized Linear Models*, although their fitting procedures under the hood will be different, the consistency of the `tidymodels` framework allows us to make this change quite simply.
+By allowing our model to "shop" freely for its predictors, we are enticing our model to overfit the training data -- giving our model a "budget" to spend on its shopping trip would be a really nice way to lower the likelihood that our model "buys" too many predictors and overfits the training data.
 
-**Note 2:** The process of applying an additional constraint such as a *budget* is commonly called *regularization*. Regularization techniques are utilized with lots of model classes to help prevent those models from overfitting our training data.
+:::{.callout-note}
+## Optimization Procedures for Model Fitting
+All of the models we've fit so far in our course use *Ordinary Least Squares* as the underlying fitting procedure -- we are moving to new waters now. Ridge Regression and LASSO models belong to a class of model called *Generalized Linear Models*, although their fitting procedures under the hood will be different, the consistency of the `{tidymodels}` framework allows us to make this change quite simply.
+:::
+
+:::{.callout-note}
+## Regularization
+The process of applying an additional constraint such as a *budget* one example of model constraints commonly referred to as *regularization*. Regularization techniques are utilized with lots of model classes to help prevent those models from overfitting our training data.
+:::
 
 ## Objectives
 
@@ -39,7 +53,7 @@ After working through this notebook you should be able to:
 
 + Articulate the *backward selection* approach and how it relates to the multiple linear regression models we've constructed and analyzed so far in our course. 
 + Discuss *forward selection* as an alternative to the backward selection process.
-+ Discuss and implement *Ridge Regression* and the *LASSO* as alternatives to Ordinary Least Squares within the `tidymodels` framework. 
++ Discuss and implement *Ridge Regression* and the *LASSO* as alternatives to Ordinary Least Squares within the `{tidymodels}` framework. 
 + Discuss the benefits and drawbacks for forward- and backward-selection, Ridge Regression, and the LASSO relative to one another.
 
 ***
@@ -47,10 +61,15 @@ After working through this notebook you should be able to:
 ## Ordinary Least Squares
 
 The process of fitting a model using ordinary least squares is an *optimization* problem. Simply put, to fit a model of the form 
+
 $$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
 we minimize the residual sum of squares:
 
-$$\text{Minimize:}~~\sum_{\text{training data}}{\left(y_{\text{observed}} - y_{\text{predicted}}\right)^2} = \sum_{\text{training data}}{\left(y_{\text{observed}} - \left(\beta_0 + \sum_{i = 1}^{k}{\beta_i x_i}\right)\right)^2}$$
+$$\text{Minimize:}~~\sum_{\text{training data}}{\left(y_{\text{observed}} - y_{\text{predicted}}\right)^2}$$
+
+Which is equivalent to
+
+$$\text{Minimize:}~\sum_{\text{training data}}{\left(y_{\text{observed}} - \left(\beta_0 + \sum_{i = 1}^{k}{\beta_i x_i}\right)\right)^2}$$
 
 This process of choosing values for $\beta_0,~\beta_1,~\beta_2,~\cdots,~\beta_k$ is called *Ordinary Least Squares* (OLS), and it's what we've been using (or, rather R has been using) all semester long to fit our models.
 
@@ -61,6 +80,7 @@ In OLS, the optimization procedure can freely choose those $\beta$ values, witho
 The process of fitting a model using Ridge Regression is similar to that of using OLS, except that a constraint on the chosen $\beta$ coefficients is imposed. That is, using Ridge Regression to fit a model of the form
 $$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
 Solves the following optimization problem:
+
 $$\begin{array}{ll}\text{Minimize:} & \displaystyle{\sum_{\text{training data}}{\left(y_{\text{observed}} - \left(\beta_0 + \sum_{i = 1}^{k}{\beta_i x_i}\right)\right)^2}}\\
 \text{Subject To:} & \displaystyle{\sum_{i=1}^{k}{\left|\beta_i\right|} \leq C}\end{array}$$
 
@@ -121,7 +141,11 @@ There are a few additional concerns with fitting Ridge Regression and LASSO mode
 
   + We can use `step_range()`, `step_scale()`, or `step_normalize()` on `all_numerical_predictors()` to achieve this.
   
-We'll filter out the observations with an unknown response (`Sale_Price`), and we'll use `step_impute_knn()` to use a $k$-nearest neighbors imputation scheme for any missing values in our predictor columns. Finally, we'll use `step_normalize()` to center and scale our numerical predictors. Then we'll proceed as usual. We'll build and assess a Ridge Regression model first.
+We'll filter out the observations with an unknown response (`Sale_Price`), and we'll use `step_impute_knn()` to use a $k$-nearest neighbors imputation scheme for any missing values in our predictor columns. Finally, we'll use `step_normalize()` to center and scale our numerical predictors. Then we'll proceed as usual. 
+
+### Implementing Ridge Regression
+
+We'll build and assess a Ridge Regression model first.
 
 ```{r}
 set.seed(123)
@@ -168,6 +192,10 @@ ridge_reg_fit %>%
   kable() %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+
+From the regression output above, we can see lots of very small coefficients attached to the majority of our available predictors.
+
+### Implementing the LASSO
 
 The work required to construct a LASSO model is nearly identical. We simply use `mixture = 1` in the model specification to signal that we want to use the LASSO constraint instead of the ridge constraint. 
 

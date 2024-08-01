@@ -1,10 +1,17 @@
 ---
 title: "Classification and Logistic Regression"
-output:
-  html_document
+format: html
+date: today
+date-format: long
+theme: flatly
+toc: true
 ---
 
-```{r global-options, include=FALSE}
+```{r}
+#| code-fold: true
+#| message: false
+#| warning: false
+
 library(tidyverse)
 library(tidymodels)
 library(patchwork)
@@ -12,7 +19,10 @@ library(kableExtra)
 library(modeldata)
 
 tidymodels_prefer()
-rm(list = ls())
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 14))
 
 loans <- read_csv("https://raw.githubusercontent.com/shrikant-temburwar/Loan-Prediction-Dataset/master/train.csv")
 ```
@@ -36,7 +46,7 @@ We'll be working with a dataset on loans and attempting to build a model which w
 loans %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 The `Loan_Status` variable is the one we'd like to predict.
@@ -86,12 +96,12 @@ log_clf_cv <- log_wf %>%
 log_clf_cv %>%
   collect_metrics() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 
 log_clf_cv %>%
   collect_metrics(summarize = FALSE) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 The accuracy of the model is hovering at around 80%. Let's fit the model to our training data and interpret the model coefficients.
@@ -103,13 +113,13 @@ log_clf_fit <- log_wf %>%
 log_clf_fit %>%
   glance() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 
 log_clf_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 Like linear regression, we get a $p$-value associated with each model term. We can use this information to remove predictors from the model if there is not statistically significant evidence to suggest that they are useful. In the output above, we can see that `ApplicantIncome` has a high $p$-value -- we'll take care of that one first since the $p$-values which are higher are each attached to a single level of a categorical variable.
@@ -133,7 +143,7 @@ log_clf_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 We'll now remove `LoanAmount` due to its high $p$-value.
@@ -158,7 +168,7 @@ log_clf_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 And now we'll remove the `Loan_Amount_Term` predictor.
@@ -184,7 +194,7 @@ log_clf_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 Now `Gender` gets removed.
@@ -211,7 +221,7 @@ log_clf_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 And now the `CoapplicantIncome`.
@@ -239,7 +249,7 @@ log_clf_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 Now the `Dependents` variable should be removed since all of its levels have $p$-values higher than the other model terms.
@@ -268,7 +278,7 @@ log_clf_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 And now `Education`.
@@ -298,7 +308,7 @@ log_clf_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 Next we'll remove the `Self_Employed` variable.
@@ -329,7 +339,7 @@ log_clf_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 Now, all of the predictors are attached to $p$-values below the 5% threshold for statistical significance. Note that the high $p$-value attached to `Property_Area_Urban` indicates no evidence for that particular level of the `Property_Area` having a different effect on loan approval or denial than the base level of `Rural`. The property area being *semiurban* though is associated with a higher likelihood of loan approval, which we can tell because its coefficient is *positive*. We were unable to estimate the impact of having a *missing* property area because there were so few observations in this category. We can similarly interpret the other coefficients.
@@ -369,7 +379,7 @@ log_clf_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover"))
+  kable_styling()
 ```
 
 ### Assessing Classifier performance
@@ -383,14 +393,14 @@ log_clf_fit %>%
   filter(!is.na(.pred_class)) %>%
   summarize(accuracy = sum(Loan_Status == .pred_class)/ n()) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Our model achieved 85.7% accuracy on the unseen test data! We won't know whether this is good or bad until we try building other models to beat this one. For now, since `r round(loans_test %>% count(Loan_Status) %>% mutate(pct = 100*n/sum(n)) %>% filter(Loan_Status == "Y") %>% pull(pct), 1)`% of all loans were approved, our model is doing better than just  naively guessing that every loan will be approved.
 
 ## Summary
 
-This notebook introduced the notion of classification -- building models to predict a categorical outcome (such as whether or not a loan will be approved). We saw that the same `tidymodels` framework we've utilized to approach *regression* tasks was also useful for *classification* tasks. If you'd like to learn more about classification, I'd love to see you in *MAT434: Statistical Learning and Classification* next semester!
+This notebook introduced the notion of classification -- building models to predict a categorical outcome (such as whether or not a loan will be approved). We saw that the same `{tidymodels}` framework we've utilized to approach *regression* tasks was also useful for *classification* tasks. If you'd like to learn more about classification, I'd love to see you in *MAT434: Statistical Learning and Classification* next semester!
 
 
 

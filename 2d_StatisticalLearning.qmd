@@ -1,10 +1,14 @@
 ---
 title: "MAT 300: An Overview of Statistical Learning"
-format: html
+format: 
+  html:
+    theme: flatly
+    toc: true
+  pdf:
+    theme: flatly
+    toc: true
 date: today
 date-format: long
-theme: flatly
-toc: true
 ---
 
 ```{r global-options, include=FALSE}

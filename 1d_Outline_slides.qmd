@@ -4,14 +4,14 @@ author: Dr. Gilbert
 format: revealjs
 date: today
 date-format: long
-theme: moon
-toc: true
+theme: beige
+incremental: true
 ---
 
 ```{r global-options, include=FALSE}
 library(tidyverse)
 
-theme_set(theme_bw(base_size = 14))
+theme_set(theme_bw(base_size = 20))
 ```
 
 ## What Are We Here For?
@@ -22,11 +22,34 @@ theme_set(theme_bw(base_size = 14))
 
 set.seed(123)
 x <- runif(50, 0, 100)
-#y <- 5*x
-x
 y <- 5*x + rnorm(50, 0, 75)
 
-#Data
+ggplot() + 
+  geom_point(aes(x = x, y = y), alpha = 0) + 
+  geom_abline(slope = 5, intercept = 0, color = "purple", lwd = 2) + 
+  labs(x = "x", y = "y")
+  
+```
+
+## What Are We Here For?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y)) + 
+  geom_abline(slope = 5, intercept = 0, color = "purple", lwd = 2, alpha = 0.25) + 
+  labs(x = "x", y = "y")
+  
+```
+
+## What Are We Here For?
+
+```{r}
+#| echo: false
+#| message: false
+
 ggplot() +
   geom_point(aes(x = x, y = y), 
              color = "black") + 
@@ -62,7 +85,7 @@ intercepts <- mean(y) - slopes*mean(x) + rnorm(75, 0, 7)
 ggplot() + 
   geom_point(aes(x = x, y = y)) +
   geom_abline(aes(slope = slopes, intercept = intercepts), alpha = 0.2) +
-  geom_abline(slope = 5, intercept = 0, color = "purple", lwd = 2) + 
+  #geom_abline(slope = 5, intercept = 0, color = "purple", lwd = 2) + 
   geom_hline(yintercept = mean(y), 
              color = "red", linetype = "dashed", lwd = 1.5)
 ```
@@ -91,7 +114,23 @@ ggplot() +
 
 ggplot() + 
   geom_point(aes(x = x, y = y)) +
-  geom_abline(aes(slope = slopes, intercept = intercepts), alpha = 0.1) +
+  #geom_abline(aes(slope = slopes, intercept = intercepts), alpha = 0.1) +
+  #geom_abline(slope = 5, intercept = 0, color = "purple", lwd = 2) + 
+  geom_hline(yintercept = mean(y), 
+             color = "red", linetype = "dashed", lwd = 1.5) +
+  geom_smooth(aes(x = x, y = y),
+              method = "lm", color = "blue", lwd = 1.5, se = FALSE)
+```
+
+## What Are We Here For?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y)) +
+  #geom_abline(aes(slope = slopes, intercept = intercepts), alpha = 0.1) +
   geom_abline(slope = 5, intercept = 0, color = "purple", lwd = 2) + 
   geom_hline(yintercept = mean(y), 
              color = "red", linetype = "dashed", lwd = 1.5) +
@@ -144,22 +183,18 @@ First and foremost...everything is free!
 
 ## Competition?
 
-+ The competition will be hosted at Kaggle.
-+ The competition is closed to only students in our course.
-+ You'll need a free account -- I'll post the link to our competition in Slack.
-+ Your grade is **not** linked to where you finish in the competition.
-+ The competition aspect is *friendly* -- please do keep it that way.
-+ Past students have cited the competition as motivating and a great source of learning -- on of the most valuable parts of the course.
++ Hosted at Kaggle
++ Closed to only students in our course
++ You'll need a free account -- link in Slack
++ Your grade is **not** tied to your finishing place
++ The competition aspect is *friendly* -- please keep it that way.
++ Students say the competition is motivating and a great source of learning -- one of the most valuable parts of the course.
 
 ## Brightspace
 
-Brightspace will contain much of our course material. The following sections will be used:
-
-  + **Syllabus**: Our class syllabus will always be available here
-  + **Notes**: This section of our BrightSpace course will simply link you back to the webpage I built for this course.
-  + **Datasets**: The notes that I've prepared for use in our class use a fairly famous, but small datasets on *penguins* and another on *home sales*. While these datasets are really convenient to use for showing you the course material, it will be beneficial to try applying the techniques introduced on your own to some new data. I'll typically use a dataset on San Francisco Apartment rentals in class, but I invite you to choose something you are interested in -- I'm also happy to work with different datasets that the class shows interest in. I'll post some links to data sets in this section of BrightSpace.
-  + **Homework**: I'll post homework assignments and solutions here.
-  + **Projects**: Generic information about the projects will go here.
++ Assignments
++ Gradebook
++ Go to the webpage for everything else
 
 ## Course Webpage
 
@@ -172,14 +207,17 @@ I've built a [webpage to organize our course content](https://agmath.github.io/R
   + Links to daily *intro slides* and *notes* (in HTML and QMD formats).
   + Links to assignments -- you can see everything now.
 
-## What's Class Like?
+## What's Class Like? (Part I)
 
 + **Discussion Days** - Most of our meetings...
 
-  + An five-minute overview of main ideas (slides) followed by/including discussion.
+  + Five-minute overview of main ideas (slides) followed by/including discussion.
   + We'll work in R to implement the day's main ideas with a data set.
-  + You have full, detailed notes on the webpage (use these how you like) -- focus on implementation and experimentation in class.
+  + Full, detailed notes on the webpage (use these how you like) -- implement and experiment in class.
   + Make your notes "pretty" after class while reviewing what we did.
+
+## What's Class Like? (Part II)
+
 + **Workshop / Lab Days** - Days to slow down and practice recent skills.
 + **Lecture Days** - Hopefully none, but I'll lecture when you all want me to.
 
@@ -197,6 +235,7 @@ We'll be discussing a lot of material in MAT 300. Here is a very generic road ma
 
 ## What Are We Doing?
 
++ Artificial Intelligence (AI)?
 + Data science?
 + Machine learning?
 + Statistical learning?
@@ -243,7 +282,7 @@ Read Chapter 1 (pages 1 - 14) of the [Introduction to Statistical Learning (ISLR
 
 ## Homework (Part II)
 
-Stop by my office (Robert Frost 311), say hi and let's briefly chat about the following. 
+Stop by my office (Robert Frost 311), say hi and let's briefly chat about the following: 
 
 + Why are you taking this course? 
 + What do you hope to get out of it?
@@ -251,10 +290,11 @@ Stop by my office (Robert Frost 311), say hi and let's briefly chat about the fo
 
 ## Next Time...
 
++ Way fewer slides! 🤕
 + What is statistical learning in terms of regression?
 + Why try to build models (estimate $f$)?
 + What are noise, reducible error, and irreducible error?
-+ Why are prediction and interpretation competing objectives?
++ Why do prediction and interpretation compete?
 + What are parametric and non-parametric models?
 + How do I identify regression versus classification problems?
 + What is the difference between supervised and unsupervised learning?

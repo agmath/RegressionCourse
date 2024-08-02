@@ -250,7 +250,7 @@ We'll be discussing a lot of material in MAT 300. Here is a very generic road ma
 ## What Foundational Statistics Knowledge Do I Need?
   
   + Confidence Intervals: $\left(\text{point estimate}\right) \pm 2\cdot \left(\text{standard error}\right)$
-  + Hypothesis Testing: $p< \alpha$ means data are incompatible with null hypothesis
+  + Hypothesis Testing: $p< \alpha$ means data are incompatible with a null (skeptical) hypothesis
 
 ## Regression
     

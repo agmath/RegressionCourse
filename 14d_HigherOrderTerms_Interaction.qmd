@@ -1,10 +1,14 @@
 ---
 title: "Using Higher-Order Terms: Interaction"
-format: html
+format: 
+  html:
+    theme: flatly
+    toc: true
+  pdf:
+    theme: flatly
+    toc: true
 date: today
 date-format: long
-theme: flatly
-toc: true
 ---
 
 ```{r global-options, include=FALSE}

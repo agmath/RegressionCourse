@@ -1,11 +1,15 @@
 ---
 title: "The Bias-Variance TradeOff: Overfitting and Underfitting"
-format: html
+format: 
+  html:
+    theme: flatly
+    toc: true
+    code-fold: true
+  pdf:
+    theme: flatly
+    toc: true
 date: today
 date-format: long
-theme: flatly
-toc: true
-code-fold: true
 warning: false
 message: false
 ---

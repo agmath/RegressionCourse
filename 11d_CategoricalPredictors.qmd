@@ -1,10 +1,14 @@
 ---
 title: Utilizing Categorical Predictors
-format: html
+format: 
+  html:
+    theme: flatly
+    toc: true
+  pdf:
+    theme: flatly
+    toc: true
 date: today
 date-format: long
-theme: flatly
-toc: true
 ---
 
 ```{r global-options, message = FALSE, warning = FALSE}

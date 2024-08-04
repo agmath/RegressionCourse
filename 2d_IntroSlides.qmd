@@ -1,0 +1,630 @@
+---
+title: "Overview of Statistical Learning (and Competition Overview)"
+author: Dr. Gilbert
+format: revealjs
+date: today
+date-format: long
+theme: beige
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+## Statistical Learning in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+num_pts <- 15
+set.seed(123)
+x <- runif(num_pts, 0, 100)
+y <- (x - 75)^2 + rnorm(num_pts, 0, 350)
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  labs(title = "Our observed data",
+       x = "x", y = "y")
+  
+```
+
+## Statistical Learning in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+num_pts <- 15
+set.seed(123)
+x <- runif(num_pts, 0, 100)
+y <- (x - 75)^2 + rnorm(num_pts, 0, 350)
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  labs(title = "Our observed data",
+       x = "x", y = "y")
+  
+```
+
++ **Goal:** Build a model $\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x}$ to predict $y$, given $x$.
++ **General Goal:** Build a model $\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k}$ to predict $y$ given features $x_1, \cdots, x_k$.
+
+  + $\beta_i$'s are *parameters*, *learned* from training data.
+
+## Statistical Learning in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+x_vals <- seq(0, 100, length.out = 500)
+y_vals <- -750 + 50*x_vals
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) + 
+  labs(title = 'How "good" is the purple model?',
+       x = "x", y = "y")
+```
+
++ This model doesn't capture the general trend between our observed $x$ and $y$ pairs.
+
+## Statistical Learning in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+x_vals <- seq(0, 100, length.out = 500)
+y_vals <- 7000 - 60*x_vals
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) + 
+  labs(title = 'Okay, how about this one?',
+       x = "x", y = "y")
+```
+
++ Better job capturing the general trend (*sort of*).
++ Larger $x$ values are associated with smaller $y$ values.
+
+## Statistical Learning in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+preds <- 7000 - 60*x
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "Check out those prediction errors",
+       x = "x", y = "y")
+```
+
+## Statistical Learning in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+preds <- 7000 - 60*x
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  geom_segment(aes(x = x, xend = x,
+                   y = y, yend = preds),
+               color = "red", 
+               size = 3,
+               alpha = 0.5) + 
+  labs(title = "Check out those prediction errors",
+       x = "x", y = "y",
+       caption = "Reducible error remains")
+```
+
++ Always predicting too high!
+
+  + We should overpredict sometimes and underpredict others. The *average* error should be $0$.
+
+## Statistical Learning in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+my_data <- tibble(x = x, y = y)
+
+lin_reg_spec <- linear_reg()
+lin_reg_rec <- recipe(y ~ x, data = my_data)
+lin_reg_wf <- workflow() %>%
+  add_model(lin_reg_spec) %>%
+  add_recipe(lin_reg_rec)
+lin_reg_fit <- lin_reg_wf %>%
+  fit(my_data)
+
+coefs <- lin_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  pull(estimate)
+
+y_vals_lin <- coefs[1] + x_vals*coefs[2]
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "Getting better?",
+       x = "x", y = "y")
+```
+
+## Statistical Learning in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+preds <- coefs[1] + x*coefs[2]
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  geom_segment(aes(x = x, xend = x,
+                   y = y, yend = preds),
+               color = "red", 
+               size = 3,
+               alpha = 0.5) + 
+  labs(title = "Getting better?",
+       x = "x", y = "y",
+       caption = "Remaining error is irreducible (at least with this model form)")
+```
+
+## Statistical Learning in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  geom_segment(aes(x = x, xend = x,
+                   y = y, yend = preds),
+               color = "red", 
+               size = 3,
+               alpha = 0.5) + 
+  labs(title = "Getting better?",
+       x = "x", y = "y")
+```
+
++ Capturing the general trend?
+
+  + ...*mostly*
+
++ Balanced errors?
+
+  + ✓
+
+## How it works
+
+In this case, we have $\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x$ and we find $\beta_0$ (intercept) and $\beta_1$ (slope) to minimize the quantity
+
+$$\sum_{i = 1}^{n}{\left(y_{\text{obs}} - y_{\text{pred}}\right)^2}$$
+
+## How it works
+
+In this case, we have $\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x$ and we find $\beta_0$ (intercept) and $\beta_1$ (slope) to minimize the quantity
+
+$$\sum_{i = 1}^{n}{\left(y_{\text{obs}} - \left(\beta_0 + \beta_1\cdot x_{\text{obs}}\right)\right)^2}$$
+
+## How it works
+
+```{r}
+#| echo: false
+#| message: false
+
+resids <- y - preds
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  geom_rect(aes(xmin = x, xmax = ifelse(x > 50, x - resids*(100/15000), x + resids*(100/15000)),
+                ymin = preds, ymax = preds + resids),
+               color = "red",
+               fill = "red",
+               alpha = 0.25) + 
+  scale_x_continuous(labels = NULL) + 
+  scale_y_continuous(labels = NULL) + 
+  labs(title = "Residual Sum of Squares",
+       x = "x", y = "y",
+       caption = "Note: Not to scale -- axis marks removed for visual purposes")
+```
+
+## Interpreting the Model
+
+$\displaystyle{\mathbb{E}\left[y\right] = 3783.21 - 45.3\cdot x}$
+
+```{r}
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "What does the model tell us?",
+       x = "x", y = "y")
+```
+
++ The expected value of $y$ when $x = 0$ is $3783.21$.
++ As $x$ increases, we expect $y$ to decrease (on average).
++ Given a unit increase in $x$, we expect $y$ to decrease by about $45.3$ units.
+
+## Can we find a *better* model?
+
+```{r}
+#| echo: false
+#| message: false
+
+my_data <- tibble(x = x, y = y)
+
+poly_reg_spec <- linear_reg()
+poly_reg_rec <- recipe(y ~ x, data = my_data) %>%
+  step_poly(x, degree = 7)
+poly_reg_wf <- workflow() %>%
+  add_model(poly_reg_spec) %>%
+  add_recipe(poly_reg_rec)
+poly_reg_fit <- poly_reg_wf %>%
+  fit(my_data)
+
+y_vals_poly <- poly_reg_fit %>%
+  predict(tibble(x = x_vals)) %>%
+  pull(.pred)
+
+coefs <- poly_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  pull(estimate)
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_poly),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "Wowzers!",
+       x = "x", y = "y")
+```
+
+## Can we interpret this model?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_poly),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "What a great model!",
+       x = "x", y = "y")
+```
+
++ The equation is $\mathbb{E}\left[y\right] \approx 1202 - 4911x +3156x^2 + 784x^3 +\\ 409x^4 -215x^5 -7x^6 -516x^7$
++ No thanks...
+
+## Do we expect this model to generalize well?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_poly),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "Great fit on past data",
+       x = "x", y = "y")
+```
+
+## Do we expect this model to generalize well?
+
+```{r}
+#| echo: false
+#| message: false
+
+num_new <- 10
+set.seed(456)
+x_new <- c(runif(num_new, 0, 100), 100, 0)
+y_new <- (x_new - 75)^2 + rnorm(num_new + 2, 0, 350)
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_poly),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  geom_point(aes(x = x_new, y = y_new),
+             color = "red",
+             size = 3) +
+  labs(title = "Oh no! Bigger (unexpectedly large) errors with new data",
+       x = "x", y = "y")
+```
+
++ Especially near $x = 0$ and $x = 100$
+
+## Is there a happy medium?
+
+```{r}
+#| echo: false
+#| message: false
+
+quad_reg_spec <- linear_reg()
+quad_reg_rec <- recipe(y ~ x, data = my_data) %>%
+  step_poly(x, degree = 2)
+quad_reg_wf <- workflow() %>%
+  add_model(quad_reg_spec) %>%
+  add_recipe(quad_reg_rec)
+quad_reg_fit <- quad_reg_wf %>%
+  fit(my_data)
+
+y_vals_quad <- quad_reg_fit %>%
+  predict(tibble(x = x_vals)) %>%
+  pull(.pred)
+
+coefs <- quad_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  pull(estimate)
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_quad),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "Something less wiggly",
+       x = "x", y = "y")
+```
+
+## Is there a happy medium?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_quad),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  geom_point(aes(x = x_new, y = y_new),
+             color = "red",
+             size = 3) + 
+  labs(title = "Something less wiggly",
+       x = "x", y = "y")
+```
+
++ Fits old and new observations similarly well
++ Equation $\displaystyle{\mathbb{E}\left[y\right] \approx 1202 -4912x + 3156x^2}$
+
+  + We'll be able to interpret this
+  
+## How do we know what model is *right*?
+
+```{r}
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) + 
+  geom_line(aes(x = x_vals, y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.9) + 
+  geom_line(aes(x = x_vals, y = y_vals_quad),
+            color = "darkgreen",
+            lwd = 2,
+            alpha = 0.9) + 
+  geom_line(aes(x = x_vals, y = y_vals_poly),
+            color = "orange",
+            lwd = 2,
+            alpha = 0.9) + 
+  geom_point(aes(x = x_new, y = y_new),
+             color = "red",
+             size = 3) +
+  labs(title = "All three models",
+       x = "x",
+       y = "y")
+```
+
++ The <font color="purple">purple</font> model is *too straight*
++ The <font color="orange">orange</font> model is *too wiggly*
++ The <font color="green">green</font> model is *just right*
+
+## How do we know what model is *right*?
+
+```{r}
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) + 
+  geom_line(aes(x = x_vals, y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.3) + 
+  geom_line(aes(x = x_vals, y = y_vals_quad),
+            color = "darkgreen",
+            lwd = 2) + 
+  geom_line(aes(x = x_vals, y = y_vals_poly),
+            color = "orange",
+            lwd = 2,
+            alpha = 0.3) + 
+  geom_point(aes(x = x_new, y = y_new),
+             color = "red",
+             size = 3) +
+  labs(title = "All three models",
+       x = "x",
+       y = "y")
+```
+
++ We don't want to wait for new data to know we are wrong.
+
+  + Use some of our available data for training
+  + And the rest for validation
+
+## But our predictions are all wrong...literally!
+
+```{r}
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3,
+             alpha = 0.25) + 
+  geom_line(aes(x = x_vals, y = y_vals_quad),
+            color = "darkgreen",
+            lwd = 2) + 
+  geom_point(aes(x = x_new, y = y_new),
+             color = "red",
+             size = 3) +
+  labs(title = "Our best model",
+       x = "x",
+       y = "y")
+```
+
++ *All models are wrong, but some are useful*, George Box (1976)
++ Predictions will be wrong but, with some assumptions, they have value
+
+## Necessary Assumptions
+
++ For model and predictions
+
+  + Training data are random and representative of population.
+
+    + Otherwise, we should not be modeling this way.
+
+  + Residuals (prediction errors) are normally distributed with mean $\mu = 0$ and constant standard deviation $\sigma$.
+
+    + Allows construction of confidence intervals around predictions (making our models *right*).
+  
++ For interpretations of coefficients (statistical learning / inference)
+
+  + No multicollinearity (predictors aren't correlated with one another)
+  
+## Summary
+
++ Building models $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$
++ Predicting a *numerical* response ($y$) given features ($x_i$)
++ Need data to build the models -- some for training, some for validation.
++ Model predictions will be wrong.
++ As long as standard deviation of residuals (prediction errors) is constant, we can build meaningful confidence intervals for predictions.
++ Can interpret models to gain insight into relationships between predictor(s) and response.
+
+## Competition Information
+
++ Predict *Door Dash* delivery times
+
+  + Time from placing order to delivery
+  
++ **Response:** delivery time
++ **Predictors:** `market_id`, `order_time`, `delivery_time`, `store_id`, `cuisine_type`, `order_protocol`, `items_in_order`, `subtotal_cost`, `distinct_items_in_order`, `min_item_price`, `max_item_price`, `dashers_working`, `busy_dashers`, `outstanding_orders`,  `model_1_estimate`, `model_2_estimate`
+
+## How this works
+
++ I'll walk you through every step, via a series of assignments.
++ You'll take data provided by *Door Dash* and build models.
++ Kaggle will assess your models' predictions (and also those predictions of your colleagues).
++ We'll have a live leaderboard, using only part of the competition data so you know approximately where you stand.
++ You'll talk with eachother about why/how you have different scores. 
++ People *might* share their strategies, or they *might not* -- this is a competition after all.
+
+## Why?
+
++ We've all done homework assignments, but we almost never think of the work on the assignment after everything is turned in and graded.
++ The competition assignments and environment ask you to iterate on previous work.
++ You'll almost surely be interested in what other people have done, especially if their models have performed better than yours.
++ You'll talk with eachother about strategies and modeling choices.
++ You'll be motivated to improve your model even if you aren't working on an assignment.
+
+## What past students say
+
++ The competition is fun
++ It is motivating
++ I learned more because I wanted to place better in the competition
++ Talking with others about their models made me more confident in my understanding of course material
+
+## What you are building
+
++ An analytics report
++ You'll be building models *and* (more importantly) writing about your modeling choices and the performance of your models
++ Six assignments -- each focusing on part(s) of the analytics report
++ Prepares you for the final project, where you'll do all this over again on a data set you identified and care about
+
+## Next Time...
+
++ Way fewer slides! 🤕
++ An introduction to R
++ Getting our hands dirty!
+
+**Homework:** Competition Assignment 1 -- join the competition, read the details, download the data, and write a *Statement of Purpose*.

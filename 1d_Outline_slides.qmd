@@ -290,7 +290,6 @@ Stop by my office (Robert Frost 311), say hi and let's briefly chat about the fo
 
 ## Next Time...
 
-+ Way fewer slides! 🤕
 + What is statistical learning in terms of regression?
 + Why try to build models (estimate $f$)?
 + What are noise, reducible error, and irreducible error?

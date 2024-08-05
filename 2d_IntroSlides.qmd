@@ -4,7 +4,7 @@ author: Dr. Gilbert
 format: revealjs
 date: today
 date-format: long
-theme: beige
+theme: serif
 incremental: true
 ---
 
@@ -258,6 +258,8 @@ $$\sum_{i = 1}^{n}{\left(y_{\text{obs}} - y_{\text{pred}}\right)^2}$$
 In this case, we have $\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x$ and we find $\beta_0$ (intercept) and $\beta_1$ (slope) to minimize the quantity
 
 $$\sum_{i = 1}^{n}{\left(y_{\text{obs}} - \left(\beta_0 + \beta_1\cdot x_{\text{obs}}\right)\right)^2}$$
+
++ Changing $\beta_0$ and/or $\beta_1$ will change this sum.
 
 ## How it works
 

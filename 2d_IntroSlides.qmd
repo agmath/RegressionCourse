@@ -567,7 +567,9 @@ ggplot() +
   + Residuals (prediction errors) are normally distributed with mean $\mu = 0$ and constant standard deviation $\sigma$.
 
     + Allows construction of confidence intervals around predictions (making our models *right*).
-  
+
+## Necessary Assumptions
+
 + For interpretations of coefficients (statistical learning / inference)
 
   + No multicollinearity (predictors aren't correlated with one another)
@@ -592,20 +594,20 @@ ggplot() +
 
 ## How this works
 
-+ I'll walk you through every step, via a series of assignments.
++ Six assignments to guide you.
 + You'll take data provided by *Door Dash* and build models.
-+ Kaggle will assess your models' predictions (and also those predictions of your colleagues).
-+ We'll have a live leaderboard, using only part of the competition data so you know approximately where you stand.
++ Kaggle will assess the predictions from everyone's models.
++ Live leaderboard, using only part of the competition data so you know approximately where you stand.
 + You'll talk with eachother about why/how you have different scores. 
 + People *might* share their strategies, or they *might not* -- this is a competition after all.
 
 ## Why?
 
-+ We've all done homework assignments, but we almost never think of the work on the assignment after everything is turned in and graded.
-+ The competition assignments and environment ask you to iterate on previous work.
++ Interest in homework assignments generally ends after they're turned in and graded.
++ Competition assignments and environment ask you to iterate on previous work.
 + You'll almost surely be interested in what other people have done, especially if their models have performed better than yours.
 + You'll talk with eachother about strategies and modeling choices.
-+ You'll be motivated to improve your model even if you aren't working on an assignment.
++ You'll be motivated to improve your model even between assignments.
 
 ## What past students say
 
@@ -618,7 +620,7 @@ ggplot() +
 
 + An analytics report
 + You'll be building models *and* (more importantly) writing about your modeling choices and the performance of your models
-+ Six assignments -- each focusing on part(s) of the analytics report
++ Six assignments -- each focusing on part(s) of the modeling process and analytics report
 + Prepares you for the final project, where you'll do all this over again on a data set you identified and care about
 
 ## Next Time...
@@ -627,4 +629,4 @@ ggplot() +
 + An introduction to R
 + Getting our hands dirty!
 
-**Homework:** Competition Assignment 1 -- join the competition, read the details, download the data, and write a *Statement of Purpose*.
++ **Homework:** Competition Assignment 1 -- join the competition, read the details, download the data, and write a *Statement of Purpose*.

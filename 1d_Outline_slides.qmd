@@ -219,7 +219,7 @@ I've built a [webpage to organize our course content](https://agmath.github.io/R
 ## What's Class Like? (Part II)
 
 + **Workshop / Lab Days** - Days to slow down and practice recent skills.
-+ **Lecture Days** - Hopefully none, but I'll lecture when you all want me to.
++ **Lecture Days** - Hopefully none after this first week, but I'll lecture when you all want me to.
 
 ## A Note on Approach to Class
 

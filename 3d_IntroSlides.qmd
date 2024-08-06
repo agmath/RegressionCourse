@@ -1,0 +1,152 @@
+---
+title: "Welcome to R; A Quick Overview"
+author: Dr. Gilbert
+format: revealjs
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+## The Highlights
+
++ Interacting with R
++ The R dialects
++ Installing and loading packages
++ Reading in data
++ First interactions with data in R
++ The pipe operator (`%>%` or `|>`)
++ Manipulating and transforming data with R
++ All changes are temporary unless you force them to be permanent
+
+## Interacting with R
+
++ We'll interact with R via RStudio in MAT300.
+
+  + You can use R with other IDE's, like VS code.
+  
++ We'll be using Quarto Documents/Notebooks for everything we do.
+
+  + Notebooks allow us to fully document and share analyses even with non-technical people.
+  
+## The R Dialects
+
+There are three main dialects in R
+
++ Base-R
++ `data.table` (speed)
++ Tidy-R / `tidyverse` (readability and consistency)
+
+  + We use this one. When you search for help -- include "*tidyverse*" in your query.
+
+## Installing and Loading Packages
+
++ `install.packages("PACKAGE_NAME")` to install a package
+
+  + You only do this once
+  + Do it in the *console*
+
++ `library(PACKAGE_NAME)` to load the package
+
+  + Do this near the top of your Quarto Document, in a *setup* chunk
+
+## Reading in Data
+
++ **ASIDE:** We store objects in R with the arrow operator (`<-`)
+
+  + ie. `x <- 2`
+
++ `data <- read_csv("PATH_TO_CSV_FILE")` to read in data from a CSV file and store it as `data`
+
+  + Requires the `{tidyverse}` (or at least `{readr}`) to be loaded
+  + Similar functions exist for reading other file formats
+  + Some require other packages(`{readxl}` or `{haven}` are common)
+  
+## First Interactions with Data
+
++ `head()` to view first six rows
++ `glimpse()` to view dimensions and data types
++ `skim()` from `{skimr}` for much more detail
+
+## The Pipe Operator 
+
++ Pipes (`%>%` or `|>`) make code more readable and allow chaining of functions together
++ Object to the left of the pipe becomes first argument to the function after the pipe
++ Read the pipe to mean "*and then*"
+
+## Manipulating and Transforming Data
+
++ `filter()` to return only desired records
++ `select()` to return only desired columns
++ `summarize()` to compute summaries on a table
++ `groupby()` to create groups in a table
++ `mutate()` to create new columns or change existing ones
+
+## All Changes are Temporary
+
+```{{r}}
+penguins %>%
+  filter(species == "Gentoo") %>%
+  groupby(island) %>%
+  summarize(
+    avg_mass = mean(body_mass_g)
+  )
+```
+
++ Start with the `penguins` data frame, and then
++ filter to just the Gentoo species, and then
++ group by island, and then
++ calculate average penguin body mass
+
+**Note:** `penguins` data frame is not permanently altered here
+
+## Until We Make Them Permanent
+
+```{{r}}
+penguins <- penguins %>%
+  filter(species == "Gentoo") %>%
+  groupby(island) %>%
+  summarize(
+    avg_mass = mean(body_mass_g)
+  )
+```
+
++ Now the change is permanent because we've stored the result
+
+  + Notice the use of the arrow operator (`<-`)
+  + Be careful overwriting existing objects -- think about whether you:
+  
+    + might need the old object again
+    + would be better off creating a new object (variable)
+    + even need to store the result at all
+    
+## Let's Do This
+
++ You have a fully complete notebook using the `penguins` data on the webpage
++ Let's use the `ames` data today -- I posted a link to it in Slack
+
+## Instructions (Setup)
+
+1. Open RStudio, create a new R Project -- you can use this one project for our entire course
+2. Download, open, and save the Student Notes Template in your project. 
+3. Create a copy of the template named `IntroToR` or something else descriptive.
+4. Confirm to install any missing packages using the yellow banner at the top of the Quarto Document.
+
+## Instructions (Analysis)
+
+5. Run the code in the `setup` chunk
+6. Use `read_csv()` and the file path from Slack to read the `ames` data into your R session
+
+    + Make sure it shows up in your *Environment*
+7. Take an initial look at the data
+8. Write down some interesting questions that might use functionality discussed in this slide deck
+
+    + Start with a few very simple questions and then build more involved ones
+9. We'll answer those questions by using the functionality

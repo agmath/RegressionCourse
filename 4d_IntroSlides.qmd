@@ -248,5 +248,5 @@ data %>% #the data to be plotted
 + Open your `ames` data notebook from last time.
 + We'll ask and answer some questions there using data visualization.
 
-  + Ask some *univariate* questions.
+  + Ask at least two *univariate* questions.
   + Move to *multivariate* questions.

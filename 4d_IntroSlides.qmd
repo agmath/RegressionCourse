@@ -151,9 +151,9 @@ data %>% #the data to be plotted
   + We don't need a data frame though
 
 + Once we use `ggplot()` we use `+` to add layers instead of piping
-+ `geom_*()` layers require *aesthetics* mapping variables to plot features
++ `geom_*()` layers require *aesthetics* to map variables to plot features
 
-  + Different *geoms* have different required/permissible aesthetics
+  + Different *geoms* have different required/permitted aesthetics
 
 + Can add multiple *geoms* to a single plot
 + Every plot should include labels
@@ -247,3 +247,6 @@ data %>% #the data to be plotted
 
 + Open your `ames` data notebook from last time.
 + We'll ask and answer some questions there using data visualization.
+
+  + Ask some *univariate* questions.
+  + Move to *multivariate* questions.

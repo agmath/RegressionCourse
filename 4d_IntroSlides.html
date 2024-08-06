@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-<script src="3d_IntroSlides_files/libs/clipboard/clipboard.min.js"></script>
-<script src="3d_IntroSlides_files/libs/quarto-html/tabby.min.js"></script>
-<script src="3d_IntroSlides_files/libs/quarto-html/popper.min.js"></script>
-<script src="3d_IntroSlides_files/libs/quarto-html/tippy.umd.min.js"></script>
-<link href="3d_IntroSlides_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="3d_IntroSlides_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="3d_IntroSlides_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
-<link href="3d_IntroSlides_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<script src="4d_IntroSlides_files/libs/clipboard/clipboard.min.js"></script>
+<script src="4d_IntroSlides_files/libs/quarto-html/tabby.min.js"></script>
+<script src="4d_IntroSlides_files/libs/quarto-html/popper.min.js"></script>
+<script src="4d_IntroSlides_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="4d_IntroSlides_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="4d_IntroSlides_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="4d_IntroSlides_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="4d_IntroSlides_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
   <meta name="dcterms.date" content="2024-08-06">
-  <title>Welcome to R; A Quick Overview</title>
+  <title>Data Viz and ggplot() Intro</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="3d_IntroSlides_files/libs/revealjs/dist/reset.css">
-  <link rel="stylesheet" href="3d_IntroSlides_files/libs/revealjs/dist/reveal.css">
+  <link rel="stylesheet" href="4d_IntroSlides_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="4d_IntroSlides_files/libs/revealjs/dist/reveal.css">
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -96,11 +96,11 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="3d_IntroSlides_files/libs/revealjs/dist/theme/quarto.css">
-  <link href="3d_IntroSlides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
-  <link href="3d_IntroSlides_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
-  <link href="3d_IntroSlides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
-  <link href="3d_IntroSlides_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <link rel="stylesheet" href="4d_IntroSlides_files/libs/revealjs/dist/theme/quarto.css">
+  <link href="4d_IntroSlides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="4d_IntroSlides_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="4d_IntroSlides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="4d_IntroSlides_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
 
   .callout {
@@ -392,7 +392,7 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Welcome to R; A Quick Overview</h1>
+  <h1 class="title">Data Viz and <code>ggplot()</code> Intro</h1>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -407,168 +407,182 @@ Dr.&nbsp;Gilbert
 <section id="the-highlights" class="slide level2">
 <h2>The Highlights</h2>
 <ul>
-<li class="fragment">Interacting with R</li>
-<li class="fragment">The R dialects</li>
-<li class="fragment">Installing and loading packages</li>
-<li class="fragment">Reading in data</li>
-<li class="fragment">First interactions with data in R</li>
-<li class="fragment">The pipe operator (<code>%&gt;%</code> or <code>|&gt;</code>)</li>
-<li class="fragment">Manipulating and transforming data with R</li>
-<li class="fragment">All changes are temporary unless you make them permanent</li>
+<li class="fragment">Sample Viz</li>
+<li class="fragment">Bad Viz</li>
+<li class="fragment">Suggested Viz Choices</li>
+<li class="fragment">Structure of a <code>ggplot()</code></li>
+<li class="fragment">Suggested Viz Choices, Revisited</li>
+<li class="fragment">On Plot Labels</li>
+<li class="fragment">Organizing plots with <code>{patchwork}</code></li>
 </ul>
 </section>
-<section id="interacting-with-r" class="slide level2">
-<h2>Interacting with R</h2>
+<section id="a-good-viz-tells-a-clear-story" class="slide level2">
+<h2>A Good Viz Tells a Clear Story</h2>
+
+<img data-src="4d_IntroSlides_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch"></section>
+<section id="a-bad-viz-doesnt" class="slide level2">
+<h2>A Bad Viz Doesn’t</h2>
+
+<img data-src="4d_IntroSlides_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
+<section id="suggested-viz-choices" class="slide level2">
+<h2>Suggested Viz Choices</h2>
 <ul>
-<li class="fragment"><p>We’ll interact with R via RStudio in MAT300.</p>
+<li class="fragment"><p>Single Numerical Variable</p>
 <ul>
-<li class="fragment">In the future, you can use R with other IDEs, like VS code.</li>
+<li class="fragment">Histogram, Boxplot, or Density</li>
 </ul></li>
-<li class="fragment"><p>We’ll be using Quarto Documents/Notebooks for everything we do.</p>
+<li class="fragment"><p>Single Categorical Variable</p>
 <ul>
-<li class="fragment">Notebooks allow us to fully document and share analyses even with non-technical people.</li>
+<li class="fragment">Bar Graph</li>
 </ul></li>
-</ul>
-</section>
-<section id="the-r-dialects" class="slide level2">
-<h2>The R Dialects</h2>
-<p>There are three main dialects in R</p>
+<li class="fragment"><p>Two Numerical Variables</p>
 <ul>
-<li class="fragment"><p>Base-R</p></li>
-<li class="fragment"><p><code>data.table</code> (speed)</p></li>
-<li class="fragment"><p>Tidy-R / <code>tidyverse</code> (readability and consistency)</p>
-<ul>
-<li class="fragment">We use this one. When you search for help – include “<em>tidyverse</em>” in your query.</li>
+<li class="fragment">Scatterplot or Heatmap</li>
 </ul></li>
-</ul>
-</section>
-<section id="installing-and-loading-packages" class="slide level2">
-<h2>Installing and Loading Packages</h2>
+<li class="fragment"><p>Two Categorical Variables</p>
 <ul>
-<li class="fragment"><p><code>install.packages("PACKAGE_NAME")</code> to install a package</p>
-<ul>
-<li class="fragment">You only do this once</li>
-<li class="fragment">Do it in the <em>console</em></li>
+<li class="fragment">Bar Graph with Fill Color or Heatmap</li>
 </ul></li>
-<li class="fragment"><p><code>library(PACKAGE_NAME)</code> to load the package</p>
+<li class="fragment"><p>One Numerical and One Categorical Variable</p>
 <ul>
-<li class="fragment">Do this near the top of your Quarto Document, in a <em>setup</em> chunk</li>
+<li class="fragment">Side-by-Side boxplots, overlayed or faceted histograms/densities</li>
 </ul></li>
 </ul>
 </section>
-<section id="reading-in-data" class="slide level2">
-<h2>Reading in Data</h2>
+<section id="structure-of-a-ggplot" class="slide level2">
+<h2>Structure of a <code>ggplot()</code></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" data-code-line-numbers="|1|2|3|4|1-4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>data <span class="sc">%&gt;%</span> <span class="co">#the data to be plotted</span></span>
+<span id="cb1-2"><a href=""></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="co">#initialize a plot</span></span>
+<span id="cb1-3"><a href=""></a>  <span class="fu">geom_PLOT_TYPE</span>(<span class="fu">aes</span>(...)) <span class="sc">+</span> <span class="co">#plot type and required mappings</span></span>
+<span id="cb1-4"><a href=""></a>  <span class="fu">labs</span>() <span class="co">#labels for plot</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <ul>
-<li class="fragment"><p><strong>ASIDE:</strong> We store objects in R with the arrow operator (<code>&lt;-</code>)</p>
+<li class="fragment"><p>Note we can pipe (<code>%&gt;%</code>) a data frame into a plot</p>
 <ul>
-<li class="fragment">ie. <code>x &lt;- 2</code></li>
+<li class="fragment">We don’t need a data frame though</li>
 </ul></li>
-<li class="fragment"><p><code>data &lt;- read_csv("PATH_TO_CSV_FILE")</code> to read in data from a CSV file and store it as <code>data</code></p>
+<li class="fragment"><p>Once we use <code>ggplot()</code> we use <code>+</code> to add layers instead of piping</p></li>
+<li class="fragment"><p><code>geom_*()</code> layers require <em>aesthetics</em> mapping variables to plot features</p>
 <ul>
-<li class="fragment">Requires the <code>{tidyverse}</code> (or at least <code>{readr}</code>) to be loaded</li>
-<li class="fragment">Similar functions exist for reading other file formats</li>
-<li class="fragment">Some require other packages (<code>{readxl}</code> or <code>{haven}</code> are common)</li>
+<li class="fragment">Different <em>geoms</em> have different required/permissible aesthetics</li>
 </ul></li>
+<li class="fragment"><p>Can add multiple <em>geoms</em> to a single plot</p></li>
+<li class="fragment"><p>Every plot should include labels</p></li>
+<li class="fragment"><p>Find <a href="https://github.com/rstudio/cheatsheets/blob/main/data-visualization.pdf">a <code>ggplot</code> cheatsheet here</a></p></li>
 </ul>
 </section>
-<section id="first-interactions-with-data" class="slide level2">
-<h2>First Interactions with Data</h2>
+<section id="suggested-viz-choices-revisited" class="slide level2">
+<h2>Suggested Viz Choices, Revisited</h2>
 <ul>
-<li class="fragment"><code>head()</code> to view first six rows</li>
-<li class="fragment"><code>glimpse()</code> to view dimensions and data types</li>
-<li class="fragment"><code>skim()</code> from <code>{skimr}</code> for much more detail</li>
-</ul>
-</section>
-<section id="the-pipe-operator" class="slide level2">
-<h2>The Pipe Operator</h2>
+<li class="fragment"><p>Single Numerical Variable</p>
 <ul>
-<li class="fragment">Pipes (<code>%&gt;%</code> or <code>|&gt;</code>) make code more readable and allow chaining of functions together</li>
-<li class="fragment">Object to the left of the pipe becomes first argument to the function after the pipe</li>
-<li class="fragment">Read the pipe to mean “<em>and then</em>”</li>
-</ul>
-</section>
-<section id="manipulating-and-transforming-data" class="slide level2">
-<h2>Manipulating and Transforming Data</h2>
+<li class="fragment"><p><code>geom_boxplot()</code>, <code>geom_histogram()</code>, or <code>geom_density()</code></p>
 <ul>
-<li class="fragment"><code>filter()</code> to return only desired records</li>
-<li class="fragment"><code>select()</code> to return only desired columns</li>
-<li class="fragment"><code>summarize()</code> to compute summaries on a table</li>
-<li class="fragment"><code>groupby()</code> to create groups in a table</li>
-<li class="fragment"><code>mutate()</code> to create new columns or change existing ones</li>
-</ul>
-</section>
-<section id="all-changes-are-temporary" class="slide level2">
-<h2>All Changes are Temporary</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href=""></a><span class="in">```{r}</span></span>
-<span id="cb1-2"><a href=""></a><span class="in">penguins %&gt;%</span></span>
-<span id="cb1-3"><a href=""></a><span class="in">  filter(species == "Gentoo") %&gt;%</span></span>
-<span id="cb1-4"><a href=""></a><span class="in">  groupby(island) %&gt;%</span></span>
-<span id="cb1-5"><a href=""></a><span class="in">  summarize(</span></span>
-<span id="cb1-6"><a href=""></a><span class="in">    avg_mass = mean(body_mass_g)</span></span>
-<span id="cb1-7"><a href=""></a><span class="in">  )</span></span>
-<span id="cb1-8"><a href=""></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<li class="fragment">Require <code>x</code> <em>or</em> <code>y</code> aesthetic (but not both!)</li>
+<li class="fragment">For example, <code>geom_density(aes(x = hwy))</code></li>
+</ul></li>
+</ul></li>
+<li class="fragment"><p>Single Categorical Variable</p>
 <ul>
-<li class="fragment">Start with the <code>penguins</code> data frame, and then</li>
-<li class="fragment">filter to just the Gentoo species, and then</li>
-<li class="fragment">group by island, and then</li>
-<li class="fragment">calculate average penguin body mass for each group</li>
-</ul>
-<p><strong>Note:</strong> <code>penguins</code> data frame is not permanently altered here</p>
-</section>
-<section id="until-we-make-them-permanent" class="slide level2">
-<h2>Until We Make Them Permanent</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href=""></a><span class="in">```{r}</span></span>
-<span id="cb2-2"><a href=""></a><span class="in">penguins &lt;- penguins %&gt;%</span></span>
-<span id="cb2-3"><a href=""></a><span class="in">  filter(species == "Gentoo") %&gt;%</span></span>
-<span id="cb2-4"><a href=""></a><span class="in">  groupby(island) %&gt;%</span></span>
-<span id="cb2-5"><a href=""></a><span class="in">  summarize(</span></span>
-<span id="cb2-6"><a href=""></a><span class="in">    avg_mass = mean(body_mass_g)</span></span>
-<span id="cb2-7"><a href=""></a><span class="in">  )</span></span>
-<span id="cb2-8"><a href=""></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<li class="fragment"><p><code>geom_bar()</code></p>
 <ul>
-<li class="fragment"><p>Now the change is permanent because we’ve stored the result</p>
+<li class="fragment">Requires <code>x</code> <em>or</em> <code>y</code> aesthetic (but not both!)</li>
+<li class="fragment">For example, <code>geom_bar(aes(x = class))</code></li>
+</ul></li>
+<li class="fragment"><p><code>geom_col()</code></p>
 <ul>
-<li class="fragment"><p>Notice the use of the arrow operator (<code>&lt;-</code>)</p></li>
-<li class="fragment"><p>Be careful overwriting existing objects – think about whether you:</p>
-<ul>
-<li class="fragment">might need the old object again</li>
-<li class="fragment">would be better off creating a new object (variable)</li>
-<li class="fragment">even need to store the result at all</li>
+<li class="fragment">Can have both <code>x</code> and <code>y</code> aesthetic</li>
+<li class="fragment">Example, <code>geom_col(aes(x = class, y = n))</code></li>
 </ul></li>
 </ul></li>
 </ul>
+</section>
+<section id="suggested-viz-choices-revisited-1" class="slide level2">
+<h2>Suggested Viz Choices, Revisited</h2>
+<ul>
+<li class="fragment"><p>Two Numerical Variables</p>
+<ul>
+<li class="fragment"><p><code>geom_point()</code> or <code>geom_hexbin()</code></p>
+<ul>
+<li class="fragment">Require both <code>x</code> <em>and</em> <code>y</code> aesthetic</li>
+<li class="fragment">For example, <code>geom_point(aes(x = cty, y = hwy))</code></li>
+</ul></li>
+</ul></li>
+<li class="fragment"><p>Two Categorical Variables</p>
+<ul>
+<li class="fragment"><p><code>geom_bar()</code></p>
+<ul>
+<li class="fragment">Use <code>x</code> <em>and</em> <code>fill</code> aesthetics</li>
+<li class="fragment">For example, <code>geom_bar(aes(x = class, fill = drv))</code></li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="suggested-viz-choices-revisited-2" class="slide level2">
+<h2>Suggested Viz Choices, Revisited</h2>
+<ul>
+<li class="fragment"><p>One Numerical and One Categorical Variable</p>
+<ul>
+<li class="fragment"><p><code>geom_boxplot()</code></p>
+<ul>
+<li class="fragment">Use both <code>x</code> and <code>y</code> aesthetics</li>
+<li class="fragment">For example, <code>geom_boxplot(aes(x = hwy, y = class))</code></li>
+</ul></li>
+<li class="fragment"><p><code>geom_density()</code> or <code>geom_histogram()</code></p>
+<ul>
+<li class="fragment">Use only <code>x</code> aesthetic</li>
+<li class="fragment">Add layer <code>facet_wrap(~ VAR_NAME)</code></li>
+</ul></li>
+</ul></li>
+<li class="fragment"><p>Other available <em>aesthetics</em> include <code>color</code>, <code>size</code>, <code>shape</code>, and <code>alpha</code> (transparency)</p>
+<ul>
+<li class="fragment">Remember, specific <em>geoms</em> permit only specific <em>aesthetics</em></li>
+</ul></li>
+</ul>
+</section>
+<section id="on-labels" class="slide level2">
+<h2>On Labels</h2>
+<ul>
+<li class="fragment"><p>The <code>labs()</code> layer permits global plot labels and labels for any mapped aesthetic</p>
+<ul>
+<li class="fragment"><code>title</code></li>
+<li class="fragment"><code>subtitle</code></li>
+<li class="fragment"><code>caption</code></li>
+<li class="fragment"><code>alt</code> (for alt-text)</li>
+<li class="fragment"><code>x</code></li>
+<li class="fragment"><code>y</code></li>
+<li class="fragment"><code>color</code></li>
+<li class="fragment"><code>fill</code></li>
+<li class="fragment">etc.</li>
+</ul></li>
+</ul>
+</section>
+<section id="organizing-plots-with-patchwork" class="slide level2">
+<h2>Organizing Plots with <code>{patchwork}</code></h2>
+<ul>
+<li class="fragment">Often you’ll want to arrange plots together, rather than printing them out one at a time</li>
+<li class="fragment">The <code>{patchwork}</code> package provides very easy and intuitive framework for doing this.</li>
+</ul>
+<ol type="1">
+<li class="fragment"><p>Create each of your plots, but store them into variables <code>p1</code>, <code>p2</code>, …</p></li>
+<li class="fragment"><p>Use <code>+</code> to organize plots side-by-side, and <code>/</code> to organize plots over/under one another.</p>
+<ul>
+<li class="fragment">For example, <code>(p1 + p2) / p3</code> will arrange plots <code>p1</code> and <code>p2</code> side-by-side, with plot <code>p3</code> underneath them.</li>
+</ul></li>
+</ol>
 </section>
 <section id="lets-do-this" class="slide level2">
 <h2>Let’s Do This</h2>
 <ul>
-<li class="fragment">You have a fully complete notebook using the <code>mpg</code> data on the webpage</li>
-<li class="fragment">Let’s use the <code>ames</code> data today – I posted a link to it in Slack</li>
+<li class="fragment"><p>Again, you have a fully complete notebook using the <code>penguins</code> data on the webpage.</p>
+<ul>
+<li class="fragment">In that notebook, I split the available data into <em>training</em> and <em>testing</em> sets – we’ll talk about why later on.</li>
+<li class="fragment">For this activity, we won’t bother.</li>
+</ul></li>
+<li class="fragment"><p>Open your <code>ames</code> data notebook from last time.</p></li>
+<li class="fragment"><p>We’ll ask and answer some questions there using data visualization.</p></li>
 </ul>
-</section>
-<section id="instructions-setup" class="slide level2">
-<h2>Instructions (Setup)</h2>
-<ol type="1">
-<li class="fragment">Open RStudio, create a new R Project – you can use this one project for our entire course</li>
-<li class="fragment">Download, open, and save the Student Notes Template in your project.</li>
-<li class="fragment">Create a copy of the template named <code>IntroToR</code> or something else descriptive.</li>
-<li class="fragment">Confirm to install any missing packages using the yellow banner at the top of the Quarto Document.</li>
-</ol>
-</section>
-<section id="instructions-analysis" class="slide level2">
-<h2>Instructions (Analysis)</h2>
-<ol start="5" type="1">
-<li class="fragment"><p>Run the code in the <code>setup</code> chunk</p></li>
-<li class="fragment"><p>Use <code>read_csv()</code> and the file path from Slack to read the <code>ames</code> data into your R session</p>
-<ul>
-<li class="fragment">Make sure it shows up in your <em>Environment</em></li>
-</ul></li>
-<li class="fragment"><p>Take an initial look at the data</p></li>
-<li class="fragment"><p>Write down some interesting questions that might use functionality discussed in this slide deck</p>
-<ul>
-<li class="fragment">Start with a few very simple questions and then build more involved ones</li>
-</ul></li>
-<li class="fragment"><p>We’ll answer those questions by using the functionality we saw here</p></li>
-</ol>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
@@ -579,19 +593,19 @@ Dr.&nbsp;Gilbert
   </div>
 
   <script>window.backupDefine = window.define; window.define = undefined;</script>
-  <script src="3d_IntroSlides_files/libs/revealjs/dist/reveal.js"></script>
+  <script src="4d_IntroSlides_files/libs/revealjs/dist/reveal.js"></script>
   <!-- reveal.js plugins -->
-  <script src="3d_IntroSlides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
-  <script src="3d_IntroSlides_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
-  <script src="3d_IntroSlides_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
-  <script src="3d_IntroSlides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
-  <script src="3d_IntroSlides_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  <script src="4d_IntroSlides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="4d_IntroSlides_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="4d_IntroSlides_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="4d_IntroSlides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="4d_IntroSlides_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
-  <script src="3d_IntroSlides_files/libs/revealjs/plugin/notes/notes.js"></script>
-  <script src="3d_IntroSlides_files/libs/revealjs/plugin/search/search.js"></script>
-  <script src="3d_IntroSlides_files/libs/revealjs/plugin/zoom/zoom.js"></script>
-  <script src="3d_IntroSlides_files/libs/revealjs/plugin/math/math.js"></script>
+  <script src="4d_IntroSlides_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="4d_IntroSlides_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="4d_IntroSlides_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="4d_IntroSlides_files/libs/revealjs/plugin/math/math.js"></script>
   <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
 
   <script>

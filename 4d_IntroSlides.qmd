@@ -1,0 +1,249 @@
+---
+title: "Data Viz and `ggplot()` Intro"
+author: Dr. Gilbert
+format: revealjs
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 20))
+```
+
+## The Highlights
+
++ Sample Viz
++ Bad Viz
++ Suggested Viz Choices
++ Structure of a `ggplot()`
++ Suggested Viz Choices, Revisited
++ On Plot Labels
++ Organizing plots with `{patchwork}`
+
+## A Good Viz Tells a Clear Story
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+p1 <- mpg %>%
+  ggplot() + 
+  geom_histogram(aes(x = hwy, y = ..density..),
+                 color = "black",
+                 fill = "purple") +
+  geom_density(aes(x = hwy),
+               fill = "purple",
+               alpha = 0.7) + 
+  labs(x = "Highway MPG",
+       y = "")
+
+p2 <- mpg %>%
+  mutate(
+    drv = case_when(
+      drv == "f" ~ "Forward Drive",
+      drv == "r" ~ "Rear Drive",
+      TRUE ~ "Four Wheel"
+    )
+  ) %>%
+  ggplot() +
+  geom_boxplot(aes(x = cty, y = drv, fill = drv),
+               show.legend = FALSE) +
+  labs(x = "City MPG",
+       y = "")
+
+p3 <- mpg %>%
+  count(class) %>%
+  ggplot() +
+  geom_col(aes(x = fct_reorder(class, n), y = n)) +
+  labs(x = "",
+       y = "Count") + 
+  coord_flip()
+
+p4 <- mpg %>%
+  ggplot() + 
+  geom_point(aes(x = cty, y = hwy)) + 
+  labs(x = "City MPG", 
+       y = "Highway MPG")
+
+pwk <- (p3 + p1) / (p2 + p4)
+pwk + plot_annotation(
+  title = "Some Plots About Cars"
+)
+```
+
+## A Bad Viz Doesn't
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+p1 <- mpg %>%
+  ggplot() + 
+  geom_bar(aes(x = displ)) + 
+  labs(x = "Engine Displacement",
+       y = "")
+
+p2 <- mpg %>%
+  ggplot() +
+  geom_point(aes(x = as.factor(year), y = class)) +
+  labs(x = "Year",
+       y = "")
+
+p3 <- mpg %>%
+  ggplot() +
+  geom_point(aes(x = cyl, y = cty)) +
+  labs(x = "",
+       y = "")
+
+pwk <- p2 + (p1 / p3)
+pwk + plot_annotation(
+  title = "These Plots Stink!"
+)
+```
+
+## Suggested Viz Choices
+
++ Single Numerical Variable
+
+  + Histogram, Boxplot, or Density
+
++ Single Categorical Variable
+
+  + Bar Graph
+
++ Two Numerical Variables
+
+  + Scatterplot or Heatmap
+
++ Two Categorical Variables
+
+  + Bar Graph with Fill Color or Heatmap
+
++ One Numerical and One Categorical Variable
+
+  + Side-by-Side boxplots, overlayed or faceted histograms/densities
+  
+## Structure of a `ggplot()`
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "|1|2|3|4|1-4"
+
+data %>% #the data to be plotted
+  ggplot() + #initialize a plot
+  geom_PLOT_TYPE(aes(...)) + #plot type and required mappings
+  labs() #labels for plot
+```
+
++ Note we can pipe (`%>%`) a data frame into a plot
+
+  + We don't need a data frame though
+
++ Once we use `ggplot()` we use `+` to add layers instead of piping
++ `geom_*()` layers require *aesthetics* mapping variables to plot features
+
+  + Different *geoms* have different required/permissible aesthetics
+
++ Can add multiple *geoms* to a single plot
++ Every plot should include labels
++ Find [a `ggplot` cheatsheet here](https://github.com/rstudio/cheatsheets/blob/main/data-visualization.pdf)
+
+## Suggested Viz Choices, Revisited
+
++ Single Numerical Variable
+
+  + `geom_boxplot()`, `geom_histogram()`, or `geom_density()`
+  
+    + Require `x` *or* `y` aesthetic (but not both!)
+    + For example, `geom_density(aes(x = hwy))`
+  
++ Single Categorical Variable
+
+  + `geom_bar()`
+  
+    + Requires `x` *or* `y` aesthetic (but not both!)
+    + For example, `geom_bar(aes(x = class))`
+  
+  + `geom_col()`
+    
+    + Can have both `x` and `y` aesthetic
+    + Example, `geom_col(aes(x = class, y = n))`
+    
+## Suggested Viz Choices, Revisited
+
++ Two Numerical Variables
+
+  + `geom_point()` or `geom_hexbin()`
+  
+    + Require both `x` *and* `y` aesthetic
+    + For example, `geom_point(aes(x = cty, y = hwy))`
+  
++ Two Categorical Variables
+
+  + `geom_bar()`
+  
+    + Use `x` *and* `fill` aesthetics
+    + For example, `geom_bar(aes(x = class, fill = drv))`
+
+## Suggested Viz Choices, Revisited
+
++ One Numerical and One Categorical Variable
+
+  + `geom_boxplot()`
+  
+    + Use both `x` and `y` aesthetics
+    + For example, `geom_boxplot(aes(x = hwy, y = class))`
+  
+  + `geom_density()` or `geom_histogram()`
+ 
+    + Use only `x` aesthetic
+    + Add layer `facet_wrap(~ VAR_NAME)`
+
++ Other available *aesthetics* include `color`, `size`, `shape`, and `alpha` (transparency)
+
+  + Remember, specific *geoms* permit only specific *aesthetics*
+  
+## On Labels
+
++ The `labs()` layer permits global plot labels and labels for any mapped aesthetic
+
+  + `title`
+  + `subtitle`
+  + `caption`
+  + `alt` (for alt-text)
+  + `x`
+  + `y`
+  + `color`
+  + `fill`
+  + etc.
+  
+## Organizing Plots with `{patchwork}`
+
++ Often you'll want to arrange plots together, rather than printing them out one at a time
++ The `{patchwork}` package provides very easy and intuitive framework for doing this.
+
+1. Create each of your plots, but store them into variables `p1`, `p2`, ...
+2. Use `+` to organize plots side-by-side, and `/` to organize plots over/under one another.
+
+    + For example, `(p1 + p2) / p3` will arrange plots `p1` and `p2` side-by-side, with plot `p3` underneath them.
+    
+## Let's Do This
+
++ Again, you have a fully complete notebook using the `penguins` data on the webpage.
+
+  + In that notebook, I split the available data into *training* and *testing* sets -- we'll talk about why later on.
+  + For this activity, we won't bother.
+
++ Open your `ames` data notebook from last time.
++ We'll ask and answer some questions there using data visualization.

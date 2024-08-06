@@ -149,4 +149,4 @@ penguins <- penguins %>%
 8. Write down some interesting questions that might use functionality discussed in this slide deck
 
     + Start with a few very simple questions and then build more involved ones
-9. We'll answer those questions by using the functionality
+9. We'll answer those questions by using the functionality we saw here

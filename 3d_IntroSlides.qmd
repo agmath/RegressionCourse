@@ -24,7 +24,7 @@ theme_set(theme_bw(base_size = 20))
 + First interactions with data in R
 + The pipe operator (`%>%` or `|>`)
 + Manipulating and transforming data with R
-+ All changes are temporary unless you force them to be permanent
++ All changes are temporary unless you make them permanent
 
 ## Interacting with R
 

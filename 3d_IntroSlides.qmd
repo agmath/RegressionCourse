@@ -30,7 +30,7 @@ theme_set(theme_bw(base_size = 20))
 
 + We'll interact with R via RStudio in MAT300.
 
-  + You can use R with other IDE's, like VS code.
+  + In the future, you can use R with other IDEs, like VS code.
   
 + We'll be using Quarto Documents/Notebooks for everything we do.
 
@@ -67,7 +67,7 @@ There are three main dialects in R
 
   + Requires the `{tidyverse}` (or at least `{readr}`) to be loaded
   + Similar functions exist for reading other file formats
-  + Some require other packages(`{readxl}` or `{haven}` are common)
+  + Some require other packages (`{readxl}` or `{haven}` are common)
   
 ## First Interactions with Data
 
@@ -103,7 +103,7 @@ penguins %>%
 + Start with the `penguins` data frame, and then
 + filter to just the Gentoo species, and then
 + group by island, and then
-+ calculate average penguin body mass
++ calculate average penguin body mass for each group
 
 **Note:** `penguins` data frame is not permanently altered here
 
@@ -129,7 +129,7 @@ penguins <- penguins %>%
     
 ## Let's Do This
 
-+ You have a fully complete notebook using the `penguins` data on the webpage
++ You have a fully complete notebook using the `mpg` data on the webpage
 + Let's use the `ames` data today -- I posted a link to it in Slack
 
 ## Instructions (Setup)

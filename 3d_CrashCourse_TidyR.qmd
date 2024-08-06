@@ -14,6 +14,9 @@ date-format: long
 ```{r global-options, include=FALSE}
 library(tidyverse)
 library(kableExtra)
+
+#For printing nice tables
+options(kable_styling_bootstrap_options = c("hover", "striped"))
 ```
 
 ## Objectives
@@ -64,17 +67,20 @@ tate_works <- read_delim("https://raw.githubusercontent.com/rfordatascience/tidy
 
 Now that we've got data, the first thing we should do is look at it. There are a few really handy R functions for *getting a feel* for the data you have access to. The `View()`, `head()`, `tail()`, and `glimpse()` functions are four that are really commonly used. For the remainder of this notebook we'll use a data frame called `mpg` which is built into the `tidyverse`.
 
-  + Running `View(mpg)` will open a file viewer which allows you to navigate the data frame in a familiar spreadsheet format. 
+  + Running `View(mpg)` will open a file viewer which allows you to navigate the data frame in a familiar spreadsheet format.
+  
+    + Try to avoid this -- especially with large data frames.
   + Using `head(mpg)` and `tail(mpg)` give us a convenient method for looking at the first six and last six rows of a data frame, respectively. This is typically enough to give us an idea of the type of data we are working with. Running both of these functions can also make us aware of potential inconsistencies in data collection.
     ```{r echo = TRUE, eval = TRUE}
     head(mpg) %>%
       kable() %>%
-      kable_styling(bootstrap_options = c("hover", "striped"))
+      kable_styling()
+    
     tail(mpg) %>%
       kable() %>%
-      kable_styling(bootstrap_options = c("hover", "striped"))
+      kable_styling()
     ```
-    + Note that the `kable() %>% kable_styline(bootsrap_options = c("hover", "striped"))` commands are used to produce visually appealing tables in our html output -- they don't actually do anything to transform our data. You are encouraged (though not required) to use these lines when you want to print out tabular output. You can see what the output looks like without using `kableExtra` below. I'll continue to utilize `kableExtra` throughout our course.
+    + Note that the `kable() %>% kable_styling()` commands are used to produce visually appealing tables in our html output -- they don't actually do anything to transform our data. You are encouraged (though not required) to use these lines when you want to print out tabular output. You can see what the output looks like without using `kableExtra` below. I'll continue to utilize `kableExtra` throughout our course.
     ```{r echo = TRUE, eval = TRUE}
     head(mpg)
     tail(mpg)
@@ -96,7 +102,7 @@ Pipes are a functionality that is included in a package that is part of `tidyver
 mpg %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 You can read the code above as saying "take the `mpg` dataset, and plug it into the `head()` function". Putting `head()` indented on a new line is not necessary for the code to work, but it does make the code easier to read. This new method of asking for the `head()` of the dataset may seem silly and inefficient, but the real magic of the pipe is that it allows us to chain operations together in a way that mimics the way humans think about instructions. We'll see this in action as we get exposure to more data manipulation tools below.
@@ -116,7 +122,7 @@ mpg %>%
   filter(class == "subcompact") %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 We can also use more complex conditions on which rows to see using *and* (`&`) and *or* (`|`) statements. Maybe we want to see only those vehicles in the made by `subaru` or  getting at least a 35 highway mile per gallon rating (`hwy`).
@@ -126,7 +132,7 @@ mpg %>%
   filter(manufacturer == "subaru" | hwy >= 35) %>%
   head()  %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 ## Selecting Columns (`select()`)
@@ -138,7 +144,7 @@ mpg %>%
   select(manufacturer, model, year, cty, hwy, class) %>%
   head()  %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 We can also select all columns *except* certain ones by preceding the column name with a `-`.
@@ -148,7 +154,7 @@ mpg %>%
   select(-displ,-cyl) %>%
   head()  %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 The `select()` function is also useful for changing the order of the columns.
@@ -158,7 +164,7 @@ mpg %>%
   select(cty, hwy, manufacturer) %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 ## Combining the Two
@@ -171,12 +177,12 @@ mpg %>%
   select(manufacturer, model, year, cty, hwy, class) %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 :::
 
-**A Note on Pipes:** The advantage to the pipe operator is probably pretty clear by now. The code we just wrote says *take the `mpg` data set, filter it so that we only see cars manufactured since 2005, show me only the few columns I am interested in, and just let me see the first six rows for now*. The alternative to this would be writing code that looks a lot less readable:
+**A Note on Pipes:** The advantage to the pipe operator is probably pretty clear by now. The code we just wrote says *take the `mpg` data set, and then filter it so that we only see cars manufactured since 2005, and then show me only the few columns I am interested in, and then just let me see the first six rows for now*. The alternative to this would be writing code that looks a lot less readable:
 
 ```{r echo = TRUE, eval = FALSE}
 head(select(filter(mpg, year >= 2005), manufacturer, model, year, cty, hwy, class))
@@ -197,7 +203,7 @@ mpg %>%
   count(manufacturer) %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 The counts are displayed in alphabetical order by manufacturer. We might be interested in the most well-represented manufacturers. We'll do this with `arrange()` -- we can pass this function the argument `desc(n)` to say that we want to arrange by our new count column in descending order, and let's ask for the top 10 rows instead of the top 6.
@@ -208,7 +214,7 @@ mpg %>%
   arrange(desc(n)) %>%
   head(n = 10) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Let's say we wanted to know how many different models of car each manufacturer has released since the year 2000. This is a more complicated question. We would first need to filter the data so that we are only considering cars manufactured since the year 2000. Then we would subset to include only the `manufacturer` and `model` columns. There are lots of duplicates here, so we would want to remove them with a function called `distinct()`, and then finally we could count occurrences within each `manufacturer`
@@ -222,7 +228,7 @@ mpg %>%
   arrange(desc(n)) %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 ## Summarizing Numerical Data
@@ -233,7 +239,7 @@ Summarizing categorical data is most often done with counts, but we've got many 
 mpg %>% 
   summarize(median_hwy = median(hwy)) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 With the use of `summarize()` we can get multiple summaries at once. Let's compute the mean and standard deviation for both the highway and city mile per gallon ratings across all of the vehicles in our data set.
@@ -242,7 +248,7 @@ With the use of `summarize()` we can get multiple summaries at once. Let's compu
 mpg %>% 
   summarize(mean_hwy = mean(hwy), std_deviation_hwy = sd(hwy), mean_cty = mean(cty), std_deviation_cty = sd(cty)) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 It might be useful if we could get grouped summary statistics. Let's use `group_by()` to see how these measures vary across the different vehicle classes.
@@ -252,7 +258,7 @@ mpg %>%
   group_by(class) %>%
   summarize(mean_hwy = mean(hwy), std_deviation_hwy = sd(hwy), mean_cty = mean(cty), std_deviation_cty = sd(cty)) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 Let's arrange the result here by mean highway mile per gallon rating in the default ascending order.
@@ -263,7 +269,7 @@ mpg %>%
   summarize(mean_hwy = mean(hwy), std_deviation_hwy = sd(hwy), mean_cty = mean(cty), std_deviation_cty = sd(cty)) %>%
   arrange(mean_hwy) %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 That's pretty informative although not totally surprising. Subcompact cars seem to have a high level of variation in their mpg ratings though!
@@ -287,10 +293,10 @@ mpg %>%
   arrange(desc(mpg_ratio)) %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
-Once pretty common step in an analysis is to create a categorical column from a variable which was originally numeric. In order to do this we can use the `if_else()` function. The three arguments of `if_else()` are a condition, and the values you want to fill if the condition is true or false, respectively.
+One pretty common step in an analysis is to create a categorical column from a variable which was originally numeric. In order to do this we can use the `if_else()` function. The three arguments of `if_else()` are a condition, and the values you want to fill if the condition is true or false, respectively.
 
 ```{r echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
 mpg %>%
@@ -298,7 +304,7 @@ mpg %>%
   select(manufacturer,model,year,pre_2000) %>%
   head() %>%
   kable() %>%
-  kable_styling(bootstrap_options = c("hover", "striped"))
+  kable_styling()
 ```
 
 

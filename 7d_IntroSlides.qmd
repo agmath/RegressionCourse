@@ -1,0 +1,239 @@
+---
+title: "`{tidymodels}` Overview"
+author: Dr. Gilbert
+format: revealjs
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+
+set.seed(123)
+data_splits <- initial_split(mpg, prop = 0.75)
+train <- training(data_splits)
+test <- testing(data_splits)
+
+sample_spec <- linear_reg()
+sample_rec <- recipe(hwy ~ displ + cyl + drv, data = train) %>%
+  step_dummy(drv)
+sample_wf <- workflow() %>%
+  add_model(sample_spec) %>%
+  add_recipe(sample_rec)
+lin_reg_fit <- sample_wf %>%
+  fit(train)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 20))
+```
+
+## A Reminder About Our Goals
+
+```{r}
+set.seed(123)
+num_pts <- 20 
+
+x <- runif(num_pts, min = 0, max = 100)
+y <- 7*x + 2 + rnorm(num_pts, mean = 0, sd = 100)
+
+ggplot() + 
+  geom_point(aes(x = x, y = y)) + 
+  geom_smooth(aes(x = x, y = y),
+              method = "lm",
+              color = "blue") + 
+  labs(title = "Let's Model y, given x", 
+       x = "x",
+       y = "y")
+```
+
++ So...how do we do it?
+
+## The Highlights {.smaller}
+
++ Obtain training and validation data
++ Build a model using the `{tidymodels}` framework
+  
+  + Model specification (declaring the type of model)
+  + Recipe (defining the response, features, and transformations)
+  + Workflow (encapsulate the specification and recipe together)
+  + Fit the workflow to training data
+
++ Assess model performance
+
+  + Global performance metrics (training data)
+  + Individual term-based assessments (training data)
+  + We'll add more assessment techniques later
+
++ Making predictions
+
+## Splitting Training and Test Data
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "|1|3-4|6-7|1-7"
+
+set.seed(080724) #set seed for reproducibility
+
+data_splits <- my_data %>% #begin with `my_data` data frame
+  initial_split(prop = 0.75) #split into 75% train / 25% test
+
+train <- training(data_splits) #collect training rows into data frame
+test <- testing(data_splits) #collect validation rows into data frame
+```
+
+. . . 
+
+:::{.callout-important}
+## Setting a Seed
+
+Make sure to **always** set a seed. It ensures that you obtain the same training and testing data each time you run your notebook/model.
+
+:::
+
+## Building a Model
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "|1-2|4-6|8-10|12-14|1-14"
+
+lin_reg_spec <- linear_reg() %>% #define model class
+  set_engine("lm") #set fitting engine
+
+#Set recipe, including response and predictors
+#Predictors are separate by "+" signs
+lin_reg_rec <- recipe(response ~ pred_1 + pred_2 + ... + pred_k, data = train)
+
+lin_reg_wf <- workflow() %>% #create workflow
+  add_model(lin_reg_spec) %>% #add the model specification
+  add_recipe(lin_reg_rec) #add the recipe
+
+#Fit the workflow to the training data
+lin_reg_fit <- lin_reg_wf %>%
+  fit(train)
+```
+
+## Global Model Assessment on Training Data {.smaller}
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+```{r}
+#| echo: false
+#| eval: true
+
+lin_reg_fit %>%
+  glance() %>%
+  pivot_longer(cols = everything(),
+               names_to = "metric",
+               values_to = "values") %>%
+  kable() %>%
+  kable_styling()
+```
+
+:::
+
+:::{.column width="40%"}
+
+```{r}
+#| echo: true
+#| eval: false
+
+#Begin with fitted model
+#and then get global 
+#performance metrics
+lin_reg_fit %>% 
+  glance() 
+```
+
+**We'll Focus On:**
+
++ `adj.r.squared`
++ `sigma`
++ `p.value`
++ `df.residual`
++ `nobs`
+
+:::
+
+::::
+
+
+## Term-Based Assessments {.smaller}
+
+```{r}
+#| echo: true
+#| eval: false
+
+#Begin with fitted model
+#Obtain model fit information
+#Format as data frame
+lin_reg_fit %>% 
+  extract_fit_engine() %>% 
+  tidy() 
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lin_reg_fit %>% 
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
++ You can conduct inference and interpret model coefficients from here as well!
+
+## Making Predictions
+
+We can obtain predictions using two methods, as long as the `new_data` you are predicting on includes all of the features from your `recipe()`.
+
+<br/>
+
+. . . 
+
+```{r}
+#| echo: true
+#| eval: false
+
+lin_reg_fit %>%
+  predict(new_data)
+```
+
+To create a single column (`.pred`) data frame of predictions.
+
+<br/>
+
+. . . 
+
+```{r}
+#| echo: true
+#| eval: false
+
+lin_reg_fit %>%
+  augment(new_data)
+```
+
+To add a new `.pred` column to the `new_data` data frame. 
+
+. . . 
+
+:::{.callout-tip}
+
+I prefer the `augment()` method nearly always!
+
+:::
+
+## Let's Do This!
+
+Let's explore our newfound modeling abilities with some simple linear regression models on the `ames` data.

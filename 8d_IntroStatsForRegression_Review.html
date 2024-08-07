@@ -2,11 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.43">
+<meta name="generator" content="quarto-1.5.56">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-08-03">
+<meta name="dcterms.date" content="2024-08-07">
 
 <title>Introductory Statistics Review</title>
 <style>
@@ -69,7 +69,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="8d_IntroStatsForRegression_Review_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="8d_IntroStatsForRegression_Review_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script src="8d_IntroStatsForRegression_Review_files/libs/kePrint-0.0.1/kePrint.js"></script>
+
 <link href="8d_IntroStatsForRegression_Review_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -137,7 +139,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 3, 2024</p>
+      <p class="date">August 7, 2024</p>
     </div>
   </div>
   
@@ -198,20 +200,17 @@ window.Quarto = {
 <pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 2 rows containing non-finite outside the scale range
-(`stat_smooth()`).</code></pre>
+<pre><code>Warning: Removed 2 rows containing non-finite values (`stat_smooth()`).</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 2 rows containing missing values or values outside the scale range
-(`geom_point()`).</code></pre>
+<pre><code>Warning: Removed 2 rows containing missing values (`geom_point()`).</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 2 rows containing non-finite outside the scale range (`stat_smooth()`).
-Removed 2 rows containing missing values or values outside the scale range
-(`geom_point()`).</code></pre>
+<pre><code>Warning: Removed 2 rows containing non-finite values (`stat_smooth()`).
+Removed 2 rows containing missing values (`geom_point()`).</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -318,7 +317,7 @@ Removed 2 rows containing missing values or values outside the scale range
 </div>
 <strong>Testing For Model Utility:</strong> Proposed form of the model,
 <center>
-<span class="math inline">\(\mathbb{E}\left[\text{body_mass}\right]=\beta_0+\beta_1\cdot\text{flipper_length}\)</span>
+<span class="math inline">\(\mathbb{E}\left[\text{body\_mass}\right]=\beta_0+\beta_1\cdot\text{flipper\_length}\)</span>
 </center>
 The hypotheses for a global test of model utility are as follows:
 <center>
@@ -328,7 +327,7 @@ The hypotheses for a global test of model utility are as follows:
 <p><strong>Testing for Significance of Individual Predictors:</strong> Since we built a simple linear regression model, there is only one predictor. That means that the <em>global test of model utility</em> tested the same hypotheses as a test for significance of <code>flipper_length_mm</code> as an individual predictor. Notice that the <span class="math inline">\(p\)</span>-value for the <em>global test of model utility</em> matches the <span class="math inline">\(p\)</span>-value associated with the <code>flipper_length_mm</code> predictor. This won’t be the case once we begin adding more predictors to our models.</p>
 <strong>Using and Interpreting a Model:</strong> Since our model to predict the body mass of a penguin depending on the length of the penguin’s flipper was significant, let’s use it! Note that the model we computed is:
 <center>
-<span class="math inline">\(\mathbb{E}\left[\text{price}\right]=-5768.76 + 49.67\cdot \text{flipper_length_mm}\)</span>
+<span class="math inline">\(\mathbb{E}\left[\text{body\_mass}\right]=-5768.76 + 49.67\cdot \text{flipper\_length\_mm}\)</span>
 </center>
 <ol type="1">
 <li>Estimate the body mass for a penguin whose <code>flipper_length_mm</code> is <span class="math inline">\(200\)</span>mm.</li>
@@ -887,7 +886,7 @@ H_a &amp; : &amp; \text{At least one of the coefficients is not 0}\end{array}\]<
 </div>
 Now that all of the model terms are statistically significant, we can consider this our “final” model. From the output, we can see that this “final” model is of the form:
 <center>
-<span class="math inline">\(\mathbb{E}\left[y\right] = 227916.27 + 50.87\cdot \text{flipper_length} - 116.5\cdot \text{year}\)</span>
+<span class="math inline">\(\mathbb{E}\left[\text{body\_mass}\right] = 227916.27 + 50.87\cdot \text{flipper\_length} - 116.5\cdot \text{year}\)</span>
 </center>
 <ol type="1">
 <li><p>What is the expected body mass (in grams) for a penguin whose flipper length is 200mm and which was observed in the year 2017?</p></li>

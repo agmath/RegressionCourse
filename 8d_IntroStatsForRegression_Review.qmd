@@ -121,7 +121,7 @@ mass_flipper_fit %>%
 ```
 
 **Testing For Model Utility:** Proposed form of the model,
-<center> $\mathbb{E}\left[\text{body_mass}\right]=\beta_0+\beta_1\cdot\text{flipper_length}$</center>
+<center> $\mathbb{E}\left[\text{body\_mass}\right]=\beta_0+\beta_1\cdot\text{flipper\_length}$</center>
 The hypotheses for a global test of model utility are as follows:
 <center> $\begin{array}{ll} H_0:& \beta_1=0\\ H_a: & \beta_1\neq 0\end{array}$ or $\begin{array}{ll} H_0:& \text{Flipper length is not a significant predictor of price}\\ H_a: & \text{Flipper length is a significant predictor of price}\end{array}$</center>
 We can find the $p$-value given for the model as a whole from the results of `glance()` on our fitted model. That $p$-value is $9.388e-82$ (that's really small!), and so we reject $H_0$, and claim that our model is useful. We won't always `glance()` at our models, but doing so can be really helpful, especially in the case where you are suspicious of coefficients and $p$-values for your individual predictors.
@@ -129,7 +129,7 @@ We can find the $p$-value given for the model as a whole from the results of `gl
 **Testing for Significance of Individual Predictors:** Since we built a simple linear regression model, there is only one predictor. That means that the *global test of model utility* tested the same hypotheses as a test for significance of `flipper_length_mm` as an individual predictor. Notice that the $p$-value for the *global test of model utility* matches the $p$-value associated with the `flipper_length_mm` predictor. This won't be the case once we begin adding more predictors to our models.
 
 **Using and Interpreting a Model:** Since our model to predict the body mass of a penguin depending on the length of the penguin's flipper was significant, let's use it! Note that the model we computed is:
-<center> $\mathbb{E}\left[\text{price}\right]=-5768.76 + 49.67\cdot \text{flipper_length_mm}$ </center>
+<center> $\mathbb{E}\left[\text{body\_mass}\right]=-5768.76 + 49.67\cdot \text{flipper\_length\_mm}$ </center>
 
 1. Estimate the body mass for a penguin whose `flipper_length_mm` is $200$mm.
 2. Interpret the intercept for the model, and comment on whether or not it makes sense.
@@ -300,7 +300,7 @@ mass_multi_fit %>%
 ```
 
 Now that all of the model terms are statistically significant, we can consider this our "final" model. From the output, we can see that this "final" model is of the form: 
-<center> $\mathbb{E}\left[y\right] = 227916.27 + 50.87\cdot \text{flipper_length} - 116.5\cdot \text{year}$</center>
+<center> $\mathbb{E}\left[\text{body\_mass}\right] = 227916.27 + 50.87\cdot \text{flipper\_length} - 116.5\cdot \text{year}$</center>
 
 1. What is the expected body mass (in grams) for a penguin whose flipper length is 200mm and which was observed in the year 2017?
 

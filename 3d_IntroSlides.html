@@ -8,10 +8,10 @@
 <link href="3d_IntroSlides_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="3d_IntroSlides_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="3d_IntroSlides_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.5.43">
+  <meta name="generator" content="quarto-1.4.555">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-06">
+  <meta name="dcterms.date" content="2024-08-07">
   <title>Welcome to R; A Quick Overview</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -43,7 +43,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -71,7 +71,7 @@
     code span.at { color: #657422; } /* Attribute */
     code span.bn { color: #ad0000; } /* BaseN */
     code span.bu { } /* BuiltIn */
-    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.cf { color: #003b4f; } /* ControlFlow */
     code span.ch { color: #20794d; } /* Char */
     code span.cn { color: #8f5902; } /* Constant */
     code span.co { color: #5e5e5e; } /* Comment */
@@ -85,7 +85,7 @@
     code span.fu { color: #4758ab; } /* Function */
     code span.im { color: #00769e; } /* Import */
     code span.in { color: #5e5e5e; } /* Information */
-    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.kw { color: #003b4f; } /* Keyword */
     code span.op { color: #5e5e5e; } /* Operator */
     code span.ot { color: #003b4f; } /* Other */
     code span.pp { color: #ad0000; } /* Preprocessor */
@@ -96,7 +96,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="3d_IntroSlides_files/libs/revealjs/dist/theme/quarto.css">
+  <link rel="stylesheet" href="3d_IntroSlides_files/libs/revealjs/dist/theme/serif.css">
   <link href="3d_IntroSlides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="3d_IntroSlides_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="3d_IntroSlides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -402,7 +402,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 6, 2024</p>
+  <p class="date">August 7, 2024</p>
 </section>
 <section id="the-highlights" class="slide level2">
 <h2>The Highlights</h2>
@@ -786,42 +786,80 @@ Dr.&nbsp;Gilbert
       });
     </script>
     
+
     <script>
+
       // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+
       // slide changes (different for each slide format).
+
       (function () {
+
         // dispatch for htmlwidgets
+
         function fireSlideEnter() {
+
           const event = window.document.createEvent("Event");
+
           event.initEvent("slideenter", true, true);
+
           window.document.dispatchEvent(event);
+
         }
+
+    
 
         function fireSlideChanged(previousSlide, currentSlide) {
+
           fireSlideEnter();
 
+    
+
           // dispatch for shiny
+
           if (window.jQuery) {
+
             if (previousSlide) {
+
               window.jQuery(previousSlide).trigger("hidden");
+
             }
+
             if (currentSlide) {
+
               window.jQuery(currentSlide).trigger("shown");
+
             }
+
           }
+
         }
+
+    
 
         // hookup for slidy
+
         if (window.w3c_slidy) {
+
           window.w3c_slidy.add_observer(function (slide_num) {
+
             // slide_num starts at position 1
+
             fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+
           });
+
         }
 
+    
+
       })();
+
     </script>
+
+    
 
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
@@ -855,7 +893,18 @@ Dr.&nbsp;Gilbert
         }
         return false;
       }
-      const onCopySuccess = function(e) {
+      const clipboard = new window.ClipboardJS('.code-copy-button', {
+        text: function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+      });
+      clipboard.on('success', function(e) {
         // button target
         const button = e.trigger;
         // don't keep focus
@@ -887,29 +936,7 @@ Dr.&nbsp;Gilbert
         }, 1000);
         // clear code selection
         e.clearSelection();
-      }
-      const getTextToCopy = function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
-            }
-          }
-          return codeEl.innerText;
-      }
-      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-        text: getTextToCopy
       });
-      clipboard.on('success', onCopySuccess);
-      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-        // For code content inside modals, clipBoardJS needs to be initialized with a container option
-        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
-        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-          text: getTextToCopy,
-          container: window.document.getElementById('quarto-embedded-source-code-modal')
-        });
-        clipboardModal.on('success', onCopySuccess);
-      }
         var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
         var mailtoRegex = new RegExp(/^mailto:/);
           var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -917,7 +944,7 @@ Dr.&nbsp;Gilbert
             return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
         // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
         for (var i=0; i<links.length; i++) {
           const link = links[i];
           if (!isInternal(link.href)) {

@@ -1,0 +1,249 @@
+---
+title: "Data Dirty Work: Wrangling"
+author: Dr. Gilbert
+format: revealjs
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+library(randomNames)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 20))
+```
+
+## A Quote and Setting Expectations
+
++ "*Life is dirty. So is your data. Get used to it.*" -- Thomas LaRock
+
++ Breakdown of Data Science work:
+
+  + 80% data cleaning
+  + 20% analysing, modeling, and interpreting
+
++ Building models is easy.
+
+  + Formatting your data appropriately is difficult.
+  + Interpreting your models takes care.
+
+## The Highlights
+
++ What is *tidy* data?
++ Common scenarios prompting data cleaning / data wrangling
+
+  + Inconsistent data entry/data collection
+  + Incorrect/unexpected data types inferred
+  + A single column encodes multiple variables
+  + Data currently in *wide* format when we want *long* format, and vice-versa
+  + Features are stored across different tables
+
+## Tidy Data
+
+Tabular data is *tidy* if the following three principles are satisfied.
+
++ Each row corresponds to a single observational unit (a record).
++ Each column corresponds to a single measured variable.
++ Each cell contains the value of the corresponding variable measured on the corresponding record.
+
+  + **Note:** Missing values are permitted.
+
+Simply put, data is *tidy* if it is in a format convenient for analysis.
+
+## A Problematic Data Set {.scrollable}
+
+```{r}
+#| echo: false
+
+set.seed(123)
+sample_df <- tibble(
+  id = sample(1:100, size = 6),
+  month = sample(1:12, size = 6, replace = TRUE),
+  day = sample(1:28, size = 6, replace = TRUE),
+  year = sample(2010:2023, size = 6, replace = TRUE),
+  salary = c(55000, "$58,500", "60,000", 22.75, "$1400", 72250),
+  favorite_color = c("blue", "purple", "orang", "Blue", "BLUE", "orange")
+)
+
+sample_df <- sample_df %>%
+  unite(date, c(month, day, year), sep = "/")
+
+sample_df %>%
+  kable() %>%
+  kable_styling()
+
+sample_df %>% 
+  glimpse()
+```
+
+## A Better Version {.scrollable}
+
+```{r}
+#| echo: false
+
+better_df <- sample_df %>%
+  separate(date, into = c("month", "day", "year"), sep = "/") %>%
+  mutate(
+    salary = str_replace_all(salary, "[$,]", ""),
+    favorite_color = tolower(favorite_color)
+  ) %>%
+  mutate(
+    month = as.numeric(month),
+    day = as.numeric(day),
+    year = as.numeric(year),
+    salary = as.numeric(salary)
+  ) 
+
+better_df %>%
+  kable() %>%
+  kable_styling()
+
+better_df %>%
+  glimpse()
+```
+
++ Problems still remain. What are they?
+
+## A Dataset That Is Too Wide
+
+```{r}
+#| echo: false
+
+set.seed(234)
+sample_df <- tibble(
+  name = randomNames(6),
+  `2019` = round(runif(6, min = 2.1, 8.2), 1),
+  `2020` = round(runif(6, min = 7.8, 13.1), 1),
+  `2021` = round(runif(6, min = 4.6, 10.1), 1),
+  `2022` = round(runif(6, min = 3.4, 9.3), 1),
+  `2023` = round(runif(6, min = 3.4, 9.3), 1),
+)
+
+sample_df %>%
+  kable() %>%
+  kable_styling()
+```
+
+## A Better Version {.scrollable}
+
+```{r}
+#| echo: false
+
+sample_df %>%
+  pivot_longer(cols = `2019`:`2023`, names_to = "year", values_to = "value") %>%
+  mutate(year = as.numeric(year)) %>%
+  kable() %>%
+  kable_styling()
+```
+
+## A Dataset That Is Too Long
+
+```{r}
+#| echo: false
+
+sample_df <- tibble(
+  name = rep(randomNames(3), 2)
+) %>%
+  arrange(name) %>%
+  mutate(measurement = rep(c("height", "weight"), 3)) %>%
+  mutate(value = rnorm(6, mean = 175, sd = 10)) %>%
+  mutate(value = ifelse(measurement == "weight", value/2.4, value))
+
+sample_df %>%
+  kable() %>%
+  kable_styling()
+```
+
+## A Better Version
+
+```{r}
+#| echo: false
+
+sample_df %>%
+  pivot_wider(names_from = measurement, values_from = value) %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Data Across Different Tables {.scrollable}
+
+```{r}
+#| echo: false
+
+set.seed(567)
+
+items <- c("apple", "banana", "pear", "mango", "peach")
+
+order_df <- tibble(
+  name = randomNames(5),
+  ordered = sample(items, 5, replace = TRUE),
+  quantity = sample(1:6, 5, replace = TRUE)
+)
+
+price_df <- tibble(
+  item = items,
+  price = round(runif(5, 1, 5), 2)
+)
+```
+
+**Orders Data Frame:**
+
+```{r}
+#| echo: false
+
+order_df %>%
+  kable() %>%
+  kable_styling()
+```
+
+**Prices Data Frame:**
+
+```{r}
+#| echo: false
+
+price_df %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Joined Data for Analysis
+
+```{r}
+#| echo: false
+
+order_df %>%
+  left_join(price_df,
+            by = c("ordered" = "item")) %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Commonly Utilized Tools {.smaller}
+
++ Tools for dealing with inconsistent data entry
+  + `mutate()` with `ifelse()`, `case_when()`, `str_replace()`, etc.
+
++ Tools for changing data types
+
+  + `as.numeric()`, `as.integer()`, `as.factor()`, etc.
+  
++ Extracting multiple variables from a single column
+  
+  + `separate()`
+
++ Moving between wide and long formats
+
+  + `pivot_longer()` and `pivot_wider()`
+  
++ Joining data from multiple tables
+
+  + `left_join()`, `full_join()`, `inner_join()`, `anti_join()`, etc.
+  + Almost always `left_join()`
+

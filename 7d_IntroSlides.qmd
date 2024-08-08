@@ -207,7 +207,7 @@ lin_reg_fit %>%
   predict(new_data)
 ```
 
-To create a single column (`.pred`) data frame of predictions.
+To create a single column (`.pred`) data frame of predictions or columns of lower and upper interval bounds.
 
 . . . 
 

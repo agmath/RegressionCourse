@@ -52,7 +52,9 @@ ggplot() +
        y = "y")
 ```
 
-+ So...how do we do it?
+. . .
+
+So...how do we do it?
 
 ## The Highlights {.smaller}
 
@@ -90,26 +92,22 @@ test <- testing(data_splits) #collect validation rows into data frame
 
 . . . 
 
-:::{.callout-important}
-## Setting a Seed
-
 Make sure to **always** set a seed. It ensures that you obtain the same training and testing data each time you run your notebook/model.
 
-:::
-
-## Building a Model
+## Build and Fit a Model
 
 ```{r}
 #| echo: true
 #| eval: false
-#| code-line-numbers: "|1-2|4-6|8-10|12-14|1-14"
+#| code-line-numbers: "|1-2|4-7|9-11|13-15|1-15"
 
 lin_reg_spec <- linear_reg() %>% #define model class
   set_engine("lm") #set fitting engine
 
 #Set recipe, including response and predictors
 #Predictors are separate by "+" signs
-lin_reg_rec <- recipe(response ~ pred_1 + pred_2 + ... + pred_k, data = train)
+lin_reg_rec <- recipe(response ~ pred_1 + pred_2 + ... + pred_k, 
+                      data = train)
 
 lin_reg_wf <- workflow() %>% #create workflow
   add_model(lin_reg_spec) %>% #add the model specification
@@ -173,12 +171,9 @@ lin_reg_fit %>%
 #| echo: true
 #| eval: false
 
-#Begin with fitted model
-#Obtain model fit information
-#Format as data frame
-lin_reg_fit %>% 
-  extract_fit_engine() %>% 
-  tidy() 
+lin_reg_fit %>% #Begin with a fitted model
+  extract_fit_engine() %>% #Obtain model fit information
+  tidy() #Format as data frame
 ```
 
 ```{r}
@@ -192,7 +187,9 @@ lin_reg_fit %>%
   kable_styling()
 ```
 
-+ You can conduct inference and interpret model coefficients from here as well!
+. . .
+
+You can conduct inference and interpret model coefficients from here as well!
 
 ## Making Predictions
 
@@ -212,8 +209,6 @@ lin_reg_fit %>%
 
 To create a single column (`.pred`) data frame of predictions.
 
-<br/>
-
 . . . 
 
 ```{r}
@@ -228,11 +223,7 @@ To add a new `.pred` column to the `new_data` data frame.
 
 . . . 
 
-:::{.callout-tip}
-
-I prefer the `augment()` method nearly always!
-
-:::
+> **FWIW:** I prefer the `augment()` method nearly always!
 
 ## Let's Do This!
 

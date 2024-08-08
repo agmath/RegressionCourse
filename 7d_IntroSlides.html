@@ -8,7 +8,7 @@
 <link href="7d_IntroSlides_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="7d_IntroSlides_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="7d_IntroSlides_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.5.56">
+  <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
   <meta name="dcterms.date" content="2024-08-07">
@@ -387,9 +387,7 @@
     }
   </style>
   <script src="7d_IntroSlides_files/libs/kePrint-0.0.1/kePrint.js"></script>
-
   <link href="7d_IntroSlides_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
-
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -411,9 +409,9 @@ Dr.&nbsp;Gilbert
 <section id="a-reminder-about-our-goals" class="slide level2">
 <h2>A Reminder About Our Goals</h2>
 
-<img data-src="7d_IntroSlides_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch"><ul>
-<li class="fragment">So…how do we do it?</li>
-</ul>
+<img data-src="7d_IntroSlides_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch"><div class="fragment">
+<p>So…how do we do it?</p>
+</div>
 </section>
 <section id="the-highlights" class="slide level2 smaller">
 <h2>The Highlights</h2>
@@ -447,38 +445,27 @@ Dr.&nbsp;Gilbert
 <span id="cb1-7"><a href=""></a>test <span class="ot">&lt;-</span> <span class="fu">testing</span>(data_splits) <span class="co">#collect validation rows into data frame</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="fragment">
-<div class="callout callout-important callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Setting a Seed</strong></p>
-</div>
-<div class="callout-content">
 <p>Make sure to <strong>always</strong> set a seed. It ensures that you obtain the same training and testing data each time you run your notebook/model.</p>
 </div>
-</div>
-</div>
-</div>
 </section>
-<section id="building-a-model" class="slide level2">
-<h2>Building a Model</h2>
+<section id="build-and-fit-a-model" class="slide level2">
+<h2>Build and Fit a Model</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2" data-code-line-numbers="|1-2|4-6|8-10|12-14|1-14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>lin_reg_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span> <span class="co">#define model class</span></span>
+<div class="sourceCode cell-code" id="cb2" data-code-line-numbers="|1-2|4-7|9-11|13-15|1-15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>lin_reg_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span> <span class="co">#define model class</span></span>
 <span id="cb2-2"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>) <span class="co">#set fitting engine</span></span>
 <span id="cb2-3"><a href=""></a></span>
 <span id="cb2-4"><a href=""></a><span class="co">#Set recipe, including response and predictors</span></span>
 <span id="cb2-5"><a href=""></a><span class="co">#Predictors are separate by "+" signs</span></span>
-<span id="cb2-6"><a href=""></a>lin_reg_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(response <span class="sc">~</span> pred_1 <span class="sc">+</span> pred_2 <span class="sc">+</span> ... <span class="sc">+</span> pred_k, <span class="at">data =</span> train)</span>
-<span id="cb2-7"><a href=""></a></span>
-<span id="cb2-8"><a href=""></a>lin_reg_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> <span class="co">#create workflow</span></span>
-<span id="cb2-9"><a href=""></a>  <span class="fu">add_model</span>(lin_reg_spec) <span class="sc">%&gt;%</span> <span class="co">#add the model specification</span></span>
-<span id="cb2-10"><a href=""></a>  <span class="fu">add_recipe</span>(lin_reg_rec) <span class="co">#add the recipe</span></span>
-<span id="cb2-11"><a href=""></a></span>
-<span id="cb2-12"><a href=""></a><span class="co">#Fit the workflow to the training data</span></span>
-<span id="cb2-13"><a href=""></a>lin_reg_fit <span class="ot">&lt;-</span> lin_reg_wf <span class="sc">%&gt;%</span></span>
-<span id="cb2-14"><a href=""></a>  <span class="fu">fit</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-6"><a href=""></a>lin_reg_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(response <span class="sc">~</span> pred_1 <span class="sc">+</span> pred_2 <span class="sc">+</span> ... <span class="sc">+</span> pred_k, </span>
+<span id="cb2-7"><a href=""></a>                      <span class="at">data =</span> train)</span>
+<span id="cb2-8"><a href=""></a></span>
+<span id="cb2-9"><a href=""></a>lin_reg_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span> <span class="co">#create workflow</span></span>
+<span id="cb2-10"><a href=""></a>  <span class="fu">add_model</span>(lin_reg_spec) <span class="sc">%&gt;%</span> <span class="co">#add the model specification</span></span>
+<span id="cb2-11"><a href=""></a>  <span class="fu">add_recipe</span>(lin_reg_rec) <span class="co">#add the recipe</span></span>
+<span id="cb2-12"><a href=""></a></span>
+<span id="cb2-13"><a href=""></a><span class="co">#Fit the workflow to the training data</span></span>
+<span id="cb2-14"><a href=""></a>lin_reg_fit <span class="ot">&lt;-</span> lin_reg_wf <span class="sc">%&gt;%</span></span>
+<span id="cb2-15"><a href=""></a>  <span class="fu">fit</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="global-model-assessment-on-training-data" class="slide level2 smaller">
@@ -565,17 +552,15 @@ Dr.&nbsp;Gilbert
 <li class="fragment"><code>df.residual</code></li>
 <li class="fragment"><code>nobs</code></li>
 </ul>
-</div></div>
+</div>
+</div>
 </section>
 <section id="term-based-assessments" class="slide level2 smaller">
 <h2>Term-Based Assessments</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a><span class="co">#Begin with fitted model</span></span>
-<span id="cb4-2"><a href=""></a><span class="co">#Obtain model fit information</span></span>
-<span id="cb4-3"><a href=""></a><span class="co">#Format as data frame</span></span>
-<span id="cb4-4"><a href=""></a>lin_reg_fit <span class="sc">%&gt;%</span> </span>
-<span id="cb4-5"><a href=""></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb4-6"><a href=""></a>  <span class="fu">tidy</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>lin_reg_fit <span class="sc">%&gt;%</span> <span class="co">#Begin with a fitted model</span></span>
+<span id="cb4-2"><a href=""></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span> <span class="co">#Obtain model fit information</span></span>
+<span id="cb4-3"><a href=""></a>  <span class="fu">tidy</span>() <span class="co">#Format as data frame</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
@@ -631,9 +616,9 @@ Dr.&nbsp;Gilbert
 
 </div>
 </div>
-<ul>
-<li class="fragment">You can conduct inference and interpret model coefficients from here as well!</li>
-</ul>
+<div class="fragment">
+<p>You can conduct inference and interpret model coefficients from here as well!</p>
+</div>
 </section>
 <section id="making-predictions" class="slide level2">
 <h2>Making Predictions</h2>
@@ -645,7 +630,6 @@ Dr.&nbsp;Gilbert
 <span id="cb5-2"><a href=""></a>  <span class="fu">predict</span>(new_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>To create a single column (<code>.pred</code>) data frame of predictions.</p>
-<p><br></p>
 </div>
 <div class="fragment">
 <div class="cell">
@@ -655,19 +639,9 @@ Dr.&nbsp;Gilbert
 <p>To add a new <code>.pred</code> column to the <code>new_data</code> data frame.</p>
 </div>
 <div class="fragment">
-<div class="callout callout-tip callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Tip</strong></p>
-</div>
-<div class="callout-content">
-<p>I prefer the <code>augment()</code> method nearly always!</p>
-</div>
-</div>
-</div>
+<blockquote>
+<p><strong>FWIW:</strong> I prefer the <code>augment()</code> method nearly always!</p>
+</blockquote>
 </div>
 </section>
 <section id="lets-do-this" class="slide level2">
@@ -890,80 +864,42 @@ Dr.&nbsp;Gilbert
       });
     </script>
     
-
     <script>
-
       // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-
       // slide changes (different for each slide format).
-
       (function () {
-
         // dispatch for htmlwidgets
-
         function fireSlideEnter() {
-
           const event = window.document.createEvent("Event");
-
           event.initEvent("slideenter", true, true);
-
           window.document.dispatchEvent(event);
-
         }
-
-    
 
         function fireSlideChanged(previousSlide, currentSlide) {
-
           fireSlideEnter();
 
-    
-
           // dispatch for shiny
-
           if (window.jQuery) {
-
             if (previousSlide) {
-
               window.jQuery(previousSlide).trigger("hidden");
-
             }
-
             if (currentSlide) {
-
               window.jQuery(currentSlide).trigger("shown");
-
             }
-
           }
-
         }
-
-    
 
         // hookup for slidy
-
         if (window.w3c_slidy) {
-
           window.w3c_slidy.add_observer(function (slide_num) {
-
             // slide_num starts at position 1
-
             fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-
           });
-
         }
 
-    
-
       })();
-
     </script>
-
-    
 
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {

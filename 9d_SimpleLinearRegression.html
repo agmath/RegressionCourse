@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-08-03">
+<meta name="dcterms.date" content="2024-08-08">
 
 <title>Simple Linear Regression</title>
 <style>
@@ -138,7 +138,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 3, 2024</p>
+      <p class="date">August 8, 2024</p>
     </div>
   </div>
   
@@ -150,6 +150,24 @@ window.Quarto = {
 </header>
 
 
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(palmerpenguins)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">tidymodels_prefer</span>()</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>penguins <span class="ot">&lt;-</span> palmerpenguins<span class="sc">::</span>penguins</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">kable_styling_bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"hover"</span>, <span class="st">"striped"</span>))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#Set ggplot base theme</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 <section id="objectives" class="level2">
 <h2 class="anchored" data-anchor-id="objectives">Objectives</h2>
 <p>This notebook gives an overview of Simple Linear Regression, where we’ll use a single predictor to predict a numerical response variable. After reviewing this notebook, you should be able to:</p>
@@ -170,26 +188,26 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="initial-exploration">Initial Exploration</h3>
 <p>We’ll start by splitting our data into training and test sets, as usual.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>penguin_splits <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(penguins)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>penguins_train <span class="ot">&lt;-</span> <span class="fu">training</span>(penguin_splits)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>penguins_test <span class="ot">&lt;-</span> <span class="fu">testing</span>(penguin_splits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>penguin_splits <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(penguins)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>penguins_train <span class="ot">&lt;-</span> <span class="fu">training</span>(penguin_splits)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>penguins_test <span class="ot">&lt;-</span> <span class="fu">testing</span>(penguin_splits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We know that we want to use <code>bill_length_mm</code> and <code>flipper_length_mm</code> to predict the body mass of our penguins. Let’s do some quick EDA to see if any potential relationships are visibly evident.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> penguins_train <span class="sc">%&gt;%</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">y =</span> body_mass_g)) <span class="sc">+</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Bill Length (mm)"</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Body Mass (g)"</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> penguins_train <span class="sc">%&gt;%</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> flipper_length_mm, <span class="at">y =</span> body_mass_g)) <span class="sc">+</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Flipper Length (mm)"</span>,</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Body Mass (g)"</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> penguins_train <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">y =</span> body_mass_g)) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Bill Length (mm)"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Body Mass (g)"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> penguins_train <span class="sc">%&gt;%</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> flipper_length_mm, <span class="at">y =</span> body_mass_g)) <span class="sc">+</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Flipper Length (mm)"</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Body Mass (g)"</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 2 rows containing missing values or values outside the scale range
 (`geom_point()`).
@@ -217,31 +235,31 @@ Removed 2 rows containing missing values or values outside the scale range
 </ul>
 <p>Let’s build and fit the model using <code>bill_length_mm</code> to predict <code>body_mass_g</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mass_bill_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>mass_bill_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(body_mass_g <span class="sc">~</span> bill_length_mm, <span class="at">data =</span> penguins_train)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>mass_bill_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(mass_bill_spec) <span class="sc">%&gt;%</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(mass_bill_rec)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>mass_bill_fit <span class="ot">&lt;-</span> mass_bill_wf <span class="sc">%&gt;%</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(penguins_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mass_bill_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>mass_bill_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(body_mass_g <span class="sc">~</span> bill_length_mm, <span class="at">data =</span> penguins_train)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>mass_bill_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(mass_bill_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(mass_bill_rec)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>mass_bill_fit <span class="ot">&lt;-</span> mass_bill_wf <span class="sc">%&gt;%</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(penguins_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now we’ll build and fit the model using <code>flipper_length_mm</code> to predict <code>body_mass_g</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mass_flipper_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>mass_flipper_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(body_mass_g <span class="sc">~</span> flipper_length_mm, <span class="at">data =</span> penguins_train)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>mass_flipper_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(mass_flipper_spec) <span class="sc">%&gt;%</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(mass_flipper_rec)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>mass_flipper_fit <span class="ot">&lt;-</span> mass_flipper_wf <span class="sc">%&gt;%</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(penguins_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mass_flipper_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>mass_flipper_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(body_mass_g <span class="sc">~</span> flipper_length_mm, <span class="at">data =</span> penguins_train)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>mass_flipper_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(mass_flipper_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(mass_flipper_rec)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>mass_flipper_fit <span class="ot">&lt;-</span> mass_flipper_wf <span class="sc">%&gt;%</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(penguins_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We’ve got our fitted models! We’ll assess the quality of the models in the next section.</p>
 </section>
@@ -261,10 +279,10 @@ Removed 2 rows containing missing values or values outside the scale range
 <h4 class="anchored" data-anchor-id="global-assessments-of-model-utility">Global Assessments of Model Utility</h4>
 <p>We’ll pipe our fitted models to <code>glance()</code> and will assess our model using the <code>r.squared</code>, <code>sigma</code>, and <code>p.value</code> metrics. Let’s start with the model using <code>bill_length_mm</code> as the sole predictor.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mass_bill_fit <span class="sc">%&gt;%</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glance</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>mass_bill_fit <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glance</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
 <thead>
@@ -307,10 +325,10 @@ Removed 2 rows containing missing values or values outside the scale range
 <p>Firstly, we see that the <span class="math inline">\(p\)</span>-value for the overall model is very small. This indicates that our model has <em>some</em> utility in predicting/explaining penguin body mass. Since we are assessing a <em>simple</em> linear regression model, we’ll look at the <code>r.squared</code> value instead of <code>adj.r.squared</code>. From <code>r.squared</code>, we see that “<em>Approximately 35.94% of the variation in penguin body mass is explained by bill length</em>”. Finally, we see that the <em>residual standard error</em> (<code>sigma</code>) on the training data is about <span class="math inline">\(658\)</span>g. This residual standard error tells us that we should expect our predictions, on average, to be within about <span class="math inline">\(\pm 1,316\)</span>g.</p>
 <p>Now let’s look at our model using <code>flipper_length_mm</code> as the sole predictor and see how it stacks up the bill length model.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>mass_flipper_fit <span class="sc">%&gt;%</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glance</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mass_flipper_fit <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glance</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
 <thead>
@@ -357,11 +375,11 @@ Removed 2 rows containing missing values or values outside the scale range
 <h4 class="anchored" data-anchor-id="assessing-model-terms">Assessing Model Terms</h4>
 <p>We’ll now pipe our fitted models into <code>extract_fit_engine()</code> and <code>tidy()</code> to obtain metrics on the individual <span class="math inline">\(\beta\)</span> values (those individual terms containing predictor variables in our model). Again, let’s look at the model using <code>bill_length_mm</code> as the sole predictor first.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mass_bill_fit <span class="sc">%&gt;%</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mass_bill_fit <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
 <thead>
@@ -397,11 +415,11 @@ Removed 2 rows containing missing values or values outside the scale range
 <p>From the data frame above, we have several takeaways. First, the fitted model is <span class="math inline">\(\mathbb{E}\left[\text{body\_mass\_g}\right] \approx 320.35 + 88.58\cdot\text{bill\_length\_mm}\)</span>. Since the <span class="math inline">\(p\)</span>-value on the <code>bill_length_mm</code> predictor is low, this indicates that <code>bill_length_mm</code> is a <em>statistically significant</em> predictor of <code>body_mass_g</code>. This means we can use this model to make predictions about the body mass of a new penguin (as long as we remain aware of the expected prediction error, <span class="math inline">\(\pm 2\)</span><code>sigma</code>), and we can also interpret the effect of <code>bill_length_mm</code> on <code>body_mass_g</code> (we’ll see this in the Model Interpretations section of this notebook). We shouldn’t overlook the <code>std.error</code> column. This gives us the standard error in the coefficient estimates. We can use that standard error to compute confidence intervals for the coefficient estimate – that is, <em>we can be about 95% certain that the coefficient on <code>bill_length_mm</code> is somewhere between <span class="math inline">\(88.58 - 2\left(7.42\right)\)</span> and <span class="math inline">\(88.58 + 2\left(7.42\right)\)</span></em>.</p>
 <p>We can discover similar information about our model which uses <code>flipper_length_mm</code> as the sole predictor of penguin body mass.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mass_flipper_fit <span class="sc">%&gt;%</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mass_flipper_fit <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
 <thead>
@@ -443,14 +461,14 @@ Removed 2 rows containing missing values or values outside the scale range
 <p>It could be the case that our models are just doing well on the data they were trained on and can’t be reliably utilized on new penguins. For this reason, the <em>residual standard error</em> (<code>sigma</code>) and <em>R squared</em> (<code>r.squared</code>) metrics from the <em>global model metrics</em> are biased estimates of model performance – the model had an unfair advantage on the training data; it knew all of the correct penguin body masses! This is the reason we’ve held out the <em>test</em> data. We can measure the models’ perfomances on the penguins in the test set to ensure that our models perform the way we expect. In fact, the metrics we compute on the <em>unseen</em> data are the ones we really should use as estimates for future model performance.</p>
 <p>Let’s use our model to make predictions for the body masses of the penguins in the test data set. We’ll use those predictions to compute a <em>test RMSE</em> and a <em>test R Squared</em>. As a reminder, we’ll <code>augment()</code> our test data, adding a predictions (<code>.pred</code>) column, and then use the <code>rmse()</code> function</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>my_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(rmse, rsq)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>mass_bill_fit <span class="sc">%&gt;%</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(penguins_test) <span class="sc">%&gt;%</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(body_mass_g, .pred) <span class="sc">%&gt;%</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">my_metrics</span>(body_mass_g, .pred) <span class="sc">%&gt;%</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>my_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(rmse, rsq)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>mass_bill_fit <span class="sc">%&gt;%</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(penguins_test) <span class="sc">%&gt;%</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(body_mass_g, .pred) <span class="sc">%&gt;%</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">my_metrics</span>(body_mass_g, .pred) <span class="sc">%&gt;%</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
 <thead>
@@ -480,14 +498,14 @@ Removed 2 rows containing missing values or values outside the scale range
 <p>The model using <code>bill_length_mm</code> as the sole predictor of <code>body_mass_g</code> seems to have done slightly better on the test set than it did on the training data. This is interesting and we’ll discuss it more in the coming weeks! For now, this output indicates that we should expect our model’s predictions to be accurate to within about <span class="math inline">\(\pm 1214\)</span>g.</p>
 <p>Let’s look at how our other model performs on the unseen test data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>my_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(rmse, rsq)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>mass_flipper_fit <span class="sc">%&gt;%</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(penguins_test) <span class="sc">%&gt;%</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(body_mass_g, .pred) <span class="sc">%&gt;%</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">my_metrics</span>(body_mass_g, .pred) <span class="sc">%&gt;%</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>my_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(rmse, rsq)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>mass_flipper_fit <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(penguins_test) <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(body_mass_g, .pred) <span class="sc">%&gt;%</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">my_metrics</span>(body_mass_g, .pred) <span class="sc">%&gt;%</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
 <thead>
@@ -522,11 +540,11 @@ Removed 2 rows containing missing values or values outside the scale range
 <p>It isn’t always the case that we are solely interested in prediction or predictive performance. Sometimes we are building models to <em>describe</em> associations or other phenomena. Linear regression models are particularly useful for this because they are <em>parametric</em> – we get a “slope” parameter for each of our model terms! We can interpret these slopes just as you’ve done in the past – as a rate of change – if our predictor variable increases, how do we expect our response variable to change.</p>
 <p>In order to make these interpretations, let’s look back at the data frame containing our model terms. As a reminder, we pipe our fitted model into <code>extract_fit_engine()</code> and <code>tidy()</code> to get this output. As usual, we’ll work with the bill length model first.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>mass_bill_fit <span class="sc">%&gt;%</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>mass_bill_fit <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
 <thead>

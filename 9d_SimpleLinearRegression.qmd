@@ -11,7 +11,11 @@ date: today
 date-format: long
 ---
 
-```{r global-options, include=FALSE}
+```{r global-options}
+#| code-fold: true
+#| message: false
+#| warning: false
+
 library(tidyverse)
 library(tidymodels)
 library(palmerpenguins)

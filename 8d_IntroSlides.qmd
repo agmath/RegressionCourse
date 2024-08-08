@@ -18,30 +18,31 @@ library(kableExtra)
 
 tidymodels_prefer()
 
-set.seed(123)
+set.seed(567)
 num_pts <- 20
-x <- runif(num_pts, 0, 10)
-y1 <- 4*x - 1 + rnorm(num_pts, 0, 8)
-y2 <- 4*x - 1 + rnorm(num_pts, 0, 30)
+x1 <- runif(num_pts, 0, 10)
+x2 <- runif(num_pts, 0, 10) 
+y1 <- 4*x1 - 1 + rnorm(num_pts, 0, 8)
+y2 <- 4*x1 - 1 + rnorm(num_pts, 0, 30)
 
 num_new <- 10
-x_new <- runif(num_new, 0, 10)
-y1_new <- 4*x_new - 1 + rnorm(num_new, 0, 8)
+x1_new <- runif(num_new, 0, 10)
+x2_new <- runif(num_new, 0, 10)
+y1_new <- 4*x1_new - 1 + rnorm(num_new, 0, 8)
 
 data <- tibble(
-  x = x,
+  x1 = x1,
+  x2 = x2,
   y = y1
 )
 
 lin_reg_spec <- linear_reg() 
-lin_reg_rec <- recipe(y ~ x, data = data)
+lin_reg_rec <- recipe(y ~ x1 + x2, data = data)
 lin_reg_wf <- workflow() %>%
   add_model(lin_reg_spec) %>%
   add_recipe(lin_reg_rec)
 lin_reg_fit <- lin_reg_wf %>%
   fit(data)
-
-
 
 options(kable_styling_bootstrap_options = c("hover", "striped"))
 
@@ -74,6 +75,26 @@ Does our model contain any useful information about predicting/explaining our re
 $$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \cdots = \beta_k = 0\\
 H_a & : & \text{At least one } \beta_i \text{ is non-zero}\end{array}$$
 
+. . . 
+
+```{r}
+#| echo: true
+#| eval: false
+
+lin_reg_fit %>%
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lin_reg_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling()
+```
+
 ## Global Test for Model Utility in Pictures
 
 $$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \cdots = \beta_k = 0\\
@@ -85,35 +106,42 @@ H_a & : & \text{At least one } \beta_i \text{ is non-zero}\end{array}$$
 #| fig-align: center
 
 p1 <- ggplot() + 
-  geom_point(aes(x = x, y = y1)) + 
+  geom_point(aes(x = x1, y = y1)) + 
   geom_hline(yintercept = mean(y1), 
              color = "red", 
              linetype = "dashed", 
              lwd = 2) +
-  geom_smooth(aes(x = x, y = y1),
+  geom_smooth(aes(x = x1, y = y1),
               method = "lm",
               color = "blue",
               se = FALSE) + 
   labs(title = "Scenario A",
-       x = "x",
+       x = "x1",
        y = "y1")
 
 p2 <- ggplot() + 
-  geom_point(aes(x = x, y = y2)) + 
+  geom_point(aes(x = x1, y = y2)) + 
   geom_hline(yintercept = mean(y2), 
              color = "red", 
              linetype = "dashed", 
              lwd = 2) +
-  geom_smooth(aes(x = x, y = y2),
+  geom_smooth(aes(x = x1, y = y2),
               method = "lm",
               color = "blue",
               se = FALSE) + 
   labs(title = "Scenario B",
-       x = "x",
+       x = "x1",
        y = "y2")
 
 p1 + p2
 ```
+
+. . . 
+
+Are our *sloped* lines better models than the horizontal line?
+
++ *Sloped* lines use predictor information
++ Horizontal line just predicts mean response
 
 ## Tests on Individual Model Terms
 
@@ -130,29 +158,47 @@ H_a & : & \beta_i \neq 0\end{array}$$
 
 . . .
 
-We'll run one of these tests for each term in our model.
+```{r}
+#| eval: false
+#| echo: true
 
-## Confidence Intervals for Model Coefficients
+lin_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy()
+```
+
+```{r}
+#| eval: true
+#| echo: false
+
+lin_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Confidence Intervals (Model Coefficients)
 
 **Reminder:** An approximate 95% confidence interval is between two *standard errors* below and above our *point estimate*.
 
-$$\left(\text{point estimate}\right) \pm 2\cdot\left(\text{standard error}\right)$$
+. . .
+
+$$\left(\text{point estimate}\right) \pm 2\cdot\left(\text{standard error}\right)~~~\textbf{or}~~~\left(\text{point estimate}\right) \pm t^*_{\text{df}}\cdot\left(\text{standard error}\right)$$
+
+. . .
 
 ```{r}
 #| echo: false
 #| eval: true
 #| fig-align: center
 
-fake_coefs <- tibble(
-  term = c("x1", "x2", "x3", "x4"),
-  estimate = c(7, -2, -4, 5),
-  std_err = c(1, 2, 0.5, 2)
-)
-
-fake_coefs %>%
+lin_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
   ggplot() +
-  geom_errorbarh(aes(xmin = estimate - 2*std_err, 
-                     xmax = estimate + 2*std_err, 
+  geom_errorbarh(aes(xmin = estimate - 2*std.error, 
+                     xmax = estimate + 2*std.error, 
                      y = term, 
                      color = term),
                  lwd = 1.25) +
@@ -175,7 +221,8 @@ std_err <- lin_reg_fit %>%
   pull(sigma)
 
 x_plot <- tibble(
-  x = seq(0, 10, length.out = 250)
+  x1 = seq(0, 10, length.out = 250),
+  x2 = seq(0, 10, length.out = 250)
 )
 
 x_plot <- x_plot %>%
@@ -202,9 +249,9 @@ x_plot <- x_plot %>%
     )
   
 ggplot() +
-  geom_point(aes(x = x_new, y = y1_new)) +
+  geom_point(aes(x = x1_new, y = y1_new)) +
   geom_line(data = x_plot,
-            aes(x = x,
+            aes(x = x1,
                 y = .pred),
             color = "blue",
             lwd = 1.25) + 
@@ -219,29 +266,42 @@ ggplot() +
 
 They're all wrong!
 
-## Confidence Intervals for Predictions
+## Confidence Intervals (Predictions)
 
-The equation to obtain confidence intervals for model predictions is somewhat complex because it accounts for having more certainty near the center of the feature space and less certainty on the extremes. I'll omit it here, since we can use R to calculate these intervals.
+The formula for confidence intervals on predictions is complex! 
+
+. . .
+
+$$\displaystyle{\left(\tt{point~estimate}\right)\pm t^*_{\text{df}}\cdot \left(\tt{RMSE}\right)\left(\sqrt{\frac{1}{n} + \frac{(x_{new} - \bar{x})^2}{\sum{\left(x - \bar{x}\right)^2}}}\right)}$$
 
 . . . 
 
+We'll use R to construct these intervals for us.
+
+. . .
+
+
 ```{r}
+#| fig-align: center
+#| fig-height: 4
+#| fig-width: 6
+
 ggplot() +
-  geom_point(aes(x = x_new, y = y1_new)) +
-  geom_line(data = x_plot,
-            aes(x = x,
-                y = .pred),
-            color = "blue",
-            lwd = 1.25) + 
   geom_ribbon(data = x_plot,
-              aes(x = x,
+              aes(x = x1,
                   ymin = .conf_lower,
                   ymax = .conf_upper),
               fill = "grey",
               alpha = 0.75) +
+  geom_line(data = x_plot,
+            aes(x = x1,
+                y = .pred),
+            color = "blue",
+            lwd = 1.25) + 
+  geom_point(aes(x = x1_new, y = y1_new)) +
   labs(
     title = "Model with Confidence Intervals",
-    x = "x",
+    x = "x1",
     y = "y"
   )
 ```
@@ -254,18 +314,18 @@ Are these wrong too?
 
 ```{r}
 ggplot() +
-  geom_point(aes(x = x_new, y = y1_new)) +
-  geom_line(data = x_plot,
-            aes(x = x,
-                y = .pred),
-            color = "blue",
-            lwd = 1.25) + 
   geom_ribbon(data = x_plot,
-              aes(x = x,
+              aes(x = x1,
                   ymin = .pred_lower,
                   ymax = .pred_upper),
               fill = "grey",
               alpha = 0.75) +
+  geom_line(data = x_plot,
+            aes(x = x1,
+                y = .pred),
+            color = "blue",
+            lwd = 1.25) + 
+  geom_point(aes(x = x1_new, y = y1_new)) +
   labs(
     title = "Model with Prediction Intervals",
     x = "x",
@@ -276,28 +336,53 @@ ggplot() +
 ## Confidence and Prediction Intervals for Model Predictions
 
 ```{r}
+int_fills <- c("confidence" = "orange",
+               "prediction" = "purple")
+
 ggplot() +
-  geom_point(aes(x = x_new, y = y1_new)) +
   geom_ribbon(data = x_plot,
-              aes(x = x,
+              aes(x = x1,
                   ymin = .pred_lower,
-                  ymax = .pred_upper),
-              fill = "grey",
-              alpha = 0.5) +
+                  ymax = .pred_upper,
+                  fill = "prediction"),
+              alpha = 0.6) +
   geom_ribbon(data = x_plot,
-              aes(x = x,
+              aes(x = x1,
                   ymin = .conf_lower,
-                  ymax = .conf_upper),
-              fill = "grey",
-              alpha = 0.9) +
+                  ymax = .conf_upper,
+                  fill = "confidence"),
+              alpha = 0.8) +
   geom_line(data = x_plot,
-            aes(x = x,
+            aes(x = x1,
                 y = .pred),
             color = "blue",
             lwd = 1.25) + 
+  geom_point(aes(x = x1_new, y = y1_new)) +
+  scale_fill_manual(values = int_fills) +
   labs(
     title = "Model with Prediction and Confidence Intervals",
+    fill = "Interval Type",
     x = "x",
     y = "y"
   )
 ```
+
+## Summary
+
+Below are the most common applications of statistical inference in regression modeling.
+
++ Hypothesis Tests
+
+  + Does our model have any utility at all?
+  + Are all of the included predictor terms useful?
+
++ Confidence Intervals
+
+  + What is the plausible range for each parameter/coefficient? 
+  
+    + How do we interpret those ranges?
+  + Can we make reliable predictions? 
+  
+    + Confidence Intervals for *average response*
+    + Prediction Intervals for *individual response*
+    

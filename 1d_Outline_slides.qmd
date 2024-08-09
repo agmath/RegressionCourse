@@ -1,7 +1,9 @@
 ---
 title: "MAT 300: Introduction and What to Expect"
 author: Dr. Gilbert
-format: revealjs
+format: 
+  revealjs:
+    smaller: true
 date: today
 date-format: long
 theme: serif
@@ -204,16 +206,15 @@ I've built a [webpage to organize our course content](https://agmath.github.io/R
 + Tentative timeline
   
   + Truly tentative -- can slow down, speed up, swap out topics, etc.
-  + Links to daily *intro/recap slides* and *notes* (in HTML and QMD formats).
+  + Links to daily *companion slides* and full *notes* (in HTML and QMD formats).
   + Links to assignments -- you can see everything now.
 
 ## What's Class Like? (Part I)
 
 + **Discussion Days** - Most of our meetings...
 
-  + Ten-minute overview of main ideas (slides) followed by/including discussion.
-  + We'll work in R to implement the day's main ideas with a data set.
-  + Full, detailed notes on the webpage (use these how you like) -- implement and experiment in class.
+  + Walk through the companion slides, and apply ideas to a different data set side-by-side.
+  + Full, detailed notes are available on the webpage (use these how you like) -- implement and experiment in class.
   + Make your notes "pretty" after class while reviewing what we did.
 
 ## What's Class Like? (Part II)

@@ -1,0 +1,864 @@
+---
+title: "Multiple Linear Regression: Construction, Assessment, and Interpretation"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(patchwork)
+library(kableExtra)
+tidymodels_prefer()
+
+penguins <- palmerpenguins::penguins
+
+penguins <- penguins %>%
+  mutate(flipper_length_mm = as.numeric(flipper_length_mm),
+         body_mass_g = as.numeric(body_mass_g))
+
+set.seed(123)
+penguin_splits <- initial_split(penguins)
+penguins_train <- training(penguin_splits)
+penguins_test <- testing(penguin_splits)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+options(scipen = 999)
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 14))
+```
+
+## The Highlights
+
++ What is Multiple Linear Regression?
++ What are we assuming?
++ Tests for Model Utility
+  
+  + Global tests for model utility 
+  + Individual term-based tests
+
++ Further model assessment
+
+  + Validation metrics
+  + Residual analysis
++ Model interpretation
++ Predictions
+
+. . .
+
+If all this seems nearly identical to our discussion on *simple linear regression* models, it is.
+
+## What is Multiple Linear Regression?
+
+```{r}
+#| message: false
+#| warning: false
+#| fig-align: center
+
+p1 <- penguins_train %>%
+  ggplot() +
+  geom_point(aes(x = bill_length_mm,
+                 y = body_mass_g)) +
+  labs(x = "Bill Length (mm)",
+       y = "Body Mass (g)")
+
+p2 <- penguins_train %>%
+  ggplot() +
+  geom_point(aes(x = bill_depth_mm,
+                 y = body_mass_g)) +
+  labs(x = "Bill Depth (mm)",
+       y = "Body Mass (g)")
+
+p3 <- penguins_train %>%
+  ggplot() +
+  geom_point(aes(x = flipper_length_mm,
+                 y = body_mass_g)) +
+  labs(x = "Flipper Length (mm)",
+       y = "Body Mass (g)")
+
+p4 <- penguins_train %>%
+  ggplot() +
+  geom_point(aes(x = year,
+                 y = body_mass_g)) +
+  labs(x = "Year",
+       y = "Body Mass (g)")
+
+(p1 + p2) / (p3 + p4)
+```
+
+. . .
+
+Why choose just one predictor when we could have them all?
+
+## What is Multiple Linear Regression?
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] = \beta_0 + &\beta_1\cdot\left(\text{bill length}\right) + \beta_2\cdot\left(\text{bill depth}\right) +\\ & \beta_3\cdot\left(\text{flipper length}\right) + \beta_4\cdot\left(\text{year}\right)\end{align}
+
+. . .
+
+**Question 1 (Predictive):** Can we use penguin bill length, bill depth, flipper length, and observation year to predict body mass?
+
+. . . 
+
+**Question 2 (Inferential):** Controlling for bill length, bill depth, and observation year, what is the association between flipper length and penguin body mass?
+
+. . .
+
+**Question 3 (Inferential):** Controlling for flipper length, bill depth, and observation year, what is the association between bill length and penguin body mass?
+
+. . .
+
+**Question 4 (Inferential):** Controlling for flipper length, bill length, and observation year, what is the association between bill depth and penguin body mass?
+
+. . .
+
+**Question 5 (Inferential):** Controlling for flipper length, bill length, and bill depth, what is the association between observation year and penguin body mass?
+
+## What Are We Assuming?
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] = \beta_0 + &\beta_1\cdot\left(\text{bill length}\right) + \beta_2\cdot\left(\text{bill depth}\right) +\\ & \beta_3\cdot\left(\text{flipper length}\right) + \beta_4\cdot\left(\text{year}\right)\end{align}
+
+. . . 
+
+**Pre-Modeling Assumptions:** Penguin body mass is associated with each of the four predictors in a linear manner, the predictors are not correlated with one another, and body mass is independent of all other possible features.
+
+. . . 
+
+**Post-Modeling Assumptions:** The following assumptions are made about model errors (*residuals*), to ensure that using and interpreting the model is appropriate.
+
++ Residuals are normally distributed
++ Residuals are independent of one another, the response, the predictions, and the predictors
++ The standard deviation of residuals is constant with respect to the predictor, predictions, and the response
+
+## Building a Multiple Linear Regression Model with `{tidymodels}`
+
+1. Create a model specification
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+
+mlr_spec <- linear_reg() %>%
+  set_engine("lm")
+```
+
+2. Create a recipe
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+
+mlr_rec <- recipe(
+  body_mass_g ~ flipper_length_mm + bill_length_mm + bill_depth_mm + year,
+  data = penguins_train
+  )
+```
+
+3. Package the model and recipe into a workflow
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+
+mlr_wf <- workflow() %>%
+  add_model(mlr_spec) %>%
+  add_recipe(mlr_rec)
+```
+
+4. Fit the workflow to the training data
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+
+mlr_fit <- mlr_wf %>%
+  fit(penguins_train)
+```
+
+## The Estimated Model
+
+```{r}
+#| echo: true
+#| eval: false
+
+mlr_fit %>%
+  extract_fit_engine()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+mlr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] = 232658.77~ + &~52.75\cdot\left(\text{flipper length}\right) + 1.52\cdot\left(\text{bill length}\right) + \\
+&~28.59\cdot\left(\text{bill depth}\right) - 119.32\cdot\left(\text{year}\right)
+\end{align}
+
+## Global Test for Model Utility
+
+Does our model include any useful information in predicting / explaining penguin body mass?
+
+. . .
+
+$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\
+H_a & : & \text{At least one } \beta_i \text{ is non-zero}\end{array}$$
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
+mlr_fit %>%
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+mlr_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . . 
+
+The $p$-value on this test is so small that it rounds to 0.
+
+. . . 
+
+We'll reject the null hypothesis and accept that our model contains at least one useful predictor of penguin body mass!
+
+## Utility of Model Terms
+
+We'll run tests $\begin{array}{lcl} H_0 & : & \beta_i = 0\\ H_a & : & \beta_i \neq 0\end{array}$ to determine whether each individual term has utility.
+
+. . . 
+
+```{r}
+#| echo: true
+#| eval: false
+
+mlr_fit %>%
+  extract_fit_engine() %>%
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+mlr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . . 
+
+At the $\alpha = 0.05$ level of significance, neither `bill_length_mm` or `bill_depth_mm` are significant.
+
+. . .
+
+Removing one of the model terms will update all of the values in the model output -- including $p$-values.
+
+. . .
+
+We'll remove `bill_length_mm` since it has the largest $p$-value and revisit the resulting table.
+
+## Updating the Model and Retesting Terms
+
+```{r}
+#| echo: true
+#| eval: true
+
+mlr_rec <- mlr_rec %>%
+  step_rm(bill_length_mm)
+
+mlr_wf <- workflow() %>%
+  add_model(mlr_spec) %>%
+  add_recipe(mlr_rec)
+
+mlr_fit <- mlr_wf %>%
+  fit(penguins_train)
+```
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
+mlr_fit %>%
+  extract_fit_engine() %>%
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+mlr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+The `bill_depth_mm` term is still not significant. Let's remove it as well.
+
+## Updating the Model and Retesting Terms
+
+```{r}
+#| echo: true
+#| eval: true
+
+mlr_rec <- mlr_rec %>%
+  step_rm(bill_depth_mm)
+
+mlr_wf <- workflow() %>%
+  add_model(mlr_spec) %>%
+  add_recipe(mlr_rec)
+
+mlr_fit <- mlr_wf %>%
+  fit(penguins_train)
+```
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
+mlr_fit %>%
+  extract_fit_engine() %>%
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+mlr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+Now, all remaining terms are significant.
+
+. . .
+
+$$\mathbb{E}\left[\text{body mass}\right] = 227916.27 + 50.87\cdot\left(\text{flipper length}\right) - 116.5\cdot\left(\text{year}\right)$$
+
+## Additional [Training] Performance Metrics
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+```{r}
+#| eval: false
+#| echo: true
+
+mlr_fit %>%
+  glance()
+```
+
+```{r}
+#| eval: true
+#| echo: false
+
+mlr_fit %>%
+  glance %>%
+  pivot_longer(cols = everything(),
+               names_to = "metric",
+               values_to = "value") %>%
+  kable() %>%
+  kable_styling()
+```
+
+:::
+
+:::{.column width="55%"}
+
++ $p$-value is rounded to $0$, so our resulting model still has some utility in predicting / explaining penguin body mass.
++ $R^2_{\text{adj}} \approx 77.6\%$, so approximately 77.6% of variation in penguin body mass is explained by our model.
+
++ Training RMSE (`sigma`) is about 388.41, so we expect our model to predict penguin body mass to within $\pm 2\cdot\left(388.41\right) \approx \pm 776.82$ grams.
+
+  + Recall that we should generally expect this estimate to be too optimistic.
+
+:::
+
+::::
+
+## Additional [Validation] Performance Metrics
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+```{r}
+#| eval: false
+#| echo: true
+
+my_metrics <- metric_set(rmse, rsq)
+
+mlr_fit %>%
+  augment(penguins_test) %>%
+  my_metrics(.pred, body_mass_g)
+```
+
+```{r}
+#| eval: true
+#| echo: false
+
+my_metrics <- metric_set(rmse, rsq)
+
+mlr_fit %>%
+  augment(penguins_test) %>%
+  my_metrics(.pred, body_mass_g) %>%
+  select(-.estimator) %>%
+  kable() %>%
+  kable_styling()
+```
+
+:::
+
+:::{.column width="60%"}
+
++ $R^2 \approx 74.5\%$, so approximately 74.5% of variation in penguin body mass is explained by our model, when taking away the training data advantage.
+
++ Test RMSE is about 376.7, so we expect our model to predict penguin body mass to within $\pm 2\cdot\left(376.7\right) \approx \pm 753.4$ grams.
+
++ As with our *simple linear regression* models, the test $R^2$ value is slightly worse than the corresponding training metric, while the test RMSE is an improvement over the training RMSE.
+
+  + Remember, we should generally expect slightly worse performance on the test data than on training data.
+
+:::
+
+::::
+
+## Residual Analysis
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-height: 6
+#| fig-align: center
+
+train_with_resids <- mlr_fit %>%
+  augment(penguins_train)
+
+p1 <- train_with_resids %>%
+  mutate(residuals = body_mass_g - .pred) %>%
+  ggplot() +
+  geom_histogram(aes(x = residuals, y = ..density..),
+                 fill = "purple",
+                 color = "black",
+                 alpha = 0.75) +
+  geom_density(aes(x = residuals),
+               fill = "purple",
+               alpha = 0.6) +
+  labs(x = "residuals", y = "")
+
+p2 <- train_with_resids %>%
+  mutate(residuals = body_mass_g - .pred) %>%
+  ggplot() +
+  geom_point(aes(x = body_mass_g, y = residuals)) +
+  geom_hline(yintercept = 0,
+             linetype = "dashed",
+             color = "red") +
+  geom_smooth(aes(x = body_mass_g, y = residuals)) +
+  labs(x = "Body Mass", y = "Residuals")
+
+p3 <- train_with_resids %>%
+  mutate(residuals = body_mass_g - .pred) %>%
+  ggplot() +
+  geom_point(aes(x = .pred, y = residuals)) +
+  geom_hline(yintercept = 0,
+             linetype = "dashed",
+             color = "red") +
+  geom_smooth(aes(x = .pred, y = residuals)) +
+  labs(x = "Predictions", y = "Residuals")
+
+p4 <- train_with_resids %>%
+  mutate(residuals = body_mass_g - .pred) %>%
+  ggplot() +
+  geom_point(aes(x = flipper_length_mm, y = residuals)) +
+  geom_hline(yintercept = 0,
+             linetype = "dashed",
+             color = "red") +
+  geom_smooth(aes(x = flipper_length_mm, y = residuals)) +
+  labs(x = "Flipper Length", y = "Residuals")
+
+p5 <- train_with_resids %>%
+  mutate(residuals = body_mass_g - .pred) %>%
+  ggplot() +
+  geom_point(aes(x = year, y = residuals)) +
+  geom_hline(yintercept = 0,
+             linetype = "dashed",
+             color = "red") +
+  geom_smooth(aes(x = year, y = residuals)) +
+  labs(x = "Year", y = "Residuals")
+
+p1 / ((p2 + p3) / (p4 + p5)) + plot_annotation(title = "Residual Plots")
+```
+
+. . .
+
+Again, some slight right skew in the distribution of residuals and some associations between the residuals and the predictors, predictions, and response.
+
+## Model Interpretations
+
+```{r}
+#| echo: false
+#| eval: true
+
+# lin_reg_flip_fit %>%
+#   extract_fit_engine() %>%
+#   tidy() %>%
+#   kable() %>%
+#   kable_styling()
+```
+
+. . .
+
+$$\mathbb{E}\left[\text{body mass}\right] = -5768.76 + 49.67\cdot\left(\text{flipper length}\right)$$
+
+. . .
+
+**Interpretations:** 
+
++ (*Intercept*) We expect a penguin whose flipper length measures 0mm to have a mass of about -5768.76g
+
+  + Note that this is not reasonable, and our model doesn't support this interpretation since our shortest observed flipper length was 172mm.
+  + We could force the intercept to be 0, but we would observe worse fit.
+  
++ (*Flipper Length*) We expect a 1mm increase in flipper length to be associated with about a 49.67g increase in penguin body mass, on average.
+
+## Using the Model to Make Predictions
+
+Consider the following questions:
+
+1. What is the body mass of a penguin whose flipper length is 212mm?
+2. What is the average body mass of *all* penguins whose flipper lengths are 212mm?
+
+. . . 
+
+The first question is asking about the mass of a single penguin, while the second question is asking about the average mass over all penguins with a particular characteristic.
+
+. . .
+
+There is more uncertainty associated with trying to answer the first question.
+
+. . .
+
+Our model predicts 
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] &= -5768.76 + 49.67\left(212\right)\\
+&= 4761.28\text{g}
+\end{align}
+
+as the answer to both -- we have 0% confidence in this!
+
+## Using the Model to Make Predictions
+
+```{r}
+#| echo: true
+#| eval: false
+
+# new_penguin <- tibble(
+#   flipper_length_mm = 212
+# )
+# 
+# lin_reg_flip_fit %>%
+#   predict(new_penguin)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+# new_penguin <- tibble(
+#   flipper_length_mm = 212
+# )
+# 
+# new_penguin <- new_penguin %>%
+#   bind_cols(
+#     lin_reg_flip_fit %>%
+#       predict(new_penguin)
+#   ) %>%
+#   bind_cols(
+#     lin_reg_flip_fit %>%
+#       predict(new_penguin,
+#               type = "conf_int") %>%
+#       rename(.conf_lower = .pred_lower,
+#              .conf_upper = .pred_upper)
+#   ) %>%
+#   bind_cols(
+#     lin_reg_flip_fit %>%
+#       predict(new_penguin, type = "pred_int")
+#   )
+# 
+# lin_reg_flip_fit %>%
+#   predict(new_penguin) %>%
+#   kable() %>%
+#   kable_styling()
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| fig-align: center
+
+# point_colors <- c("training" = "black", "new" = "darkgreen")
+# 
+# ggplot() +
+#   geom_line(data = new_data,
+#             aes(x = flipper_length_mm, 
+#                 y = flip_pred),
+#             color = "blue",
+#             lwd = 2,
+#             alpha = 0.5) + 
+#   geom_point(data = penguins_train,
+#              aes(x = flipper_length_mm,
+#                  y = body_mass_g,
+#                  color = "training"),
+#              alpha = 0.2) +
+#   geom_point(data = new_penguin,
+#              aes(x = flipper_length_mm,
+#                  y = .pred,
+#                  color = "new"),
+#              size = 6) + 
+#   scale_color_manual(values = point_colors) + 
+#   labs(x = "Flipper Length (mm)",
+#        y = "Body Mass (g)",
+#        color = "Penguin Type") 
+
+```
+
+## Using the Model to Make Predictions
+
+What is <font color="green">the body mass of a penguin whose flipper length is 212mm</font>?
+
+```{r}
+#| echo: true
+#| eval: false
+
+# lin_reg_flip_fit %>%
+#   predict(new_penguin, type = "pred_int", level = 0.95)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+# lin_reg_flip_fit %>%
+#   predict(new_penguin, type = "pred_int") %>%
+#   kable() %>%
+#   kable_styling()
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| fig-align: center
+
+# point_colors <- c("prediction" = "darkgreen")
+# 
+# ggplot() +
+#   geom_line(data = new_data,
+#             aes(x = flipper_length_mm, 
+#                 y = flip_pred),
+#             color = "blue",
+#             lwd = 2,
+#             alpha = 0.5) + 
+#   geom_point(data = penguins_train,
+#              aes(x = flipper_length_mm,
+#                  y = body_mass_g),
+#              color = "black",
+#              alpha = 0.2) +
+#   geom_errorbar(data = new_penguin,
+#                 aes(x = flipper_length_mm,
+#                     ymin = .pred_lower,
+#                     ymax = .pred_upper,
+#                     color = "prediction"),
+#                 alpha = 0.75,
+#                 lwd = 1.5,
+#                 width = 5) +
+#   geom_point(data = new_penguin,
+#              aes(x = flipper_length_mm,
+#                  y = .pred),
+#              color = "darkgreen",
+#              size = 6) + 
+#   scale_color_manual(values = point_colors) + 
+#   labs(x = "Flipper Length (mm)",
+#        y = "Body Mass (g)",
+#        color = "Interval") 
+
+```
+
+## Using the Model to Make Predictions
+
+What is <font color="purple">the *average* body mass of *all* penguins whose flipper length is 212mm</font>?
+
+```{r}
+#| echo: true
+#| eval: false
+
+# lin_reg_flip_fit %>%
+#   predict(new_penguin, type = "conf_int", level = 0.95)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+# lin_reg_flip_fit %>%
+#   predict(new_penguin, type = "conf_int") %>%
+#   kable() %>%
+#   kable_styling()
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| fig-align: center
+
+# point_colors <- c("confidence" = "purple")
+# 
+# ggplot() +
+#   geom_line(data = new_data,
+#             aes(x = flipper_length_mm, 
+#                 y = flip_pred),
+#             color = "blue",
+#             lwd = 2,
+#             alpha = 0.5) + 
+#   geom_point(data = penguins_train,
+#              aes(x = flipper_length_mm,
+#                  y = body_mass_g),
+#              color = "black",
+#              alpha = 0.2) +
+#   geom_errorbar(data = new_penguin,
+#                 aes(x = flipper_length_mm,
+#                     ymin = .conf_lower,
+#                     ymax = .conf_upper,
+#                     color = "confidence"),
+#                 alpha = 0.75,
+#                 lwd = 1.5,
+#                 width = 5) +
+#   geom_point(data = new_penguin,
+#              aes(x = flipper_length_mm,
+#                  y = .pred),
+#              color = "darkgreen",
+#              size = 6) + 
+#   scale_color_manual(values = point_colors) + 
+#   labs(x = "Flipper Length (mm)",
+#        y = "Body Mass (g)",
+#        color = "Interval") 
+```
+
+
+## Using the Model to Make Predictions
+
+What is <font color="green">the body mass of a penguin whose flipper length is 212mm</font>?
+
++ Somewhere between `round(new_penguin %>% pull(.pred_lower), 1)`g and `round(new_penguin %>% pull(.pred_upper), 1)`g, with 95% confidence.
+
+What is <font color="purple">the *average* body mass of *all* penguins whose flipper length is 212mm</font>?
+
++ Somewhere between `round(new_penguin %>% pull(.conf_lower), 1)`g and `round(new_penguin %>% pull(.conf_upper), 1)`g, with 95% confidence.
+
+```{r}
+#| message: false
+#| warning: false
+#| fig-align: center
+
+# point_colors <- c("prediction" = "darkgreen", "confidence" = "purple")
+# 
+# ggplot() +
+#   geom_line(data = new_data,
+#             aes(x = flipper_length_mm, 
+#                 y = flip_pred),
+#             color = "blue",
+#             lwd = 2,
+#             alpha = 0.5) + 
+#   geom_point(data = penguins_train,
+#              aes(x = flipper_length_mm,
+#                  y = body_mass_g),
+#              color = "black",
+#              alpha = 0.2) +
+#   geom_errorbar(data = new_penguin,
+#                 aes(x = flipper_length_mm,
+#                     ymin = .pred_lower,
+#                     ymax = .pred_upper,
+#                     color = "prediction"),
+#                 alpha = 0.5,
+#                 lwd = 1.5,
+#                 width = 5) +
+#   geom_errorbar(data = new_penguin,
+#                 aes(x = flipper_length_mm,
+#                     ymin = .conf_lower,
+#                     ymax = .conf_upper,
+#                     color = "confidence"),
+#                 alpha = 1,
+#                 lwd = 1.5,
+#                 width = 5) +
+#   geom_point(data = new_penguin,
+#              aes(x = flipper_length_mm,
+#                  y = .pred),
+#              color = "darkgreen",
+#              size = 6) + 
+#   scale_color_manual(values = point_colors) + 
+#   labs(x = "Flipper Length (mm)",
+#        y = "Body Mass (g)",
+#        color = "Interval")
+```
+
+## Summary
+
++ Simple linear regression models are models of the form $\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x}$, with one predictor.
++ We assume that the sole predictor is linearly associated with the response, independent of any other features. 
++ The *global test for model utility* and the *test for significance of the predictor* are identical in this case.
++ We further assess simple linear regression models with summary metrics like $R^2_{\text{adj}}$, RMSE (both training and testing), as well as residual plots.
++ The intercept is the expected response when the predictor takes a value of 0, which may not be meaningful or supported.
++ The coefficient on the predictor can be interpreted as a slope.
++ We can predict responses for a single observation, or an average over all observations having the same value of the predictor.
+
+
+

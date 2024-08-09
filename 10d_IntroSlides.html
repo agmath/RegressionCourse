@@ -989,18 +989,58 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </section>
 <section id="model-interpretations" class="slide level2">
 <h2>Model Interpretations</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std.error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">227916.26652</td>
+<td style="text-align: right;">60596.048460</td>
+<td style="text-align: right;">3.76124</td>
+<td style="text-align: right;">0.0002101</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">flipper_length_mm</td>
+<td style="text-align: right;">50.87429</td>
+<td style="text-align: right;">1.712514</td>
+<td style="text-align: right;">29.70736</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">year</td>
+<td style="text-align: right;">-116.49701</td>
+<td style="text-align: right;">30.207960</td>
+<td style="text-align: right;">-3.85650</td>
+<td style="text-align: right;">0.0001460</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
 <div class="fragment">
-<p><span class="math display">\[\mathbb{E}\left[\text{body mass}\right] = -5768.76 + 49.67\cdot\left(\text{flipper length}\right)\]</span></p>
+<p><span class="math display">\[\mathbb{E}\left[\text{body mass}\right] \approx 227916.27 + 50.87\cdot\left(\text{flipper length}\right) - 116.5\cdot\left(\text{year}\right)\]</span></p>
 </div>
 <div class="fragment">
 <p><strong>Interpretations:</strong></p>
 <ul>
-<li class="fragment"><p>(<em>Intercept</em>) We expect a penguin whose flipper length measures 0mm to have a mass of about -5768.76g</p>
+<li class="fragment"><p>(<em>Intercept</em>) We expect a penguin from the year 0 and whose flipper length measures 0mm to have a mass of about 227916.27g</p>
 <ul>
-<li class="fragment">Note that this is not reasonable, and our model doesn’t support this interpretation since our shortest observed flipper length was 172mm.</li>
-<li class="fragment">We could force the intercept to be 0, but we would observe worse fit.</li>
+<li class="fragment">Again, this is not reasonable or supported. The intercept here is meaningless.</li>
 </ul></li>
-<li class="fragment"><p>(<em>Flipper Length</em>) We expect a 1mm increase in flipper length to be associated with about a 49.67g increase in penguin body mass, on average.</p></li>
+<li class="fragment"><p>(<em>Flipper Length</em>) Holding year constant, we expect a 1mm increase in flipper length to be associated with about a 50.87g increase in penguin body mass, on average.</p></li>
+<li class="fragment"><p>(<em>Year</em>) Holding flipper length constant, we expect an elapsed year to be associated with about a 116.5g decrease in penguin body mass, on average.</p></li>
 </ul>
 </div>
 </section>
@@ -1008,71 +1048,151 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <h2>Using the Model to Make Predictions</h2>
 <p>Consider the following questions:</p>
 <ol type="1">
-<li class="fragment">What is the body mass of a penguin whose flipper length is 212mm?</li>
-<li class="fragment">What is the average body mass of <em>all</em> penguins whose flipper lengths are 212mm?</li>
+<li class="fragment">In 2009, what is the body mass of a penguin whose flipper length is 212mm?</li>
+<li class="fragment">In 2009, what is the average body mass of <em>all</em> penguins whose flipper lengths are 212mm?</li>
 </ol>
 <div class="fragment">
-<p>The first question is asking about the mass of a single penguin, while the second question is asking about the average mass over all penguins with a particular characteristic.</p>
+<p>As with last time, the answer to the first question requires a <em>prediction interval</em>, while answering the second uses a <em>confidence interval</em>.</p>
 </div>
 <div class="fragment">
-<p>There is more uncertainty associated with trying to answer the first question.</p>
+<p>The prediction interval will be wider due to the additional uncertainty in predicting the body mass of a single penguin.</p>
 </div>
 <div class="fragment">
 <p>Our model predicts</p>
-<p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{body mass}\right] &amp;= -5768.76 + 49.67\left(212\right)\\
-&amp;= 4761.28\text{g}
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{body mass}\right] &amp;\approx 227916.27 + 50.87\left(212\right) - 116.5\cdot\left(2009\right)\\
+&amp;= 4652.21\text{g}
 \end{align}\]</span></p>
-<p>as the answer to both – we have 0% confidence in this!</p>
+<p>which we again have 0% confidence in.</p>
 </div>
 </section>
 <section id="using-the-model-to-make-predictions-1" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href=""></a><span class="co"># new_penguin &lt;- tibble(</span></span>
-<span id="cb14-2"><a href=""></a><span class="co">#   flipper_length_mm = 212</span></span>
-<span id="cb14-3"><a href=""></a><span class="co"># )</span></span>
-<span id="cb14-4"><a href=""></a><span class="co"># </span></span>
-<span id="cb14-5"><a href=""></a><span class="co"># lin_reg_flip_fit %&gt;%</span></span>
-<span id="cb14-6"><a href=""></a><span class="co">#   predict(new_penguin)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href=""></a>new_penguin <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb14-2"><a href=""></a>  <span class="at">flipper_length_mm =</span> <span class="dv">212</span>,</span>
+<span id="cb14-3"><a href=""></a>  <span class="at">year =</span> <span class="dv">2009</span>,</span>
+<span id="cb14-4"><a href=""></a>  <span class="at">bill_length_mm =</span> <span class="cn">NA</span>,</span>
+<span id="cb14-5"><a href=""></a>  <span class="at">bill_depth_mm =</span> <span class="cn">NA</span></span>
+<span id="cb14-6"><a href=""></a>)</span>
+<span id="cb14-7"><a href=""></a></span>
+<span id="cb14-8"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb14-9"><a href=""></a>  <span class="fu">predict</span>(new_penguin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">.pred</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">4659.126</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+
+<img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-26-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="using-the-model-to-make-predictions-2" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
-<p>What is <font color="green">the body mass of a penguin whose flipper length is 212mm</font>?</p>
+<p>What is <font color="green">the body mass of a penguin observed in 2009, whose flipper length is 212mm</font>?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href=""></a><span class="co"># lin_reg_flip_fit %&gt;%</span></span>
-<span id="cb15-2"><a href=""></a><span class="co">#   predict(new_penguin, type = "pred_int", level = 0.95)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href=""></a>  <span class="fu">predict</span>(new_penguin, <span class="at">type =</span> <span class="st">"pred_int"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">.pred_lower</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">.pred_upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">3890.01</td>
+<td style="text-align: right;">5428.241</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+
+<img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-29-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="using-the-model-to-make-predictions-3" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
-<p>What is <font color="purple">the <em>average</em> body mass of <em>all</em> penguins whose flipper length is 212mm</font>?</p>
+<p>What is <font color="purple">the <em>average</em> body mass of <em>all</em> penguins observed in 2009 and whose flipper lengths were 212mm</font>?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href=""></a><span class="co"># lin_reg_flip_fit %&gt;%</span></span>
-<span id="cb16-2"><a href=""></a><span class="co">#   predict(new_penguin, type = "conf_int", level = 0.95)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href=""></a>  <span class="fu">predict</span>(new_penguin, <span class="at">type =</span> <span class="st">"conf_int"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">.pred_lower</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">.pred_upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">4579.014</td>
+<td style="text-align: right;">4739.238</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+
+<img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-32-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="using-the-model-to-make-predictions-4" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
-<p>What is <font color="green">the body mass of a penguin whose flipper length is 212mm</font>?</p>
+<p>What is <font color="green">the body mass of a penguin observed in 2009 with flipper length 212mm</font>?</p>
 <ul>
-<li class="fragment">Somewhere between <code>round(new_penguin %&gt;% pull(.pred_lower), 1)</code>g and <code>round(new_penguin %&gt;% pull(.pred_upper), 1)</code>g, with 95% confidence.</li>
+<li class="fragment">Somewhere between 3890g and 5428.2g, with 95% confidence.</li>
 </ul>
-<p>What is <font color="purple">the <em>average</em> body mass of <em>all</em> penguins whose flipper length is 212mm</font>?</p>
+<p>What is <font color="purple">the <em>average</em> body mass of <em>all</em> penguins observed in 2009 with flipper lengths 212mm</font>?</p>
 <ul>
-<li class="fragment">Somewhere between <code>round(new_penguin %&gt;% pull(.conf_lower), 1)</code>g and <code>round(new_penguin %&gt;% pull(.conf_upper), 1)</code>g, with 95% confidence.</li>
+<li class="fragment">Somewhere between 4579g and 4739.2g, with 95% confidence.</li>
 </ul>
+<div class="fragment">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-33-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
 </section>
+<section id="using-the-model-to-make-predictions-5" class="slide level2">
+<h2>Using the Model to Make Predictions</h2>
+
+<img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-34-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="summary" class="slide level2">
 <h2>Summary</h2>
 <ul>
-<li class="fragment">Simple linear regression models are models of the form <span class="math inline">\(\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x}\)</span>, with one predictor.</li>
-<li class="fragment">We assume that the sole predictor is linearly associated with the response, independent of any other features.</li>
-<li class="fragment">The <em>global test for model utility</em> and the <em>test for significance of the predictor</em> are identical in this case.</li>
-<li class="fragment">We further assess simple linear regression models with summary metrics like <span class="math inline">\(R^2_{\text{adj}}\)</span>, RMSE (both training and testing), as well as residual plots.</li>
-<li class="fragment">The intercept is the expected response when the predictor takes a value of 0, which may not be meaningful or supported.</li>
-<li class="fragment">The coefficient on the predictor can be interpreted as a slope.</li>
-<li class="fragment">We can predict responses for a single observation, or an average over all observations having the same value of the predictor.</li>
+<li class="fragment">Multiple linear regression models are models of the form <span class="math inline">\(\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k}\)</span>.</li>
+<li class="fragment">We assume that none of the predictors are correlated with one another.</li>
+<li class="fragment">The <em>global test for model utility</em> and the <em>test for significance of each predictor</em> are different in this case.</li>
+<li class="fragment">In the case of model terms which aren’t significant, we drop one term at a time until all remaining model terms are significant. We drop the term corresponding to the highest <span class="math inline">\(p\)</span>-value(<span class="math inline">\(^*\)</span>).</li>
+<li class="fragment">We further assess multiple linear regression models with summary metrics like <span class="math inline">\(R^2_{\text{adj}}\)</span>, RMSE (both training and testing), as well as residual plots.</li>
+<li class="fragment">The intercept is the expected response when all predictors take a value of 0, which may not be meaningful or supported.</li>
+<li class="fragment">The coefficient on each predictor can be interpreted as a slope(<span class="math inline">\(^*\)</span>).</li>
+<li class="fragment">We can predict responses for a single observation, or an average over all observations having the same values of the predictors.</li>
 </ul>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">

@@ -549,52 +549,53 @@ Again, some slight right skew in the distribution of residuals and some associat
 #| echo: false
 #| eval: true
 
-# lin_reg_flip_fit %>%
-#   extract_fit_engine() %>%
-#   tidy() %>%
-#   kable() %>%
-#   kable_styling()
+mlr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
 ```
 
 . . .
 
-$$\mathbb{E}\left[\text{body mass}\right] = -5768.76 + 49.67\cdot\left(\text{flipper length}\right)$$
+$$\mathbb{E}\left[\text{body mass}\right] \approx 227916.27 + 50.87\cdot\left(\text{flipper length}\right) - 116.5\cdot\left(\text{year}\right)$$
 
 . . .
 
 **Interpretations:** 
 
-+ (*Intercept*) We expect a penguin whose flipper length measures 0mm to have a mass of about -5768.76g
++ (*Intercept*) We expect a penguin from the year 0 and whose flipper length measures 0mm to have a mass of about 227916.27g
 
-  + Note that this is not reasonable, and our model doesn't support this interpretation since our shortest observed flipper length was 172mm.
-  + We could force the intercept to be 0, but we would observe worse fit.
+  + Again, this is not reasonable or supported. The intercept here is meaningless.
   
-+ (*Flipper Length*) We expect a 1mm increase in flipper length to be associated with about a 49.67g increase in penguin body mass, on average.
++ (*Flipper Length*) Holding year constant, we expect a 1mm increase in flipper length to be associated with about a 50.87g increase in penguin body mass, on average.
+
++ (*Year*) Holding flipper length constant, we expect an elapsed year to be associated with about a 116.5g decrease in penguin body mass, on average.
 
 ## Using the Model to Make Predictions
 
 Consider the following questions:
 
-1. What is the body mass of a penguin whose flipper length is 212mm?
-2. What is the average body mass of *all* penguins whose flipper lengths are 212mm?
+1. In 2009, what is the body mass of a penguin whose flipper length is 212mm?
+2. In 2009, what is the average body mass of *all* penguins whose flipper lengths are 212mm?
 
 . . . 
 
-The first question is asking about the mass of a single penguin, while the second question is asking about the average mass over all penguins with a particular characteristic.
+As with last time, the answer to the first question requires a *prediction interval*, while answering the second uses a *confidence interval*. 
 
-. . .
+. . . 
 
-There is more uncertainty associated with trying to answer the first question.
+The prediction interval will be wider due to the additional uncertainty in predicting the body mass of a single penguin.
 
 . . .
 
 Our model predicts 
 
-\begin{align} \mathbb{E}\left[\text{body mass}\right] &= -5768.76 + 49.67\left(212\right)\\
-&= 4761.28\text{g}
+\begin{align} \mathbb{E}\left[\text{body mass}\right] &\approx 227916.27 + 50.87\left(212\right) - 116.5\cdot\left(2009\right)\\
+&= 4652.21\text{g}
 \end{align}
 
-as the answer to both -- we have 0% confidence in this!
+which we again have 0% confidence in.
 
 ## Using the Model to Make Predictions
 
@@ -602,43 +603,50 @@ as the answer to both -- we have 0% confidence in this!
 #| echo: true
 #| eval: false
 
-# new_penguin <- tibble(
-#   flipper_length_mm = 212
-# )
-# 
-# lin_reg_flip_fit %>%
-#   predict(new_penguin)
+new_penguin <- tibble(
+  flipper_length_mm = 212,
+  year = 2009,
+  bill_length_mm = NA,
+  bill_depth_mm = NA
+)
+
+mlr_fit %>%
+  predict(new_penguin)
 ```
+
 
 ```{r}
 #| echo: false
 #| eval: true
 
-# new_penguin <- tibble(
-#   flipper_length_mm = 212
-# )
-# 
-# new_penguin <- new_penguin %>%
-#   bind_cols(
-#     lin_reg_flip_fit %>%
-#       predict(new_penguin)
-#   ) %>%
-#   bind_cols(
-#     lin_reg_flip_fit %>%
-#       predict(new_penguin,
-#               type = "conf_int") %>%
-#       rename(.conf_lower = .pred_lower,
-#              .conf_upper = .pred_upper)
-#   ) %>%
-#   bind_cols(
-#     lin_reg_flip_fit %>%
-#       predict(new_penguin, type = "pred_int")
-#   )
-# 
-# lin_reg_flip_fit %>%
-#   predict(new_penguin) %>%
-#   kable() %>%
-#   kable_styling()
+new_penguin <- tibble(
+  flipper_length_mm = 212,
+  year = 2009,
+  bill_length_mm = NA,
+  bill_depth_mm = NA
+)
+
+new_penguin <- new_penguin %>%
+  bind_cols(
+    mlr_fit %>%
+      predict(new_penguin)
+  ) %>%
+  bind_cols(
+    mlr_fit %>%
+      predict(new_penguin,
+              type = "conf_int") %>%
+      rename(.conf_lower = .pred_lower,
+             .conf_upper = .pred_upper)
+  ) %>%
+  bind_cols(
+    mlr_fit %>%
+      predict(new_penguin, type = "pred_int")
+  )
+
+mlr_fit %>%
+  predict(new_penguin) %>%
+  kable() %>%
+  kable_styling()
 ```
 
 ```{r}
@@ -646,52 +654,82 @@ as the answer to both -- we have 0% confidence in this!
 #| warning: false
 #| fig-align: center
 
-# point_colors <- c("training" = "black", "new" = "darkgreen")
-# 
-# ggplot() +
-#   geom_line(data = new_data,
-#             aes(x = flipper_length_mm, 
-#                 y = flip_pred),
-#             color = "blue",
-#             lwd = 2,
-#             alpha = 0.5) + 
-#   geom_point(data = penguins_train,
-#              aes(x = flipper_length_mm,
-#                  y = body_mass_g,
-#                  color = "training"),
-#              alpha = 0.2) +
-#   geom_point(data = new_penguin,
-#              aes(x = flipper_length_mm,
-#                  y = .pred,
-#                  color = "new"),
-#              size = 6) + 
-#   scale_color_manual(values = point_colors) + 
-#   labs(x = "Flipper Length (mm)",
-#        y = "Body Mass (g)",
-#        color = "Penguin Type") 
+new_data <- crossing(
+  flipper_length_mm = seq(
+    min(penguins_train$flipper_length_mm, na.rm = TRUE),
+    max(penguins_train$flipper_length_mm, na.rm = TRUE),
+    length.out = 250
+    ),
+  year = 2009,
+  bill_length_mm = NA,
+  bill_depth_mm = NA
+)
 
+new_data <- new_data %>%
+  bind_cols(
+    mlr_fit %>%
+  predict(new_data)
+  ) %>% 
+  bind_cols(
+    mlr_fit %>%
+      predict(new_data,
+              type = "conf_int") %>%
+      rename(
+        .conf_lower = .pred_lower,
+        .conf_upper = .pred_upper
+      )
+  ) %>%
+  bind_cols(
+    mlr_fit %>%
+      predict(new_data,
+              type = "pred_int")
+  )
+
+point_colors <- c("training" = "black", "new" = "darkgreen")
+
+ggplot() +
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = .pred),
+            color = "blue",
+            lwd = 2,
+            alpha = 0.5) +
+  geom_point(data = penguins_train,
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = "training"),
+             alpha = 0.2) +
+  geom_point(data = new_penguin,
+             aes(x = flipper_length_mm,
+                 y = .pred,
+                 color = "new"),
+             size = 6) +
+  scale_color_manual(values = point_colors) +
+  labs(x = "Flipper Length (mm)",
+       y = "Body Mass (g)",
+       color = "Penguin Type")
 ```
 
 ## Using the Model to Make Predictions
 
-What is <font color="green">the body mass of a penguin whose flipper length is 212mm</font>?
+What is <font color="green">the body mass of a penguin observed in 2009, whose flipper length is 212mm</font>?
 
 ```{r}
 #| echo: true
 #| eval: false
 
-# lin_reg_flip_fit %>%
-#   predict(new_penguin, type = "pred_int", level = 0.95)
+mlr_fit %>%
+  predict(new_penguin, type = "pred_int", level = 0.95)
 ```
 
 ```{r}
 #| echo: false
 #| eval: true
 
-# lin_reg_flip_fit %>%
-#   predict(new_penguin, type = "pred_int") %>%
-#   kable() %>%
-#   kable_styling()
+mlr_fit %>%
+  predict(new_penguin, type = "pred_int") %>%
+  kable() %>%
+  kable_styling()
 ```
 
 ```{r}
@@ -699,60 +737,60 @@ What is <font color="green">the body mass of a penguin whose flipper length is 2
 #| warning: false
 #| fig-align: center
 
-# point_colors <- c("prediction" = "darkgreen")
-# 
-# ggplot() +
-#   geom_line(data = new_data,
-#             aes(x = flipper_length_mm, 
-#                 y = flip_pred),
-#             color = "blue",
-#             lwd = 2,
-#             alpha = 0.5) + 
-#   geom_point(data = penguins_train,
-#              aes(x = flipper_length_mm,
-#                  y = body_mass_g),
-#              color = "black",
-#              alpha = 0.2) +
-#   geom_errorbar(data = new_penguin,
-#                 aes(x = flipper_length_mm,
-#                     ymin = .pred_lower,
-#                     ymax = .pred_upper,
-#                     color = "prediction"),
-#                 alpha = 0.75,
-#                 lwd = 1.5,
-#                 width = 5) +
-#   geom_point(data = new_penguin,
-#              aes(x = flipper_length_mm,
-#                  y = .pred),
-#              color = "darkgreen",
-#              size = 6) + 
-#   scale_color_manual(values = point_colors) + 
-#   labs(x = "Flipper Length (mm)",
-#        y = "Body Mass (g)",
-#        color = "Interval") 
+point_colors <- c("prediction" = "darkgreen")
+
+ggplot() +
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = .pred),
+            color = "blue",
+            lwd = 2,
+            alpha = 0.5) +
+  geom_point(data = penguins_train,
+             aes(x = flipper_length_mm,
+                 y = body_mass_g),
+             color = "black",
+             alpha = 0.2) +
+  geom_errorbar(data = new_penguin,
+                aes(x = flipper_length_mm,
+                    ymin = .pred_lower,
+                    ymax = .pred_upper,
+                    color = "prediction"),
+                alpha = 0.75,
+                lwd = 1.5,
+                width = 5) +
+  geom_point(data = new_penguin,
+             aes(x = flipper_length_mm,
+                 y = .pred),
+             color = "darkgreen",
+             size = 6) +
+  scale_color_manual(values = point_colors) +
+  labs(x = "Flipper Length (mm)",
+       y = "Body Mass (g)",
+       color = "Interval")
 
 ```
 
 ## Using the Model to Make Predictions
 
-What is <font color="purple">the *average* body mass of *all* penguins whose flipper length is 212mm</font>?
+What is <font color="purple">the *average* body mass of *all* penguins observed in 2009 and whose flipper lengths were 212mm</font>?
 
 ```{r}
 #| echo: true
 #| eval: false
 
-# lin_reg_flip_fit %>%
-#   predict(new_penguin, type = "conf_int", level = 0.95)
+mlr_fit %>%
+  predict(new_penguin, type = "conf_int", level = 0.95)
 ```
 
 ```{r}
 #| echo: false
 #| eval: true
 
-# lin_reg_flip_fit %>%
-#   predict(new_penguin, type = "conf_int") %>%
-#   kable() %>%
-#   kable_styling()
+mlr_fit %>%
+  predict(new_penguin, type = "conf_int") %>%
+  kable() %>%
+  kable_styling()
 ```
 
 ```{r}
@@ -760,105 +798,171 @@ What is <font color="purple">the *average* body mass of *all* penguins whose fli
 #| warning: false
 #| fig-align: center
 
-# point_colors <- c("confidence" = "purple")
-# 
-# ggplot() +
-#   geom_line(data = new_data,
-#             aes(x = flipper_length_mm, 
-#                 y = flip_pred),
-#             color = "blue",
-#             lwd = 2,
-#             alpha = 0.5) + 
-#   geom_point(data = penguins_train,
-#              aes(x = flipper_length_mm,
-#                  y = body_mass_g),
-#              color = "black",
-#              alpha = 0.2) +
-#   geom_errorbar(data = new_penguin,
-#                 aes(x = flipper_length_mm,
-#                     ymin = .conf_lower,
-#                     ymax = .conf_upper,
-#                     color = "confidence"),
-#                 alpha = 0.75,
-#                 lwd = 1.5,
-#                 width = 5) +
-#   geom_point(data = new_penguin,
-#              aes(x = flipper_length_mm,
-#                  y = .pred),
-#              color = "darkgreen",
-#              size = 6) + 
-#   scale_color_manual(values = point_colors) + 
-#   labs(x = "Flipper Length (mm)",
-#        y = "Body Mass (g)",
-#        color = "Interval") 
+point_colors <- c("confidence" = "purple")
+
+ggplot() +
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = .pred),
+            color = "blue",
+            lwd = 2,
+            alpha = 0.5) +
+  geom_point(data = penguins_train,
+             aes(x = flipper_length_mm,
+                 y = body_mass_g),
+             color = "black",
+             alpha = 0.2) +
+  geom_errorbar(data = new_penguin,
+                aes(x = flipper_length_mm,
+                    ymin = .conf_lower,
+                    ymax = .conf_upper,
+                    color = "confidence"),
+                alpha = 0.75,
+                lwd = 1.5,
+                width = 5) +
+  geom_point(data = new_penguin,
+             aes(x = flipper_length_mm,
+                 y = .pred),
+             color = "darkgreen",
+             size = 6) +
+  scale_color_manual(values = point_colors) +
+  labs(x = "Flipper Length (mm)",
+       y = "Body Mass (g)",
+       color = "Interval")
 ```
 
 
 ## Using the Model to Make Predictions
 
-What is <font color="green">the body mass of a penguin whose flipper length is 212mm</font>?
+What is <font color="green">the body mass of a penguin observed in 2009 with flipper length 212mm</font>?
 
-+ Somewhere between `round(new_penguin %>% pull(.pred_lower), 1)`g and `round(new_penguin %>% pull(.pred_upper), 1)`g, with 95% confidence.
++ Somewhere between `r round(new_penguin %>% pull(.pred_lower), 1)`g and `r round(new_penguin %>% pull(.pred_upper), 1)`g, with 95% confidence.
 
-What is <font color="purple">the *average* body mass of *all* penguins whose flipper length is 212mm</font>?
+What is <font color="purple">the *average* body mass of *all* penguins observed in 2009 with flipper lengths 212mm</font>?
 
-+ Somewhere between `round(new_penguin %>% pull(.conf_lower), 1)`g and `round(new_penguin %>% pull(.conf_upper), 1)`g, with 95% confidence.
++ Somewhere between `r round(new_penguin %>% pull(.conf_lower), 1)`g and `r round(new_penguin %>% pull(.conf_upper), 1)`g, with 95% confidence.
+
+. . .
 
 ```{r}
 #| message: false
 #| warning: false
 #| fig-align: center
 
-# point_colors <- c("prediction" = "darkgreen", "confidence" = "purple")
-# 
-# ggplot() +
-#   geom_line(data = new_data,
-#             aes(x = flipper_length_mm, 
-#                 y = flip_pred),
-#             color = "blue",
-#             lwd = 2,
-#             alpha = 0.5) + 
-#   geom_point(data = penguins_train,
-#              aes(x = flipper_length_mm,
-#                  y = body_mass_g),
-#              color = "black",
-#              alpha = 0.2) +
-#   geom_errorbar(data = new_penguin,
-#                 aes(x = flipper_length_mm,
-#                     ymin = .pred_lower,
-#                     ymax = .pred_upper,
-#                     color = "prediction"),
-#                 alpha = 0.5,
-#                 lwd = 1.5,
-#                 width = 5) +
-#   geom_errorbar(data = new_penguin,
-#                 aes(x = flipper_length_mm,
-#                     ymin = .conf_lower,
-#                     ymax = .conf_upper,
-#                     color = "confidence"),
-#                 alpha = 1,
-#                 lwd = 1.5,
-#                 width = 5) +
-#   geom_point(data = new_penguin,
-#              aes(x = flipper_length_mm,
-#                  y = .pred),
-#              color = "darkgreen",
-#              size = 6) + 
-#   scale_color_manual(values = point_colors) + 
-#   labs(x = "Flipper Length (mm)",
-#        y = "Body Mass (g)",
-#        color = "Interval")
+point_colors <- c("prediction" = "darkgreen", "confidence" = "purple")
+
+ggplot() +
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = .pred),
+            color = "blue",
+            lwd = 2,
+            alpha = 0.5) +
+  geom_point(data = penguins_train,
+             aes(x = flipper_length_mm,
+                 y = body_mass_g),
+             color = "black",
+             alpha = 0.2) +
+  geom_errorbar(data = new_penguin,
+                aes(x = flipper_length_mm,
+                    ymin = .pred_lower,
+                    ymax = .pred_upper,
+                    color = "prediction"),
+                alpha = 0.5,
+                lwd = 1.5,
+                width = 5) +
+  geom_errorbar(data = new_penguin,
+                aes(x = flipper_length_mm,
+                    ymin = .conf_lower,
+                    ymax = .conf_upper,
+                    color = "confidence"),
+                alpha = 1,
+                lwd = 1.5,
+                width = 5) +
+  geom_point(data = new_penguin,
+             aes(x = flipper_length_mm,
+                 y = .pred),
+             color = "darkgreen",
+             size = 6) +
+  scale_color_manual(values = point_colors) +
+  labs(x = "Flipper Length (mm)",
+       y = "Body Mass (g)",
+       color = "Interval")
+```
+
+## Using the Model to Make Predictions
+
+```{r}
+#| message: false
+#| warning: false
+#| fig-align: center
+
+point_colors <- c("prediction" = "darkgreen", "confidence" = "purple")
+
+ggplot() +
+  geom_ribbon(data = new_data,
+              aes(x = flipper_length_mm,
+                  ymin = .pred_lower,
+                  ymax = .pred_upper,
+                  fill = "prediction"),
+              alpha = 0.4) + 
+  geom_ribbon(data = new_data,
+              aes(x = flipper_length_mm,
+                  ymin = .conf_lower,
+                  ymax = .conf_upper,
+                  fill = "confidence"),
+              alpha = 0.4) +
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = .pred),
+            color = "blue",
+            lwd = 2,
+            alpha = 0.5) +
+  geom_point(data = penguins_train,
+             aes(x = flipper_length_mm,
+                 y = body_mass_g),
+             color = "black",
+             alpha = 0.2) +
+  # geom_errorbar(data = new_penguin,
+  #               aes(x = flipper_length_mm,
+  #                   ymin = .pred_lower,
+  #                   ymax = .pred_upper,
+  #                   color = "prediction"),
+  #               alpha = 0.5,
+  #               lwd = 1.5,
+  #               width = 5,
+  #               show.legend = FALSE) +
+  # geom_errorbar(data = new_penguin,
+  #               aes(x = flipper_length_mm,
+  #                   ymin = .conf_lower,
+  #                   ymax = .conf_upper,
+  #                   color = "confidence"),
+  #               alpha = 1,
+  #               lwd = 1.5,
+  #               width = 5,
+  #               show.legend = FALSE) +
+  geom_vline(xintercept = 212,
+             linetype = "dashed") +
+  geom_point(data = new_penguin,
+             aes(x = flipper_length_mm,
+                 y = .pred),
+             color = "darkgreen",
+             size = 6) +
+  scale_color_manual(values = point_colors) +
+  scale_fill_manual(values = point_colors) +
+  labs(x = "Flipper Length (mm)",
+       y = "Body Mass (g)",
+       fill = "Interval")
 ```
 
 ## Summary
 
-+ Simple linear regression models are models of the form $\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x}$, with one predictor.
-+ We assume that the sole predictor is linearly associated with the response, independent of any other features. 
-+ The *global test for model utility* and the *test for significance of the predictor* are identical in this case.
-+ We further assess simple linear regression models with summary metrics like $R^2_{\text{adj}}$, RMSE (both training and testing), as well as residual plots.
-+ The intercept is the expected response when the predictor takes a value of 0, which may not be meaningful or supported.
-+ The coefficient on the predictor can be interpreted as a slope.
-+ We can predict responses for a single observation, or an average over all observations having the same value of the predictor.
-
-
++ Multiple linear regression models are models of the form $\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k}$.
++ We assume that none of the predictors are correlated with one another. 
++ The *global test for model utility* and the *test for significance of each predictor* are different in this case.
++ In the case of model terms which aren't significant, we drop one term at a time until all remaining model terms are significant. We drop the term corresponding to the highest $p$-value($^*$).
++ We further assess multiple linear regression models with summary metrics like $R^2_{\text{adj}}$, RMSE (both training and testing), as well as residual plots.
++ The intercept is the expected response when all predictors take a value of 0, which may not be meaningful or supported.
++ The coefficient on each predictor can be interpreted as a slope($^*$).
++ We can predict responses for a single observation, or an average over all observations having the same values of the predictors.
 

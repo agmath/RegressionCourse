@@ -321,6 +321,7 @@ p1 <- train_with_resids %>%
   ggplot() +
   geom_histogram(aes(x = residuals, y = ..density..),
                  fill = "purple",
+                 color = "black",
                  alpha = 0.75) + 
   geom_density(aes(x = residuals),
                fill = "purple",

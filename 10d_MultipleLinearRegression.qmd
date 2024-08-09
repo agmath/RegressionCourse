@@ -104,7 +104,7 @@ p2 <- penguins_train %>%
 p3 <- penguins_train %>%
   ggplot() +
   geom_point(aes(x = flipper_length_mm, y = body_mass_g)) +
-  labs(x = "Bill Length (mm)",
+  labs(x = "Flipper Length (mm)",
        y = "Body Mass (g)")
 
 p4 <- penguins_train %>%

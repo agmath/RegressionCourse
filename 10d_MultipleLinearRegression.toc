@@ -1,0 +1,13 @@
+\contentsline {subsection}{\nonumberline Objectives}{1}{subsection*.3}%
+\contentsline {subsection}{\nonumberline Simple Versus Multiple Linear Regression}{2}{subsection*.5}%
+\contentsline {subsubsection}{\nonumberline Training and Test Data}{3}{subsubsection*.7}%
+\contentsline {subsubsection}{\nonumberline EDA with Numerical Features}{3}{subsubsection*.9}%
+\contentsline {subsubsection}{\nonumberline Building a Multiple Linear Regression Model}{5}{subsubsection*.11}%
+\contentsline {subsubsection}{\nonumberline Assessing our Fitted Model}{5}{subsubsection*.13}%
+\contentsline {paragraph}{\nonumberline Global Model Assessment}{6}{paragraph*.15}%
+\contentsline {paragraph}{\nonumberline Assessment of Individual Model Terms}{7}{paragraph*.17}%
+\contentsline {subparagraph}{\nonumberline Interpreting Marginal Effects with \texttt {\{marginaleffects\}}}{10}{subparagraph*.19}%
+\contentsline {paragraph}{\nonumberline Returning to Global Performance Metrics}{12}{paragraph*.21}%
+\contentsline {paragraph}{\nonumberline Assessing Model Performance on Unseen (Test) Observations}{13}{paragraph*.23}%
+\contentsline {subsection}{\nonumberline Summary}{14}{subsection*.25}%
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

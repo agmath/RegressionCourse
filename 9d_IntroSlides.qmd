@@ -186,8 +186,8 @@ $$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{fl
 
 **Post-Modeling Assumptions:** The following assumptions are made about model errors (*residuals*), to ensure that using and interpreting the model is appropriate.
 
-+ Residuals are independent of one another
 + Residuals are normally distributed
++ Residuals are independent of one another, the predictor, predictions, and the response
 + The standard deviation of residuals is constant with respect to the predictor, predictions, and the response
 
 ## Global and Term-Based Model Assessments

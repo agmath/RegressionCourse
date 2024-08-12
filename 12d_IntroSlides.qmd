@@ -1,0 +1,726 @@
+---
+title: "Inclusion and Interpretation of Catgorical Predictors in Linear Regression Models"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(patchwork)
+library(kableExtra)
+tidymodels_prefer()
+
+penguins <- palmerpenguins::penguins
+
+penguins <- penguins %>%
+  mutate(flipper_length_mm = as.numeric(flipper_length_mm),
+         body_mass_g = as.numeric(body_mass_g))
+
+set.seed(123)
+penguin_splits <- initial_split(penguins)
+penguins_train <- training(penguin_splits)
+penguins_test <- testing(penguin_splits)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+options(scipen = 999)
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 14))
+```
+
+## Motivation
+
+```{r}
+penguins_train %>%
+  ggplot() + 
+  geom_point(aes(x = bill_length_mm, y = body_mass_g)) + 
+  labs(
+    x = "Bill Length",
+    y = "Body Mass"
+  )
+```
+
+## Motivation
+
+```{r}
+#| fig-align: center
+
+lin_reg_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lin_reg_rec <- recipe(body_mass_g ~ bill_length_mm, data = penguins_train)
+
+lin_reg_wf <- workflow() %>%
+  add_model(lin_reg_spec) %>%
+  add_recipe(lin_reg_rec)
+
+lin_reg_fit <- lin_reg_wf %>%
+  fit(penguins_train)
+
+new_data <- tibble(
+  bill_length_mm = seq(
+    min(penguins_train$bill_length_mm, na.rm = TRUE),
+    max(penguins_train$bill_length_mm, na.rm = TRUE),
+    length.out = 250)
+  )
+
+new_data <- lin_reg_fit %>%
+  augment(new_data)
+
+ggplot() + 
+  geom_point(data = penguins_train, 
+             aes(x = bill_length_mm,
+                 y = body_mass_g)) + 
+  geom_line(data = new_data, 
+            aes(x = bill_length_mm, 
+                y = .pred),
+            color = "blue",
+            lwd = 1.5) + 
+  labs(x = "Bill Length",
+       y = "Body Mass")
+```
+
+```{r}
+lin_reg_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling()
+
+lin_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+
+```
+
+## Motivation
+
+```{r}
+ggplot() + 
+  geom_point(data = penguins_train, 
+             aes(x = bill_length_mm,
+                 y = body_mass_g,
+                 color = species)) + 
+  geom_line(data = new_data, 
+            aes(x = bill_length_mm, 
+                y = .pred),
+            color = "blue",
+            lwd = 1.5) + 
+  labs(x = "Bill Length",
+       y = "Body Mass")
+```
+
+## The Highlights
+
++ ANOVA as a linear regression model
++ Strategies for using categorical predictors in a model
+
+  + One-hot encodings versus dummy encodings
+  + Ordinal scorings
+
++ Feature engineering steps in recipes
++ Handling unknown or novel levels of a categorical variable
++ Fitting a model with categorical and numerical variables
++ Interpreting models with categorical predictors
+
+## ANalysis Of VAriance
+
+Does penguin body mass vary by species?
+
+. . . 
+
+$$\begin{array}{lcl} H_0 & : & \mu_{\text{Adelie}} = \mu_{\text{Chinstrap}} =  \mu_{\text{Gentoo}}\\
+H_a & : & \text{At least one species has different average body mass}\end{array}$$
+
+. . . 
+
+```{r}
+penguins_train %>%
+  ggplot() + 
+  geom_boxplot(aes(x = body_mass_g, 
+                   y = species,
+                   fill = species),
+               show.legend = FALSE) + 
+  labs(x = "Body Mass",
+       y = "")
+```
+
+## ANalysis Of VAriance
+
+Does penguin body mass vary by species?
+
+$$\begin{array}{lcl} H_0 & : & \mu_{\text{Adelie}} = \mu_{\text{Chinstrap}} =  \mu_{\text{Gentoo}}\\
+H_a & : & \text{At least one species has different average body mass}\end{array}$$
+
+**ANOVA Test:**
+
+```{r}
+ANOVAtable <- aov(body_mass_g ~ species, data = penguins_train)
+
+ANOVAtable %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+## ANalysis Of VAriance as Linear Regression
+
+Does penguin body mass vary by species?
+
+. . . 
+
+$$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{???}\right)$$
+
+. . . 
+
+**Model-Based Test:**
+
+```{r}
+anova_spec <- linear_reg()
+
+anova_rec <- recipe(body_mass_g ~ species, data = penguins_train) %>%
+  step_dummy(species)
+
+anova_wf <- workflow() %>%
+  add_model(anova_spec) %>%
+  add_recipe(anova_rec)
+
+anova_fit <- anova_wf %>%
+  fit(penguins_train)
+
+anova_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+```{r}
+anova_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+## ANalysis Of VAriance as Linear Regression
+
+Does penguin body mass vary by species?
+
+$$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{speciesChinstrap}\right) + \beta_2\cdot\left(\text{speciesGentoo}\right)$$
+
+**Model-Based Test:**
+
+```{r}
+anova_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling()
+```
+
+```{r}
+anova_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+## ANalysis Of VAriance as Linear Regression
+
+Does penguin body mass vary by species?
+
+$$\mathbb{E}\left[\text{body mass}\right] \approx 3703.95 - 18.45\cdot\left(\text{speciesChinstrap}\right) + 1298.23\cdot\left(\text{speciesGentoo}\right)$$
+
+```{r}
+#| fig.align: center
+
+new_data <- tibble(
+  species = as.factor(c("Adelie", "Chinstrap", "Gentoo"))
+)
+
+new_data <- anova_fit %>%
+  augment(new_data) %>%
+  bind_cols(
+    anova_fit %>%
+      predict(new_data, type = "conf_int")
+  )
+
+ggplot() + 
+  geom_jitter(data = penguins_train,
+              aes(x = as.numeric(species),
+                  y = body_mass_g,
+                  color = species), 
+              width = 0.25, 
+              height = 0) + 
+  geom_segment(data = new_data,
+             aes(x = as.numeric(species) - .25, xend = as.numeric(species) + 0.25, y = .pred, yend = .pred, color = species),
+             lwd = 3,
+             alpha = 0.75) + 
+  scale_x_continuous(breaks = 1:length(levels(penguins_train$species)), 
+                     labels = levels(penguins_train$species)) +
+  theme(legend.position = "None") +
+  labs(x = "",
+       y = "Body Mass")
+```
+
+## ANalysis Of VAriance as Linear Regression
+
+Does penguin body mass vary by species?
+
+$$\mathbb{E}\left[\text{body mass}\right] \approx 3703.95 - 18.45\cdot\left(\text{speciesChinstrap}\right) + 1298.23\cdot\left(\text{speciesGentoo}\right)$$
+
+```{r}
+#| fig.align: center
+
+new_data <- tibble(
+  species = as.factor(c("Adelie", "Chinstrap", "Gentoo"))
+)
+
+new_data <- anova_fit %>%
+  augment(new_data) %>%
+  bind_cols(
+    anova_fit %>%
+      predict(new_data, type = "conf_int")
+  )
+
+ggplot() + 
+  geom_rect(data = new_data,
+              aes(xmin = as.numeric(species) - 0.25, 
+                  ymin = .pred_lower, 
+                  xmax = as.numeric(species) + 0.25,
+                  ymax = .pred_upper,
+                  color = species),
+            alpha = 0.2) + 
+  geom_jitter(data = penguins_train,
+              aes(x = as.numeric(species),
+                  y = body_mass_g,
+                  color = species), 
+              width = 0.25, 
+              height = 0) + 
+  geom_segment(data = new_data,
+             aes(x = as.numeric(species) - .25, xend = as.numeric(species) + 0.25, y = .pred, yend = .pred, color = species),
+             lwd = 3,
+             alpha = 0.75) + 
+  scale_x_continuous(breaks = 1:length(levels(penguins_train$species)), 
+                     labels = levels(penguins_train$species)) +
+  theme(legend.position = "None") +
+  labs(x = "",
+       y = "Body Mass")
+```
+
+## Categorical Predictors in Models
+
+Linear regression models depend on multiplication and addition
+
+. . . 
+
+These operations are not meaningful for categories (*Adelie*, *Torgersen*, *red*, etc.)
+
+. . .
+
+$$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{species}\right)$$
+
+. . .
+
+How would we evaluate this model for say, a Chinstrap penguin?
+
+. . .
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] &= \beta_0 + \beta_1\cdot\left(\text{Chinstrap}\right)\\
+&= \text{???}
+\end{align}
+
+. . .
+
+We need some way to convert categories into numeric quantities so that our models can consume them
+
+## Strategies for Using Categorical Predictors (Scoring)
+
+We can use an *ordinal* scoring method
+
+. . .
+
+<center>
+
+Species | Score
+---|---
+Adelie | 1
+Chinstrap | 2
+Gentoo | 3
+
+</center>
+
+. . .
+
+**Advantages:**
+
+  + Only one $\beta$-coefficient required for inclusion of the categorical predictor
+  + Can accommodate/model rankings between levels
+
+. . . 
+
+**Drawbacks:**
+
+  + Imposes an ordering on categories
+  + Enforces relationships between effect sizes
+  
+    + For example, the effect of being *Gentoo* on body mass is $3\times$ the effect of being *Adelie*
+    + The expected difference in body mass between *Adelie* and *Chinstrap* penguins is the same as the expected difference between *Chinstrap* and *Gentoo* penguins
+    
+## Strategies for Using Categorical Predictors (Dummy Variables)
+
+We can use *dummy* (or *indicator*) variables to encode the category
+
+```{r}
+penguins_train %>%
+  head() %>%
+  select(species) %>%
+  mutate(
+    speciesAdelie = ifelse(species == "Adelie", 1, 0),
+    speciesChinstrap = ifelse(species == "Chinstrap", 1, 0),
+    speciesGentoo = ifelse(species == "Gentoo", 1, 0)
+  ) %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Strategies for Using Categorical Predictors (Dummy Variables)
+
+We can use *dummy* (or *indicator*) variables to encode the category
+
+So we don't need the `species` variable any longer
+
+```{r}
+penguins_train %>%
+  head() %>%
+  select(species) %>%
+  mutate(
+    speciesAdelie = ifelse(species == "Adelie", 1, 0),
+    speciesChinstrap = ifelse(species == "Chinstrap", 1, 0),
+    speciesGentoo = ifelse(species == "Gentoo", 1, 0)
+  ) %>%
+  select(-species) %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Strategies for Using Categorical Predictors (Dummy Variables)
+
+We can use *dummy* (or *indicator*) variables to encode the category
+
+So we don't need the `species` variable any longer
+
+And we don't need every *indicator* column, either
+
+```{r}
+penguins_train %>%
+  head() %>%
+  select(species) %>%
+  mutate(
+    speciesAdelie = ifelse(species == "Adelie", 1, 0),
+    speciesChinstrap = ifelse(species == "Chinstrap", 1, 0),
+    speciesGentoo = ifelse(species == "Gentoo", 1, 0)
+  ) %>%
+  select(-species, -speciesAdelie) %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Strategies for Using Categorical Predictors (Dummy Variables)
+
+We can use *dummy* (or *indicator*) variables to encode the category
+
+So we don't need the `species` variable any longer
+
+And we don't need every *indicator* column, either
+
+```{r}
+penguins_train %>%
+  head() %>%
+  select(species) %>%
+  mutate(
+    speciesAdelie = ifelse(species == "Adelie", 1, 0),
+    speciesChinstrap = ifelse(species == "Chinstrap", 1, 0),
+    speciesGentoo = ifelse(species == "Gentoo", 1, 0)
+  ) %>%
+  select(-speciesAdelie) %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+**Advantage:** Can model variable effect sizes between levels
+
+. . .
+
+**Disadvantage:** Requires more $\beta$-coefficients (one less than the number of unique levels)
+
+## Back to Our Model from Earlier
+
+```{r}
+anova_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . . 
+
+$$\mathbb{E}\left[\text{body mass}\right] \approx 3703.95 - 18.45\cdot\left(\text{speciesChinstrap}\right) + 1398.23\cdot\left(\text{speciesGentoo}\right)$$
+
+. . .
+
+**Prediction for Adelie:** $3703.95 - 18.45\cdot\left(0\right) + 1398.23\cdot\left(0\right) \approx 3703.95\text{g}$
+
+. . .
+
+**Prediction for Chinstrap:** $3703.95 - 18.45\cdot\left(1\right) + 1398.23\cdot\left(0\right) \approx 3685.5\text{g}$
+
+. . .
+
+**Prediction for Gentoo:** $3703.95 - 18.45\cdot\left(0\right) + 1398.23\cdot\left(1\right) \approx 5102.18\text{g}$
+
+. . . 
+
+> **Note:** The interpretations for these $\beta$-coefficients on the species dummy variables are not as slopes. They are direct <u>adjustments</u> to the expected body mass, accounting for differences in species.
+
+## Including Categorical Predictors with `{tidymodels}`
+
+. . .
+
+The act of transforming a categorical column into either ordinal scores or dummy variables is a *feature-engineering* step.
+
+. . .
+
+We'll encounter more feature engineering steps throughout our course. In the `{tidymodels}` framework, feature engineering steps are carried out as *steps* appended to our `recipe()`.
+
+. . .
+
+To build the linear regression version of our ANOVA test, I used the following to set up the model:
+
+```{r}
+#| echo: true
+#| eval: false
+
+anova_spec <- linear_reg() %>%
+  set_engine("lm")
+
+anova_rec <- recipe(body_mass_g ~ species, data = penguins_train) %>%
+  step_dummy(species)
+```
+
+. . .
+
+I then used our usual code to construct the *workflow* and *fit* the model to our training data.
+
+## Something More Interesting
+
+Let's build a model that better corresponds to the plot we began this discussion with...
+
+```{r}
+ggplot() + 
+  geom_point(data = penguins_train, 
+             aes(x = bill_length_mm,
+                 y = body_mass_g,
+                 color = species)) + 
+  labs(x = "Bill Length",
+       y = "Body Mass")
+```
+
+. . . 
+
+Can we accomodate both `bill_length_mm` (a numerical variable) and `species` (a categorical variable) into a single model?
+
+## Bill Length and Species as Predictors of Body Mass
+
+. . .
+
+Start with our model *specification*
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+```
+
+. . .
+
+Now our *recipe*, with the feature engineering step included
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_rec <- recipe(body_mass_g ~ bill_length_mm + species, data = penguins_train) %>%
+  step_dummy(species)
+```
+
+. . . 
+
+Next, we package both the model and recipe together into a *workflow*
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+```
+
+. . .
+
+And, finally, fit the workflow to the training data
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_fit <- lr_wf %>%
+  fit(penguins_train)
+```
+
+## Assessing Our New Model
+
+. . .
+
+**Global Test for Model Utility:**
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit %>%
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+**Individual Term-Based Tests:**
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy(conf.int = TRUE)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy(conf.int = TRUE) %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+**Note:** Controlling for differences in bill length, all three species have statistically discernible average body masses
+
+. . .
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx 83.47 ~+ &~93.83\cdot\left(\text{bill length}\right) - 966.14\cdot\left(\text{speciesChinstrap}\right) +\\ &~543.47\cdot\left(\text{speciesGentoo}\right)\end{align}
+
+## Visualizing Model Coefficients
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy(conf.int = TRUE) %>%
+  select(-statistic) %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+```{r}
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy(conf.int = TRUE) %>%
+  ggplot() + 
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high, y = term, color = term),
+                 lwd = 1.25) + 
+  geom_point(aes(x = estimate, y = term, color = term),
+             size = 4) + 
+  geom_vline(xintercept = 0, linetype = "dashed", lwd = 1.25) +
+  labs(title = "Model Coefficients",
+       x = "Coefficient",
+       y = "") + 
+  theme(legend.position = "None")
+```
+
+
+## Interpreting this Model
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx 83.47 ~+ &~93.83\cdot\left(\text{bill length}\right) - 966.14\cdot\left(\text{speciesChinstrap}\right) +\\ &~543.47\cdot\left(\text{speciesGentoo}\right)\end{align}
+
++ (*Intercept*) Interpretation of this intercept is not meaningful because it would correspond to a penguin with a bill length of 0mm.
+
++ (*Bill Length*) Controlling for differences in species, we expect a 1mm increase in bill length to be associated with a 93.83g increase in body mass, on average.
+
++ (*Chinstrap*) Given a Chinstrap and Adelie penguin with the same bill length, we expect the Chinstrap to have a lower body mass by about 966.14g, on average.
+
++ (*Gentoo*) Given a Gentoo and Adelie penguin with the same bill length, we expect the Gentoo to have greater mass by about 543.47g, on average.
+
+## Additional Feature-Engineering Steps for Categorical Predictors
+
++ If we expect to encounter missing values, we can use `step_unknown()` to create a *level* for unknown values or we can use `step_impute_mode()` to fill in missing levels with the most frequently observed level
++ If we expect to encounter new levels, unknown to the model at training time, we can use `step_novel()`
++ If we expect to have levels which are infrequently observed, we can group those levels together into an "`other`" level with `step_other()`
+
+## Let's Do This!
+
+1. Fit a model to predict penguin body mass using species, bill length, bill depth, flipper length, and year to predict penguin body mass
+
+2. Conduct global and term-based model assessments
+
+3. Compute the $R^2$ and RMSE values on the test data for both this new model and our models from earlier in this slide deck. What model has the best performance on the unseen test data?
+
+4. Once you've identified that best model, provide an interpretation of the model coefficients
+
+5. Now go back and do all of these, but use year as a categorical predictor rather than a numeric one.

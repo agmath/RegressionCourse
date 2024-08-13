@@ -1,7 +1,9 @@
 ---
 title: "`{tidymodels}` Overview"
 author: Dr. Gilbert
-format: revealjs
+format: 
+  revealjs:
+    smaller: true
 date: today
 date-format: long
 theme: serif
@@ -31,6 +33,13 @@ lin_reg_fit <- sample_wf %>%
 options(kable_styling_bootstrap_options = c("hover", "striped"))
 
 theme_set(theme_bw(base_size = 20))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
 ```
 
 ## A Reminder About Our Goals
@@ -220,10 +229,6 @@ lin_reg_fit %>%
 ```
 
 To add a new `.pred` column to the `new_data` data frame. 
-
-. . . 
-
-> **FWIW:** I prefer the `augment()` method nearly always!
 
 ## Let's Do This!
 

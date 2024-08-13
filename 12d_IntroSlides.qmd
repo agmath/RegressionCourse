@@ -760,6 +760,8 @@ lr_sbl_fit %>%
 
 + (*Gentoo*) Given a Gentoo and Adelie penguin with the same bill length, we expect the Gentoo to have greater mass by about 543.47g, on average.
 
+  + **Note:** Some intercept comparisons are misleading since Adelie bill lengths rarely overlap the other two species'
+
 ## Making Predictions with this Model
 
 ```{r}

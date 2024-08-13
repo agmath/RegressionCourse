@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-09">
+  <meta name="dcterms.date" content="2024-08-13">
   <title>Simple Linear Regression: Construction, Assessment, and Interpretation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,18 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 9, 2024</p>
+  <p class="date">August 13, 2024</p>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<style type="text/css">
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+</style>
+</div>
 </section>
 <section id="the-highlights" class="slide level2">
 <h2>The Highlights</h2>
@@ -424,7 +435,7 @@ Dr.&nbsp;Gilbert
 <section id="what-is-simple-linear-regression" class="slide level2">
 <h2>What is Simple Linear Regression?</h2>
 
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-1-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
+<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-2-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
 <p><strong>Question 1 (Inferential):</strong> What, if anything, is the relationship between penguin flipper length and body mass?</p>
 </div>
 <div class="fragment">
@@ -440,7 +451,7 @@ Dr.&nbsp;Gilbert
 <section id="what-is-simple-linear-regression-1" class="slide level2">
 <h2>What is Simple Linear Regression?</h2>
 
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-2-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><p>Each of these questions can be answered by the construction and analysis of a model.</p>
+<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-3-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><p>Each of these questions can be answered by the construction and analysis of a model.</p>
 <div class="fragment">
 <p>Simple linear regression predicts a response as a linear function of a single predictor variable.</p>
 </div>
@@ -451,14 +462,14 @@ Dr.&nbsp;Gilbert
 <section id="what-is-simple-linear-regression-2" class="slide level2">
 <h2>What is Simple Linear Regression?</h2>
 
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-3-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
+<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
 <p><span class="math display">\[\mathbb{E}\left[\text{body mass}\right] = -5769 + 49.7\left(\text{flipper length}\right)\\ \textbf{or}\\ \mathbb{E}\left[\text{body mass}\right] = 7697 - 203\left(\text{bill depth}\right)\]</span></p>
 </div>
 </section>
 <section id="what-are-we-assuming" class="slide level2">
 <h2>What Are We Assuming?</h2>
 
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
+<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-5-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
 <p><span class="math display">\[\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{flipper length}\right)\]</span></p>
 </div>
 <div class="fragment">
@@ -644,11 +655,14 @@ Dr.&nbsp;Gilbert
 <div class="columns">
 <div class="column" style="width:40%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>my_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(rmse, rsq)</span>
-<span id="cb2-2"><a href=""></a></span>
-<span id="cb2-3"><a href=""></a>lin_reg_flip_fit <span class="sc">%&gt;%</span></span>
-<span id="cb2-4"><a href=""></a>  <span class="fu">augment</span>(penguins_test) <span class="sc">%&gt;%</span></span>
-<span id="cb2-5"><a href=""></a>  <span class="fu">my_metrics</span>(.pred, body_mass_g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>my_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(</span>
+<span id="cb2-2"><a href=""></a>  rmse, rsq</span>
+<span id="cb2-3"><a href=""></a>  )</span>
+<span id="cb2-4"><a href=""></a></span>
+<span id="cb2-5"><a href=""></a>lin_reg_flip_fit <span class="sc">%&gt;%</span></span>
+<span id="cb2-6"><a href=""></a>  <span class="fu">augment</span>(penguins_test) <span class="sc">%&gt;%</span></span>
+<span id="cb2-7"><a href=""></a>  <span class="fu">my_metrics</span>(.pred, </span>
+<span id="cb2-8"><a href=""></a>             body_mass_g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
@@ -689,7 +703,7 @@ Dr.&nbsp;Gilbert
 <section id="residual-analysis" class="slide level2">
 <h2>Residual Analysis</h2>
 
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-11-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
+<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
 <p>The residuals look approximately normal – with some right skew. There does seem to be an association between the residuals and response, predictions, and flipper length though.</p>
 </div>
 <div class="fragment">
@@ -796,7 +810,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-15-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-16-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="using-the-model-to-make-predictions-2" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
 <p>What is <font color="green">the body mass of a penguin whose flipper length is 212mm</font>?</p>
@@ -825,7 +839,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-18-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-19-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="using-the-model-to-make-predictions-3" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
 <p>What is <font color="purple">the <em>average</em> body mass of <em>all</em> penguins whose flipper length is 212mm</font>?</p>
@@ -854,7 +868,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-21-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-22-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="using-the-model-to-make-predictions-4" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
 <p>What is <font color="green">the body mass of a penguin whose flipper length is 212mm</font>?</p>
@@ -866,7 +880,7 @@ Dr.&nbsp;Gilbert
 <li class="fragment">Somewhere between 4699.4g and 4823.9g, with 95% confidence.</li>
 </ul>
 
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-22-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-23-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="summary" class="slide level2">
 <h2>Summary</h2>
 <ul>

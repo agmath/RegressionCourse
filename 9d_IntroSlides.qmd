@@ -36,6 +36,13 @@ options(scipen = 999)
 theme_set(theme_bw(base_size = 14))
 ```
 
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+```
+
 ## The Highlights
 
 + What is Simple Linear Regression?
@@ -268,11 +275,14 @@ lin_reg_flip_fit %>%
 #| eval: false
 #| echo: true
 
-my_metrics <- metric_set(rmse, rsq)
+my_metrics <- metric_set(
+  rmse, rsq
+  )
 
 lin_reg_flip_fit %>%
   augment(penguins_test) %>%
-  my_metrics(.pred, body_mass_g)
+  my_metrics(.pred, 
+             body_mass_g)
 ```
 
 ```{r}

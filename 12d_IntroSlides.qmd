@@ -124,8 +124,8 @@ ggplot() +
 + ANOVA as a linear regression model
 + Strategies for using categorical predictors in a model
 
-  + One-hot encodings versus dummy encodings
   + Ordinal scorings
+  + One-hot encodings versus dummy encodings
 
 + Feature engineering steps in recipes
 + Handling unknown or novel levels of a categorical variable

@@ -164,6 +164,17 @@ H_a & : & \text{At least one species has different average body mass}\end{array}
 **ANOVA Test:**
 
 ```{r}
+#| echo: true
+#| eval: false
+ANOVAtable <- aov(body_mass_g ~ species, data = penguins_train)
+
+ANOVAtable %>%
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
 ANOVAtable <- aov(body_mass_g ~ species, data = penguins_train)
 
 ANOVAtable %>%
@@ -256,6 +267,8 @@ new_data <- anova_fit %>%
       predict(new_data, type = "conf_int")
   )
 
+set.seed(123)
+
 ggplot() + 
   geom_jitter(data = penguins_train,
               aes(x = as.numeric(species),
@@ -293,6 +306,8 @@ new_data <- anova_fit %>%
     anova_fit %>%
       predict(new_data, type = "conf_int")
   )
+
+set.seed(123)
 
 ggplot() + 
   geom_rect(data = new_data,
@@ -411,7 +426,7 @@ penguins_train %>%
     speciesGentoo = ifelse(species == "Gentoo", 1, 0)
   ) %>%
   select(-species) %>%
-  kable() %>%
+  kable(caption = "A One-Hot Encoding") %>%
   kable_styling()
 ```
 
@@ -433,7 +448,7 @@ penguins_train %>%
     speciesGentoo = ifelse(species == "Gentoo", 1, 0)
   ) %>%
   select(-species, -speciesAdelie) %>%
-  kable() %>%
+  kable(caption = "A Dummy Encoding") %>%
   kable_styling()
 ```
 
@@ -495,7 +510,7 @@ $$\mathbb{E}\left[\text{body mass}\right] \approx 3703.95 - 18.45\cdot\left(\tex
 
 . . . 
 
-> **Note:** The interpretations for these $\beta$-coefficients on the species dummy variables are not as slopes. They are direct <u>adjustments</u> to the expected body mass, accounting for differences in species.
+> **Note:** The interpretations for these $\beta$-coefficients on the species dummy variables are not as slopes. They are direct <u>adjustments</u> to the expected body mass, accounting for differences in species. The *intercept* in this model is the predicted response for the *base level*.
 
 ## Including Categorical Predictors with `{tidymodels}`
 
@@ -554,7 +569,7 @@ Start with our model *specification*
 #| echo: true
 #| eval: true
 
-lr_spec <- linear_reg() %>%
+lr_sbl_spec <- linear_reg() %>%
   set_engine("lm")
 ```
 
@@ -566,7 +581,7 @@ Now our *recipe*, with the feature engineering step included
 #| echo: true
 #| eval: true
 
-lr_rec <- recipe(body_mass_g ~ bill_length_mm + species, data = penguins_train) %>%
+lr_sbl_rec <- recipe(body_mass_g ~ bill_length_mm + species, data = penguins_train) %>%
   step_dummy(species)
 ```
 
@@ -578,9 +593,9 @@ Next, we package both the model and recipe together into a *workflow*
 #| echo: true
 #| eval: true
 
-lr_wf <- workflow() %>%
-  add_model(lr_spec) %>%
-  add_recipe(lr_rec)
+lr_sbl_wf <- workflow() %>%
+  add_model(lr_sbl_spec) %>%
+  add_recipe(lr_sbl_rec)
 ```
 
 . . .
@@ -591,7 +606,7 @@ And, finally, fit the workflow to the training data
 #| echo: true
 #| eval: true
 
-lr_fit <- lr_wf %>%
+lr_sbl_fit <- lr_sbl_wf %>%
   fit(penguins_train)
 ```
 
@@ -605,7 +620,7 @@ lr_fit <- lr_wf %>%
 #| echo: true
 #| eval: false
 
-lr_fit %>%
+lr_sbl_fit %>%
   glance()
 ```
 
@@ -613,7 +628,7 @@ lr_fit %>%
 #| echo: false
 #| eval: true
 
-lr_fit %>%
+lr_sbl_fit %>%
   glance() %>%
   kable() %>%
   kable_styling()
@@ -627,7 +642,7 @@ lr_fit %>%
 #| echo: true
 #| eval: false
 
-lr_fit %>%
+lr_sbl_fit %>%
   extract_fit_engine() %>%
   tidy(conf.int = TRUE)
 ```
@@ -636,7 +651,7 @@ lr_fit %>%
 #| echo: false
 #| eval: true
 
-lr_fit %>%
+lr_sbl_fit %>%
   extract_fit_engine() %>%
   tidy(conf.int = TRUE) %>%
   kable() %>%
@@ -651,13 +666,51 @@ lr_fit %>%
 
 \begin{align} \mathbb{E}\left[\text{body mass}\right] \approx 83.47 ~+ &~93.83\cdot\left(\text{bill length}\right) - 966.14\cdot\left(\text{speciesChinstrap}\right) +\\ &~543.47\cdot\left(\text{speciesGentoo}\right)\end{align}
 
+## An Improvement Over the Species-Only Model?
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+**Species-Only Model:**
+
+```{r}
+anova_fit %>%
+  glance() %>%
+  pivot_longer(cols = everything(),
+               names_to = "metric",
+               values_to = "value") %>%
+  kable() %>%
+  kable_styling()
+```
+
+:::
+
+:::{.column width="50%"}
+
+**Species and Bill Length Model:**
+
+```{r}
+lr_sbl_fit %>%
+  glance() %>%
+  pivot_longer(cols = everything(),
+               names_to = "metric",
+               values_to = "value") %>%
+  kable() %>%
+  kable_styling()
+```
+
+:::
+
+::::
+
 ## Visualizing Model Coefficients
 
 ```{r}
 #| echo: false
 #| eval: true
 
-lr_fit %>%
+lr_sbl_fit %>%
   extract_fit_engine() %>%
   tidy(conf.int = TRUE) %>%
   select(-statistic) %>%
@@ -668,7 +721,7 @@ lr_fit %>%
 . . .
 
 ```{r}
-lr_fit %>%
+lr_sbl_fit %>%
   extract_fit_engine() %>%
   tidy(conf.int = TRUE) %>%
   ggplot() + 
@@ -690,7 +743,7 @@ lr_fit %>%
 #| echo: false
 #| eval: true
 
-lr_fit %>%
+lr_sbl_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
@@ -706,6 +759,97 @@ lr_fit %>%
 + (*Chinstrap*) Given a Chinstrap and Adelie penguin with the same bill length, we expect the Chinstrap to have a lower body mass by about 966.14g, on average.
 
 + (*Gentoo*) Given a Gentoo and Adelie penguin with the same bill length, we expect the Gentoo to have greater mass by about 543.47g, on average.
+
+## Making Predictions with this Model
+
+```{r}
+#| echo: true
+#| eval: true
+
+new_data <- crossing(
+  bill_length_mm = seq(32.1, 59.6, length.out = 250),
+  species = c("Adelie", "Chinstrap", "Gentoo")
+)
+
+new_data <- lr_sbl_fit %>%
+  augment(new_data) %>%
+  bind_cols(
+    lr_sbl_fit %>%
+      predict(new_data, type = "conf_int") %>%
+      rename(
+        .conf_lower = .pred_lower,
+        .conf_upper = .pred_upper
+      )
+  ) %>%
+  bind_cols(
+    lr_sbl_fit %>%
+      predict(new_data, type = "pred_int")
+  )
+```
+
+## Making Predictions with this Model
+
+```{r}
+#| echo: true
+#| eval: false
+#| fig-align: center
+
+ggplot() + 
+  geom_ribbon(data = new_data, 
+              aes(x = bill_length_mm, ymin = .pred_lower, ymax = .pred_upper),
+              alpha = 0.25) +
+  geom_ribbon(data = new_data,
+              aes(x = bill_length_mm, ymin = .conf_lower, ymax = .conf_upper),
+              alpha = 0.5) +
+  geom_line(data = new_data,
+            aes(x = bill_length_mm, y = .pred, color = species),
+            lwd = 1.25) +
+  geom_point(data = penguins_train,
+             aes(x = bill_length_mm, y = body_mass_g, color = species),
+             alpha = 0.5) + 
+  labs(
+    x = "Bill Length",
+    y = "Body Mass"
+  ) + 
+  facet_wrap(~species, ncol = 3) + 
+  theme(legend.position = "None")
+  
+```
+
+## Making Predictions with this Model
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: center
+
+ggplot() + 
+  geom_ribbon(data = new_data, 
+              aes(x = bill_length_mm, ymin = .pred_lower, ymax = .pred_upper),
+              alpha = 0.25) +
+  geom_ribbon(data = new_data,
+              aes(x = bill_length_mm, ymin = .conf_lower, ymax = .conf_upper),
+              alpha = 0.5) +
+  geom_line(data = new_data,
+            aes(x = bill_length_mm, y = .pred, color = species),
+            lwd = 1.25) +
+  geom_point(data = penguins_train,
+             aes(x = bill_length_mm,
+                 y = body_mass_g,
+                 color = species),
+             alpha = 0.5) + 
+  labs(
+    x = "Bill Length",
+    y = "Body Mass"
+  ) + 
+  facet_wrap(~species, ncol = 3) + 
+  theme(legend.position = "None")
+  
+```
+
+. . . 
+
+> **Note:** Including the categorical predictor has resulted in our model taking the form of these separate, parallel lines.
 
 ## Additional Feature-Engineering Steps for Categorical Predictors
 

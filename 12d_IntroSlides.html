@@ -530,6 +530,12 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 H_a &amp; : &amp; \text{At least one species has different average body mass}\end{array}\]</span></p>
 <p><strong>ANOVA Test:</strong></p>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>ANOVAtable <span class="ot">&lt;-</span> <span class="fu">aov</span>(body_mass_g <span class="sc">~</span> species, <span class="at">data =</span> penguins_train)</span>
+<span id="cb1-2"><a href=""></a></span>
+<span id="cb1-3"><a href=""></a>ANOVAtable <span class="sc">%&gt;%</span></span>
+<span id="cb1-4"><a href=""></a>  <span class="fu">tidy</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -749,13 +755,13 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <p>Does penguin body mass vary by species?</p>
 <p><span class="math display">\[\mathbb{E}\left[\text{body mass}\right] \approx 3703.95 - 18.45\cdot\left(\text{speciesChinstrap}\right) + 1298.23\cdot\left(\text{speciesGentoo}\right)\]</span></p>
 
-<img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-11-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="analysis-of-variance-as-linear-regression-3" class="slide level2">
 <h2>ANalysis Of VAriance as Linear Regression</h2>
 <p>Does penguin body mass vary by species?</p>
 <p><span class="math display">\[\mathbb{E}\left[\text{body mass}\right] \approx 3703.95 - 18.45\cdot\left(\text{speciesChinstrap}\right) + 1298.23\cdot\left(\text{speciesGentoo}\right)\]</span></p>
 
-<img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="categorical-predictors-in-models" class="slide level2">
 <h2>Categorical Predictors in Models</h2>
 <p>Linear regression models depend on multiplication and addition</p>
@@ -890,6 +896,7 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<caption>A One-Hot Encoding</caption>
 <thead>
 <tr class="header">
 <th style="text-align: right;" data-quarto-table-cell-role="th">speciesAdelie</th>
@@ -943,6 +950,7 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<caption>A Dummy Encoding</caption>
 <thead>
 <tr class="header">
 <th style="text-align: right;" data-quarto-table-cell-role="th">speciesChinstrap</th>
@@ -1096,7 +1104,7 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 </div>
 <div class="fragment">
 <blockquote>
-<p><strong>Note:</strong> The interpretations for these <span class="math inline">\(\beta\)</span>-coefficients on the species dummy variables are not as slopes. They are direct <u>adjustments</u> to the expected body mass, accounting for differences in species.</p>
+<p><strong>Note:</strong> The interpretations for these <span class="math inline">\(\beta\)</span>-coefficients on the species dummy variables are not as slopes. They are direct <u>adjustments</u> to the expected body mass, accounting for differences in species. The <em>intercept</em> in this model is the predicted response for the <em>base level</em>.</p>
 </blockquote>
 </div>
 </section>
@@ -1111,11 +1119,11 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <div class="fragment">
 <p>To build the linear regression version of our ANOVA test, I used the following to set up the model:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>anova_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb1-2"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
-<span id="cb1-3"><a href=""></a></span>
-<span id="cb1-4"><a href=""></a>anova_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(body_mass_g <span class="sc">~</span> species, <span class="at">data =</span> penguins_train) <span class="sc">%&gt;%</span></span>
-<span id="cb1-5"><a href=""></a>  <span class="fu">step_dummy</span>(species)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>anova_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-2"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb2-3"><a href=""></a></span>
+<span id="cb2-4"><a href=""></a>anova_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(body_mass_g <span class="sc">~</span> species, <span class="at">data =</span> penguins_train) <span class="sc">%&gt;%</span></span>
+<span id="cb2-5"><a href=""></a>  <span class="fu">step_dummy</span>(species)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div class="fragment">
@@ -1126,7 +1134,7 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <h2>Something More Interesting</h2>
 <p>Let’s build a model that better corresponds to the plot we began this discussion with…</p>
 
-<img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"><div class="fragment">
+<img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch"><div class="fragment">
 <p>Can we accomodate both <code>bill_length_mm</code> (a numerical variable) and <code>species</code> (a categorical variable) into a single model?</p>
 </div>
 </section>
@@ -1135,30 +1143,30 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <div class="fragment">
 <p>Start with our model <em>specification</em></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>lr_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb2-2"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>lr_sbl_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div class="fragment">
 <p>Now our <em>recipe</em>, with the feature engineering step included</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>lr_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(body_mass_g <span class="sc">~</span> bill_length_mm <span class="sc">+</span> species, <span class="at">data =</span> penguins_train) <span class="sc">%&gt;%</span></span>
-<span id="cb3-2"><a href=""></a>  <span class="fu">step_dummy</span>(species)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>lr_sbl_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(body_mass_g <span class="sc">~</span> bill_length_mm <span class="sc">+</span> species, <span class="at">data =</span> penguins_train) <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href=""></a>  <span class="fu">step_dummy</span>(species)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div class="fragment">
 <p>Next, we package both the model and recipe together into a <em>workflow</em></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>lr_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href=""></a>  <span class="fu">add_model</span>(lr_spec) <span class="sc">%&gt;%</span></span>
-<span id="cb4-3"><a href=""></a>  <span class="fu">add_recipe</span>(lr_rec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>lr_sbl_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href=""></a>  <span class="fu">add_model</span>(lr_sbl_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href=""></a>  <span class="fu">add_recipe</span>(lr_sbl_rec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div class="fragment">
 <p>And, finally, fit the workflow to the training data</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>lr_fit <span class="ot">&lt;-</span> lr_wf <span class="sc">%&gt;%</span></span>
-<span id="cb5-2"><a href=""></a>  <span class="fu">fit</span>(penguins_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a>lr_sbl_fit <span class="ot">&lt;-</span> lr_sbl_wf <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href=""></a>  <span class="fu">fit</span>(penguins_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </section>
@@ -1167,8 +1175,8 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <div class="fragment">
 <p><strong>Global Test for Model Utility:</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a>lr_fit <span class="sc">%&gt;%</span></span>
-<span id="cb6-2"><a href=""></a>  <span class="fu">glance</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a>lr_sbl_fit <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href=""></a>  <span class="fu">glance</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
@@ -1214,9 +1222,9 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <div class="fragment">
 <p><strong>Individual Term-Based Tests:</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a>lr_fit <span class="sc">%&gt;%</span></span>
-<span id="cb7-2"><a href=""></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb7-3"><a href=""></a>  <span class="fu">tidy</span>(<span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>lr_sbl_fit <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href=""></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href=""></a>  <span class="fu">tidy</span>(<span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
@@ -1283,6 +1291,144 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx 83.47 ~+ &amp;~93.83\cdot\left(\text{bill length}\right) - 966.14\cdot\left(\text{speciesChinstrap}\right) +\\ &amp;~543.47\cdot\left(\text{speciesGentoo}\right)\end{align}\]</span></p>
 </div>
 </section>
+<section id="an-improvement-over-the-species-only-model" class="slide level2">
+<h2>An Improvement Over the Species-Only Model?</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Species-Only Model:</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">metric</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">r.squared</td>
+<td style="text-align: right;">0.6766167</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">adj.r.squared</td>
+<td style="text-align: right;">0.6740604</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sigma</td>
+<td style="text-align: right;">468.4530146</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">statistic</td>
+<td style="text-align: right;">264.6767122</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">p.value</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">df</td>
+<td style="text-align: right;">2.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">logLik</td>
+<td style="text-align: right;">-1935.9949729</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AIC</td>
+<td style="text-align: right;">3879.9899458</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BIC</td>
+<td style="text-align: right;">3894.1706556</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">deviance</td>
+<td style="text-align: right;">55520401.4016019</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">df.residual</td>
+<td style="text-align: right;">253.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">nobs</td>
+<td style="text-align: right;">256.0000000</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p><strong>Species and Bill Length Model:</strong></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">metric</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">r.squared</td>
+<td style="text-align: right;">0.7881583</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">adj.r.squared</td>
+<td style="text-align: right;">0.7856363</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sigma</td>
+<td style="text-align: right;">379.9032633</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">statistic</td>
+<td style="text-align: right;">312.5224319</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">p.value</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">df</td>
+<td style="text-align: right;">3.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">logLik</td>
+<td style="text-align: right;">-1881.8511372</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AIC</td>
+<td style="text-align: right;">3773.7022744</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BIC</td>
+<td style="text-align: right;">3791.4281617</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">deviance</td>
+<td style="text-align: right;">36370275.3437731</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">df.residual</td>
+<td style="text-align: right;">252.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">nobs</td>
+<td style="text-align: right;">256.0000000</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="visualizing-model-coefficients" class="slide level2">
 <h2>Visualizing Model Coefficients</h2>
 <div class="cell">
@@ -1342,7 +1488,7 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-29-1.png" width="960"></p>
+<p><img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-32-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1405,6 +1551,63 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <li class="fragment"><p>(<em>Chinstrap</em>) Given a Chinstrap and Adelie penguin with the same bill length, we expect the Chinstrap to have a lower body mass by about 966.14g, on average.</p></li>
 <li class="fragment"><p>(<em>Gentoo</em>) Given a Gentoo and Adelie penguin with the same bill length, we expect the Gentoo to have greater mass by about 543.47g, on average.</p></li>
 </ul>
+</section>
+<section id="making-predictions-with-this-model" class="slide level2">
+<h2>Making Predictions with this Model</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>new_data <span class="ot">&lt;-</span> <span class="fu">crossing</span>(</span>
+<span id="cb9-2"><a href=""></a>  <span class="at">bill_length_mm =</span> <span class="fu">seq</span>(<span class="fl">32.1</span>, <span class="fl">59.6</span>, <span class="at">length.out =</span> <span class="dv">250</span>),</span>
+<span id="cb9-3"><a href=""></a>  <span class="at">species =</span> <span class="fu">c</span>(<span class="st">"Adelie"</span>, <span class="st">"Chinstrap"</span>, <span class="st">"Gentoo"</span>)</span>
+<span id="cb9-4"><a href=""></a>)</span>
+<span id="cb9-5"><a href=""></a></span>
+<span id="cb9-6"><a href=""></a>new_data <span class="ot">&lt;-</span> lr_sbl_fit <span class="sc">%&gt;%</span></span>
+<span id="cb9-7"><a href=""></a>  <span class="fu">augment</span>(new_data) <span class="sc">%&gt;%</span></span>
+<span id="cb9-8"><a href=""></a>  <span class="fu">bind_cols</span>(</span>
+<span id="cb9-9"><a href=""></a>    lr_sbl_fit <span class="sc">%&gt;%</span></span>
+<span id="cb9-10"><a href=""></a>      <span class="fu">predict</span>(new_data, <span class="at">type =</span> <span class="st">"conf_int"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-11"><a href=""></a>      <span class="fu">rename</span>(</span>
+<span id="cb9-12"><a href=""></a>        <span class="at">.conf_lower =</span> .pred_lower,</span>
+<span id="cb9-13"><a href=""></a>        <span class="at">.conf_upper =</span> .pred_upper</span>
+<span id="cb9-14"><a href=""></a>      )</span>
+<span id="cb9-15"><a href=""></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb9-16"><a href=""></a>  <span class="fu">bind_cols</span>(</span>
+<span id="cb9-17"><a href=""></a>    lr_sbl_fit <span class="sc">%&gt;%</span></span>
+<span id="cb9-18"><a href=""></a>      <span class="fu">predict</span>(new_data, <span class="at">type =</span> <span class="st">"pred_int"</span>)</span>
+<span id="cb9-19"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="making-predictions-with-this-model-1" class="slide level2">
+<h2>Making Predictions with this Model</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb10-2"><a href=""></a>  <span class="fu">geom_ribbon</span>(<span class="at">data =</span> new_data, </span>
+<span id="cb10-3"><a href=""></a>              <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">ymin =</span> .pred_lower, <span class="at">ymax =</span> .pred_upper),</span>
+<span id="cb10-4"><a href=""></a>              <span class="at">alpha =</span> <span class="fl">0.25</span>) <span class="sc">+</span></span>
+<span id="cb10-5"><a href=""></a>  <span class="fu">geom_ribbon</span>(<span class="at">data =</span> new_data,</span>
+<span id="cb10-6"><a href=""></a>              <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">ymin =</span> .conf_lower, <span class="at">ymax =</span> .conf_upper),</span>
+<span id="cb10-7"><a href=""></a>              <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb10-8"><a href=""></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> new_data,</span>
+<span id="cb10-9"><a href=""></a>            <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">y =</span> .pred, <span class="at">color =</span> species),</span>
+<span id="cb10-10"><a href=""></a>            <span class="at">lwd =</span> <span class="fl">1.25</span>) <span class="sc">+</span></span>
+<span id="cb10-11"><a href=""></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> penguins_train,</span>
+<span id="cb10-12"><a href=""></a>             <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">y =</span> body_mass_g, <span class="at">color =</span> species),</span>
+<span id="cb10-13"><a href=""></a>             <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb10-14"><a href=""></a>  <span class="fu">labs</span>(</span>
+<span id="cb10-15"><a href=""></a>    <span class="at">x =</span> <span class="st">"Bill Length"</span>,</span>
+<span id="cb10-16"><a href=""></a>    <span class="at">y =</span> <span class="st">"Body Mass"</span></span>
+<span id="cb10-17"><a href=""></a>  ) <span class="sc">+</span> </span>
+<span id="cb10-18"><a href=""></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>species, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span> </span>
+<span id="cb10-19"><a href=""></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"None"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="making-predictions-with-this-model-2" class="slide level2">
+<h2>Making Predictions with this Model</h2>
+
+<img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-36-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
+<blockquote>
+<p><strong>Note:</strong> Including the categorical predictor has resulted in our model taking the form of these separate, parallel lines.</p>
+</blockquote>
+</div>
 </section>
 <section id="additional-feature-engineering-steps-for-categorical-predictors" class="slide level2">
 <h2>Additional Feature-Engineering Steps for Categorical Predictors</h2>

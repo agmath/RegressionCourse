@@ -49,6 +49,13 @@ options(kable_styling_bootstrap_options = c("hover", "striped"))
 theme_set(theme_bw(base_size = 20))
 ```
 
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+```
+
 ## The Highlights
 
 + Are our models useful?

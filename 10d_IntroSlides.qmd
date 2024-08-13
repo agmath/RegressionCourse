@@ -36,6 +36,13 @@ options(scipen = 999)
 theme_set(theme_bw(base_size = 14))
 ```
 
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+```
+
 ## The Highlights
 
 + What is Multiple Linear Regression?
@@ -435,11 +442,14 @@ mlr_fit %>%
 #| eval: false
 #| echo: true
 
-my_metrics <- metric_set(rmse, rsq)
+my_metrics <- metric_set(
+  rmse, rsq
+  )
 
 mlr_fit %>%
   augment(penguins_test) %>%
-  my_metrics(.pred, body_mass_g)
+  my_metrics(.pred, 
+             body_mass_g)
 ```
 
 ```{r}
@@ -599,6 +609,10 @@ which we again have 0% confidence in.
 
 ## Using the Model to Make Predictions
 
+::::{.columns}
+
+:::{.column width="50%"}
+
 ```{r}
 #| echo: true
 #| eval: false
@@ -614,6 +628,9 @@ mlr_fit %>%
   predict(new_penguin)
 ```
 
+:::
+
+:::{.column width="50%"}
 
 ```{r}
 #| echo: false
@@ -648,6 +665,12 @@ mlr_fit %>%
   kable() %>%
   kable_styling()
 ```
+
+:::
+
+::::
+
+. . .
 
 ```{r}
 #| message: false
@@ -714,13 +737,23 @@ ggplot() +
 
 What is <font color="green">the body mass of a penguin observed in 2009, whose flipper length is 212mm</font>?
 
+::::{.columns}
+
+:::{.column width="50%"}
+
 ```{r}
 #| echo: true
 #| eval: false
 
 mlr_fit %>%
-  predict(new_penguin, type = "pred_int", level = 0.95)
+  predict(new_penguin, 
+          type = "pred_int", 
+          level = 0.95)
 ```
+
+:::
+
+:::{.column width="50%"}
 
 ```{r}
 #| echo: false
@@ -731,6 +764,12 @@ mlr_fit %>%
   kable() %>%
   kable_styling()
 ```
+
+:::
+
+::::
+
+. . .
 
 ```{r}
 #| message: false
@@ -775,13 +814,23 @@ ggplot() +
 
 What is <font color="purple">the *average* body mass of *all* penguins observed in 2009 and whose flipper lengths were 212mm</font>?
 
+::::{.columns}
+
+:::{.column width="50%"}
+
 ```{r}
 #| echo: true
 #| eval: false
 
 mlr_fit %>%
-  predict(new_penguin, type = "conf_int", level = 0.95)
+  predict(new_penguin, 
+          type = "conf_int", 
+          level = 0.95)
 ```
+
+:::
+
+:::{.column width="50%"}
 
 ```{r}
 #| echo: false
@@ -792,6 +841,12 @@ mlr_fit %>%
   kable() %>%
   kable_styling()
 ```
+
+:::
+
+::::
+
+. . .
 
 ```{r}
 #| message: false

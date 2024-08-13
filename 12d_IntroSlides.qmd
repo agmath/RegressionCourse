@@ -36,6 +36,13 @@ options(scipen = 999)
 theme_set(theme_bw(base_size = 14))
 ```
 
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+```
+
 ## Motivation
 
 ```{r}

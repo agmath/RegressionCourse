@@ -1,7 +1,9 @@
 ---
 title: "Data Dirty Work: Wrangling"
 author: Dr. Gilbert
-format: revealjs
+format: 
+  revealjs:
+    smaller: true
 date: today
 date-format: long
 theme: serif
@@ -18,6 +20,13 @@ library(randomNames)
 options(kable_styling_bootstrap_options = c("hover", "striped"))
 
 theme_set(theme_bw(base_size = 20))
+```
+
+```{css}
+code {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
 ```
 
 ## A Quote and Setting Expectations

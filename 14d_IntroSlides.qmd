@@ -1,0 +1,743 @@
+---
+title: "Higher-Order Terms: Interactions in Regression"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(patchwork)
+library(kableExtra)
+library(memer)
+library(marginaleffects)
+tidymodels_prefer()
+
+penguins <- palmerpenguins::penguins
+
+penguins <- penguins %>%
+  mutate(flipper_length_mm = as.numeric(flipper_length_mm),
+         body_mass_g = as.numeric(body_mass_g))
+
+set.seed(123)
+penguin_splits <- initial_split(penguins)
+penguins_train <- training(penguin_splits)
+penguins_test <- testing(penguin_splits)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+options(scipen = 999)
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 14))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+```
+
+## Motivation
+
+. . .
+
+```{r}
+#| fig.height: 4
+#| fig.align: center
+
+mlr_fls_spec <- linear_reg() %>%
+  set_engine("lm")
+
+mlr_fls_rec <- recipe(body_mass_g ~ flipper_length_mm + species, data = penguins_train) %>%
+  step_dummy(species)
+
+mlr_fls_wf <- workflow() %>%
+  add_model(mlr_fls_spec) %>%
+  add_recipe(mlr_fls_rec)
+
+mlr_fls_fit <- mlr_fls_wf %>%
+  fit(penguins_train)
+
+new_data <- crossing(
+  flipper_length_mm = seq(
+    min(penguins_train$flipper_length_mm, na.rm = TRUE),
+    max(penguins_train$flipper_length_mm, na.rm = TRUE),
+    length.out = 250),
+  species = c("Adelie", "Chinstrap", "Gentoo")
+  )
+
+new_data <- mlr_fls_fit %>%
+  augment(new_data)
+
+ggplot() + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = .pred,
+                color = species),
+            lwd = 1.5) + 
+  geom_point(data = penguins_train, 
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = species),
+             alpha = 0.75) +
+  labs(x = "Flipper Length",
+       y = "Body Mass",
+       caption = "Are parallel lines appropriate here?")
+```
+
+. . .
+
+```{r}
+#| fig.height: 4
+#| fig.align: center
+
+ggplot() + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = .pred,
+                color = species),
+            lwd = 1.5) + 
+  geom_point(data = penguins_train, 
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = species),
+             alpha = 0.75) +
+  labs(x = "Flipper Length",
+       y = "Body Mass") + 
+  facet_wrap(~species, ncol = 3) + 
+  theme(legend.position = "None")
+```
+
+## Motivation
+
+. . . 
+
+In our first discussion on higher-order terms, we saw how to use polynomial terms in regression models
+
++ We use polynomial terms when the expected change in the response due to a change in the value of a predictor changes depending on the "current" value of the predictor
++ That is, the expected change in the response due to a change in the predictor is *not constant*
+
+. . .
+
+There is another way for an association between predictor and response to be non-constant...
+
+. . . 
+
+> What if the effect of a change in one predictor on the response depends on the value of another predictor, as you saw with flipper length, species, and body mass on the previous slide?
+
+. . .
+
+We can handle this scenario using *interactions*
+
+## Types of Interactions
+
+. . .
+
+There are three main types of *two-way interactions*
+
++ An interaction between two categorical variables
++ An interaction between a categorical variable and a numerical variable
++ An interaction between two numerical variables
+
+. . . 
+
+We'll see what each one accommodates and how to implement each type of interaction here
+
+## Reminder: Models with Categorical Predictors
+
+. . .
+
+Recall that the effect of including a categorical predictor in a model is an adjustment in the model intercept for each category.
+
+. . .
+
+Below are visual representations of two models, both using flipper length as predictors but one using `species` as an additional predictor of body mass and the other using `year`
+
+. . .
+
+```{r}
+mlr_fly_spec <- linear_reg() %>%
+  set_engine("lm")
+
+mlr_fly_rec <- recipe(body_mass_g ~ flipper_length_mm + year, data = penguins_train) %>%
+  step_mutate(year = as.factor(year)) %>%
+  step_dummy(year)
+
+mlr_fly_wf <- workflow() %>%
+  add_model(mlr_fly_spec) %>%
+  add_recipe(mlr_fly_rec)
+
+mlr_fly_fit <- mlr_fly_wf %>%
+  fit(penguins_train)
+
+new_data <- crossing(
+  flipper_length_mm = seq(
+    min(penguins_train$flipper_length_mm, na.rm = TRUE),
+    max(penguins_train$flipper_length_mm, na.rm = TRUE),
+    length.out = 250),
+  year = c(2007, 2008, 2009),
+  species = c("Adelie", "Chinstrap", "Gentoo")
+  )
+
+new_data <- mlr_fls_fit %>%
+  augment(new_data) %>%
+  rename(species.pred = .pred)
+
+new_data <- mlr_fly_fit %>%
+  augment(new_data) %>%
+  rename(year.pred = .pred)
+
+p1 <- ggplot() + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = species.pred,
+                color = species),
+            lwd = 1.5) + 
+  geom_point(data = penguins_train, 
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = species),
+             alpha = 0.75) +
+  labs(x = "Flipper Length",
+       y = "Body Mass")
+
+p2 <- ggplot() + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = year.pred,
+                linetype = as.factor(year)),
+            color = "blue",
+            alpha = 0.75,
+            lwd = 1.25) + 
+  geom_point(data = penguins_train, 
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 shape = as.factor(year)),
+             show.legend = FALSE,
+             alpha = 0.75) +
+  labs(x = "Flipper Length",
+       y = "Body Mass",
+       linetype = "Year")
+
+p1 + p2
+```
+
+## Models with Categorical Predictors (Cont'd.)
+
+. . .
+
+We could even build a model that compensates for both `species` and `year` simultaneously
+
+. . .
+
+A visual of such a model appears below
+
+. . .
+
+```{r}
+mlr_flsy_spec <- linear_reg() %>%
+  set_engine("lm")
+
+mlr_flsy_rec <- recipe(body_mass_g ~ flipper_length_mm + species + year, data = penguins_train) %>%
+  step_mutate(year = as.factor(year)) %>%
+  step_dummy(year) %>%
+  step_dummy(species)
+
+mlr_flsy_wf <- workflow() %>%
+  add_model(mlr_flsy_spec) %>%
+  add_recipe(mlr_flsy_rec)
+
+mlr_flsy_fit <- mlr_flsy_wf %>%
+  fit(penguins_train)
+
+new_data <- mlr_flsy_fit %>%
+  augment(new_data) %>%
+  rename(species.year.pred = .pred)
+
+ggplot() + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = species.year.pred,
+                color = species,
+                linetype = as.factor(year)),
+            lwd = 1) + 
+  geom_point(data = penguins_train, 
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = species),
+             alpha = 0.75) +
+  labs(x = "Flipper Length",
+       y = "Body Mass",
+       color = "Species", 
+       linetype = "Year")
+```
+
+## Models with Categorical Predictors (Cont'd.)
+
+. . . 
+
+Let's take a look at this new fitted model
+
+. . .
+
+```{r}
+mlr_flsy_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx -4905.72 +~ &46.1\cdot\left(\text{flipper length}\right) - 195.3\cdot\left(\text{year2008}\right) +\\ &- 209.68\cdot\left(\text{year2009}\right) - 270.54\cdot\left(\text{speciesChinstrap}\right) +\\ & 117.91\cdot\left(\text{speciesGentoo}\right)\end{align}
+
+. . .
+
+We can see, mathematically, that this model assumes an effect for `species` and an effect for `year` on penguin body mass, independently of one another
+
+. . .
+
+That is, year-to-year, all penguins body masses are impacted in the same way, regardless of species
+
+## Interactions Between Categorical Predictors
+
+. . .
+
+It would be reasonable to ask whether yearly conditions had different impacts across the species of penguin
+
+. . .
+
+We can answer this by constructing and analysing a model that includes an interaction between `year` and `species`
+
+. . .
+
+We can compare the previous model form to this proposed model form below.
+
+. . .
+
+**Model with Year and Species Independently:**
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx \beta_0 +~ &\beta_1\cdot\left(\text{flipper length}\right) + \beta_2\cdot\left(\text{year2008}\right) + \beta_3\cdot\left(\text{year2009}\right) +\\  &\beta_4\cdot\left(\text{speciesChinstrap}\right) + \beta_5\cdot\left(\text{speciesGentoo}\right)\end{align}
+
+. . .
+
+**Model with Interaction Between Year and Species:**
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx \beta_0 +~ &\beta_1\cdot\left(\text{flipper length}\right) + \beta_2\cdot\left(\text{year2008}\right) + \beta_3\cdot\left(\text{year2009}\right) +\\  &\beta_4\cdot\left(\text{speciesChinstrap}\right) + \beta_5\cdot\left(\text{speciesGentoo}\right) +\\ 
+&\beta_6\cdot\left(\text{speciesGentoo}\cdot\text{year2008}\right) +\\ 
+&\beta_7\cdot\left(\text{speciesGentoo}\cdot\text{year2009}\right) +\\
+&\beta_8\cdot\left(\text{speciesChinstrap}\cdot\text{year2008}\right) +\\ 
+&\beta_9\cdot\left(\text{speciesChinstrap}\cdot\text{year2009}\right)
+\end{align}
+
+## Building a Model with Interactions
+
+. . . 
+
+In `{tidymodels}`, we use `step_interact()` as part of our *recipe* to create an interaction
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+
+mlr_flsy_isy_spec <- linear_reg() %>%
+  set_engine("lm")
+
+mlr_flsy_isy_rec <- recipe(body_mass_g ~ flipper_length_mm + species + year, 
+                           data = penguins_train) %>%
+  step_mutate(year = as.factor(year)) %>%
+  step_dummy(year) %>%
+  step_dummy(species) %>%
+  step_interact(~ starts_with("species"):starts_with("year"))
+
+mlr_flsy_isy_wf <- workflow() %>%
+  add_model(mlr_flsy_isy_spec) %>%
+  add_recipe(mlr_flsy_isy_rec)
+
+mlr_flsy_isy_fit <- mlr_flsy_isy_wf %>%
+  fit(penguins_train)
+```
+
+## The Estimated Model
+
+. . .
+
+```{r}
+mlr_flsy_isy_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+$\displaystyle{\mathbb{E}\left[\text{body mass}\right] \approx~...}$
+
+## The Estimated Model (Cont'd.)
+
+. . .
+
+```{r}
+#| fig.align: center
+#| fig.height: 4
+
+new_data <- mlr_flsy_isy_fit %>%
+  augment(new_data) %>%
+  rename(isy.pred = .pred)
+
+ggplot() + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = isy.pred,
+                color = species,
+                linetype = as.factor(year)),
+            lwd = 1) + 
+  geom_point(data = penguins_train, 
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = species,
+                 shape = as.factor(year)),
+             alpha = 0.75) +
+  labs(x = "Flipper Length",
+       y = "Body Mass",
+       color = "species",
+       linetype = "Year",
+       shape = "Year")
+```
+
+. . . 
+
+```{r}
+#| fig.align: center
+#| fig.height: 4
+
+ggplot() + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = isy.pred,
+                color = species,
+                linetype = as.factor(year)),
+            lwd = 1.5) + 
+  geom_point(data = penguins_train, 
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = species,
+                 shape = as.factor(year)),
+             alpha = 0.75) +
+  labs(x = "Flipper Length",
+       y = "Body Mass") + 
+  theme(legend.position = "None") +
+  facet_grid(year ~ species)
+```
+
+## Additional Flexibility with Interactions
+
+. . .
+
+Note that our new model, including the interaction between `species` and `year` includes nine (9) parallel lines
+
+. . .
+
+```{r}
+#| fig.align: center
+#| fig.height: 7
+
+ggplot() + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = isy.pred,
+                color = species,
+                linetype = as.factor(year)),
+            lwd = 1) + 
+  geom_point(data = penguins_train, 
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = species,
+                 shape = as.factor(year)),
+             alpha = 0.75) +
+  labs(x = "Flipper Length",
+       y = "Body Mass",
+       color = "Species",
+       linetype = "Year",
+       shape = "Year")
+```
+
+## Additional Flexibility with Interactions
+
+. . . 
+
+Where our model including `species` and `year` independently only included six
+
+. . .
+
+```{r}
+#| fig.align: center
+#| fig.height: 7
+
+ggplot() + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = species.year.pred,
+                color = species,
+                linetype = as.factor(year)),
+            lwd = 1) + 
+  geom_point(data = penguins_train, 
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = species),
+             alpha = 0.75) +
+  labs(x = "Flipper Length",
+       y = "Body Mass",
+       color = "Species", 
+       linetype = "Year",
+       shape = "Year")
+```
+
+## Mini-Summary: Interactions Between Categorical Variables
+
++ Interactions between pairs of categorical variables can be used to investigate whether the effect of a change in levels of one of the variables depends on the level of the second categorical variable
+
++ The result of including such an interaction is **a unique model intercept for each combination of levels of the categorical variables**
+
++ Note that the resulting models will still be *parallel* unless different types of interactions are also present in the model
+
+## Interactions Between a Categorical Predictor and a Numerical Predictor
+
+. . .
+
+Another reasonable question to ask is whether the association between flipper length and body mass changes based on the species of penguin
+
+. . .
+
+We can investigate this by constructing and analysing a model that includes an interaction between `species` and flipper length
+
+. . . 
+
+Again, we can compare the model forms below:
+
+. . .
+
+**Model with Flipper Length and Species Independently:**
+
+$$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{flipper length}\right) + \beta_2\cdot\left(\text{speciesChinstrap}\right) + \beta_3\cdot\left(\text{speciesGentoo}\right)$$
+
+. . .
+
+**Model with Interaction Between Flipper Length and Species:**
+
+\begin{align}\mathbb{E}\left[\text{body mass}\right] = \beta_0 + &\beta_1\cdot\left(\text{flipper length}\right) + \beta_2\cdot\left(\text{speciesChinstrap}\right) + \beta_3\cdot\left(\text{speciesGentoo}\right) + \\
+&\beta_4\cdot\left(\text{flipper length}\right)\left(\text{speciesChinstrap}\right) +\\ 
+&\beta_5\cdot\left(\text{flipper length}\right)\left(\text{speciesGentoo}\right)
+\end{align}
+
+## Building the Model
+
+. . .
+
+We construct our model in the same way as we did with the previous interaction model
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+
+mlr_fls_isfl_spec <- linear_reg() %>%
+  set_engine("lm")
+
+mlr_fls_isfl_rec <- recipe(body_mass_g ~ flipper_length_mm + species,
+                           data = penguins_train) %>%
+  step_dummy(species) %>%
+  step_interact(~ starts_with("species"):flipper_length_mm)
+
+mlr_fls_isfl_wf <- workflow() %>%
+  add_model(mlr_fls_isfl_spec) %>%
+  add_recipe(mlr_fls_isfl_rec)
+
+mlr_fls_isfl_fit <- mlr_fls_isfl_wf %>%
+  fit(penguins_train)
+```
+
+## The Estimated Model
+
+```{r}
+mlr_fls_isfl_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+$\displaystyle{\mathbb{E}\left[\text{body mass}\right] \approx ...}$
+
+## The Estimated Model (Cont'd.)
+
+```{r}
+#| fig.align: center
+#| fig.height: 4
+
+new_data <- mlr_fls_isfl_fit %>%
+  augment(new_data) %>%
+  rename(isfl.pred = .pred)
+
+ggplot() + 
+  geom_point(data = penguins_train,
+             aes(x = flipper_length_mm, 
+                 y = body_mass_g,
+                 color = species),
+             alpha = 0.5) + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = isfl.pred,
+                color = species),
+            lwd = 1.5) + 
+  labs(x = "Flipper Length",
+       y = "Body Mass",
+       color = "Species")
+```
+
+. . .
+
+```{r}
+#| fig.align: center
+#| fig.height: 4
+
+ggplot() + 
+  geom_point(data = penguins_train,
+             aes(x = flipper_length_mm, 
+                 y = body_mass_g,
+                 color = species),
+             alpha = 0.5) + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = isfl.pred,
+                color = species),
+            lwd = 1.5) + 
+  labs(x = "Flipper Length",
+       y = "Body Mass") +
+  theme(legend.position = "None") +
+  facet_wrap(~species)
+```
+
+## Additional Flexibility with Interactions
+
+. . .
+
+Note that our new model, including an interaction between `species` and flipper length still includes only three lines
+
+. . .
+
+```{r}
+#| fig.align: center
+#| fig.height: 4
+
+ggplot() + 
+  geom_point(data = penguins_train,
+             aes(x = flipper_length_mm, 
+                 y = body_mass_g,
+                 color = species),
+             alpha = 0.5) + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = isfl.pred,
+                color = species),
+            lwd = 1.5) + 
+  labs(x = "Flipper Length",
+       y = "Body Mass",
+       color = "Species")
+```
+
+. . .
+
+Those lines are no longer parallel, though
+
+. . . 
+
+We needed additional $\beta$-coefficients to accommodate our slope adjustments
+
+## Interpreting this Interaction Model
+
+. . .
+
+**General Model:**
+
+\begin{align}\mathbb{E}\left[\text{body mass}\right] = -2797.76 ~+~ &34.28\cdot\left(\text{flipper length}\right) - 129.71\cdot\left(\text{speciesChinstrap}\right) +\\ &- 4216.63\cdot\left(\text{speciesGentoo}\right) +\\
+&- 0.37\cdot\left(\text{flipper length}\right)\left(\text{speciesChinstrap}\right) +\\ 
+&21.39\cdot\left(\text{flipper length}\right)\left(\text{speciesGentoo}\right)
+\end{align}
+
+. . .
+
+**Model for Adelie Penguins:**
+
+\begin{align}\mathbb{E}\left[\text{body mass}\right] = -2797.76 ~+~ &34.28\cdot\left(\text{flipper length}\right)
+\end{align}
+
+. . . 
+
+> Given an Adelie penguin, an increase of 1mm in flipper length is associated with an increase in expected body mass by about 34.28g
+
+## Interpreting this Interaction Model
+
+**General Model:**
+
+\begin{align}\mathbb{E}\left[\text{body mass}\right] = -2797.76 ~+~ &34.28\cdot\left(\text{flipper length}\right) - 129.71\cdot\left(\text{speciesChinstrap}\right) +\\ &- 4216.63\cdot\left(\text{speciesGentoo}\right) +\\
+&- 0.37\cdot\left(\text{flipper length}\right)\left(\text{speciesChinstrap}\right) +\\ 
+&21.39\cdot\left(\text{flipper length}\right)\left(\text{speciesGentoo}\right)
+\end{align}
+
+**Model for Chinstrap Penguins:**
+
+. . .
+
+\begin{align}\mathbb{E}\left[\text{body mass}\right] = -2927.47 ~+~ &33.91\cdot\left(\text{flipper length}\right)
+\end{align}
+
+. . . 
+
+> Given a Chinstrap penguin, an increase of 1mm in flipper length is associated with an increase in expected body mass by about 33.91g
+
+. . .
+
+Note that this is not significantly different than the expected change for Adelies
+
+## Interpreting this Interaction Model
+
+**General Model:**
+
+\begin{align}\mathbb{E}\left[\text{body mass}\right] = -2797.76 ~+~ &34.28\cdot\left(\text{flipper length}\right) - 129.71\cdot\left(\text{speciesChinstrap}\right) +\\ &- 4216.63\cdot\left(\text{speciesGentoo}\right) +\\
+&- 0.37\cdot\left(\text{flipper length}\right)\left(\text{speciesChinstrap}\right) +\\ 
+&21.39\cdot\left(\text{flipper length}\right)\left(\text{speciesGentoo}\right)
+\end{align}
+
+**Model for Gentoo Penguins:**
+
+. . .
+
+\begin{align}\mathbb{E}\left[\text{body mass}\right] = -7014.39 ~+~ &55.67\cdot\left(\text{flipper length}\right)
+\end{align}
+
+. . . 
+
+> Given a Gentoo penguin, an increase of 1mm in flipper length is associated with an increase in expected body mass by about 55.67g
+
+## Mini-Summary: Interactions Between a Categorical and a Numerical Variable
+
++ Interactions between a categorical variable and a numerical variable can be used to investigate whether the effect of a unit increase in the numerical variable differs across the levels of the categorical variable
++ The result of including such an interaction is **a unique model slope for each level of the categorical variable**
+
+## Interactions Between Numerical Variables
+
+...Under Construction...

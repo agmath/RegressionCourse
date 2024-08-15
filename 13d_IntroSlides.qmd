@@ -1,0 +1,668 @@
+---
+title: "Higher-Order Terms: Curvi-Linear Regression"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(patchwork)
+library(kableExtra)
+library(memer)
+library(marginaleffects)
+tidymodels_prefer()
+
+boston <- read_csv("https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv")
+
+set.seed(123)
+boston_split <- initial_split(boston)
+boston_train <- training(boston_split)
+boston_test <- testing(boston_split)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+options(scipen = 999)
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 14))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+```
+
+## Motivation {.scollable}
+
+We'll switch data sets for today.
+
+. . . 
+
+This Boston housing dataset is quite famous (and problematic), and includes features on each neighborhood and the corresponding median home value in that neighborhood. You can see a data dictionary here. The data set has many interesting features and even allows us some ability to explore structural racism in property valuation in 1970s Boston.
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
+boston <- read_csv(
+  "https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv"
+  )
+
+boston %>%
+  head()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+boston %>%
+  head() %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Motivation: Median Home Values
+
+```{r}
+#| echo: true
+#| eval: false
+
+boston_train %>%
+  ggplot() + 
+  geom_histogram(aes(x = medv,
+                     y = ..density..),
+                 color = "black",
+                 fill = "purple",
+                 alpha = 0.9) + 
+  geom_density(aes(x = medv),
+               fill = "purple",
+               alpha = 0.5) + 
+  labs(x = "Median Home Values",
+       y = "")
+```
+
+. . .
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig.align: center
+
+boston_train %>%
+  ggplot() + 
+  geom_histogram(aes(x = medv,
+                     y = ..density..),
+                 color = "black",
+                 fill = "purple",
+                 alpha = 0.9) + 
+  geom_density(aes(x = medv),
+               fill = "purple",
+               alpha = 0.5) + 
+  labs(x = "Median Home Values",
+       y = "")
+```
+
+## Motivation: Predictors Associated with Median Home Values
+
+```{r}
+p1 <- boston_train %>%
+  ggplot() + 
+  geom_hex(aes(x = lstat, y = medv)) + 
+  labs(x = "% Low Socioeconmic Status",
+       y = "Median Values (000s)")
+
+p2 <- boston_train %>%
+  ggplot() + 
+  geom_point(aes(x = age, y = medv),
+             alpha = 0.5) + 
+  labs(x = "% Built Before 1940",
+       y = "Median Values (000s)")
+
+p3 <- boston_train %>%
+  mutate(chas = ifelse(chas == 1, "On-River", "Off-River")) %>%
+  ggplot() + 
+  geom_boxplot(aes(x = medv, y = chas)) + 
+  labs(x = "Median Values (000s)",
+       y = "")
+
+(p1 + p2)/p3
+```
+
+## Motivation
+
+```{r}
+boston_train %>%
+  ggplot() + 
+  geom_point(aes(x = lstat, y = medv),
+             alpha = 0.5) + 
+  geom_smooth(aes(x = lstat, y = medv), 
+              method = "lm",
+              lwd = 1.5,
+              se = FALSE) +
+  labs(x = "% Built Before 1940",
+       y = "Median Values (000s)")
+```
+
+## Motivation
+
+```{r}
+#| fig-align: center
+
+meme_get("HotlineDrake") %>%
+  meme_text_drake(top = "Linear Regression", bot = "Curvi-Linear Regression")
+```
+
+## Motivation
+
+```{r}
+lr_ls2_spec <- linear_reg()
+lr_ls2_rec <- recipe(medv ~ lstat, data = boston_train) %>%
+  step_poly(lstat, degree = 2, options = list(raw = TRUE))
+lr_ls2_wf <- workflow() %>%
+  add_model(lr_ls2_spec) %>%
+  add_recipe(lr_ls2_rec)
+lr_ls2_fit <- lr_ls2_wf %>%
+  fit(boston_train)
+
+new_data <- tibble(
+  lstat = seq(2, 37, length.out = 250)
+)
+
+new_data <- lr_ls2_fit %>%
+  augment(new_data)
+
+ggplot() + 
+  geom_point(data = boston_train, 
+             aes(x = lstat, y = medv),
+             alpha = 0.5) + 
+  geom_line(data = new_data,
+            aes(x = lstat, y = .pred),
+            color = "blue",
+            lwd = 1.5) +
+  labs(x = "% Built Before 1940",
+       y = "Median Values (000s)")
+```
+
+## Curvi-Linear Regression
+
+. . .
+
+We can use higher-order terms to introduce curvature to our models
+
+. . .
+
+Consider the following fourth-order model
+
+. . . 
+
+\begin{align} \mathbb{E}\left[\text{medv}\right] = \beta_0 +~ &\beta_1\cdot\left(\text{age}\right) + \beta_2\cdot\left(\text{lstat}\right) + \beta_3\cdot\left(\text{chas}\right) + \beta_4\cdot\left(\text{age}^2\right) + \beta_5\cdot\left(\text{lstat}^2\right) +\\
+&~\beta_6\cdot\left(\text{chas}\cdot\text{age}\right) + \beta_7\cdot\left(\text{chas}\cdot\text{lstat}\right) + \beta_8\cdot\left(\text{chas}\cdot\text{age}^2\right) +\\
+&~\beta_9\cdot\left(\text{chas}\cdot\text{lstat}^2\right) + \beta_{10}\cdot\left(\text{age}\cdot\text{lstat}\right) + \beta_{11}\cdot\left(\text{age}\cdot\text{lstat}^2\right) +\\
+&\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_13\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)
+\end{align}
+
+## Curvi-Linear Regression
+
+The *main effects* terms are in <font color="blue">blue</font>
+
+\begin{align} \mathbb{E}\left[\text{medv}\right] = \beta_0 +~ &\color{blue}{\beta_1\cdot\left(\text{age}\right) + \beta_2\cdot\left(\text{lstat}\right) + \beta_3\cdot\left(\text{chas}\right) + \beta_4\cdot\left(\text{age}^2\right) + \beta_5\cdot\left(\text{lstat}^2\right)} +\\
+&~\beta_6\cdot\left(\text{chas}\cdot\text{age}\right) + \beta_7\cdot\left(\text{chas}\cdot\text{lstat}\right) + \beta_8\cdot\left(\text{chas}\cdot\text{age}^2\right) +\\
+&~\beta_9\cdot\left(\text{chas}\cdot\text{lstat}^2\right) + \beta_{10}\cdot\left(\text{age}\cdot\text{lstat}\right) + \beta_{11}\cdot\left(\text{age}\cdot\text{lstat}^2\right) +\\
+&\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_13\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)
+\end{align}
+
+## Curvi-Linear Regression
+
+The *main effects* terms are in <font color="blue">blue</font>
+
+and the *mixed effects* terms are in <font color="purple">purple</font>
+
+\begin{align} \mathbb{E}\left[\text{medv}\right] = \beta_0 +~ &\color{blue}{\beta_1\cdot\left(\text{age}\right) + \beta_2\cdot\left(\text{lstat}\right) + \beta_3\cdot\left(\text{chas}\right) + \beta_4\cdot\left(\text{age}^2\right) + \beta_5\cdot\left(\text{lstat}^2\right)} +\\
+&~\color{purple}{\beta_6\cdot\left(\text{chas}\cdot\text{age}\right) + \beta_7\cdot\left(\text{chas}\cdot\text{lstat}\right) + \beta_8\cdot\left(\text{chas}\cdot\text{age}^2\right) +}\\
+&~\color{purple}{\beta_9\cdot\left(\text{chas}\cdot\text{lstat}^2\right) + \beta_{10}\cdot\left(\text{age}\cdot\text{lstat}\right) + \beta_{11}\cdot\left(\text{age}\cdot\text{lstat}^2\right) +}\\
+&\color{purple}{\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_13\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)}
+\end{align}
+
+## Curvi-Linear Regression
+
+We'll focus just on the *main effects* model today and wait to handle mixed effects (interactions) until next time
+
+\begin{align} \mathbb{E}\left[\text{medv}\right] = \beta_0 +~ &\beta_1\cdot\left(\text{age}\right) + \beta_2\cdot\left(\text{lstat}\right) + \beta_3\cdot\left(\text{chas}\right) + \beta_4\cdot\left(\text{age}^2\right) + \beta_5\cdot\left(\text{lstat}^2\right)
+\end{align}
+
+. . . 
+
+**Model Setup:**
+
+```{r}
+#| echo: true
+#| eval: true
+
+mlr_me_spec <- linear_reg() %>%
+  set_engine("lm")
+
+mlr_me_rec <- recipe(medv ~ age + lstat + chas, data = boston_train) %>%
+  step_poly(age, degree = 2, options = list(raw = TRUE)) %>%
+  step_poly(lstat, degree = 2, options = list(raw = TRUE))
+
+mlr_me_wf <- workflow() %>%
+  add_model(mlr_me_spec) %>%
+  add_recipe(mlr_me_rec)
+```
+
+## Fit and Assess Model
+
+. . . 
+
+**Fit the Model to Training Data:**
+
+```{r}
+#| echo: true
+#| eval: true
+
+mlr_me_fit <- mlr_me_wf %>%
+  fit(boston_train)
+```
+
+. . .
+
+**Global Model Utility:**
+
+```{r}
+#| echo: true
+#| eval: false
+
+mlr_me_fit %>% 
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+mlr_me_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+**Individual Term-Based Assessments:**
+
+```{r}
+#| echo: true
+#| eval: false
+
+mlr_me_fit %>% 
+  extract_fit_engine() %>%
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+mlr_me_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Drop the Curvi-linear Term for `age`
+
+```{r}
+#| echo: true
+#| eval: true
+
+mlr_me_rec <- recipe(medv ~ age + lstat + chas, data = boston_train) %>%
+  step_poly(lstat, degree = 2, options = list(raw = TRUE))
+
+mlr_me_wf <- workflow() %>%
+  add_model(mlr_me_spec) %>%
+  add_recipe(mlr_me_rec)
+```
+
+**Re-Fit the Model to Training Data:** 
+
+```{r}
+#| echo: true
+#| eval: true
+
+mlr_me_fit <- mlr_me_wf %>%
+  fit(boston_train)
+```
+
+## Assess Updated Model
+
+. . .
+
+**Global Model Utility:**
+
+```{r}
+#| echo: true
+#| eval: false
+
+mlr_me_fit %>%
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+mlr_me_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+**Individual Term-Based Assessments:** 
+
+```{r}
+#| echo: true
+#| eval: false
+
+mlr_me_fit %>%
+  extract_fit_engine() %>%
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+mlr_me_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+## A Note on Higher-Order Terms and Significance
+
+. . . 
+
+If a higher-order term in a model is statistically significant, then all lower-order components of that term must be kept in the model
+
+. . .
+
+For example, if a term for `age` $\cdot$ `lstat` $^2$ is included in a model, then each of the following terms must be kept regardless of statistical significance
+
++ `age`
++ `lstat`
++ `age` $\cdot$ `lstat`
++ `lstat` $^2$
+
+## Visualizing Model Predictions [Training Data]
+
+```{r}
+#| echo: true
+#| eval: false
+
+point_colors <- c("actual" = "black", "predicted" = "red")
+
+mlr_me_fit %>%
+  augment(boston_train) %>%
+  ggplot() + 
+  geom_point(aes(x = lstat, y = medv, color = actual),
+             alpha = 0.75) + 
+  geom_point(aes(x = lstat, y = .pred, color = predicted), 
+             alpha = 0.75) +
+  scale_color_manual(values = point_colors) + 
+  labs(x = "% Low Socioeconomic Status",
+       y = "Median Home Value (000s)",
+       color = "Type")
+```
+
+. . .
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig-height: 4
+
+point_colors <- c("actual" = "black", "predicted" = "red")
+
+mlr_me_fit %>%
+  augment(boston_train) %>%
+  ggplot() + 
+  geom_point(aes(x = lstat, y = medv, color = "actual"),
+             alpha = 0.75) + 
+  geom_point(aes(x = lstat, y = .pred, color = "predicted"),
+             alpha = 0.75) +
+  scale_color_manual(values = point_colors) + 
+  labs(x = "% Low Socioeconomic Status",
+       y = "Median Home Value (000s)",
+       color = "Type")
+```
+
+## Model At Various Age Thresholds
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-fold: true
+
+new_data <- crossing(age = c(10, 25, 50),
+                     chas = c(0, 1),
+                     lstat = seq(min(boston_train$lstat, na.rm = TRUE),
+                                max(boston_train$lstat, na.rm = TRUE),
+                                length.out = 250))
+
+mlr_me_fit %>%
+  augment(new_data) %>%
+  ggplot() + 
+  geom_line(aes(x = lstat, 
+                y = .pred, 
+                color = as.factor(age),
+                linetype = as.factor(chas)),
+            lwd = 1) +
+  labs(x = "Proportion of Residents with Low Socioeconomic Status",
+       y = "Predicted Median Home Value",
+       title = "Estimated Median Home Values",
+       subtitle = "(by prevalence of low socioeconomic status)",
+       color = "% Homes Built \nPrior to 1940",
+       linetype = "On Charles River")
+```
+
+. . .
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: center
+
+new_data <- crossing(age = c(10, 25, 50),
+                     chas = c(0, 1),
+                     lstat = seq(min(boston_train$lstat, na.rm = TRUE),
+                                 max(boston_train$lstat, na.rm = TRUE),
+                                 lenght.out = 250))
+
+mlr_me_fit %>%
+  augment(new_data) %>%
+  ggplot() + 
+  geom_line(aes(x = lstat, 
+                y = .pred, 
+                color = as.factor(age),
+                linetype = as.factor(chas)),
+            lwd = 1) +
+  labs(x = "Proportion of Residents with Low Socioeconomic Status",
+       y = "Predicted Median Home Value",
+       title = "Estimated Median Home Values",
+       subtitle = "(by prevalence of low socioeconomic status)",
+       color = "% Homes Built \nPrior to 1940",
+       linetype = "On Charles River")
+```
+
++ The model consists of curved surfaces
++ One surface for when the neighborhood is on the Charles River, and another for neighborhoods off of it
++ The cross-sections for each surface at different `age` thresholds are *parallel*
+
+## Interpreting the Model
+
+. . .
+
+**Our Model:**
+
+```{r}
+mlr_me_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+\begin{align} \mathbb{E}\left[\text{medv}\right] \approx 40.541 +~ &0.067\cdot\left(\text{age}\right) + 4.966\cdot\left(\text{chas}\right) - 2.628\cdot\left(\text{lstat}\right) + 0.048\cdot\left(\text{lstat}^2\right)
+\end{align}
+
+## Interpreting the Model
+
+**Our Model:**
+
+\begin{align} \mathbb{E}\left[\text{medv}\right] \approx 40.541 +~ &0.067\cdot\left(\text{age}\right) + 4.966\cdot\left(\text{chas}\right) - 2.628\cdot\left(\text{lstat}\right) + 0.048\cdot\left(\text{lstat}^2\right)
+\end{align}
+
++ (*Intercept*) The expected median home value for a neighborhood with 0% of residents being of low socioeconomic status, 0% of homes built before 1940, and being away from the Charles River is about \$40,541
++ (*age*) Holding location relative to the Charles River and percentage of residents with low socioeconomic status constant, a one percentage-point increase in the proportion of homes built prior to 1940 is associated with an expected *increase* of about \$67 in median home value
++ (*chas*) Holding percentage of residents with low socioeconomic status and percentage of homes built before 1940 constant, a neighborhood on the Charles River is expected to have higher median home values by about \$4,966
+
+## Interpreting the Model
+
+**Our Model:**
+
+\begin{align} \mathbb{E}\left[\text{medv}\right] \approx 40.541 +~ &0.067\cdot\left(\text{age}\right) + 4.966\cdot\left(\text{chas}\right) - 2.628\cdot\left(\text{lstat}\right) + 0.048\cdot\left(\text{lstat}^2\right)
+\end{align}
+
+. . .
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: center
+
+mlr_me_fit %>%
+  augment(new_data) %>%
+  ggplot() + 
+  geom_line(aes(x = lstat, 
+                y = .pred, 
+                color = as.factor(age),
+                linetype = as.factor(chas)),
+            lwd = 1) +
+  labs(x = "Proportion of Residents with Low Socioeconomic Status",
+       y = "Predicted Median Home Value",
+       title = "Estimated Median Home Values",
+       subtitle = "(by prevalence of low socioeconomic status)",
+       color = "% Homes Built \nPrior to 1940",
+       linetype = "On Charles River")
+```
+
+:::
+
+:::{.column width="40%"}
+
++ The association between `lstat` and median home values is not constant!
++ The expected change in median home values due to a change in the percentage of residents with low socioeconomic status depends on the "current" percentage.
+
+:::
+
+::::
+
+. . .
+
+(*lstat*) Holding the location of a neighborhood relative to the Charles River and the percentage of homes built before 1940, a one percentage-point increase in the percentage of residents of low socioeconomic status is expected to be associated with a change in median home values of about
+
+. . .
+
+$$-2.628 + 2\cdot\left(0.048\right)\cdot\left(\text{lstat}\right)~~~~~~~~\left(\text{times 1000 to convert to thousands}\right)$$
+
+## Interpreting the Model
+
+**Our Model:**
+
+\begin{align} \mathbb{E}\left[\text{medv}\right] \approx 40.541 +~ &0.067\cdot\left(\text{age}\right) + 4.966\cdot\left(\text{chas}\right) - 2.628\cdot\left(\text{lstat}\right) + 0.048\cdot\left(\text{lstat}^2\right)
+\end{align}
+
+(*lstat*) Holding the location of a neighborhood relative to the Charles River and the percentage of homes built before 1940, a one percentage-point increase in the percentage of residents of low socioeconomic status is expected to be associated with a change in median home values of about
+
+. . .
+
+$$-2.628 + 2\left(0.048\right)\cdot\left(\text{lstat}\right)~~~~~~~~\left(\text{times 1000 to convert to thousands}\right)$$
+
+. . .
+
+**For Example:** If the current percentage of residents of low socioeconomic status is 10%, then holding location relative to the Charles River and the percentage of homes build before 1940 constant, an increase to 11% of residents with low socioeconomic status is expected to be associated with a change in median home values by about
+
+. . .
+
+$$-2.628 + 2\left(0.048\right)\cdot\left(10\right) = -1.668$$
+
+. . . 
+
+That is, a drop of about \$1,668
+
+. . .
+
+Similarly, if the current percentage was 33%, then we would expect an increase of about \$540 in a similar neighborhood but where the percentage of residents of low socioeconomic status is 34%
+
+## General Interpretation with a Squared Predictor
+
+. . .
+
+Consider a model of the form: 
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x + \beta_2\cdot x^2 + \cdots$$
+
+where the only two terms involving the predictor $x$ are the ones shown.
+
+. . .
+
+**Interpretation of a Unit Increase in $x$:** Holding all other predictors constant, a unit increase in $x$ is associated with an expected change in the response by about $\beta_1 + 2\cdot\beta_2\cdot x$.
+
+. . .
+
+**A Bit of Calculus:** Those of you with a Calculus background will recognize this as the partial derivative of the model with respect to $x$.
+
+. . . 
+
+Taking the partial derivative is how you examine the effect of a change in any numerical variable on the response.
+
+. . . 
+
+Two class meetings from now, we'll see how we can use the `{marginaleffects}` package to make our interpretations easier, especially for those of you without a calculus background.
+
+## Summary
+
++ We can use *higher order* terms to model associations that are more complex than "straight line"
++ Higher order terms include polynomial terms (a predictor to a positive integer power) and interaction terms (a product of two or more predictors)
++ We add polynomial terms to a model using the `{tidymodels}` framework by appending `step_poly()` to our *recipe*
+
+  + Models with polynomial terms approximate curved relationships between the predictor and response
+  + We use the `degree` argument of `step_poly()` to determine the degree of the polynomial term (higher degree means more wiggly, and more $\beta$-coefficients)
+  + Setting `options = list(raw = TRUE)` within `step_poly()` prevents the function from attempting to build "orthogonal polynomial terms" which would reduce interpretability
+  
++ To interpret models with higher-order terms, we'll need a bit of calculus (or help from a package like `{marginaleffects}`)
+
+  + If a model $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x + \beta_2 x^2 + \cdots$ includes a second degree term for the predictor $x$ and $x$ is not included in any model terms other than those shown, the effect of a unit increase in $x$ on the response $y$ is an increase of about $\beta_1 + 2\beta_2 x$

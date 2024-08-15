@@ -477,6 +477,18 @@ code.sourceCode {
 <p>We’ll see what each one accommodates and how to implement each type of interaction here</p>
 </div>
 </section>
+<section id="a-note-before-moving-forward" class="slide level2">
+<h2>A Note Before Moving Forward</h2>
+<div class="fragment">
+<p>This notebook omits both global assessments of model utility and individual term-based assessments in order to focus on the types of interactions available to us, why we use them, and what phenomena we are trying to model when we use a particular type of interaction</p>
+</div>
+<div class="fragment">
+<p>As with all previously discussed topics, we conduct term-based assessments and remove individual terms which are insignificant, one at a time, in order of highest <span class="math inline">\(p\)</span>-value to lowest</p>
+</div>
+<div class="fragment">
+<p>If a higher order term (ie. an interaction) is deemed significant, then all of its component lower order terms must be kept in the model, regardless of statistical significance</p>
+</div>
+</section>
 <section id="reminder-models-with-categorical-predictors" class="slide level2">
 <h2>Reminder: Models with Categorical Predictors</h2>
 <div class="fragment">
@@ -1036,10 +1048,235 @@ code.sourceCode {
 </section>
 <section id="interactions-between-numerical-variables" class="slide level2">
 <h2>Interactions Between Numerical Variables</h2>
-<p>…Under Construction…</p>
+<div class="fragment">
+<p>Also reasonable, yet more difficult to interpret, is the possibility that the association between bill length and penguin body mass is dependent on the penguin’s bill depth (another numerical predictor)</p>
+</div>
+<div class="fragment">
+<blockquote>
+<p>We’ve switched from flipper length to bill length and bill depth because some interaction between those features is intuitively plausible</p>
+</blockquote>
+</div>
+<div class="fragment">
+<p>We can investigate whether such an interaction effect is present by constructing and analysing a model which includes an interaction term between bill length and bill depth</p>
+</div>
+<div class="fragment">
+<p>As we did previously, we can compare the proposed model forms:</p>
+</div>
+<div class="fragment">
+<p><strong>Model with Bill Length and Bill Depth Independently:</strong></p>
+<p><span class="math display">\[\begin{align}\mathbb{E}\left[\text{body mass}\right] = \beta_0 +~ &amp;\beta_1 \cdot\left(\text{bill length}\right) + \beta_2\cdot\left(\text{bill depth}\right)
+\end{align}\]</span></p>
+</div>
+<div class="fragment">
+<p><strong>Model with Interaction Between Bill Length and Bill Depth:</strong></p>
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{body mass}\right] = \beta_0 +~ &amp;\beta_1 \cdot\left(\text{bill length}\right) + \beta_2\cdot\left(\text{bill depth}\right) +\\
+&amp;\beta_3\cdot\left(\text{bill length}\right)\left(\text{bill depth}\right)
+\end{align}\]</span></p>
+</div>
+</section>
+<section id="building-the-model-1" class="slide level2">
+<h2>Building the Model</h2>
+<div class="fragment">
+<p>No real changes here – we’ll use <code>step_interact()</code> again</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>mlr_blbd_i_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb3-3"><a href=""></a></span>
+<span id="cb3-4"><a href=""></a>mlr_blbd_i_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(body_mass_g <span class="sc">~</span> bill_length_mm <span class="sc">+</span> bill_depth_mm,</span>
+<span id="cb3-5"><a href=""></a>                           <span class="at">data =</span> penguins_train) <span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a href=""></a>  <span class="fu">step_interact</span>(<span class="sc">~</span> bill_length_mm<span class="sc">:</span>bill_depth_mm)</span>
+<span id="cb3-7"><a href=""></a></span>
+<span id="cb3-8"><a href=""></a>mlr_blbd_i_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb3-9"><a href=""></a>  <span class="fu">add_model</span>(mlr_blbd_i_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb3-10"><a href=""></a>  <span class="fu">add_recipe</span>(mlr_blbd_i_rec)</span>
+<span id="cb3-11"><a href=""></a></span>
+<span id="cb3-12"><a href=""></a>mlr_blbd_i_fit <span class="ot">&lt;-</span> mlr_blbd_i_wf <span class="sc">%&gt;%</span></span>
+<span id="cb3-13"><a href=""></a>  <span class="fu">fit</span>(penguins_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="the-estimated-model-2" class="slide level2">
+<h2>The Estimated Model</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std.error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">-27159.5171</td>
+<td style="text-align: right;">3343.877732</td>
+<td style="text-align: right;">-8.122162</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bill_length_mm</td>
+<td style="text-align: right;">751.5601</td>
+<td style="text-align: right;">73.587759</td>
+<td style="text-align: right;">10.213112</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">bill_depth_mm</td>
+<td style="text-align: right;">1581.3298</td>
+<td style="text-align: right;">188.042339</td>
+<td style="text-align: right;">8.409435</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bill_length_mm_x_bill_depth_mm</td>
+<td style="text-align: right;">-38.3255</td>
+<td style="text-align: right;">4.155655</td>
+<td style="text-align: right;">-9.222491</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p><span class="math inline">\(\displaystyle{\mathbb{E}\left[\text{body mass}\right] = \cdots}\)</span></p>
+</section>
+<section id="the-estimated-model-contd.-2" class="slide level2">
+<h2>The Estimated Model (Cont’d.)</h2>
+
+<img data-src="14d_IntroSlides_files/figure-revealjs/unnamed-chunk-20-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="additional-flexibility-with-interactions-3" class="slide level2">
+<h2>Additional Flexibility with Interactions</h2>
+<div class="fragment">
+<p>This model consists of a warped surface.</p>
+</div>
+<div class="fragment">
+<p>As long as we fix a value of bill length, then the expected effect of a unit increase in bill depth on penguin body mass is constant</p>
+</div>
+<div class="fragment">
+<p>Similarly, as long as we fix a value of bill depth, then the expected effect of a unit increase in bill length on penguin body mass is constant</p>
+</div>
+<div class="fragment">
+<p>The effect of a unit increase in either bill length or depth, however, depends on the current level of the other predictor</p>
+</div>
+<div class="fragment">
+<p>We needed one additional <span class="math inline">\(\beta\)</span>-coefficient to accommodate the interaction</p>
+</div>
+</section>
+<section id="interpreting-this-interaction-model-3" class="slide level2">
+<h2>Interpreting this Interaction Model</h2>
+<div class="fragment">
+<p>As a reminder, the general form for this interaction model was</p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{body mass}\right] = \beta_0 +~ &amp;\beta_1 \cdot\left(\text{bill length}\right) + \beta_2\cdot\left(\text{bill depth}\right) +\\
+&amp;\beta_3\cdot\left(\text{bill length}\right)\left(\text{bill depth}\right)
+\end{align}\]</span></p>
+</div>
+<div class="fragment">
+<p><strong>Effect of a Unit Change in Bill Length, Holding Bill Depth Constant:</strong></p>
+<blockquote>
+<p>Holding bill depth constant, a unit increase in bill length is associated with an expected increase in penguin body mass of <span class="math inline">\(\displaystyle{\beta_1 + \beta_3\cdot\left(\text{bill depth}\right)}\)</span></p>
+</blockquote>
+</div>
+<div class="fragment">
+<p><strong>Effect of a Unit Change in Bill Depth, Holding Bill Length Constant:</strong></p>
+<blockquote>
+<p>Holding bill length constant, a unit increase in bill depth is associated with an expected increase in penguin body mass of <span class="math inline">\(\displaystyle{\beta_2 + \beta_3\cdot\left(\text{bill length}\right)}\)</span></p>
+</blockquote>
+</div>
+</section>
+<section id="interpreting-this-interaction-model-4" class="slide level2">
+<h2>Interpreting this Interaction Model</h2>
+<div class="fragment">
+<p>Our estimated model was</p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{body mass}\right] = -27159.52 +~ &amp;751.56 \cdot\left(\text{bill length}\right) + 1581.33\cdot\left(\text{bill depth}\right) +\\
+&amp;-38.33\cdot\left(\text{bill length}\right)\left(\text{bill depth}\right)
+\end{align}\]</span></p>
+</div>
+<div class="fragment">
+<p><strong>Effect of a Unit Change in Bill Length, Holding Bill Depth Constant:</strong></p>
+<blockquote>
+<p>Holding bill depth constant, a unit increase in bill length is associated with an expected increase in penguin body mass of <span class="math inline">\(\displaystyle{\beta_1 + \beta_3\cdot\left(\text{bill depth}\right)}\)</span></p>
+</blockquote>
+</div>
+<div class="fragment">
+<p>For this particular estimated model,</p>
+<p><span class="math display">\[\begin{align} \beta_1 + \beta_3 \cdot\left(\text{bill depth}\right) &amp;\approx 751.56 - 38.33\cdot\left(\text{bill depth}\right)
+\end{align}\]</span></p>
+</div>
+<div class="fragment">
+<p><strong>For Example:</strong> Holding bill depth constant at 15mm, a unit increase in bill length is associated with an expected increase in body mass by about <span class="math display">\[\begin{align} 751.56 - 38.33\cdot\left(15\right) &amp;= 176.61\text{g}
+\end{align}\]</span></p>
+</div>
+</section>
+<section id="interpreting-this-interaction-model-5" class="slide level2">
+<h2>Interpreting this Interaction Model</h2>
+<p>Our estimated model was</p>
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{body mass}\right] = -27159.52 +~ &amp;751.56 \cdot\left(\text{bill length}\right) + 1581.33\cdot\left(\text{bill depth}\right) +\\
+&amp;-38.33\cdot\left(\text{bill length}\right)\left(\text{bill depth}\right)
+\end{align}\]</span></p>
+<p><strong>Effect of a Unit Change in Bill Depth, Holding Bill Length Constant:</strong></p>
+<blockquote>
+<p>Holding bill length constant, a unit increase in bill depth is associated with an expected increase in penguin body mass of <span class="math inline">\(\displaystyle{\beta_2 + \beta_3\cdot\left(\text{bill length}\right)}\)</span></p>
+</blockquote>
+<div class="fragment">
+<p>For this particular estimated model,</p>
+<p><span class="math display">\[\begin{align} \beta_1 + \beta_3 \cdot\left(\text{bill depth}\right) &amp;\approx 1581.33 - 38.33\cdot\left(\text{bill length}\right)
+\end{align}\]</span></p>
+</div>
+<div class="fragment">
+<p><strong>For Example:</strong> Holding bill length constant at 40mm, a unit increase in bill depth is associated with an expected increase in body mass by about <span class="math display">\[\begin{align} 1581.33 - 38.33\cdot\left(40\right) &amp;= 48.13\text{g}
+\end{align}\]</span></p>
+</div>
+</section>
+<section id="mini-summary-interactions-between-two-numerical-variables" class="slide level2">
+<h2>Mini-Summary: Interactions Between Two Numerical Variables</h2>
+<ul>
+<li class="fragment">Interactions between two numerical variables can be used to investigate whether the effect of a unit increase in one numerical predictor depends on the level of the other</li>
+<li class="fragment">The result of including such an interaction is a <strong>warped surface</strong> such that a cross-section holding one of the numerical predictors constant results in a straight line (constant slope) relationship between the remaining numerical predictor and the response</li>
+</ul>
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li class="fragment"><p><em>Interaction terms</em> are another example of <em>higher-order</em> terms in models that allow us to model associations more complex than “straight line”</p></li>
+<li class="fragment"><p>We add interaction terms to a model using the <code>{tidymodels}</code> framework by appending <code>step_interact()</code> to our <em>recipe</em></p>
+<ul>
+<li class="fragment"><code>step_interact()</code> requires a tilde <code>~</code> followed by the interaction variables with a colon separating them</li>
+<li class="fragment">There are three types of two-way interaction (categorical-categorical, categorical-numerical, numerical-numerical)</li>
+</ul></li>
+<li class="fragment"><p>Categorical-categorical interactions result in additional **intercept adjustments* corresponding to each combination of levels of the interacting predictors</p></li>
+<li class="fragment"><p>Categorical-numerical interactions result in <strong>slope adjustments</strong> between the numerical predictor and response for each level of the categorical predictor</p></li>
+<li class="fragment"><p>Numerical-numerical interactions result in a <strong>warped prediction surface</strong> such that the “slopes” in the direction of each numerical predictor change, however, if we look at a cross-section holding one of the numerical predictors constant, then the slope in the direction of the other numerical predictor is constant(<span class="math inline">\(^*\)</span>)</p></li>
+<li class="fragment"><p>As we mentioned last time, interpreting models with higher-order terms can be a complex business, requiring some calculus knowledge – we’ll get some help from the <code>{marginaleffects}</code> package next</p></li>
+</ul>
+</section>
+<section id="waitwhat-about-interactions-between-more-than-two-predictors" class="slide level2">
+<h2>Wait…What About Interactions Between More than Two Predictors???</h2>
+<div class="fragment">
+<center>
+<blockquote class="twitter-tweet">
+<p lang="en" dir="ltr">
+Sup. It's a dirty job, but someone's gotta provide plausible and defensible rationales for nonmonotonic interactions. <a href="http://t.co/arCeYeK9Ot">pic.twitter.com/arCeYeK9Ot</a>
+</p>
+— Research Wahlberg (<span class="citation" data-cites="ResearchMark">@ResearchMark</span>) <a href="https://twitter.com/ResearchMark/status/527489859636985857?ref_src=twsrc%5Etfw">October 29, 2014</a>
+</blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</center>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
+</div>
 </div>
 </div>
 </section>

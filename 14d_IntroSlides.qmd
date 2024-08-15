@@ -151,6 +151,20 @@ There are three main types of *two-way interactions*
 
 We'll see what each one accommodates and how to implement each type of interaction here
 
+## A Note Before Moving Forward
+
+. . .
+
+This notebook omits both global assessments of model utility and individual term-based assessments in order to focus on the types of interactions available to us, why we use them, and what phenomena we are trying to model when we use a particular type of interaction
+
+. . .
+
+As with all previously discussed topics, we conduct term-based assessments and remove individual terms which are insignificant, one at a time, in order of highest $p$-value to lowest
+
+. . .
+
+If a higher order term (ie. an interaction) is deemed significant, then all of its component lower order terms must be kept in the model, regardless of statistical significance
+
 ## Reminder: Models with Categorical Predictors
 
 . . .
@@ -740,4 +754,264 @@ Note that this is not significantly different than the expected change for Adeli
 
 ## Interactions Between Numerical Variables
 
-...Under Construction...
+. . . 
+
+Also reasonable, yet more difficult to interpret, is the possibility that the association between bill length and penguin body mass is dependent on the penguin's bill depth (another numerical predictor)
+
+. . .
+
+> We've switched from flipper length to bill length and bill depth because some interaction between those features is intuitively plausible
+
+. . .
+
+We can investigate whether such an interaction effect is present by constructing and analysing a model which includes an interaction term between bill length and bill depth
+
+. . .
+
+As we did previously, we can compare the proposed model forms:
+
+. . .
+
+**Model with Bill Length and Bill Depth Independently:** 
+
+\begin{align}\mathbb{E}\left[\text{body mass}\right] = \beta_0 +~ &\beta_1 \cdot\left(\text{bill length}\right) + \beta_2\cdot\left(\text{bill depth}\right)
+\end{align}
+
+. . .
+
+**Model with Interaction Between Bill Length and Bill Depth:** 
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] = \beta_0 +~ &\beta_1 \cdot\left(\text{bill length}\right) + \beta_2\cdot\left(\text{bill depth}\right) +\\
+&\beta_3\cdot\left(\text{bill length}\right)\left(\text{bill depth}\right)
+\end{align}
+
+## Building the Model
+
+. . .
+
+No real changes here -- we'll use `step_interact()` again
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+
+mlr_blbd_i_spec <- linear_reg() %>%
+  set_engine("lm")
+
+mlr_blbd_i_rec <- recipe(body_mass_g ~ bill_length_mm + bill_depth_mm,
+                           data = penguins_train) %>%
+  step_interact(~ bill_length_mm:bill_depth_mm)
+
+mlr_blbd_i_wf <- workflow() %>%
+  add_model(mlr_blbd_i_spec) %>%
+  add_recipe(mlr_blbd_i_rec)
+
+mlr_blbd_i_fit <- mlr_blbd_i_wf %>%
+  fit(penguins_train)
+```
+
+
+## The Estimated Model
+
+```{r}
+mlr_blbd_i_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+$\displaystyle{\mathbb{E}\left[\text{body mass}\right] = \cdots}$
+
+## The Estimated Model (Cont'd.)
+
+```{r}
+#| fig.align: center
+#| fig.height: 7
+
+new_data_length <- crossing(
+  bill_length_mm = seq(
+    min(penguins_train$bill_length_mm, na.rm = TRUE),
+    max(penguins_train$bill_length_mm, na.rm = TRUE),
+    length.out = 250),
+  bill_depth_mm = c(14, 17, 20)
+)
+
+new_data_depth <- crossing(
+  bill_length_mm = c(35, 45, 55),
+  bill_depth_mm = seq(
+    min(penguins_train$bill_depth_mm, na.rm = TRUE),
+    max(penguins_train$bill_depth_mm, na.rm = TRUE),
+    length.out = 250)
+)
+
+new_data_length <- mlr_blbd_i_fit %>%
+  augment(new_data_length)
+
+new_data_depth <- mlr_blbd_i_fit %>%
+  augment(new_data_depth)
+
+p1 <- ggplot() +
+  geom_point(data = penguins_train,
+             aes(x = bill_length_mm,
+                 y = body_mass_g),
+             alpha = 0.5) + 
+  geom_line(data = new_data_length,
+            aes(x = bill_length_mm,
+                y = .pred,
+                color = as.factor(bill_depth_mm)),
+            lwd = 1.5) + 
+  labs(x = "Bill Length (mm)",
+       y = "Body Mass (g)",
+       color = "Bill Depth (mm)")
+
+p2 <- ggplot() +
+  geom_point(data = penguins_train,
+             aes(x = bill_depth_mm,
+                 y = body_mass_g),
+             alpha = 0.5,
+             show.legend = FALSE) + 
+  geom_line(data = new_data_depth,
+            aes(x = bill_depth_mm,
+                y = .pred,
+                color = as.factor(bill_length_mm)),
+            lwd = 1.5) + 
+  labs(x = "Bill Depth (mm)",
+       y = "Body Mass (g)",
+       color = "Bill Length (mm)")
+
+(p1 / p2)
+```
+
+## Additional Flexibility with Interactions
+
+. . . 
+
+This model consists of a warped surface.
+
+. . .
+
+As long as we fix a value of bill length, then the expected effect of a unit increase in bill depth on penguin body mass is constant
+
+. . . 
+
+Similarly, as long as we fix a value of bill depth, then the expected effect of a unit increase in bill length on penguin body mass is constant
+
+. . . 
+
+The effect of a unit increase in either bill length or depth, however, depends on the current level of the other predictor
+
+. . .
+
+We needed one additional $\beta$-coefficient to accommodate the interaction
+
+## Interpreting this Interaction Model
+
+. . . 
+
+As a reminder, the general form for this interaction model was
+
+. . .
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] = \beta_0 +~ &\beta_1 \cdot\left(\text{bill length}\right) + \beta_2\cdot\left(\text{bill depth}\right) +\\
+&\beta_3\cdot\left(\text{bill length}\right)\left(\text{bill depth}\right)
+\end{align}
+
+. . .
+
+**Effect of a Unit Change in Bill Length, Holding Bill Depth Constant:**
+
+> Holding bill depth constant, a unit increase in bill length is associated with an expected increase in penguin body mass of $\displaystyle{\beta_1 + \beta_3\cdot\left(\text{bill depth}\right)}$
+
+. . .
+
+**Effect of a Unit Change in Bill Depth, Holding Bill Length Constant:**
+
+> Holding bill length constant, a unit increase in bill depth is associated with an expected increase in penguin body mass of $\displaystyle{\beta_2 + \beta_3\cdot\left(\text{bill length}\right)}$
+
+## Interpreting this Interaction Model
+
+. . . 
+
+Our estimated model was
+
+. . .
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] = -27159.52 +~ &751.56 \cdot\left(\text{bill length}\right) + 1581.33\cdot\left(\text{bill depth}\right) +\\
+&-38.33\cdot\left(\text{bill length}\right)\left(\text{bill depth}\right)
+\end{align}
+
+. . .
+
+**Effect of a Unit Change in Bill Length, Holding Bill Depth Constant:**
+
+> Holding bill depth constant, a unit increase in bill length is associated with an expected increase in penguin body mass of $\displaystyle{\beta_1 + \beta_3\cdot\left(\text{bill depth}\right)}$
+
+. . .
+
+For this particular estimated model, 
+
+\begin{align} \beta_1 + \beta_3 \cdot\left(\text{bill depth}\right) &\approx 751.56 - 38.33\cdot\left(\text{bill depth}\right)
+\end{align}
+
+. . .
+
+**For Example:** Holding bill depth constant at 15mm, a unit increase in bill length is associated with an expected increase in body mass by about 
+\begin{align} 751.56 - 38.33\cdot\left(15\right) &= 176.61\text{g}
+\end{align}
+
+
+## Interpreting this Interaction Model
+
+Our estimated model was
+
+\begin{align} \mathbb{E}\left[\text{body mass}\right] = -27159.52 +~ &751.56 \cdot\left(\text{bill length}\right) + 1581.33\cdot\left(\text{bill depth}\right) +\\
+&-38.33\cdot\left(\text{bill length}\right)\left(\text{bill depth}\right)
+\end{align}
+
+**Effect of a Unit Change in Bill Depth, Holding Bill Length Constant:**
+
+> Holding bill length constant, a unit increase in bill depth is associated with an expected increase in penguin body mass of $\displaystyle{\beta_2 + \beta_3\cdot\left(\text{bill length}\right)}$
+
+. . .
+
+For this particular estimated model, 
+
+\begin{align} \beta_1 + \beta_3 \cdot\left(\text{bill depth}\right) &\approx 1581.33 - 38.33\cdot\left(\text{bill length}\right)
+\end{align}
+
+. . .
+
+**For Example:** Holding bill length constant at 40mm, a unit increase in bill depth is associated with an expected increase in body mass by about 
+\begin{align} 1581.33 - 38.33\cdot\left(40\right) &= 48.13\text{g}
+\end{align}
+
+## Mini-Summary: Interactions Between Two Numerical Variables
+
++ Interactions between two numerical variables can be used to investigate whether the effect of a unit increase in one numerical predictor depends on the level of the other
++ The result of including such an interaction is a **warped surface** such that a cross-section holding one of the numerical predictors constant results in a straight line (constant slope) relationship between the remaining numerical predictor and the response
+
+## Summary
+
++ *Interaction terms* are another example of *higher-order* terms in models that allow us to model associations more complex than "straight line"
++ We add interaction terms to a model using the `{tidymodels}` framework by appending `step_interact()` to our *recipe*
+
+  + `step_interact()` requires a tilde `~` followed by the interaction variables with a colon separating them
+  + There are three types of two-way interaction (categorical-categorical, categorical-numerical, numerical-numerical)
+  
++ Categorical-categorical interactions result in additional **intercept adjustments* corresponding to each combination of levels of the interacting predictors
++ Categorical-numerical interactions result in **slope adjustments** between the numerical predictor and response for each level of the categorical predictor
++ Numerical-numerical interactions result in a **warped prediction surface** such that the "slopes" in the direction of each numerical predictor change, however, if we look at a cross-section holding one of the numerical predictors constant, then the slope in the direction of the other numerical predictor is constant($^*$)
++ As we mentioned last time, interpreting models with higher-order terms can be a complex business, requiring some calculus knowledge -- we'll get some help from the `{marginaleffects}` package next
+
+## Wait...What About Interactions Between More than Two Predictors???
+
+. . .
+
+<center>
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Sup. It&#39;s a dirty job, but someone&#39;s gotta provide plausible and defensible rationales for nonmonotonic interactions. <a href="http://t.co/arCeYeK9Ot">pic.twitter.com/arCeYeK9Ot</a></p>&mdash; Research Wahlberg (@ResearchMark) <a href="https://twitter.com/ResearchMark/status/527489859636985857?ref_src=twsrc%5Etfw">October 29, 2014</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+</center>

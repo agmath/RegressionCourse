@@ -47,3 +47,1056 @@ code.sourceCode {
 
 ## Motivation
 
+```{r}
+num_pts <- 10
+set.seed(123)
+
+x_vals <- runif(num_pts, 0, 10)
+y_vals <- (x_vals - 4)^2 + rnorm(num_pts, 0, 5)
+
+my_data <- tibble(
+  x = x_vals,
+  y = y_vals
+)
+
+lr_spec <- linear_reg() 
+lr1_rec <- recipe(y ~ x, data = my_data)
+lr2_rec <- lr1_rec %>%
+  step_poly(x, degree = 2, options = list(raw = TRUE))
+lr8_rec <- lr1_rec %>%
+  step_poly(x, degree = 8, options = list(raw = TRUE))
+
+lr1_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr1_rec)
+lr2_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr2_rec)
+lr8_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr8_rec)
+
+lr1_fit <- lr1_wf %>%
+  fit(my_data)
+lr2_fit <- lr2_wf %>%
+  fit(my_data)
+lr8_fit <- lr8_wf %>%
+  fit(my_data)
+
+new_data <- tibble(
+  x = seq(0, 10, length.out = 500)
+)
+
+new_data <- lr1_fit %>%
+  augment(new_data) %>%
+  rename(lin.pred = .pred)
+new_data <- lr2_fit %>%
+  augment(new_data) %>%
+  rename(quad.pred = .pred)
+new_data <- lr8_fit %>%
+  augment(new_data) %>%
+  rename(eight.pred = .pred)
+
+line_colors <- c("Linear" = "purple", "Quadratic" = "darkgreen", "Eighth Degree" = "orange")
+
+ggplot() + 
+  geom_point(data = my_data,
+             aes(x = x, y = y),
+             size = 3) + 
+  geom_line(data = new_data,
+            aes(x = x, y = lin.pred, color = "Linear"),
+            lwd = 1.25) +
+  geom_line(data = new_data,
+            aes(x = x, y = quad.pred,
+                color = "Quadratic"),
+            lwd = 1.25) +
+  geom_line(data = new_data,
+            aes(x = x, y = eight.pred,
+                color = "Eighth Degree"),
+            lwd = 1.25) + 
+  scale_color_manual(values = line_colors) + 
+  labs(x = "x",
+       y = "y",
+       color = "Model") +
+  coord_cartesian(ylim = c(-20, 50))
+```
+
+## Recap
+
+. . .
+
+We've been hypothesizing, building, assessing, and interpreting regression models
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+
+for the past few weeks
+
++ We began with *simple linear regression* and *multiple linear regression*, where the predictors $x_1, \cdots, x_k$ were independent, numerical predictors.
+
+  + We interpreted each $\beta_i$ (other than $\beta_0$) as the expected change in the response given a unit increase in the corresponding predictor $x_i$ -- ($\beta_i$ was a *slope*)
+  
++ We considered strategies for adding *categorical predictors* to our models
+
+  + We used *dummy variables* which could take values of 0 or 1 -- each $\beta_i$ corresponding to a dummy variable was an *intercept adjustment*
+  
++ We expanded our ability to fit complex relationships by considering higher-order terms
+
+  + Polynomial terms accommodated curvature in the relationship between a numerical predictor and the response
+  + Interaction terms allowed for the association between a predictor and the response to depend on the level of another predictor
+  
+## Recap
+
+. . . 
+
+Each time we expanded our modeling abilities, we introduced additional $\beta$-parameters to our models
+
+. . . 
+
+This gave us several **advantages**:
+
++ Improved fit to our training data
++ Greater ability to model, discover, and explain complex relationships
+
+. . . 
+
+And some **disadvantages**:
+
++ More data required to fit these models
++ More difficulty in interpreting models
+
+. . .
+
+There's a question we've been neglecting though...
+
+. . . 
+
+> Does improved fit to our training data actually translate to a better (more accurate, more meaningful) model in practice? 
+
+## The Big Concern and Questions
+
+. . . 
+
+Increasing the number of $\beta$-parameters in a model (by including dummy variables, higher-order terms, etc.) increases the *flexibility* of our model
+
+. . . 
+
+This means that our model can accommodate more complex relationships -- whether they are *signal* or *noise*
+
+. . . 
+
+This also means that our model becomes more sensitive to its *training data*
+
+1. More $\beta$ coefficients means better training performance (higher $R^2$, lower RMSE, etc.) in general
+
+2. The more $\beta$ coefficients we have, the greater the likelihood that we are *overfitting* to our training data
+
+. . . 
+
+**Question 1:** If all those great strategies we've learned recently are increasing our risk of *overfitting*, should we really be using them?
+
+. . . 
+
+**Question 2:** How do we know whether we are overfitting or not?
+
+. . .
+
+**Question 3:** Can we know?
+
+## Highlights
+
+. . .
+
+We'll look at the following items as we try to answer those three questions.
+
++ What are *bias* and *variance*?
++ How do bias and variance manifest themselves in our models?
++ How are bias and variance connected to model flexibility?
++ How are bias, variance, and model flexibility connected to overfitting and underfitting?
++ Training error, test error, and identifying appropriate model flexibility to solve the bias/variance trade-off problem
+
+## Bias and Variance
+
+. . .
+
+The level of *bias* in a model is a measure of how conservative that model is
+
++ Models with *high bias* have *low flexibility* -- they are more rigid/straight/flat
++ Models with *low bias* have *high flexibility* -- they can wiggle around a lot, allowing them to get closer to more training observations
+
+. . .
+
+The level of *variance* in a model is a measure of how much that model would change, given different training data from the same population
+
++ Models with *low variance* change little even if given slightly different training data
++ Models with *high variance* may change wildly under a slightly different training set
+
+## Seeing Bias and Variance in Models
+
+. . .
+
+Let's bring back our Linear and Eighth Degree models from the opening slide
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+**High Bias / Low Variance:**
+
+```{r}
+#| fig.height: 4
+#| fig.align: center
+
+ggplot() + 
+  geom_point(data = my_data,
+             aes(x = x, y = y),
+             size = 3) + 
+  geom_line(data = new_data,
+            aes(x = x, y = lin.pred),
+            color = "purple",
+            lwd = 1.25) +
+  labs(x = "x",
+       y = "y") +
+  coord_cartesian(ylim = c(-20, 50))
+```
+
+:::
+
+:::{.column width="50%"}
+
+**Low Bias / High Variance:**
+
+```{r}
+#| fig.height: 4
+#| fig.align: center
+
+ggplot() + 
+  geom_point(data = my_data,
+             aes(x = x, y = y),
+             size = 3) + 
+  geom_line(data = new_data,
+            aes(x = x, y = eight.pred),
+            color = "purple",
+            lwd = 1.25) + 
+  labs(x = "x",
+       y = "y") +
+  coord_cartesian(ylim = c(-20, 50))
+```
+
+:::
+
+::::
+
+. . .
+
+Let's consider what would happen if we had a new training observation at $x = 7$, $y = 5$ 
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+#| fig.height: 4
+#| fig.align: center
+
+my_data_ll <- my_data %>%
+  bind_rows(
+    tibble(
+      x = 7,
+      y = 5
+    )
+  ) %>%
+  mutate(type = c(rep("original", num_pts), "new"))
+
+lr1_fit2 <- lr1_wf %>%
+  fit(my_data_ll)
+
+new_data <- lr1_fit2 %>%
+  augment(new_data) %>%
+  rename(lin2.pred = .pred)
+
+ggplot() + 
+  geom_point(data = my_data_ll,
+             aes(x = x, y = y,
+                 color = type),
+             size = 3) + 
+  geom_line(data = new_data,
+            aes(x = x, y = lin.pred),
+            color = "purple",
+            lwd = 1.25) +
+    geom_line(data = new_data,
+            aes(x = x, y = lin2.pred),
+            color = "orange",
+            lwd = 1.25) +
+  scale_color_manual(values = c("red", "black")) +
+  labs(x = "x",
+       y = "y",
+       color = "Obs. Type") +
+  coord_cartesian(ylim = c(-20, 50))
+```
+
+:::
+
+:::{.column width="50%"}
+
+```{r}
+#| fig.height: 4
+#| fig.align: center
+
+lr8_fit2 <- lr8_wf %>%
+  fit(my_data_ll)
+
+new_data <- lr8_fit2 %>%
+  augment(new_data) %>%
+  rename(eight2.pred = .pred)
+
+ggplot() + 
+  geom_point(data = my_data_ll,
+             aes(x = x, y = y,
+                 color = type),
+             size = 3) + 
+  geom_line(data = new_data,
+            aes(x = x, y = eight.pred),
+            color = "purple",
+            lwd = 1.25) +
+    geom_line(data = new_data,
+            aes(x = x, y = eight2.pred),
+            color = "orange",
+            lwd = 1.25) +
+  scale_color_manual(values = c("red", "black")) +
+  labs(x = "x",
+       y = "y",
+       color = "Obs. Type") +
+  coord_cartesian(ylim = c(-20, 50))
+```
+
+:::
+
+::::
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::
+
+:::{.column width="50%"}
+
+<center>
+
+Oh No!
+
+</center>
+
+:::
+
+::::
+
+## Seeing Bias in Our Models
+
+. . . 
+
+On the previous slide, we saw very clearly that the model on the right had bias which was too low and variance that was too high
+
+. . .
+
+It is also possible for a model to have bias which is too high and variance which is too low
+
+. . .
+
+Consider the scenario below
+
+. . .
+
+```{r}
+set.seed(123)
+num_pts_bias <- 30
+x_vals_bias <- runif(num_pts_bias, 0, 10)
+y_vals_bias <- -(x_vals_bias - 5)^2 + 50 + rnorm(num_pts_bias, 0, 2)
+
+data_bias <- tibble(
+  x = x_vals_bias,
+  y = y_vals_bias
+)
+
+lr1_bias_fit <- lr1_wf %>%
+  fit(data_bias)
+
+new_data_bias <- tibble(
+  x = seq(0, 10, length.out = 100)
+)
+
+new_data_bias <- lr1_bias_fit %>%
+  augment(new_data_bias) %>%
+  rename(bias.pred = .pred)
+
+ggplot() + 
+  geom_point(data = data_bias,
+             aes(x = x, y = y),
+             size = 3) + 
+  geom_line(data = new_data_bias,
+            aes(x = x, y = bias.pred),
+            color = "purple",
+            lwd = 2) + 
+  labs(x = "x",
+       y = "y")
+```
+
+## The Connection Between Bias, Variance, and Model Flexibility
+
+. . .
+
+Models with *high bias* have *low variance*, and vice-versa.
+
++ Decreasing *bias* by adding new $\beta$-parameters (allowing access to additional predictors, introducing dummy variables, polynomial terms, interactions, etc.) increases *variance*
++ Bias and variance are in conflict with one another because they move in opposite directions
+
+. . . 
+
+This is the bias/variance trade-off
+
+. . .
+
+Identifying an appropriate level of model *flexibility* means solving the bias/variance trade-off problem!
+
+## Overfitting and Underfitting
+
+. . .
+
+Let's head back to the linear and eighth degree model from the opening slide again
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+#| fig.height: 4
+#| fig.align: center
+
+ggplot() + 
+  geom_point(data = my_data,
+             aes(x = x, y = y),
+             size = 3) + 
+  geom_line(data = new_data,
+            aes(x = x, y = lin.pred),
+            color = "purple",
+            lwd = 1.25) +
+  labs(x = "x",
+       y = "y") +
+  coord_cartesian(ylim = c(-20, 50))
+```
+
+:::
+
+:::{.column width="50%"}
+
+```{r}
+#| fig.height: 4
+#| fig.align: center
+
+ggplot() + 
+  geom_point(data = my_data,
+             aes(x = x, y = y),
+             size = 3) + 
+  geom_line(data = new_data,
+            aes(x = x, y = eight.pred),
+            color = "purple",
+            lwd = 1.25) + 
+  labs(x = "x",
+       y = "y") +
+  coord_cartesian(ylim = c(-20, 50))
+```
+
+:::
+
+::::
+
+. . .
+
+Now that we've fit these models, let's see how they perform on new data drawn from the same population
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+#| fig.height: 4
+#| fig.align: center
+
+num_new <- 30
+new_observations <- tibble(
+  x = runif(num_new, 0, 10),
+  y = (x - 4)^2 + rnorm(num_new, 0, 5)
+)
+
+point_colors <- c("Training" = "black", "New" = "red")
+
+ggplot() + 
+  geom_point(data = my_data,
+             aes(x = x, y = y,
+                 color = "Training"),
+             size = 3) +
+  geom_point(data = new_observations,
+             aes(x = x, y = y,
+                 color = "New"),
+             size = 3) +
+  geom_line(data = new_data,
+            aes(x = x, y = lin.pred),
+            color = "purple",
+            lwd = 1.25) +
+  scale_color_manual(values = point_colors) +
+  labs(x = "x",
+       y = "y",
+       color = "Obs. Type") +
+  coord_cartesian(ylim = c(-20, 50))
+```
+
+:::
+
+:::{.column width="50%"}
+
+```{r}
+#| fig.height: 4
+#| fig.align: center
+
+ggplot() + 
+  geom_point(data = my_data,
+             aes(x = x, y = y,
+                 color = "Training"),
+             size = 3) + 
+  geom_point(data = new_observations,
+             aes(x = x, y = y,
+                 color = "New"),
+             size = 3) +
+  geom_line(data = new_data,
+            aes(x = x, y = eight.pred),
+            color = "purple",
+            lwd = 1.25) + 
+  scale_color_manual(values = point_colors) +
+  labs(x = "x",
+       y = "y") +
+  coord_cartesian(ylim = c(-20, 50))
+```
+
+:::
+
+::::
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<center>
+
+**Underfit!**
+
+</center>
+
+:::
+
+:::{.column width="50%"}
+
+<center>
+
+**Overfit!**
+
+</center>
+
+:::
+
+::::
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<center>
+
+*bias too high, variance too low*
+
+</center>
+
+:::
+
+:::{.column width="50%"}
+
+<center>
+
+*bias too low, variance to high*
+
+</center>
+
+:::
+
+::::
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<center>
+
+Not flexible enough
+
+</center>
+
+:::
+
+:::{.column width="50%"}
+
+<center>
+
+Too flexible
+
+</center>
+
+:::
+
+::::
+
+## Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem
+
+. . . 
+
+Let's start with a new data set, but I won't tell you what degree association there is between $x$ and $y$
+
+. . . 
+
+```{r}
+num_train <- 75
+num_test <- 25
+total_obs <- num_train + num_test
+
+mystery_data <- tibble(
+  x = runif(total_obs, 0, 100),
+  y = 1e-2*(x - 20)*(x - 60)*(x - 80) + rnorm(total_obs, 0, 200),
+  type = c(rep("train", num_train), rep("test", num_test))
+)
+
+training_data <- mystery_data %>%
+  filter(type == "train")
+
+test_data <- mystery_data %>%
+  filter(type == "test")
+
+training_data %>%
+  ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) + 
+  labs(x = "x",
+       y = "y")
+```
+
+## Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem
+
+. . . 
+
+We'll fit a variety of models
+
++ Straight-line model
++ Second-order (quadratic) model
++ Third-order (cubic) model
++ Fifth-order model
++ Eleventh-order model
+
+. . .
+
+And then we'll measure their performance
+
+## Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem
+
+. . . 
+
+Here they are...
+
+. . .
+
+```{r}
+#First-Order (Straight Line)
+lr1_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr1_rec <- recipe(y ~ x, data = training_data)
+
+lr1_wf <- workflow() %>%
+  add_model(lr1_spec) %>%
+  add_recipe(lr1_rec)
+
+lr1_fit <- lr1_wf %>%
+  fit(training_data)
+
+#Second-Order (Parabola)
+lr2_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr2_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 2, options = list(raw = TRUE))
+
+lr2_wf <- workflow() %>%
+  add_model(lr2_spec) %>%
+  add_recipe(lr2_rec)
+
+lr2_fit <- lr2_wf %>%
+  fit(training_data)
+
+#Third-Order (Cubic)
+lr3_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr3_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 3, options = list(raw = TRUE))
+
+lr3_wf <- workflow() %>%
+  add_model(lr3_spec) %>%
+  add_recipe(lr3_rec)
+
+lr3_fit <- lr3_wf %>%
+  fit(training_data)
+
+#Fifth-Order
+lr4_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr4_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 5, options = list(raw = TRUE))
+
+lr4_wf <- workflow() %>%
+  add_model(lr4_spec) %>%
+  add_recipe(lr4_rec)
+
+lr4_fit <- lr4_wf %>%
+  fit(training_data)
+
+#11th-Order
+lr5_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr5_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 11, options = list(raw = TRUE))
+
+lr5_wf <- workflow() %>%
+  add_model(lr5_spec) %>%
+  add_recipe(lr5_rec)
+
+lr5_fit <- lr5_wf %>%
+  fit(training_data)
+
+plotting_data <- tibble(
+  x = seq(0, 100, length.out = 500)
+)
+
+plotting_data <- lr1_fit %>%
+  augment(plotting_data) %>%
+  rename(StraightLine = .pred)
+plotting_data <- lr2_fit %>%
+  augment(plotting_data) %>%
+  rename(Quadratic = .pred)
+plotting_data <- lr3_fit %>%
+  augment(plotting_data) %>%
+  rename(Cubic = .pred)
+plotting_data <- lr4_fit %>%
+  augment(plotting_data) %>%
+  rename(FifthDegree = .pred)
+plotting_data <- lr5_fit %>%
+  augment(plotting_data) %>%
+  rename(EleventhDegree = .pred)
+
+plotting_data <- plotting_data %>%
+  pivot_longer(-x, names_to = "model", values_to = "prediction") %>%
+  mutate(model = factor(model, levels = c("StraightLine", "Quadratic", "Cubic", "FifthDegree", "EleventhDegree")))
+
+ggplot() + 
+  geom_point(data = training_data,
+             aes(x = x, y = y),
+             size = 3) + 
+  geom_line(data = plotting_data,
+            aes(x = x, y = prediction, 
+                color = model))
+```
+
+## Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem
+
+. . .
+
+Let's examine the *training metrics*
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+#Add Predictions to Training Data
+training_data <- lr1_fit %>%
+  augment(training_data) %>%
+  rename(lr1_pred = .pred)
+training_data <- lr2_fit %>%
+  augment(training_data) %>%
+  rename(lr2_pred = .pred)
+training_data <- lr3_fit %>%
+  augment(training_data) %>%
+  rename(lr3_pred = .pred)
+training_data <- lr4_fit %>%
+  augment(training_data) %>%
+  rename(lr4_pred = .pred)
+training_data <- lr5_fit %>%
+  augment(training_data) %>%
+  rename(lr5_pred = .pred)
+
+#Add Predictions to Test Data
+test_data <- lr1_fit %>%
+  augment(test_data) %>%
+  rename(lr1_pred = .pred)
+test_data <- lr2_fit %>%
+  augment(test_data) %>%
+  rename(lr2_pred = .pred)
+test_data <- lr3_fit %>%
+  augment(test_data) %>%
+  rename(lr3_pred = .pred)
+test_data <- lr4_fit %>%
+  augment(test_data) %>%
+  rename(lr4_pred = .pred)
+test_data <- lr5_fit %>%
+  augment(test_data) %>%
+  rename(lr5_pred = .pred)
+
+my_metrics <- metric_set(rsq, rmse)
+
+train_results <- (training_data %>%
+  my_metrics(y, lr1_pred) %>% 
+  mutate(model = "straight-line",
+         type = "training")) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr2_pred) %>%
+      mutate(model = "quadratic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr3_pred) %>%
+      mutate(model = "cubic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr4_pred) %>%
+      mutate(model = "5th-Order",
+             type = "training")
+  ) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr5_pred) %>%
+      mutate(model = "11th-order",
+             type = "training")
+  ) %>%
+  pivot_wider(id_cols = model, names_from = .metric, values_from = .estimate) %>%
+  mutate(degree = c(1, 2, 3, 5, 11), .after = model)
+
+train_results %>%
+  kable() %>%
+  kable_styling()
+```
+
+:::
+
+:::{.column width="50%"}
+
+```{r}
+#| fig.align: center
+
+train_results %>%
+  ggplot() +
+  geom_line(aes(x = degree, y = rmse),
+            color = "red") + 
+  geom_point(aes(x = degree, y = rmse),
+             shape = "X",
+             color = "red",
+             size = 10) +
+  labs(x = "Degree",
+       y = "RMSE",
+       title = "Flexibility and Training RMSE")
+```
+
+:::
+
+::::
+
+. . .
+
+Performance gets better as flexibility increases!
+
+## Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem
+
+. . .
+
+Let's do the same with the *test metrics*
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+test_results <- (test_data %>%
+  my_metrics(y, lr1_pred) %>% 
+  mutate(model = "straight-line",
+         type = "training")) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr2_pred) %>%
+      mutate(model = "quadratic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr3_pred) %>%
+      mutate(model = "cubic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr4_pred) %>%
+      mutate(model = "5th-Order",
+             type = "training")
+  ) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr5_pred) %>%
+      mutate(model = "11th-order",
+             type = "training")
+  ) %>%
+  pivot_wider(id_cols = model, names_from = .metric, values_from = .estimate) %>%
+  mutate(degree = c(1, 2, 3, 5, 11), .after = model)
+
+test_results %>%
+  kable() %>%
+  kable_styling()
+```
+
+:::
+
+:::{.column width="50%"}
+
+```{r}
+#| fig.align: center
+
+ggplot() +
+  geom_line(data = train_results,
+            aes(x = degree, y = rmse),
+            color = "red") + 
+  geom_point(data = train_results,
+             aes(x = degree, y = rmse),
+             shape = "X",
+             color = "red",
+             size = 10) +
+  geom_line(data = test_results,
+            aes(x = degree, y = rmse),
+            color = "black") + 
+  geom_point(data = test_results,
+             aes(x = degree, y = rmse),
+             shape = "X",
+             color = "black",
+             size = 10) +
+  scale_color_manual(values = c("Training" = "red", "Test" = "black")) +
+  labs(x = "Degree",
+       y = "RMSE",
+       color = "Error Type",
+       title = "Flexibility and RMSE")
+```
+
+:::
+
+::::
+
+. . .
+
+The training and test RMSE values largely agree over the lowest three levels of model flexibility, but...
+
+. . .
+
+Test performance gets worse with more flexibility than third degree!
+
+## Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem
+
+. . .
+
+Here's the code I used to generate our toy dataset...
+
+. . .
+
+```{r}
+#| echo: true
+#| code-line-numbers: "|7"
+
+num_train <- 75
+num_test <- 25
+total_obs <- num_train + num_test
+
+mystery_data <- tibble(
+  x = runif(total_obs, 0, 100),
+  y = 1e-2*(x - 20)*(x - 60)*(x - 80) + rnorm(total_obs, 0, 200),
+  type = c(rep("train", num_train), rep("test", num_test))
+)
+```
+
+. . . 
+
+That's a third-degree association!
+
+. . . 
+
+**Solving the Bias/Variance TradeOff Problem:**
+
+. . .
+
+> We can identify the appropriate level of model flexibility by finding the location of the bend in the *elbow plot* of test performance
+
+## Summary
+
++ Bias and Variance are two competing measures on models
+
+  + Models with *high bias* have *low variance* and are rigid/straight/flat -- they are biased *against* complex associations
+  + Models with *low bias* have *high variance* and are more "wiggly"
+
++ Model *variance* refers to how much our model may change if provided a different training set from the same population
++ Models with *high variance* are *more flexible* and are more likely to *overfit*
++ Models with *low variance* are *less flexible* and are more likely to *underfit*
+
+  + A model is *overfit* if it has learned too much about its *training data* and the model performance doesn't generalize to unseen or new data
+  
+    + A telltale sign is if training performance is much better than test performance
+    
+  + A model is *underfit* if it is not flexible enough to capture the general trend between predictors and response
+  
+    + When training performance and test performance agree (or test performance is better than training performance), the model *may* be underfit
+    
++ We solve the bias/variance trade-off problem by finding the level of flexibility at which **test** performance is best (*the bend in the elbow plot*)
+
+## A Note About Optimal Flexibility
+
+. . .
+
+Remember that greater levels of flexibility are associated with
+
++ a higher likelihood of overfitting
++ greater difficulty in interpretation
+
+. . . 
+
+If the improvements in model performance are small enough that they don't outweigh these risks, we should choose the simpler (*more parsimonious*) model even if it doesn't have the absolute best performance on the unseen test data

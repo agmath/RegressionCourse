@@ -251,11 +251,11 @@ Let's bring back our Linear and Eighth Degree models from the opening slide
 ggplot() + 
   geom_point(data = my_data,
              aes(x = x, y = y),
-             size = 3) + 
+             size = 5) + 
   geom_line(data = new_data,
             aes(x = x, y = lin.pred),
             color = "purple",
-            lwd = 1.25) +
+            lwd = 1.5) +
   labs(x = "x",
        y = "y") +
   coord_cartesian(ylim = c(-20, 50))
@@ -274,11 +274,11 @@ ggplot() +
 ggplot() + 
   geom_point(data = my_data,
              aes(x = x, y = y),
-             size = 3) + 
+             size = 5) + 
   geom_line(data = new_data,
             aes(x = x, y = eight.pred),
             color = "purple",
-            lwd = 1.25) + 
+            lwd = 1.5) + 
   labs(x = "x",
        y = "y") +
   coord_cartesian(ylim = c(-20, 50))
@@ -322,15 +322,15 @@ ggplot() +
   geom_point(data = my_data_ll,
              aes(x = x, y = y,
                  color = type),
-             size = 3) + 
+             size = 5) + 
   geom_line(data = new_data,
             aes(x = x, y = lin.pred),
             color = "purple",
-            lwd = 1.25) +
+            lwd = 1.5) +
     geom_line(data = new_data,
             aes(x = x, y = lin2.pred),
             color = "orange",
-            lwd = 1.25) +
+            lwd = 1.5) +
   scale_color_manual(values = c("red", "black")) +
   labs(x = "x",
        y = "y",
@@ -357,15 +357,15 @@ ggplot() +
   geom_point(data = my_data_ll,
              aes(x = x, y = y,
                  color = type),
-             size = 3) + 
+             size = 5) + 
   geom_line(data = new_data,
             aes(x = x, y = eight.pred),
             color = "purple",
-            lwd = 1.25) +
+            lwd = 1.5) +
     geom_line(data = new_data,
             aes(x = x, y = eight2.pred),
             color = "orange",
-            lwd = 1.25) +
+            lwd = 1.5) +
   scale_color_manual(values = c("red", "black")) +
   labs(x = "x",
        y = "y",
@@ -483,7 +483,7 @@ Let's head back to the linear and eighth degree model from the opening slide aga
 ggplot() + 
   geom_point(data = my_data,
              aes(x = x, y = y),
-             size = 3) + 
+             size = 4) + 
   geom_line(data = new_data,
             aes(x = x, y = lin.pred),
             color = "purple",
@@ -504,7 +504,7 @@ ggplot() +
 ggplot() + 
   geom_point(data = my_data,
              aes(x = x, y = y),
-             size = 3) + 
+             size = 4) + 
   geom_line(data = new_data,
             aes(x = x, y = eight.pred),
             color = "purple",
@@ -542,11 +542,11 @@ ggplot() +
   geom_point(data = my_data,
              aes(x = x, y = y,
                  color = "Training"),
-             size = 3) +
+             size = 4) +
   geom_point(data = new_observations,
              aes(x = x, y = y,
                  color = "New"),
-             size = 3) +
+             size = 4) +
   geom_line(data = new_data,
             aes(x = x, y = lin.pred),
             color = "purple",
@@ -570,11 +570,11 @@ ggplot() +
   geom_point(data = my_data,
              aes(x = x, y = y,
                  color = "Training"),
-             size = 3) + 
+             size = 4) + 
   geom_point(data = new_observations,
              aes(x = x, y = y,
                  color = "New"),
-             size = 3) +
+             size = 4) +
   geom_line(data = new_data,
             aes(x = x, y = eight.pred),
             color = "purple",
@@ -929,7 +929,7 @@ train_results %>%
              size = 10) +
   labs(x = "Degree",
        y = "RMSE",
-       title = "Flexibility and Training RMSE")
+       title = "Flexibility and Training RMSE (Elbow Plot)")
 ```
 
 :::
@@ -1017,7 +1017,7 @@ ggplot() +
   labs(x = "Degree",
        y = "RMSE",
        color = "Error Type",
-       title = "Flexibility and RMSE")
+       title = "Flexibility and RMSE (Elbow Plot)")
 ```
 
 :::

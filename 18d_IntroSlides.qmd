@@ -1030,7 +1030,7 @@ The training and test RMSE values largely agree over the lowest three levels of 
 
 . . .
 
-Test performance gets worse with more flexibility than third degree!
+Test performance gets worse with additional flexibility beyond third degree!
 
 ## Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem
 
@@ -1050,7 +1050,7 @@ total_obs <- num_train + num_test
 
 mystery_data <- tibble(
   x = runif(total_obs, 0, 100),
-  y = 1e-2*(x - 20)*(x - 60)*(x - 80) + rnorm(total_obs, 0, 200),
+  y = 0.01*(x - 20)*(x - 60)*(x - 80) + rnorm(total_obs, 0, 200),
   type = c(rep("train", num_train), rep("test", num_test))
 )
 ```
@@ -1080,7 +1080,7 @@ That's a third-degree association!
 
   + A model is *overfit* if it has learned too much about its *training data* and the model performance doesn't generalize to unseen or new data
   
-    + A telltale sign is if training performance is much better than test performance
+    + A telltale sign is if training performance is *much* better than test performance
     
   + A model is *underfit* if it is not flexible enough to capture the general trend between predictors and response
   

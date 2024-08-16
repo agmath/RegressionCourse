@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-15">
+  <meta name="dcterms.date" content="2024-08-16">
   <title>The Bias/Variance TradeOff</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 15, 2024</p>
+  <p class="date">August 16, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -930,7 +930,7 @@ code.sourceCode {
 <p>The training and test RMSE values largely agree over the lowest three levels of model flexibility, but…</p>
 </div>
 <div class="fragment">
-<p>Test performance gets worse with more flexibility than third degree!</p>
+<p>Test performance gets worse with additional flexibility beyond third degree!</p>
 </div>
 </section>
 <section id="training-error-test-error-and-solving-the-biasvariance-tradeoff-problem-5" class="slide level2">
@@ -946,7 +946,7 @@ code.sourceCode {
 <span id="cb1-4"><a href=""></a></span>
 <span id="cb1-5"><a href=""></a>mystery_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
 <span id="cb1-6"><a href=""></a>  <span class="at">x =</span> <span class="fu">runif</span>(total_obs, <span class="dv">0</span>, <span class="dv">100</span>),</span>
-<span id="cb1-7"><a href=""></a>  <span class="at">y =</span> <span class="fl">1e-2</span><span class="sc">*</span>(x <span class="sc">-</span> <span class="dv">20</span>)<span class="sc">*</span>(x <span class="sc">-</span> <span class="dv">60</span>)<span class="sc">*</span>(x <span class="sc">-</span> <span class="dv">80</span>) <span class="sc">+</span> <span class="fu">rnorm</span>(total_obs, <span class="dv">0</span>, <span class="dv">200</span>),</span>
+<span id="cb1-7"><a href=""></a>  <span class="at">y =</span> <span class="fl">0.01</span><span class="sc">*</span>(x <span class="sc">-</span> <span class="dv">20</span>)<span class="sc">*</span>(x <span class="sc">-</span> <span class="dv">60</span>)<span class="sc">*</span>(x <span class="sc">-</span> <span class="dv">80</span>) <span class="sc">+</span> <span class="fu">rnorm</span>(total_obs, <span class="dv">0</span>, <span class="dv">200</span>),</span>
 <span id="cb1-8"><a href=""></a>  <span class="at">type =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"train"</span>, num_train), <span class="fu">rep</span>(<span class="st">"test"</span>, num_test))</span>
 <span id="cb1-9"><a href=""></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -977,7 +977,7 @@ code.sourceCode {
 <ul>
 <li class="fragment"><p>A model is <em>overfit</em> if it has learned too much about its <em>training data</em> and the model performance doesn’t generalize to unseen or new data</p>
 <ul>
-<li class="fragment">A telltale sign is if training performance is much better than test performance</li>
+<li class="fragment">A telltale sign is if training performance is <em>much</em> better than test performance</li>
 </ul></li>
 <li class="fragment"><p>A model is <em>underfit</em> if it is not flexible enough to capture the general trend between predictors and response</p>
 <ul>

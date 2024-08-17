@@ -278,7 +278,7 @@ We don't want any of our predictors to be artificially advantaged or disadvantag
 
 . . .
 
-**Standard Scaling:** Converts observed measurements into standard deviations ($z$-scores) via $\displaystyle{\frac{x - \text{mean}\left(x\right)}{{\text{sd}\left(x\right)}}}$
+**Standard Scaling:** Converts observed measurements into standard deviations ($z$-scores) via $\displaystyle{\frac{x - \text{mean}\left(x\right)}{\text{sd}\left(x\right)}}$
 
   + We include `step_normalize()` in a *recipe* to utilize standard scaling
 

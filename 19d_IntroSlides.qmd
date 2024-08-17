@@ -1,0 +1,1101 @@
+---
+title: "Model Performance Expectations: Cross-Validation"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(patchwork)
+library(kableExtra)
+library(memer)
+library(marginaleffects)
+tidymodels_prefer()
+
+penguins <- palmerpenguins::penguins
+
+penguins <- penguins %>%
+  mutate(flipper_length_mm = as.numeric(flipper_length_mm),
+         body_mass_g = as.numeric(body_mass_g))
+
+set.seed(123)
+penguin_splits <- initial_split(penguins)
+penguins_train <- training(penguin_splits)
+penguins_test <- testing(penguin_splits)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+options(scipen = 999)
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 18))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+```
+
+## Reminders from Last Time
+
+```{r}
+set.seed(345)
+num_train <- 75
+num_test <- 25
+total_obs <- num_train + num_test
+
+mystery_data <- tibble(
+  x = runif(total_obs, 0, 100),
+  y = 1e-2*(x - 20)*(x - 60)*(x - 80) + rnorm(total_obs, 0, 200),
+  type = c(rep("train", num_train), rep("test", num_test))
+)
+
+training_data <- mystery_data %>%
+  filter(type == "train")
+
+test_data <- mystery_data %>%
+  filter(type == "test")
+
+training_data %>%
+  ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) + 
+  labs(x = "x",
+       y = "y")
+```
+
+## Reminders from Last Time
+
+```{r}
+#First-Order (Straight Line)
+lr1_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr1_rec <- recipe(y ~ x, data = training_data)
+
+lr1_wf <- workflow() %>%
+  add_model(lr1_spec) %>%
+  add_recipe(lr1_rec)
+
+lr1_fit <- lr1_wf %>%
+  fit(training_data)
+
+#Second-Order (Parabola)
+lr2_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr2_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 2, options = list(raw = TRUE))
+
+lr2_wf <- workflow() %>%
+  add_model(lr2_spec) %>%
+  add_recipe(lr2_rec)
+
+lr2_fit <- lr2_wf %>%
+  fit(training_data)
+
+#Third-Order (Cubic)
+lr3_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr3_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 3, options = list(raw = TRUE))
+
+lr3_wf <- workflow() %>%
+  add_model(lr3_spec) %>%
+  add_recipe(lr3_rec)
+
+lr3_fit <- lr3_wf %>%
+  fit(training_data)
+
+#Fifth-Order
+lr4_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr4_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 5, options = list(raw = TRUE))
+
+lr4_wf <- workflow() %>%
+  add_model(lr4_spec) %>%
+  add_recipe(lr4_rec)
+
+lr4_fit <- lr4_wf %>%
+  fit(training_data)
+
+#11th-Order
+lr5_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr5_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 11, options = list(raw = TRUE))
+
+lr5_wf <- workflow() %>%
+  add_model(lr5_spec) %>%
+  add_recipe(lr5_rec)
+
+lr5_fit <- lr5_wf %>%
+  fit(training_data)
+
+plotting_data <- tibble(
+  x = seq(0, 100, length.out = 500)
+)
+
+plotting_data <- lr1_fit %>%
+  augment(plotting_data) %>%
+  rename(StraightLine = .pred)
+plotting_data <- lr2_fit %>%
+  augment(plotting_data) %>%
+  rename(Quadratic = .pred)
+plotting_data <- lr3_fit %>%
+  augment(plotting_data) %>%
+  rename(Cubic = .pred)
+plotting_data <- lr4_fit %>%
+  augment(plotting_data) %>%
+  rename(FifthDegree = .pred)
+plotting_data <- lr5_fit %>%
+  augment(plotting_data) %>%
+  rename(EleventhDegree = .pred)
+
+plotting_data <- plotting_data %>%
+  pivot_longer(-x, names_to = "model", values_to = "prediction") %>%
+  mutate(model = factor(model, levels = c("StraightLine", "Quadratic", "Cubic", "FifthDegree", "EleventhDegree")))
+
+ggplot() + 
+  geom_point(data = training_data,
+             aes(x = x, y = y),
+             size = 3) + 
+  geom_line(data = plotting_data,
+            aes(x = x, y = prediction, 
+                color = model))
+```
+
+## Reminders from Last time
+
+```{r}
+#Add Predictions to Training Data
+training_data <- lr1_fit %>%
+  augment(training_data) %>%
+  rename(lr1_pred = .pred)
+training_data <- lr2_fit %>%
+  augment(training_data) %>%
+  rename(lr2_pred = .pred)
+training_data <- lr3_fit %>%
+  augment(training_data) %>%
+  rename(lr3_pred = .pred)
+training_data <- lr4_fit %>%
+  augment(training_data) %>%
+  rename(lr4_pred = .pred)
+training_data <- lr5_fit %>%
+  augment(training_data) %>%
+  rename(lr5_pred = .pred)
+
+#Add Predictions to Test Data
+test_data <- lr1_fit %>%
+  augment(test_data) %>%
+  rename(lr1_pred = .pred)
+test_data <- lr2_fit %>%
+  augment(test_data) %>%
+  rename(lr2_pred = .pred)
+test_data <- lr3_fit %>%
+  augment(test_data) %>%
+  rename(lr3_pred = .pred)
+test_data <- lr4_fit %>%
+  augment(test_data) %>%
+  rename(lr4_pred = .pred)
+test_data <- lr5_fit %>%
+  augment(test_data) %>%
+  rename(lr5_pred = .pred)
+
+my_metrics <- metric_set(rsq, rmse)
+
+train_results <- (training_data %>%
+  my_metrics(y, lr1_pred) %>% 
+  mutate(model = "straight-line",
+         type = "training")) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr2_pred) %>%
+      mutate(model = "quadratic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr3_pred) %>%
+      mutate(model = "cubic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr4_pred) %>%
+      mutate(model = "5th-Order",
+             type = "training")
+  ) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr5_pred) %>%
+      mutate(model = "11th-order",
+             type = "training")
+  ) %>%
+  pivot_wider(id_cols = model, names_from = .metric, values_from = .estimate) %>%
+  mutate(degree = c(1, 2, 3, 5, 11), .after = model)
+
+test_results <- (test_data %>%
+  my_metrics(y, lr1_pred) %>% 
+  mutate(model = "straight-line",
+         type = "training")) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr2_pred) %>%
+      mutate(model = "quadratic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr3_pred) %>%
+      mutate(model = "cubic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr4_pred) %>%
+      mutate(model = "5th-Order",
+             type = "training")
+  ) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr5_pred) %>%
+      mutate(model = "11th-order",
+             type = "training")
+  ) %>%
+  pivot_wider(id_cols = model, names_from = .metric, values_from = .estimate) %>%
+  mutate(degree = c(1, 2, 3, 5, 11), .after = model)
+
+ggplot() +
+  geom_line(data = train_results,
+            aes(x = degree, y = rmse),
+            color = "red") + 
+  geom_point(data = train_results,
+             aes(x = degree, y = rmse),
+             shape = "X",
+             color = "red",
+             size = 10) +
+  geom_line(data = test_results,
+            aes(x = degree, y = rmse),
+            color = "black") + 
+  geom_point(data = test_results,
+             aes(x = degree, y = rmse),
+             shape = "X",
+             color = "black",
+             size = 10) +
+  scale_color_manual(values = c("Training" = "red", "Test" = "black")) +
+  labs(x = "Degree",
+       y = "RMSE",
+       color = "Error Type",
+       title = "Flexibility and RMSE (Elbow Plot)")
+```
+
+> The appropriate level of flexibility is third-degree, since this is where test error "bottoms out"
+
+## Reminders from Last Time
+
+```{r}
+test_error <- test_results %>% arrange(rmse) %>% slice(1) %>% pull(rmse)
+
+train_results %>%
+  rename(training_rsq = rsq,
+         training_rmse = rmse) %>%
+  bind_cols(
+    test_results %>%
+      select(test_rsq = rsq,
+             test_rmse = rmse)
+  ) %>%
+  mutate(model = as.character(model)) %>%
+  arrange(test_rmse) %>%
+  kable() %>%
+  kable_styling()
+```
+
+> We see that the test RMSE for our third degree model is `r round(test_error, 2)`, so we expect our model to make accurate predictions to within about $\pm$ `r round(2*test_error, 2)`
+
+## Motivation
+
+. . . 
+
+Everything seems great!
+
++ We've got a method for solving the bias / variance trade-off problem which will identify a best model from a collection of models of varying flexibility for us
++ We can use that best model's test error to approximate expectations for how well the model will perform in the future
+
+. . . 
+
+::::{.columns}
+
+:::{.column widht="50%"}
+
+<div class="tenor-gif-embed" data-postid="5866217" data-share-method="host" data-aspect-ratio="1.33333" data-width="100%"><a href="https://tenor.com/view/futurama-bender-catch-theres-always-a-catch-gif-5866217">Futurama Bender GIF</a>from <a href="https://tenor.com/search/futurama-gifs">Futurama GIFs</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+
+:::
+
+:::{.column widht="50%"}
+
+<center>
+
+<font size="120pt">...except...</font>
+
+</center>
+
+:::
+
+::::
+
+## Motivation
+
+**With a New Training Set:**
+
+
+```{r}
+set.seed(NULL)
+num_train <- 75
+num_test <- 25
+total_obs <- num_train + num_test
+
+mystery_data <- tibble(
+  x = runif(total_obs, 0, 100),
+  y = 1e-2*(x - 20)*(x - 60)*(x - 80) + rnorm(total_obs, 0, 200),
+  type = c(rep("train", num_train), rep("test", num_test))
+)
+
+training_data <- mystery_data %>%
+  filter(type == "train")
+
+test_data <- mystery_data %>%
+  filter(type == "test")
+
+#First-Order (Straight Line)
+lr1_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr1_rec <- recipe(y ~ x, data = training_data)
+
+lr1_wf <- workflow() %>%
+  add_model(lr1_spec) %>%
+  add_recipe(lr1_rec)
+
+lr1_fit <- lr1_wf %>%
+  fit(training_data)
+
+#Second-Order (Parabola)
+lr2_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr2_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 2, options = list(raw = TRUE))
+
+lr2_wf <- workflow() %>%
+  add_model(lr2_spec) %>%
+  add_recipe(lr2_rec)
+
+lr2_fit <- lr2_wf %>%
+  fit(training_data)
+
+#Third-Order (Cubic)
+lr3_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr3_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 3, options = list(raw = TRUE))
+
+lr3_wf <- workflow() %>%
+  add_model(lr3_spec) %>%
+  add_recipe(lr3_rec)
+
+lr3_fit <- lr3_wf %>%
+  fit(training_data)
+
+#Fifth-Order
+lr4_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr4_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 5, options = list(raw = TRUE))
+
+lr4_wf <- workflow() %>%
+  add_model(lr4_spec) %>%
+  add_recipe(lr4_rec)
+
+lr4_fit <- lr4_wf %>%
+  fit(training_data)
+
+#11th-Order
+lr5_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr5_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 11, options = list(raw = TRUE))
+
+lr5_wf <- workflow() %>%
+  add_model(lr5_spec) %>%
+  add_recipe(lr5_rec)
+
+lr5_fit <- lr5_wf %>%
+  fit(training_data)
+
+#Add Predictions to Training Data
+training_data <- lr1_fit %>%
+  augment(training_data) %>%
+  rename(lr1_pred = .pred)
+training_data <- lr2_fit %>%
+  augment(training_data) %>%
+  rename(lr2_pred = .pred)
+training_data <- lr3_fit %>%
+  augment(training_data) %>%
+  rename(lr3_pred = .pred)
+training_data <- lr4_fit %>%
+  augment(training_data) %>%
+  rename(lr4_pred = .pred)
+training_data <- lr5_fit %>%
+  augment(training_data) %>%
+  rename(lr5_pred = .pred)
+
+#Add Predictions to Test Data
+test_data <- lr1_fit %>%
+  augment(test_data) %>%
+  rename(lr1_pred = .pred)
+test_data <- lr2_fit %>%
+  augment(test_data) %>%
+  rename(lr2_pred = .pred)
+test_data <- lr3_fit %>%
+  augment(test_data) %>%
+  rename(lr3_pred = .pred)
+test_data <- lr4_fit %>%
+  augment(test_data) %>%
+  rename(lr4_pred = .pred)
+test_data <- lr5_fit %>%
+  augment(test_data) %>%
+  rename(lr5_pred = .pred)
+
+my_metrics <- metric_set(rsq, rmse)
+
+train_results <- (training_data %>%
+  my_metrics(y, lr1_pred) %>% 
+  mutate(model = "straight-line",
+         type = "training")) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr2_pred) %>%
+      mutate(model = "quadratic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr3_pred) %>%
+      mutate(model = "cubic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr4_pred) %>%
+      mutate(model = "5th-Order",
+             type = "training")
+  ) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr5_pred) %>%
+      mutate(model = "11th-order",
+             type = "training")
+  ) %>%
+  pivot_wider(id_cols = model, names_from = .metric, values_from = .estimate) %>%
+  mutate(degree = c(1, 2, 3, 5, 11), .after = model)
+
+test_results <- (test_data %>%
+  my_metrics(y, lr1_pred) %>% 
+  mutate(model = "straight-line",
+         type = "training")) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr2_pred) %>%
+      mutate(model = "quadratic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr3_pred) %>%
+      mutate(model = "cubic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr4_pred) %>%
+      mutate(model = "5th-Order",
+             type = "training")
+  ) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr5_pred) %>%
+      mutate(model = "11th-order",
+             type = "training")
+  ) %>%
+  pivot_wider(id_cols = model, names_from = .metric, values_from = .estimate) %>%
+  mutate(degree = c(1, 2, 3, 5, 11), .after = model)
+
+test_error <- test_results %>% arrange(rmse) %>% slice(1) %>% pull(rmse)
+
+train_results %>%
+  rename(training_rsq = rsq,
+         training_rmse = rmse) %>%
+  bind_cols(
+    test_results %>%
+      select(test_rsq = rsq,
+             test_rmse = rmse)
+  ) %>%
+  arrange(test_rmse) %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+**And Another One:**
+
+
+```{r}
+set.seed(NULL)
+num_train <- 75
+num_test <- 25
+total_obs <- num_train + num_test
+
+mystery_data <- tibble(
+  x = runif(total_obs, 0, 100),
+  y = 1e-2*(x - 20)*(x - 60)*(x - 80) + rnorm(total_obs, 0, 200),
+  type = c(rep("train", num_train), rep("test", num_test))
+)
+
+training_data <- mystery_data %>%
+  filter(type == "train")
+
+test_data <- mystery_data %>%
+  filter(type == "test")
+
+#First-Order (Straight Line)
+lr1_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr1_rec <- recipe(y ~ x, data = training_data)
+
+lr1_wf <- workflow() %>%
+  add_model(lr1_spec) %>%
+  add_recipe(lr1_rec)
+
+lr1_fit <- lr1_wf %>%
+  fit(training_data)
+
+#Second-Order (Parabola)
+lr2_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr2_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 2, options = list(raw = TRUE))
+
+lr2_wf <- workflow() %>%
+  add_model(lr2_spec) %>%
+  add_recipe(lr2_rec)
+
+lr2_fit <- lr2_wf %>%
+  fit(training_data)
+
+#Third-Order (Cubic)
+lr3_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr3_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 3, options = list(raw = TRUE))
+
+lr3_wf <- workflow() %>%
+  add_model(lr3_spec) %>%
+  add_recipe(lr3_rec)
+
+lr3_fit <- lr3_wf %>%
+  fit(training_data)
+
+#Fifth-Order
+lr4_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr4_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 5, options = list(raw = TRUE))
+
+lr4_wf <- workflow() %>%
+  add_model(lr4_spec) %>%
+  add_recipe(lr4_rec)
+
+lr4_fit <- lr4_wf %>%
+  fit(training_data)
+
+#11th-Order
+lr5_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr5_rec <- recipe(y ~ x, data = training_data) %>%
+  step_poly(x, degree = 11, options = list(raw = TRUE))
+
+lr5_wf <- workflow() %>%
+  add_model(lr5_spec) %>%
+  add_recipe(lr5_rec)
+
+lr5_fit <- lr5_wf %>%
+  fit(training_data)
+
+#Add Predictions to Training Data
+training_data <- lr1_fit %>%
+  augment(training_data) %>%
+  rename(lr1_pred = .pred)
+training_data <- lr2_fit %>%
+  augment(training_data) %>%
+  rename(lr2_pred = .pred)
+training_data <- lr3_fit %>%
+  augment(training_data) %>%
+  rename(lr3_pred = .pred)
+training_data <- lr4_fit %>%
+  augment(training_data) %>%
+  rename(lr4_pred = .pred)
+training_data <- lr5_fit %>%
+  augment(training_data) %>%
+  rename(lr5_pred = .pred)
+
+#Add Predictions to Test Data
+test_data <- lr1_fit %>%
+  augment(test_data) %>%
+  rename(lr1_pred = .pred)
+test_data <- lr2_fit %>%
+  augment(test_data) %>%
+  rename(lr2_pred = .pred)
+test_data <- lr3_fit %>%
+  augment(test_data) %>%
+  rename(lr3_pred = .pred)
+test_data <- lr4_fit %>%
+  augment(test_data) %>%
+  rename(lr4_pred = .pred)
+test_data <- lr5_fit %>%
+  augment(test_data) %>%
+  rename(lr5_pred = .pred)
+
+my_metrics <- metric_set(rsq, rmse)
+
+train_results <- (training_data %>%
+  my_metrics(y, lr1_pred) %>% 
+  mutate(model = "straight-line",
+         type = "training")) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr2_pred) %>%
+      mutate(model = "quadratic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr3_pred) %>%
+      mutate(model = "cubic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr4_pred) %>%
+      mutate(model = "5th-Order",
+             type = "training")
+  ) %>%
+  bind_rows(
+    training_data %>%
+      my_metrics(y, lr5_pred) %>%
+      mutate(model = "11th-order",
+             type = "training")
+  ) %>%
+  pivot_wider(id_cols = model, names_from = .metric, values_from = .estimate) %>%
+  mutate(degree = c(1, 2, 3, 5, 11), .after = model)
+
+test_results <- (test_data %>%
+  my_metrics(y, lr1_pred) %>% 
+  mutate(model = "straight-line",
+         type = "training")) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr2_pred) %>%
+      mutate(model = "quadratic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr3_pred) %>%
+      mutate(model = "cubic",
+             type = "training")
+  ) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr4_pred) %>%
+      mutate(model = "5th-Order",
+             type = "training")
+  ) %>%
+  bind_rows(
+    test_data %>%
+      my_metrics(y, lr5_pred) %>%
+      mutate(model = "11th-order",
+             type = "training")
+  ) %>%
+  pivot_wider(id_cols = model, names_from = .metric, values_from = .estimate) %>%
+  mutate(degree = c(1, 2, 3, 5, 11), .after = model)
+
+test_error <- test_results %>% arrange(rmse) %>% slice(1) %>% pull(rmse)
+
+train_results %>%
+  rename(training_rsq = rsq,
+         training_rmse = rmse) %>%
+  bind_cols(
+    test_results %>%
+      select(test_rsq = rsq,
+             test_rmse = rmse)
+  ) %>%
+  arrange(test_rmse) %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Our Method is Unstable!
+
+. . .
+
+```{r}
+#| fig.align: center
+
+set.seed(345)
+num_points <- 100
+
+toy_data <- tibble(
+  x = runif(num_points, 0, 100),
+  y = 1e-2*(x - 20)*(x - 60)*(x - 80) + rnorm(num_points, 0, 200)
+)
+
+#ggplot(toy_data) + 
+#  geom_point(aes(x = x, y = y)) +
+#  labs(title = "Toy Data")
+my_order <- c(1, 2, 3, 5)
+
+collected_metrics_df <- tibble(.metric = NA, 
+                               .estimator = NA, 
+                               .estimate = NA,
+                               flexibility = NA,
+                               trial = NA,
+                               type = NA)
+
+for(i in 1:10){
+  toy_splits <- initial_split(toy_data)
+  toy_train <- training(toy_splits)
+  toy_test <- testing(toy_splits)
+  
+  for(deg in my_order){
+    lr_spec <- linear_reg() %>%
+      set_engine("lm")
+    lr_rec <- recipe(y ~ x, data = toy_train) %>%
+      step_poly(x, degree = deg, options = list(raw = TRUE))
+    lr_wf <- workflow() %>%
+      add_model(lr_spec) %>%
+      add_recipe(lr_rec)
+    lr_fit <- lr_wf %>%
+      fit(toy_train)
+    pred_col_name <- paste0("degree_", deg, "_trial_", i)
+    toy_train <- lr_fit %>%
+      augment(toy_train) %>%
+      rename(!!pred_col_name := .pred)
+    toy_test <- lr_fit %>%
+      augment(toy_test) %>%
+      rename(!!pred_col_name := .pred)
+    my_metrics <- metric_set(rsq, rmse)
+    collected_metrics_df <- collected_metrics_df %>%
+      bind_rows(
+        (toy_train %>% 
+           my_metrics(y, !!pred_col_name) %>%
+           mutate(flexibility = deg,
+                  trial = i,
+                  type = "training")
+        )
+      ) %>%
+      bind_rows(
+        (toy_test %>% 
+           my_metrics(y, !!pred_col_name) %>%
+           mutate(flexibility = deg,
+                  trial = i,
+                  type = "test")
+        )
+      )
+  }
+}
+
+collected_metrics_df %>%
+  filter(!is.na(.metric)) %>%
+  pivot_wider(id_cols = c(flexibility, trial, type), 
+              names_from = .metric, values_from = .estimate) %>%
+  ggplot() + 
+  geom_point(aes(x = flexibility, y = rmse, shape = type, color = type),
+             size = 3) +
+  geom_line(aes(x = flexibility, y = rmse, color = type)) +
+  labs(x = "Flexibility (Degree)",
+       y = "RMSE",
+       color = "Error Type",
+       shape = "Error Type") +
+  scale_color_manual(values = c("test" = "black", "training" = "red")) +
+  facet_wrap(~trial)
+```
+
+. . .
+
+> We fairly reliably identify the appropriate level of flexibility
+
+## Our Method is Unstable!
+
+. . .
+
+```{r}
+collected_metrics_df %>%
+  filter(!is.na(.metric),
+         flexibility == 3,
+         type == "test") %>%
+  pivot_wider(id_cols = c(flexibility, trial, type), 
+              names_from = .metric, values_from = .estimate) %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . .
+
+> ...but those performance estimates are wild!
+
+. . .
+
+Depending on the test set, we could be claiming model predictions accurate to within $\pm 299$ or $\pm 492.68$ -- that's a big difference
+
+## Okay, So What's Going On
+
+. . .
+
+We thought we were doing the right thing with our training/test/validation set approach all along, but
+
+. . .
+
+this approach left us very vulnerable to the observations which, by chance, fell into our training and validation/test sets
+
+. . .
+
+Different training data can lead to different models (beyond even just differences in estimated coefficients) and result in quite different performance expectations
+
+. . .
+
+We need a framework that leaves us less susceptible to random chance
+
+## Cross-Validation
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+![](cv_meme.jpg)
+
+:::
+
+:::{.column width="50%"}
+
+1. Randomly split available data into *training* and *validation* sets
+2. Randomly split the training set into $k$ *folds*
+3. For each individual fold...
+
+    + Keep that fold as a *hold-out* set
+    + Train your model on all remaining folds
+    + Assess the resulting model on the *hold-out*
+    + Store the resulting performance metric
+
+4. Average your $k$ performance estimates together
+
+:::
+
+::::
+
+. . .
+
+> The resulting estimate is our *cross-validation performance estimate*, which is **much** more stable than a performance estimate from a single model on a single hold-out set
+
+## About Cross-Validation
+
+. . .
+
+The following observations are worth calling out
+
++ Even when you are using cross-validation, you should initially split your data into a *training* and final *testing* set
+
+  + That testing set will remain hidden and untouched as a final check before you send a model into "production"
+  + You'll no longer need separate *testing* and *validation* sets though
+  
++ Common choices for $k$ in *$k$-fold cross-validation* are $k = 5$ and $k = 10$
++ A special case of $k$-fold cross-validation sets $k = n$ so that each observation sits in its own *fold* -- this is referred to as *leave one out cross-validation* (LOOCV)
++ Since we are training and assessing multiple models, *cross-validation* is a more computationally intensive approach than we've taken thus far
+
+  + More *folds* means more model fits and assessments, so more compute time
+
++ *Cross-validation* results in performance estimates, but does not result in a fitted model!
+
+  + For each fold, prior to fitting our model, the model fitted prior is obliterated
+  + **Important Restatement:** *Cross-validation* assesses models; it does not fit them
+  
+## Implementing *Cross-Validation* in `{tidymodels}`
+
+. . .
+
+Largely, things will remain the same -- we'll start with a *model specification*, then declare a *recipe*, and package the model and recipe together into a *workflow*
+
+. . .
+
+There will be three main differences though
+
+1. After we split our data into *training* and *test* sets, we'll split our training set into folds using the `vfold_cv()` function
+
+2. Rather than using the `fit()` function to *fit* our model to the training data, we'll use `fit_resamples()` to fit and assess along each fold (resample)
+
+3. The result of `fit_resamples()` will be a set of performance metrics calculated on each fold -- we'll obtain these using the `collect_metrics()` function
+
+. . .
+
+Let's see this in action with our familiar penguins data
+
+## Implementing *Cross-Validation* in `{tidymodels}`
+
+. . .
+
+We'll build a fairly complex model that includes all of the available predictors
+
+. . .
+
+It also includes interactions between both `species` and `island` with flipper length and bill length as well as between bill length and bill depth
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "|1-3|5|7-8|10-14|10|11-12|13|14|16-18|20-21"
+
+penguins_split <- initial_split(penguins, prop = 0.9)
+penguins_train <- training(penguins_split)
+penguins_test <- testing(penguins_split)
+
+penguins_folds <- vfold_cv(penguins_train)
+
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr_rec <- recipe(body_mass_g ~ ., data = penguins_train) %>%
+  step_dummy(species) %>%
+  step_dummy(island) %>%
+  step_interact(~ starts_with("species"):contains("length")) %>%
+  step_interact(~ bill_length_mm:bill_depth_mm)
+
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_results <- lr_wf %>%
+  fit_resamples(penguins_folds) 
+```
+
+## Implementing *Cross-Validation* in `{tidymodels}`
+
+. . .
+
+Now that we've run cross-validation, it's time to collect the results!
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_results %>%
+  collect_metrics()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+cv_rmse <- lr_results %>%
+  collect_metrics() %>%
+  filter(.metric == "rmse") %>%
+  pull(mean)
+
+cv_rmse_sd <- lr_results %>%
+  collect_metrics() %>%
+  filter(.metric == "rmse") %>%
+  pull(std_err)
+
+lr_results %>%
+  collect_metrics() %>%
+  kable() %>%
+  kable_styling()
+```
+
+> We see that the *cross-validation* RMSE is about `r round(cv_rmse, 2)`, with a standard error of about `r round(cv_rmse_sd, 2)`, so that we are confident that our model will predict penguin body masses accurate to within a conservative estimate of about $\pm 2\cdot\left(\right.$ `r round(cv_rmse, 2)` $\pm 2\cdot\left(\right.$ `r round(cv_rmse_sd, 2)`$\left.\left.\right)\right)$g, which is the same as $\pm$ `r round(2*(cv_rmse + (2*cv_rmse_sd)), 2)`g
+
+## Implementing *Cross-Validation* in `{tidymodels}`
+
+. . .
+
+We can also see the results on each fold -- I'll do a bit of extra manipulation (not shown here) so that we can see both RMSE and $R^2$ metrics side-by-side
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_results %>%
+  collect_metrics(summarize = FALSE)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_results %>%
+  collect_metrics(summarize = FALSE) %>%
+  pivot_wider(id_cols = id, names_from = .metric, values_from = .estimate) %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Summary
+
++ The *training*/*test*/*validation* set approach leaves us too vulnerable to randomness
+  
+  + Both our model and performance metrics are extremely sensitive to our training and test/validation data
+
++ We split our training data into *folds*, using each fold once as a *hold-out* set, training a model on the remaining folds, and assessing the model on the hold-out fold to obtain multiple models and multiple performance assessments
+
+  + Since we have multiple model assessments, some may be on *"hard" tests* and others may be on *"easy" tests* so that the average performance is a reliable estimate
+  + In taking this cross-validation approach, we no longer need separate *test* and *validation* sets
+  + We can include more of our data as part of the *training* set, which means we get to *learn* from more data as well
+
++ In `{tidymodels}`, we 
+
+  1. use `vfold_cv()` on our *training* data to create cross-validation folds
+  2. use `fit_resamples()` on our folds, instead of `fit()` on the training data, to run the cross-validation procedure and obtain performance metrics on each fold
+  3. use `collect_metrics()` to access the cross-validation performance measures
+
+## Let's Do This!
+
+Let's try out cross-validation on the `ames` housing data that we were using earlier this semester
+
+

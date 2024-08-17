@@ -296,7 +296,7 @@ Regularization
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glmnet"</span>)</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>reg_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(Sale_Price <span class="sc">~</span> ., <span class="at">data =</span> ames_train) <span class="sc">%&gt;%</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">%&gt;%</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_impute_knn</span>(<span class="fu">all_predictors</span>()) <span class="sc">%&gt;%</span></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">%&gt;%</span></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_other</span>(<span class="fu">all_nominal_predictors</span>()) <span class="sc">%&gt;%</span></span>
@@ -329,17 +329,17 @@ Regularization
 <tr class="odd">
 <td style="text-align: left;">rmse</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.3916875</td>
+<td style="text-align: right;">3.163600e+04</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">0.0447422</td>
+<td style="text-align: right;">3258.9443024</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">rsq</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.8484653</td>
+<td style="text-align: right;">8.477678e-01</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">0.0206100</td>
+<td style="text-align: right;">0.0205856</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 </tbody>
@@ -367,70 +367,70 @@ Regularization
 <td style="text-align: left;">Fold1</td>
 <td style="text-align: left;">rmse</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.5189227</td>
+<td style="text-align: right;">4.023294e+04</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold1</td>
 <td style="text-align: left;">rsq</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.8116721</td>
+<td style="text-align: right;">8.121570e-01</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold2</td>
 <td style="text-align: left;">rmse</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.4013395</td>
+<td style="text-align: right;">3.227439e+04</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold2</td>
 <td style="text-align: left;">rsq</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.8502987</td>
+<td style="text-align: right;">8.499513e-01</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold3</td>
 <td style="text-align: left;">rmse</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.2862786</td>
+<td style="text-align: right;">2.373823e+04</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold3</td>
 <td style="text-align: left;">rsq</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.8970876</td>
+<td style="text-align: right;">8.965585e-01</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold4</td>
 <td style="text-align: left;">rmse</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.4538870</td>
+<td style="text-align: right;">3.708400e+04</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold4</td>
 <td style="text-align: left;">rsq</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.7932557</td>
+<td style="text-align: right;">7.915890e-01</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold5</td>
 <td style="text-align: left;">rmse</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.2980094</td>
+<td style="text-align: right;">2.485042e+04</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold5</td>
 <td style="text-align: left;">rsq</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.8900122</td>
+<td style="text-align: right;">8.885830e-01</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 </tbody>
@@ -457,747 +457,747 @@ Regularization
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">0.1145293</td>
+<td style="text-align: right;">191818.9719</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Lot_Frontage</td>
-<td style="text-align: right;">0.0090180</td>
+<td style="text-align: right;">635.0426</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Lot_Area</td>
-<td style="text-align: right;">0.0325429</td>
+<td style="text-align: right;">2632.2748</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Year_Built</td>
-<td style="text-align: right;">0.0405505</td>
+<td style="text-align: right;">3643.3324</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Year_Remod_Add</td>
-<td style="text-align: right;">0.0575928</td>
+<td style="text-align: right;">4676.9398</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Mas_Vnr_Area</td>
-<td style="text-align: right;">0.0556967</td>
+<td style="text-align: right;">4539.0144</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BsmtFin_SF_1</td>
-<td style="text-align: right;">-0.0060892</td>
+<td style="text-align: right;">-428.1522</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">BsmtFin_SF_2</td>
-<td style="text-align: right;">0.0097812</td>
+<td style="text-align: right;">792.9066</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Bsmt_Unf_SF</td>
-<td style="text-align: right;">-0.0252520</td>
+<td style="text-align: right;">-2277.7734</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Total_Bsmt_SF</td>
-<td style="text-align: right;">0.0730677</td>
+<td style="text-align: right;">5900.9613</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">First_Flr_SF</td>
-<td style="text-align: right;">0.0906649</td>
+<td style="text-align: right;">7349.9085</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Second_Flr_SF</td>
-<td style="text-align: right;">0.1088686</td>
+<td style="text-align: right;">9836.1873</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Low_Qual_Fin_SF</td>
-<td style="text-align: right;">-0.0065341</td>
+<td style="text-align: right;">-524.0123</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Gr_Liv_Area</td>
-<td style="text-align: right;">0.1583716</td>
+<td style="text-align: right;">13599.1103</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Bsmt_Full_Bath</td>
-<td style="text-align: right;">0.0350655</td>
+<td style="text-align: right;">2770.9347</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Bsmt_Half_Bath</td>
-<td style="text-align: right;">-0.0081504</td>
+<td style="text-align: right;">-658.8395</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Full_Bath</td>
-<td style="text-align: right;">0.0515726</td>
+<td style="text-align: right;">4052.4543</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Half_Bath</td>
-<td style="text-align: right;">0.0267011</td>
+<td style="text-align: right;">2013.8465</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Bedroom_AbvGr</td>
-<td style="text-align: right;">-0.0129840</td>
+<td style="text-align: right;">-1283.6240</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Kitchen_AbvGr</td>
-<td style="text-align: right;">-0.0302027</td>
+<td style="text-align: right;">-2450.6191</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">TotRms_AbvGrd</td>
-<td style="text-align: right;">0.0400075</td>
+<td style="text-align: right;">2934.1361</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fireplaces</td>
-<td style="text-align: right;">0.0580324</td>
+<td style="text-align: right;">4970.9791</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Garage_Cars</td>
-<td style="text-align: right;">0.0644812</td>
+<td style="text-align: right;">5526.8513</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Garage_Area</td>
-<td style="text-align: right;">0.0316236</td>
+<td style="text-align: right;">2106.3876</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Wood_Deck_SF</td>
-<td style="text-align: right;">0.0185118</td>
+<td style="text-align: right;">1412.6677</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Open_Porch_SF</td>
-<td style="text-align: right;">-0.0047602</td>
+<td style="text-align: right;">-525.2878</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Enclosed_Porch</td>
-<td style="text-align: right;">0.0160070</td>
+<td style="text-align: right;">1394.0973</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Three_season_porch</td>
-<td style="text-align: right;">0.0060659</td>
+<td style="text-align: right;">495.8018</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Screen_Porch</td>
-<td style="text-align: right;">0.0442458</td>
+<td style="text-align: right;">3635.3907</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Pool_Area</td>
-<td style="text-align: right;">-0.0145346</td>
+<td style="text-align: right;">-1409.9219</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Misc_Val</td>
-<td style="text-align: right;">-0.0607332</td>
+<td style="text-align: right;">-5134.1938</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Mo_Sold</td>
-<td style="text-align: right;">-0.0052524</td>
+<td style="text-align: right;">-454.5277</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Year_Sold</td>
-<td style="text-align: right;">-0.0152585</td>
+<td style="text-align: right;">-1282.1268</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Longitude</td>
-<td style="text-align: right;">0.0105057</td>
+<td style="text-align: right;">988.5822</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Latitude</td>
-<td style="text-align: right;">0.0559548</td>
+<td style="text-align: right;">4725.5739</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">MS_SubClass_One_Story_1945_and_Older</td>
-<td style="text-align: right;">-0.0576545</td>
+<td style="text-align: right;">-4416.9538</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">MS_SubClass_One_Story_1946_and_Newer_All_Styles</td>
-<td style="text-align: right;">0.0403500</td>
+<td style="text-align: right;">3304.0249</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">MS_SubClass_One_Story_PUD_1946_and_Newer</td>
-<td style="text-align: right;">-0.0429358</td>
+<td style="text-align: right;">-3143.7530</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">MS_SubClass_Two_Story_1946_and_Newer</td>
-<td style="text-align: right;">0.0062131</td>
+<td style="text-align: right;">324.7893</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">MS_SubClass_other</td>
-<td style="text-align: right;">0.0099330</td>
+<td style="text-align: right;">1715.7145</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">MS_Zoning_Residential_Medium_Density</td>
-<td style="text-align: right;">-0.0708960</td>
+<td style="text-align: right;">-5868.1882</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">MS_Zoning_other</td>
-<td style="text-align: right;">-0.0910336</td>
+<td style="text-align: right;">-8029.4040</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Street_other</td>
-<td style="text-align: right;">-0.2907418</td>
+<td style="text-align: right;">-23696.6799</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Alley_other</td>
-<td style="text-align: right;">-0.0013009</td>
+<td style="text-align: right;">-104.5784</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Lot_Shape_Slightly_Irregular</td>
-<td style="text-align: right;">0.0289572</td>
+<td style="text-align: right;">2245.2842</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Lot_Shape_other</td>
-<td style="text-align: right;">0.0239668</td>
+<td style="text-align: right;">1938.9597</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Land_Contour_other</td>
-<td style="text-align: right;">-0.0010353</td>
+<td style="text-align: right;">-408.0211</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Utilities_other</td>
-<td style="text-align: right;">-0.1868721</td>
+<td style="text-align: right;">-13984.6732</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Lot_Config_CulDSac</td>
-<td style="text-align: right;">0.1272896</td>
+<td style="text-align: right;">10373.2126</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Lot_Config_Inside</td>
-<td style="text-align: right;">0.0036636</td>
+<td style="text-align: right;">376.8869</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Lot_Config_other</td>
-<td style="text-align: right;">-0.0708138</td>
+<td style="text-align: right;">-5855.1299</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Land_Slope_other</td>
-<td style="text-align: right;">0.0616860</td>
+<td style="text-align: right;">5012.1091</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Neighborhood_Edwards</td>
-<td style="text-align: right;">-0.1124247</td>
+<td style="text-align: right;">-9390.3854</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Neighborhood_Gilbert</td>
-<td style="text-align: right;">-0.2014004</td>
+<td style="text-align: right;">-16966.9174</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Neighborhood_North_Ames</td>
-<td style="text-align: right;">-0.0637403</td>
+<td style="text-align: right;">-5558.3609</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Neighborhood_Northridge_Heights</td>
-<td style="text-align: right;">0.2314445</td>
+<td style="text-align: right;">18265.8881</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Neighborhood_Old_Town</td>
-<td style="text-align: right;">-0.0818374</td>
+<td style="text-align: right;">-7357.2823</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Neighborhood_Somerset</td>
-<td style="text-align: right;">0.1126527</td>
+<td style="text-align: right;">9460.1468</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Neighborhood_other</td>
-<td style="text-align: right;">0.0598542</td>
+<td style="text-align: right;">4718.5160</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Condition_1_Norm</td>
-<td style="text-align: right;">0.1254967</td>
+<td style="text-align: right;">10833.0680</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Condition_1_other</td>
-<td style="text-align: right;">0.0255332</td>
+<td style="text-align: right;">2692.3090</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Condition_2_other</td>
-<td style="text-align: right;">-0.0010087</td>
+<td style="text-align: right;">-388.4195</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Bldg_Type_TwnhsE</td>
-<td style="text-align: right;">-0.1392049</td>
+<td style="text-align: right;">-12433.2155</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Bldg_Type_other</td>
-<td style="text-align: right;">-0.1470693</td>
+<td style="text-align: right;">-12772.5323</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">House_Style_One_Story</td>
-<td style="text-align: right;">0.0360186</td>
+<td style="text-align: right;">3970.5877</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">House_Style_Two_Story</td>
-<td style="text-align: right;">-0.0332128</td>
+<td style="text-align: right;">-3677.5124</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">House_Style_other</td>
-<td style="text-align: right;">-0.0116643</td>
+<td style="text-align: right;">-1127.9941</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Overall_Qual_Average</td>
-<td style="text-align: right;">-0.0230210</td>
+<td style="text-align: right;">-1706.9615</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Overall_Qual_Below_Average</td>
-<td style="text-align: right;">-0.0388567</td>
+<td style="text-align: right;">-2948.3523</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Overall_Qual_Good</td>
-<td style="text-align: right;">0.0166177</td>
+<td style="text-align: right;">1648.5617</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Overall_Qual_Very_Good</td>
-<td style="text-align: right;">0.1862754</td>
+<td style="text-align: right;">15406.4636</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Overall_Qual_other</td>
-<td style="text-align: right;">0.3649797</td>
+<td style="text-align: right;">29505.5762</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Overall_Cond_Average</td>
-<td style="text-align: right;">-0.0271776</td>
+<td style="text-align: right;">-2439.3189</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Overall_Cond_Good</td>
-<td style="text-align: right;">0.0616089</td>
+<td style="text-align: right;">4982.5093</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Overall_Cond_other</td>
-<td style="text-align: right;">-0.0459818</td>
+<td style="text-align: right;">-3768.5434</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Roof_Style_Hip</td>
-<td style="text-align: right;">0.0638390</td>
+<td style="text-align: right;">4932.1920</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Roof_Style_other</td>
-<td style="text-align: right;">-0.0550882</td>
+<td style="text-align: right;">-4617.6292</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Roof_Matl_other</td>
-<td style="text-align: right;">0.0272135</td>
+<td style="text-align: right;">1693.2505</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Exterior_1st_MetalSd</td>
-<td style="text-align: right;">0.0237034</td>
+<td style="text-align: right;">2168.7468</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Exterior_1st_Plywood</td>
-<td style="text-align: right;">0.0056861</td>
+<td style="text-align: right;">795.5784</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Exterior_1st_VinylSd</td>
-<td style="text-align: right;">0.0098063</td>
+<td style="text-align: right;">851.9245</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Exterior_1st_Wd.Sdng</td>
-<td style="text-align: right;">-0.0006277</td>
+<td style="text-align: right;">-186.6109</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Exterior_1st_other</td>
-<td style="text-align: right;">0.0772224</td>
+<td style="text-align: right;">6571.8953</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Exterior_2nd_MetalSd</td>
-<td style="text-align: right;">0.0221860</td>
+<td style="text-align: right;">1596.0933</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Exterior_2nd_Plywood</td>
-<td style="text-align: right;">-0.0422859</td>
+<td style="text-align: right;">-3631.0092</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Exterior_2nd_VinylSd</td>
-<td style="text-align: right;">0.0116312</td>
+<td style="text-align: right;">949.2826</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Exterior_2nd_Wd.Sdng</td>
-<td style="text-align: right;">0.0438734</td>
+<td style="text-align: right;">3755.8799</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Exterior_2nd_other</td>
-<td style="text-align: right;">-0.0090969</td>
+<td style="text-align: right;">-1258.0924</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Mas_Vnr_Type_None</td>
-<td style="text-align: right;">0.0733293</td>
+<td style="text-align: right;">6482.2932</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Mas_Vnr_Type_Stone</td>
-<td style="text-align: right;">0.0369354</td>
+<td style="text-align: right;">2906.4064</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Mas_Vnr_Type_other</td>
-<td style="text-align: right;">-0.1086331</td>
+<td style="text-align: right;">-8363.1220</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Exter_Qual_Typical</td>
-<td style="text-align: right;">-0.0823973</td>
+<td style="text-align: right;">-6484.2417</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Exter_Qual_other</td>
-<td style="text-align: right;">0.2000401</td>
+<td style="text-align: right;">15366.6626</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Exter_Cond_Typical</td>
-<td style="text-align: right;">-0.0097492</td>
+<td style="text-align: right;">-857.9075</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Exter_Cond_other</td>
-<td style="text-align: right;">-0.1788661</td>
+<td style="text-align: right;">-14473.8030</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Foundation_CBlock</td>
-<td style="text-align: right;">-0.0268604</td>
+<td style="text-align: right;">-1773.5303</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Foundation_PConc</td>
-<td style="text-align: right;">0.0544823</td>
+<td style="text-align: right;">4484.0142</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Foundation_other</td>
-<td style="text-align: right;">0.0036561</td>
+<td style="text-align: right;">320.5474</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Bsmt_Qual_Good</td>
-<td style="text-align: right;">-0.1680415</td>
+<td style="text-align: right;">-15251.3685</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Bsmt_Qual_Typical</td>
-<td style="text-align: right;">-0.1539823</td>
+<td style="text-align: right;">-14338.6875</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Bsmt_Qual_other</td>
-<td style="text-align: right;">-0.1530138</td>
+<td style="text-align: right;">-14341.2896</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Bsmt_Cond_other</td>
-<td style="text-align: right;">-0.0339487</td>
+<td style="text-align: right;">-2799.6797</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Bsmt_Exposure_Gd</td>
-<td style="text-align: right;">0.1728179</td>
+<td style="text-align: right;">13803.2479</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Bsmt_Exposure_Mn</td>
-<td style="text-align: right;">-0.0637248</td>
+<td style="text-align: right;">-5658.9405</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Bsmt_Exposure_No</td>
-<td style="text-align: right;">-0.1024973</td>
+<td style="text-align: right;">-8614.6482</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Bsmt_Exposure_other</td>
-<td style="text-align: right;">-0.0701788</td>
+<td style="text-align: right;">-6281.7374</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BsmtFin_Type_1_BLQ</td>
-<td style="text-align: right;">-0.0084944</td>
+<td style="text-align: right;">-511.8263</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">BsmtFin_Type_1_GLQ</td>
-<td style="text-align: right;">0.0905850</td>
+<td style="text-align: right;">7199.5285</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BsmtFin_Type_1_LwQ</td>
-<td style="text-align: right;">-0.0521331</td>
+<td style="text-align: right;">-4358.6347</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">BsmtFin_Type_1_Rec</td>
-<td style="text-align: right;">-0.0100155</td>
+<td style="text-align: right;">-849.0571</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BsmtFin_Type_1_Unf</td>
-<td style="text-align: right;">-0.0259222</td>
+<td style="text-align: right;">-1914.3319</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">BsmtFin_Type_1_other</td>
-<td style="text-align: right;">-0.0398366</td>
+<td style="text-align: right;">-2926.1817</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BsmtFin_Type_2_other</td>
-<td style="text-align: right;">-0.0240291</td>
+<td style="text-align: right;">-2019.5929</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Heating_other</td>
-<td style="text-align: right;">-0.0193442</td>
+<td style="text-align: right;">-1729.5089</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Heating_QC_Good</td>
-<td style="text-align: right;">-0.0305130</td>
+<td style="text-align: right;">-2492.5041</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Heating_QC_Typical</td>
-<td style="text-align: right;">-0.0654624</td>
+<td style="text-align: right;">-5346.1460</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Heating_QC_other</td>
-<td style="text-align: right;">-0.1295312</td>
+<td style="text-align: right;">-10686.6811</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Central_Air_Y</td>
-<td style="text-align: right;">0.0546754</td>
+<td style="text-align: right;">4072.2257</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Electrical_SBrkr</td>
-<td style="text-align: right;">0.0038786</td>
+<td style="text-align: right;">346.4420</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Electrical_other</td>
-<td style="text-align: right;">0.0004011</td>
+<td style="text-align: right;">301.2078</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Kitchen_Qual_Good</td>
-<td style="text-align: right;">-0.1455608</td>
+<td style="text-align: right;">-13742.2922</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Kitchen_Qual_Typical</td>
-<td style="text-align: right;">-0.1764373</td>
+<td style="text-align: right;">-16186.8202</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Kitchen_Qual_other</td>
-<td style="text-align: right;">-0.2046404</td>
+<td style="text-align: right;">-18648.4382</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Functional_other</td>
-<td style="text-align: right;">-0.1906057</td>
+<td style="text-align: right;">-15944.3071</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fireplace_Qu_No_Fireplace</td>
-<td style="text-align: right;">-0.0047285</td>
+<td style="text-align: right;">542.6519</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fireplace_Qu_Typical</td>
-<td style="text-align: right;">-0.0249439</td>
+<td style="text-align: right;">-1928.1394</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fireplace_Qu_other</td>
-<td style="text-align: right;">0.0070166</td>
+<td style="text-align: right;">646.1564</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Garage_Type_BuiltIn</td>
-<td style="text-align: right;">0.0000858</td>
+<td style="text-align: right;">-941.3937</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Garage_Type_Detchd</td>
-<td style="text-align: right;">-0.0216167</td>
+<td style="text-align: right;">-1661.7981</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Garage_Type_No_Garage</td>
-<td style="text-align: right;">0.0045639</td>
+<td style="text-align: right;">617.5876</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Garage_Type_other</td>
-<td style="text-align: right;">-0.1450426</td>
+<td style="text-align: right;">-11561.5629</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Garage_Finish_No_Garage</td>
-<td style="text-align: right;">0.0059326</td>
+<td style="text-align: right;">612.2936</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Garage_Finish_RFn</td>
-<td style="text-align: right;">-0.0492982</td>
+<td style="text-align: right;">-3891.0061</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Garage_Finish_Unf</td>
-<td style="text-align: right;">-0.0234584</td>
+<td style="text-align: right;">-1754.4046</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Garage_Qual_Typical</td>
-<td style="text-align: right;">-0.0175402</td>
+<td style="text-align: right;">-1528.9216</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Garage_Qual_other</td>
-<td style="text-align: right;">0.0271115</td>
+<td style="text-align: right;">2247.5272</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Garage_Cond_Typical</td>
-<td style="text-align: right;">0.0293285</td>
+<td style="text-align: right;">2349.5782</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Garage_Cond_other</td>
-<td style="text-align: right;">-0.0765959</td>
+<td style="text-align: right;">-6338.7852</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Paved_Drive_Paved</td>
-<td style="text-align: right;">0.0517364</td>
+<td style="text-align: right;">4236.6662</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Paved_Drive_other</td>
-<td style="text-align: right;">0.0665841</td>
+<td style="text-align: right;">5735.1255</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Pool_QC_other</td>
-<td style="text-align: right;">0.1142025</td>
+<td style="text-align: right;">10854.0122</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fence_No_Fence</td>
-<td style="text-align: right;">-0.0257223</td>
+<td style="text-align: right;">-2304.5540</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fence_other</td>
-<td style="text-align: right;">-0.0121176</td>
+<td style="text-align: right;">-1200.1668</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Misc_Feature_other</td>
-<td style="text-align: right;">0.0751086</td>
+<td style="text-align: right;">6997.8461</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Sale_Type_WD</td>
-<td style="text-align: right;">-0.0564736</td>
+<td style="text-align: right;">-4789.3508</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Sale_Type_other</td>
-<td style="text-align: right;">-0.0850875</td>
+<td style="text-align: right;">-6853.4085</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Sale_Condition_Normal</td>
-<td style="text-align: right;">0.0919020</td>
+<td style="text-align: right;">8367.5845</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Sale_Condition_Partial</td>
-<td style="text-align: right;">0.1426420</td>
+<td style="text-align: right;">12015.2260</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Sale_Condition_other</td>
-<td style="text-align: right;">0.0804423</td>
+<td style="text-align: right;">7677.5821</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 </tbody>
@@ -1242,17 +1242,17 @@ Regularization
 <tr class="odd">
 <td style="text-align: left;">rmse</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.4691218</td>
+<td style="text-align: right;">3.245268e+04</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">0.0441989</td>
+<td style="text-align: right;">3148.2028813</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">rsq</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.8052893</td>
+<td style="text-align: right;">8.411357e-01</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">0.0220063</td>
+<td style="text-align: right;">0.0204318</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 </tbody>
@@ -1280,70 +1280,70 @@ Regularization
 <td style="text-align: left;">Fold1</td>
 <td style="text-align: left;">rmse</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.5972859</td>
+<td style="text-align: right;">3.992358e+04</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold1</td>
 <td style="text-align: left;">rsq</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.7851941</td>
+<td style="text-align: right;">8.145726e-01</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold2</td>
 <td style="text-align: left;">rmse</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.5053414</td>
+<td style="text-align: right;">3.363114e+04</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold2</td>
 <td style="text-align: left;">rsq</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.7846345</td>
+<td style="text-align: right;">8.363147e-01</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold3</td>
 <td style="text-align: left;">rmse</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.3694636</td>
+<td style="text-align: right;">2.462751e+04</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold3</td>
 <td style="text-align: left;">rsq</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.8542007</td>
+<td style="text-align: right;">8.892578e-01</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold4</td>
 <td style="text-align: left;">rmse</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.5049735</td>
+<td style="text-align: right;">3.834326e+04</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold4</td>
 <td style="text-align: left;">rsq</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.7445101</td>
+<td style="text-align: right;">7.819507e-01</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fold5</td>
 <td style="text-align: left;">rmse</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.3685445</td>
+<td style="text-align: right;">2.573790e+04</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Fold5</td>
 <td style="text-align: left;">rsq</td>
 <td style="text-align: left;">standard</td>
-<td style="text-align: right;">0.8579072</td>
+<td style="text-align: right;">8.835826e-01</td>
 <td style="text-align: left;">Preprocessor1_Model1</td>
 </tr>
 </tbody>
@@ -1371,92 +1371,697 @@ Regularization
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">0.0226717</td>
+<td style="text-align: right;">204174.844499</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lot_Frontage</td>
+<td style="text-align: right;">302.118404</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lot_Area</td>
+<td style="text-align: right;">2652.964700</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Year_Built</td>
-<td style="text-align: right;">0.0942332</td>
+<td style="text-align: right;">5610.573998</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Year_Remod_Add</td>
-<td style="text-align: right;">0.0680334</td>
+<td style="text-align: right;">4367.645860</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Mas_Vnr_Area</td>
-<td style="text-align: right;">0.0352078</td>
+<td style="text-align: right;">4482.646323</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Total_Bsmt_SF</td>
-<td style="text-align: right;">0.1427965</td>
+<td style="text-align: left;">BsmtFin_SF_1</td>
+<td style="text-align: right;">-738.656408</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">BsmtFin_SF_2</td>
+<td style="text-align: right;">736.862775</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bsmt_Unf_SF</td>
+<td style="text-align: right;">-2866.828195</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Total_Bsmt_SF</td>
+<td style="text-align: right;">5568.968315</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Second_Flr_SF</td>
+<td style="text-align: right;">6684.251469</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Low_Qual_Fin_SF</td>
+<td style="text-align: right;">-1166.224044</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">Gr_Liv_Area</td>
-<td style="text-align: right;">0.3128844</td>
+<td style="text-align: right;">25928.430006</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bsmt_Full_Bath</td>
+<td style="text-align: right;">2439.591819</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bsmt_Half_Bath</td>
+<td style="text-align: right;">-621.816279</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Full_Bath</td>
+<td style="text-align: right;">3013.901185</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Half_Bath</td>
+<td style="text-align: right;">1058.224436</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bedroom_AbvGr</td>
+<td style="text-align: right;">-1847.998427</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Kitchen_AbvGr</td>
+<td style="text-align: right;">-2158.528555</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TotRms_AbvGrd</td>
+<td style="text-align: right;">1215.142354</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Fireplaces</td>
-<td style="text-align: right;">0.0542894</td>
+<td style="text-align: right;">6293.765983</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Garage_Cars</td>
-<td style="text-align: right;">0.0870143</td>
+<td style="text-align: right;">7167.390067</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Garage_Area</td>
-<td style="text-align: right;">0.0452995</td>
+<td style="text-align: right;">-18.026412</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">Wood_Deck_SF</td>
+<td style="text-align: right;">1106.285872</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Open_Porch_SF</td>
+<td style="text-align: right;">-916.391841</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Enclosed_Porch</td>
+<td style="text-align: right;">1663.492292</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Three_season_porch</td>
+<td style="text-align: right;">456.706922</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Screen_Porch</td>
+<td style="text-align: right;">3677.763138</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pool_Area</td>
+<td style="text-align: right;">-2354.835149</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Misc_Val</td>
+<td style="text-align: right;">-5627.001608</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mo_Sold</td>
+<td style="text-align: right;">-572.996463</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Year_Sold</td>
+<td style="text-align: right;">-1369.021517</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Longitude</td>
+<td style="text-align: right;">1733.166334</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Latitude</td>
+<td style="text-align: right;">5384.510158</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MS_SubClass_One_Story_1945_and_Older</td>
+<td style="text-align: right;">-4308.968247</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">MS_SubClass_One_Story_1946_and_Newer_All_Styles</td>
+<td style="text-align: right;">1678.308280</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MS_SubClass_One_Story_PUD_1946_and_Newer</td>
+<td style="text-align: right;">-1480.098139</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">MS_SubClass_Two_Story_1946_and_Newer</td>
+<td style="text-align: right;">32.282767</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MS_SubClass_other</td>
+<td style="text-align: right;">6322.081252</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">MS_Zoning_Residential_Medium_Density</td>
+<td style="text-align: right;">-6101.997383</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MS_Zoning_other</td>
+<td style="text-align: right;">-9260.875155</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Street_other</td>
+<td style="text-align: right;">-22970.598540</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Alley_other</td>
+<td style="text-align: right;">-7.656359</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lot_Shape_Slightly_Irregular</td>
+<td style="text-align: right;">1771.961285</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lot_Shape_other</td>
+<td style="text-align: right;">1838.909134</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Land_Contour_other</td>
+<td style="text-align: right;">-1349.950041</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Utilities_other</td>
+<td style="text-align: right;">-9062.911216</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lot_Config_CulDSac</td>
+<td style="text-align: right;">10270.569626</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lot_Config_Inside</td>
+<td style="text-align: right;">565.003677</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lot_Config_other</td>
+<td style="text-align: right;">-6278.376017</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Land_Slope_other</td>
+<td style="text-align: right;">4625.142399</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Neighborhood_Edwards</td>
+<td style="text-align: right;">-10973.471669</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Neighborhood_Gilbert</td>
+<td style="text-align: right;">-19530.932784</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Neighborhood_North_Ames</td>
+<td style="text-align: right;">-8414.765814</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">Neighborhood_Northridge_Heights</td>
-<td style="text-align: right;">0.2164590</td>
+<td style="text-align: right;">14589.995488</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Neighborhood_Old_Town</td>
+<td style="text-align: right;">-11134.705591</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Neighborhood_Somerset</td>
+<td style="text-align: right;">8635.024580</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Neighborhood_other</td>
+<td style="text-align: right;">2810.367615</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Condition_1_Norm</td>
+<td style="text-align: right;">12745.603198</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Condition_1_other</td>
+<td style="text-align: right;">4603.785551</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Condition_2_other</td>
+<td style="text-align: right;">-1162.412692</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bldg_Type_TwnhsE</td>
+<td style="text-align: right;">-18596.435680</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Bldg_Type_other</td>
-<td style="text-align: right;">-0.0043000</td>
+<td style="text-align: right;">-17463.487230</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">House_Style_One_Story</td>
+<td style="text-align: right;">10066.653129</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">House_Style_Two_Story</td>
+<td style="text-align: right;">-8523.299507</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">House_Style_other</td>
+<td style="text-align: right;">-2571.006941</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Overall_Qual_Average</td>
+<td style="text-align: right;">-1436.679065</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Overall_Qual_Below_Average</td>
+<td style="text-align: right;">-2595.730854</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Overall_Qual_Good</td>
+<td style="text-align: right;">2280.491136</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Overall_Qual_Very_Good</td>
-<td style="text-align: right;">0.0590885</td>
+<td style="text-align: right;">15680.512980</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Overall_Qual_other</td>
-<td style="text-align: right;">0.3117465</td>
+<td style="text-align: right;">26471.108719</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Exter_Qual_Typical</td>
-<td style="text-align: right;">-0.1080192</td>
+<td style="text-align: left;">Overall_Cond_Average</td>
+<td style="text-align: right;">-3237.595266</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">Overall_Cond_Good</td>
+<td style="text-align: right;">4664.798807</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Overall_Cond_other</td>
+<td style="text-align: right;">-3679.502049</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Roof_Style_Hip</td>
+<td style="text-align: right;">3976.513691</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Roof_Style_other</td>
+<td style="text-align: right;">-5087.445097</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Exterior_1st_MetalSd</td>
+<td style="text-align: right;">3681.733444</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Exterior_1st_Plywood</td>
+<td style="text-align: right;">1478.941547</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Exterior_1st_VinylSd</td>
+<td style="text-align: right;">1114.089194</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Exterior_1st_Wd.Sdng</td>
+<td style="text-align: right;">-137.300127</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Exterior_1st_other</td>
+<td style="text-align: right;">7548.520118</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Exterior_2nd_Plywood</td>
+<td style="text-align: right;">-4165.802943</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Exterior_2nd_VinylSd</td>
+<td style="text-align: right;">702.891204</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Exterior_2nd_Wd.Sdng</td>
+<td style="text-align: right;">3609.641444</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Exterior_2nd_other</td>
+<td style="text-align: right;">-3116.316461</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mas_Vnr_Type_None</td>
+<td style="text-align: right;">7630.970285</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mas_Vnr_Type_Stone</td>
+<td style="text-align: right;">2241.854107</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mas_Vnr_Type_other</td>
+<td style="text-align: right;">-6568.695833</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Exter_Qual_Typical</td>
+<td style="text-align: right;">-5426.837474</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">Exter_Qual_other</td>
-<td style="text-align: right;">0.0160573</td>
+<td style="text-align: right;">10846.988450</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Exter_Cond_Typical</td>
+<td style="text-align: right;">-1067.575915</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Exter_Cond_other</td>
+<td style="text-align: right;">-13298.737373</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Foundation_PConc</td>
+<td style="text-align: right;">4605.195066</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bsmt_Qual_Good</td>
+<td style="text-align: right;">-23745.004600</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bsmt_Qual_Typical</td>
+<td style="text-align: right;">-24768.334851</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bsmt_Qual_other</td>
+<td style="text-align: right;">-25365.513028</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bsmt_Cond_other</td>
+<td style="text-align: right;">-2662.979330</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Bsmt_Exposure_Gd</td>
-<td style="text-align: right;">0.1342189</td>
+<td style="text-align: right;">12971.464880</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bsmt_Exposure_Mn</td>
+<td style="text-align: right;">-7258.496092</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bsmt_Exposure_No</td>
+<td style="text-align: right;">-9341.789381</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bsmt_Exposure_other</td>
+<td style="text-align: right;">-9581.993387</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BsmtFin_Type_1_BLQ</td>
+<td style="text-align: right;">364.916614</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BsmtFin_Type_1_GLQ</td>
-<td style="text-align: right;">0.0823411</td>
+<td style="text-align: right;">6708.401065</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">BsmtFin_Type_1_LwQ</td>
+<td style="text-align: right;">-4053.082751</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BsmtFin_Type_1_Unf</td>
+<td style="text-align: right;">-124.232722</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BsmtFin_Type_2_other</td>
+<td style="text-align: right;">-1766.478865</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Heating_other</td>
+<td style="text-align: right;">-2679.276782</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Heating_QC_Good</td>
+<td style="text-align: right;">-2153.910215</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Heating_QC_Typical</td>
+<td style="text-align: right;">-5213.089203</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Heating_QC_other</td>
+<td style="text-align: right;">-10407.381099</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Central_Air_Y</td>
+<td style="text-align: right;">2548.570117</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electrical_SBrkr</td>
+<td style="text-align: right;">624.529636</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Electrical_other</td>
+<td style="text-align: right;">851.058235</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kitchen_Qual_Good</td>
+<td style="text-align: right;">-24550.199978</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">Kitchen_Qual_Typical</td>
-<td style="text-align: right;">-0.0661239</td>
+<td style="text-align: right;">-27862.653516</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Kitchen_Qual_other</td>
+<td style="text-align: right;">-30664.715311</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Functional_other</td>
+<td style="text-align: right;">-16889.690718</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fireplace_Qu_No_Fireplace</td>
+<td style="text-align: right;">4546.031514</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fireplace_Qu_Typical</td>
+<td style="text-align: right;">-1105.453354</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fireplace_Qu_other</td>
+<td style="text-align: right;">1172.042634</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Garage_Type_BuiltIn</td>
+<td style="text-align: right;">-5182.566720</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Garage_Type_Detchd</td>
+<td style="text-align: right;">-1238.501946</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Garage_Type_other</td>
+<td style="text-align: right;">-10324.464210</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Garage_Finish_RFn</td>
+<td style="text-align: right;">-2806.603971</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Garage_Finish_Unf</td>
+<td style="text-align: right;">-969.339686</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Garage_Qual_Typical</td>
+<td style="text-align: right;">-2427.037740</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Garage_Qual_other</td>
+<td style="text-align: right;">1761.572629</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Garage_Cond_other</td>
+<td style="text-align: right;">-9021.722065</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Paved_Drive_Paved</td>
+<td style="text-align: right;">3943.712969</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Paved_Drive_other</td>
+<td style="text-align: right;">6114.141994</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pool_QC_other</td>
+<td style="text-align: right;">17880.143965</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fence_No_Fence</td>
+<td style="text-align: right;">-2711.857292</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Fence_other</td>
+<td style="text-align: right;">-1542.616891</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Misc_Feature_other</td>
+<td style="text-align: right;">9460.842093</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sale_Type_WD</td>
+<td style="text-align: right;">-124.694469</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sale_Type_other</td>
+<td style="text-align: right;">-1217.105822</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sale_Condition_Normal</td>
+<td style="text-align: right;">11499.733894</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sale_Condition_Partial</td>
+<td style="text-align: right;">18556.312374</td>
+<td style="text-align: right;">0.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sale_Condition_other</td>
+<td style="text-align: right;">11574.716158</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 </tbody>

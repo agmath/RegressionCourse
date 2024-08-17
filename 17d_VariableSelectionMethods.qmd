@@ -165,7 +165,7 @@ ridge_reg_spec <- linear_reg(mixture = 0, penalty = 0.1) %>%
   set_engine("glmnet")
 
 reg_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
-  step_normalize(all_numeric()) %>%
+  step_normalize(all_numeric_predictors()) %>%
   step_impute_knn(all_predictors()) %>%
   step_normalize(all_numeric_predictors()) %>%
   step_other(all_nominal_predictors()) %>%

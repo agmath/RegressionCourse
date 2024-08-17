@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-08-03">
+<meta name="dcterms.date" content="2024-08-17">
 
 <title>Variable Selection Methods: Regularization with Ridge and LASSO</title>
 <style>
@@ -146,7 +146,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 3, 2024</p>
+      <p class="date">August 17, 2024</p>
     </div>
   </div>
   
@@ -243,7 +243,7 @@ Regularization
 <li><p>Standardization converts a variables raw measurements into standard deviations (<span class="math inline">\(z\)</span>-scores), where the mean of the transformed variable is <span class="math inline">\(0\)</span> and the standard deviation of the transformed variable is <span class="math inline">\(1\)</span>.</p>
 <ul>
 <li>Standardized scaling for the variable <span class="math inline">\(x\)</span> is done using the formula: <span class="math inline">\(\displaystyle{\frac{x - \text{mean}\left(x\right)}{\text{sd}(x)}}\)</span></li>
-<li>We can add <code>step_scale()</code> to a <code>recipe()</code> to standardize the values of a feature.</li>
+<li>We can add <code>step_normalize()</code> to a <code>recipe()</code> to standardize the values of a feature.</li>
 </ul></li>
 </ul>
 </section>
@@ -275,7 +275,7 @@ Regularization
 </ul></li>
 <li><p>Because the <code>penalty</code> parameter imposes a <em>budget</em> on coefficients, all of our predictors must be on the same scale – otherwise, some predictors are artificially <em>cheaper</em> or <em>more expensive</em> than others to include in our model.</p>
 <ul>
-<li>We can use <code>step_range()</code>, <code>step_scale()</code>, or <code>step_normalize()</code> on <code>all_numerical_predictors()</code> to achieve this.</li>
+<li>We can use <code>step_range()</code> or <code>step_normalize()</code> on <code>all_numerical_predictors()</code> to achieve this.</li>
 </ul></li>
 </ul>
 <p>We’ll filter out the observations with an unknown response (<code>Sale_Price</code>), and we’ll use <code>step_impute_knn()</code> to use a <span class="math inline">\(k\)</span>-nearest neighbors imputation scheme for any missing values in our predictor columns. Finally, we’ll use <code>step_normalize()</code> to center and scale our numerical predictors. Then we’ll proceed as usual.</p>
@@ -298,7 +298,7 @@ Regularization
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>reg_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(Sale_Price <span class="sc">~</span> ., <span class="at">data =</span> ames_train) <span class="sc">%&gt;%</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric</span>()) <span class="sc">%&gt;%</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_impute_knn</span>(<span class="fu">all_predictors</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_scale</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">%&gt;%</span></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_other</span>(<span class="fu">all_nominal_predictors</span>()) <span class="sc">%&gt;%</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal_predictors</span>())</span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>

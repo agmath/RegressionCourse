@@ -112,7 +112,7 @@ If we are going to utilize Ridge Regression or the LASSO, we need to ensure that
 + Standardization converts a variables raw measurements into standard deviations ($z$-scores), where the mean of the transformed variable is $0$ and the standard deviation of the transformed variable is $1$.
 
   + Standardized scaling for the variable $x$ is done using the formula: $\displaystyle{\frac{x - \text{mean}\left(x\right)}{\text{sd}(x)}}$
-  + We can add `step_scale()` to a `recipe()` to standardize the values of a feature.
+  + We can add `step_normalize()` to a `recipe()` to standardize the values of a feature.
   
 ### Fitting a Model Using Ridge Regression or the LASSO
 
@@ -143,7 +143,7 @@ There are a few additional concerns with fitting Ridge Regression and LASSO mode
 
 + Because the `penalty` parameter imposes a *budget* on coefficients, all of our predictors must be on the same scale -- otherwise, some predictors are artificially *cheaper* or *more expensive* than others to include in our model.
 
-  + We can use `step_range()`, `step_scale()`, or `step_normalize()` on `all_numerical_predictors()` to achieve this.
+  + We can use `step_range()` or `step_normalize()` on `all_numerical_predictors()` to achieve this.
   
 We'll filter out the observations with an unknown response (`Sale_Price`), and we'll use `step_impute_knn()` to use a $k$-nearest neighbors imputation scheme for any missing values in our predictor columns. Finally, we'll use `step_normalize()` to center and scale our numerical predictors. Then we'll proceed as usual. 
 
@@ -167,7 +167,7 @@ ridge_reg_spec <- linear_reg(mixture = 0, penalty = 0.1) %>%
 reg_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
   step_normalize(all_numeric()) %>%
   step_impute_knn(all_predictors()) %>%
-  step_scale(all_numeric_predictors()) %>%
+  step_normalize(all_numeric_predictors()) %>%
   step_other(all_nominal_predictors()) %>%
   step_dummy(all_nominal_predictors())
 

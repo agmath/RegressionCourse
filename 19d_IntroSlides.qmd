@@ -279,24 +279,25 @@ test_results <- (test_data %>%
   pivot_wider(id_cols = model, names_from = .metric, values_from = .estimate) %>%
   mutate(degree = c(1, 2, 3, 5, 11), .after = model)
 
+plot_colors <- c("training" = "red", "test" = "black")
+
 ggplot() +
   geom_line(data = train_results,
-            aes(x = degree, y = rmse),
-            color = "red") + 
+            aes(x = degree, y = rmse,
+                color = "training")) + 
   geom_point(data = train_results,
-             aes(x = degree, y = rmse),
+             aes(x = degree, y = rmse,
+                 color = "training"),
              shape = "X",
-             color = "red",
              size = 10) +
   geom_line(data = test_results,
-            aes(x = degree, y = rmse),
-            color = "black") + 
+            aes(x = degree, y = rmse, color = "test")) + 
   geom_point(data = test_results,
-             aes(x = degree, y = rmse),
+             aes(x = degree, y = rmse,
+                 color = "test"),
              shape = "X",
-             color = "black",
              size = 10) +
-  scale_color_manual(values = c("Training" = "red", "Test" = "black")) +
+  scale_color_manual(values = plot_colors) +
   labs(x = "Degree",
        y = "RMSE",
        color = "Error Type",

@@ -1,0 +1,579 @@
+---
+title: "Introduction to Regularization: Ridge Regression and the LASSO"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+#Note -- for taller slides, set height option on revealjs to a large pixel number, ie. 900
+
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(patchwork)
+library(kableExtra)
+library(memer)
+library(marginaleffects)
+tidymodels_prefer()
+
+penguins <- palmerpenguins::penguins
+
+penguins <- penguins %>%
+  mutate(flipper_length_mm = as.numeric(flipper_length_mm),
+         body_mass_g = as.numeric(body_mass_g))
+
+set.seed(123)
+penguin_splits <- initial_split(penguins)
+penguins_train <- training(penguin_splits)
+penguins_test <- testing(penguin_splits)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+options(scipen = 999)
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 18))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+```
+
+## Reminders from Last Time
+
+. . . 
+
+Cross-validation is a procedure that we can use to obtain more reliable performance assessments for our models
+
+. . . 
+
+In $k$-fold cross validation, we create $k$ models and obtain $k$ performance estimates -- the average of these performance estimates can be referred to as the *cross-validation performance estimate*
+
+. . . 
+
+Our *cross-validation* procedure does NOT result in a fitted model, but results in the *cross-validation performance estimate* and an estimated standard error for that model performance
+
+. . . 
+
+*Cross-validation* makes our choices and inferences less susceptible to random chance (the randomly chosen training and test observations)
+
+## Big Picture Recap
+
+. . .
+
+Our approach to linear regression so far has perhaps led us to the intuition that we should start with a large model and then reduce it down to include only statistically significant terms
+
+. . . 
+
+This approach, called *backward elimination*, is commonly utilized
+
+. . . 
+
+There is also an opposite approach, called *forward selection*
+
+## A Shopping Analogy
+
+. . .
+
+Consider the model (or us, as modelers) as a shopper in a market that sells predictors
+
++ (*Backward elimination*) Our model begins by putting every item in the store into its shopping cart, and then puts back the items it doesn't need
+
++ (*Forward selection*) Our model begins with an empty cart and wanders the store, finding the items it needs most to add to its cart one-by-one
+
+## Okay, So What?
+
+. . .
+
+At first, these approaches may seem reasonable, if inefficient
+
+. . . 
+
+**Statistical Standpoint:** We're evaluating lots of $t$-tests in determining statistical significance of predictors
+
+  + The probability of making at least one *Type I* error (claiming a term is significant when it truly isn't) becomes inflated -- even with just three tests, the probability is over 14% when using the common $\alpha = 0.05$
+  
+. . .
+
+**Model-Fit Perspective:** The more predictors a model has access to, the more *flexible* it is, the better it will fit the training data, and the more likely it is to become *overfit*
+
+. . .
+
+<center>
+
+<iframe src="https://giphy.com/embed/SY9I1UD4ub5sbtCfYe" width="480" height="480" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/cbc-schitts-creek-SY9I1UD4ub5sbtCfYe">via GIPHY</a></p>
+
+</center>
+
+## Back to the Shopping Analogy
+
+. . .
+
+By allowing a model to "shop" freely for its predictors, we are encouraging our model to become overfit
+
+. . . 
+
+Giving our model a "budget" to spend on its shopping trip would force our model to be more selective about the predictors it chooses, and lowers the likelihood that it becomes overfit
+
+## A Look Under the Hood
+
+. . .
+
+We've hidden the math that fits our models up until this point, but its worth a look now
+
+. . . 
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+
+. . .
+
+The optimization procedure we've been using to find the $\beta$-coefficients is called *Ordinary Least Squares*
+
+. . .
+
+**Ordinary Least Squares:** Find $\beta_0, \beta_1, \cdots, \beta_k$ in order to minimize
+
+$$\sum_{i = 1}^{n}{\left(y_{\text{obs}_i} - y_{\text{pred}_i}\right)^2}$$
+
+## A Look Under the Hood
+
+We've hidden the math that fits our models up until this point, but its worth a look now
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+
+The optimization procedure we've been using to find the $\beta$-coefficients is called *Ordinary Least Squares*
+
+**Ordinary Least Squares:** Find $\beta_0, \beta_1, \cdots, \beta_k$ in order to minimize
+
+$$\sum_{i = 1}^{n}{\left(y_{\text{obs}_i} - \left(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_k x_{ik}\right)\right)^2}$$
+
+## A Look Under the Hood
+
+We've hidden the math that fits our models up until this point, but its worth a look now
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+
+The optimization procedure we've been using to find the $\beta$-coefficients is called *Ordinary Least Squares*
+
+**Ordinary Least Squares:** Find $\beta_0, \beta_1, \cdots, \beta_k$ in order to minimize
+
+$$\sum_{i = 1}^{n}{\left(y_{\text{obs}_i} - \left(\beta_0 + \sum_{j = 1}^{k}{\beta_j x_{ij}}\right)\right)^2}$$
+
+. . .
+
+This is the procedure that allows our model to *shop freely* for predictors
+
+## Regularization
+
+. . .
+
+*Regularization* refers to techniques design to constrain models and reduce the likelihood of overfitting
+
+. . .
+
+For linear regression, there are two commonly used methods
+
++ *Ridge Regression*
++ *The LASSO* (least absolute shrinkage and selection operator)
+
+. . .
+
+Each of these methods makes an adjustment to the *Ordinary Least Squares* procedure we just saw
+
+## Regularization: Ridge Regression
+
+. . .
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+
+. . .
+
+
+**Ridge Regression:** Find $\beta_0, \beta_1, \cdots, \beta_k$ in order to minimize
+
+$$\sum_{i = 1}^{n}{\left(y_{\text{obs}_i} - \left(\beta_0 + \sum_{j = 1}^{k}{\beta_j x_{ij}}\right)\right)^2}$$
+
+. . .
+
+subject to the constraint
+
+$$\sum_{j = 1}^{k}{\beta_j^2} \leq C$$
+
+. . .
+
+**Note:** $C$ is a constraint which can be thought of as our *budget* for coefficients
+
+. . .
+
+**The Result:** Ridge regression encourages very small coefficients on unimportant predictors
+
+## Regularization: The LASSO
+
+. . .
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+
+. . .
+
+
+**LASSO:** Find $\beta_0, \beta_1, \cdots, \beta_k$ in order to minimize
+
+$$\sum_{i = 1}^{n}{\left(y_{\text{obs}_i} - \left(\beta_0 + \sum_{j = 1}^{k}{\beta_j x_{ij}}\right)\right)^2}$$
+
+. . .
+
+subject to the constraint
+
+$$\sum_{j = 1}^{k}{\left|\beta_j\right|} \leq C$$
+
+. . .
+
+**Note:** Like with *Ridge Regression*, $C$ is a constraint which can be thought of as our *budget* for coefficients
+
+. . .
+
+**The Result:** The LASSO pushes coefficients of unimportant predictors to $0$
+
+## LASSO or Ridge?
+
+. . .
+
+The choice between *Ridge Regression* and the *LASSO* depends on your goals
+
+. . . 
+
+The LASSO is better at variable selection because it sends coefficients on unimportant predictors to exactly $0$
+
+. . .
+
+LASSO won't always out-perform Ridge though, so you might try both and see which is better for your use case
+
+## Feature PreProcessing Requirements
+
+. . .
+
+If a predictor $x_i$ is on a larger scale than the response $y$, then that predictor becomes artificially *cheap* to include in a model
+
+. . .
+
+Similarly, if a predictor $x_j$ is on a smaller scale than the response, then that predictor becomes artificially *expensive* to include in a model
+
+. . .
+
+We don't want any of our predictors to be artificially advantaged or disadvantaged, so we must ensure that all of our numerical predictors are on the same scale as one another
+
+. . .
+
+**Min-Max Scaling:** Projects each numerical predictor down to the interval $\left[0, 1\right]$ via $\displaystyle{\frac{x - \min\left(x\right)}{\max\left(x\right) - \min\left(x\right)}}$
+
+  + We include `step_range()` in a *recipe* to utilize min-max scaling
+
+. . .
+
+**Standard Scaling:** Converts observed measurements into standard deviations ($z$-scores) via $\displaystyle{\frac{x - \text{mean}\left(x\right)}{{\text{sd}\left(x\right)}}}$
+
+  + We include `step_normalize()` in a *recipe* to utilize standard scaling
+
+## Switching Engines
+
+. . .
+
+The `{tidymodels}` framework is great because it provides us with standardized structure for defining and fitting models
+
+. . . 
+
+Ridge and the LASSO are still *linear regression* models, but they're no longer fit using OLS
+
+. . .
+
+This puts them in a class of models called *Generalized Linear Models*
+. . .
+
+We'll need to change our fitting *engine* from `"lm"` to something that can fit these GLMs -- we'll use `"glmnet"`
+
+. . .
+
+**Required Parameters for `"glmnet"`:** 
+
++ `mixture` can be set to any value between $0$ and $1$
+
+  + Setting `mixture = 0` results in Ridge Regression
+  + Setting `mixture = 1` results in the LASSO
+
++ `penalty` is the amount of regularization being applied
+
+  + You can think of this parameter as being tied to our *coefficient budget*
+
+## Choosing a `penalty`
+
+. . .
+
+For now, we'll just pick a value and see how it performs
+
+. . . 
+
+We can experiment with several if we like, and then choose the one that results in the best performance
+
+. . .
+
+We'll talk about a better strategy next time
+
+## A Few Additional Concerns
+
++ The `"glmnet"` engine requires that no missing values are included in any fold
+
+  + We could *omit* any rows with missing values
+  + We could *omit* any features with missing entries
+  + We could *impute* missing values with a `step_impute_*()` function added to a recipe
+  
+## Implementing Ridge and LASSO with the Ames Data
+
+. . .
+
+We'll use the `ames` housing data set that we've seen from time to time this semester
+
+. . .
+
+We'll read it in, remove the rows with missing `Sale_Price` (our response), split the data into training and test sets, and create our cross-validation folds
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+
+ames_known_price <- ames %>%
+  filter(!is.na(Sale_Price))
+
+set.seed(123)
+
+ames_split <- initial_split(ames_known_price, prop = 0.9)
+ames_train <- training(ames_split)
+ames_test <- testing(ames_split)
+
+ames_folds <- vfold_cv(ames_train, v = 5)
+```
+
+## Ridge Regression
+
+```{r}
+#| echo: true
+#| eval: false
+
+ridge_reg_spec <- linear_reg(mixture = 0, penalty = 1e4) %>%
+  set_engine("glmnet")
+
+ridge_reg_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_impute_knn(all_predictors()) %>%
+  step_normalize(all_numeric_predictors()) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+ridge_reg_wf <- workflow() %>%
+  add_model(ridge_reg_spec) %>%
+  add_recipe(ridge_reg_rec)
+
+ridge_reg_results <- ridge_reg_wf %>%
+  fit_resamples(ames_folds)
+
+ridge_reg_results %>%
+  collect_metrics()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+ridge_reg_spec <- linear_reg(mixture = 0, penalty = 1e4) %>%
+  set_engine("glmnet")
+
+ridge_reg_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_impute_knn(all_predictors()) %>%
+  step_normalize(all_numeric_predictors()) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+ridge_reg_wf <- workflow() %>%
+  add_model(ridge_reg_spec) %>%
+  add_recipe(ridge_reg_rec)
+
+ridge_reg_results <- ridge_reg_wf %>%
+  fit_resamples(ames_folds)
+
+ridge_reg_results %>%
+  collect_metrics() %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Seeing the Estimated Ridge Regression Model {.scrollable}
+
+. . .
+
+While we wouldn't generally fit the Ridge Regression model at this time, you can see how to do that and examine the estimated model below.
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
+ridge_reg_fit <- ridge_reg_wf %>%
+  fit(ames_train)
+
+ridge_reg_fit %>%
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+ridge_reg_fit <- ridge_reg_wf %>%
+  fit(ames_train)
+
+ridge_reg_fit %>%
+  tidy() %>%
+  kable() %>% 
+  kable_styling()
+```
+
+## The LASSO
+
+```{r}
+#| echo: true
+#| eval: false
+
+lasso_reg_spec <- linear_reg(mixture = 1, penalty = 1e4) %>%
+  set_engine("glmnet")
+
+lasso_reg_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_impute_knn(all_predictors()) %>%
+  step_normalize(all_numeric_predictors()) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+lasso_reg_wf <- workflow() %>%
+  add_model(lasso_reg_spec) %>%
+  add_recipe(lasso_reg_rec)
+
+lasso_reg_results <- lasso_reg_wf %>%
+  fit_resamples(ames_folds)
+
+lasso_reg_results %>%
+  collect_metrics()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lasso_reg_spec <- linear_reg(mixture = 1, penalty = 1e4) %>%
+  set_engine("glmnet")
+
+lasso_reg_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_impute_knn(all_predictors()) %>%
+  step_normalize(all_numeric_predictors()) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+
+lasso_reg_wf <- workflow() %>%
+  add_model(lasso_reg_spec) %>%
+  add_recipe(lasso_reg_rec)
+
+lasso_reg_results <- lasso_reg_wf %>%
+  fit_resamples(ames_folds)
+
+lasso_reg_results %>%
+  collect_metrics() %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Seeing the Estimated LASSO Model {.scrollable}
+
+. . .
+
+Again, we wouldn't generally fit the LASSO model at this time, however you can see how to do that and examine the estimated model below.
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
+lasso_reg_fit <- lasso_reg_wf %>%
+  fit(ames_train)
+
+lasso_reg_fit %>%
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lasso_reg_fit <- lasso_reg_wf %>%
+  fit(ames_train)
+
+lasso_reg_fit %>%
+  tidy() %>%
+  kable() %>% 
+  kable_styling()
+```
+
+## Non-zero LASSO Coefficients
+
+. . .
+
+Here are only the predictors with non-zero coefficients
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
+lasso_reg_fit %>%
+  tidy() %>%
+  filter(estimate != 0)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lasso_reg_fit %>%
+  tidy() %>%
+  filter(estimate != 0) %>%
+  kable() %>% 
+  kable_styling()
+```
+
+## Summary
+
++ The more predictors we include in a model, the more flexible that model is
++ We can use *regularization* methods to constrain our models and make overfitting less likely
++ Two techniques commonly used with linear regression models are *Ridge Regression* and the *LASSO*
++ These methods alter the optimization problem that obtains the estimated $\beta$-coefficients for our model
++ *Ridge Regression* attaches very small coefficients to uninformative predictors, while the *LASSO* attaches coefficients of $0$ to them
+
+  + This means that the *LASSO* can be used for variable selection
+
++ Both *Ridge Regression* and the *LASSO* require all numerical predictors to be scaled
++ We can fit/cross-validate these models in nearly the same way that we have been working with ordinary linear regression models
+
+  + We `set_engine("glmnet")` rather than `set_engine("lm")` for *ridge* and *LASSO*
+  + We set `mixture = 0` for *Ridge Regression* and `mixture = 1` for the *LASSO*
+  + We define a `penalty` parameter which determines the amount of regularization (constraint) applied to the model
+
+
+

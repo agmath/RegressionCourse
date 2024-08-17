@@ -337,25 +337,19 @@ Everything seems great!
 
 . . . 
 
-::::{.columns}
-
-:::{.column widht="50%"}
-
-<div class="tenor-gif-embed" data-postid="5866217" data-share-method="host" data-aspect-ratio="1.33333" data-width="100%"><a href="https://tenor.com/view/futurama-bender-catch-theres-always-a-catch-gif-5866217">Futurama Bender GIF</a>from <a href="https://tenor.com/search/futurama-gifs">Futurama GIFs</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
-
-:::
-
-:::{.column widht="50%"}
-
 <center>
 
-<font size="120pt">...except...</font>
+<font size="100pt">...except...</font>
 
 </center>
 
-:::
+. . .
 
-::::
+<center>
+
+<div class="tenor-gif-embed" data-postid="5866217" data-share-method="host" data-aspect-ratio="1.33333" data-width="50%"><a href="https://tenor.com/view/futurama-bender-catch-theres-always-a-catch-gif-5866217">Futurama Bender GIF</a>from <a href="https://tenor.com/search/futurama-gifs">Futurama GIFs</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+
+</center>
 
 ## Motivation
 

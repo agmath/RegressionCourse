@@ -1,0 +1,55 @@
+---
+title: "Beyond Linear Regression: Other Classes of Regressor"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+#Note -- for taller slides, set height option on revealjs to a large pixel number, ie. 900
+
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(patchwork)
+library(kableExtra)
+library(memer)
+library(marginaleffects)
+tidymodels_prefer()
+
+penguins <- palmerpenguins::penguins
+
+penguins <- penguins %>%
+  mutate(flipper_length_mm = as.numeric(flipper_length_mm),
+         body_mass_g = as.numeric(body_mass_g))
+
+set.seed(123)
+penguin_splits <- initial_split(penguins)
+penguins_train <- training(penguin_splits)
+penguins_test <- testing(penguin_splits)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+options(scipen = 999)
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 18))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+```
+
+## Recap
+
+
+
+
+

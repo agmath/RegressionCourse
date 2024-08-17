@@ -986,7 +986,7 @@ penguins_split <- initial_split(penguins, prop = 0.9)
 penguins_train <- training(penguins_split)
 penguins_test <- testing(penguins_split)
 
-penguins_folds <- vfold_cv(penguins_train)
+penguins_folds <- vfold_cv(penguins_train, v = 10)
 
 lr_spec <- linear_reg() %>%
   set_engine("lm")

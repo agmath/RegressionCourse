@@ -1041,7 +1041,7 @@ lr_results %>%
   kable_styling()
 ```
 
-> We see that the *cross-validation* RMSE is about `r round(cv_rmse, 2)`, with a standard error of about `r round(cv_rmse_sd, 2)`, so that we are confident that our model will predict penguin body masses accurate to within a conservative estimate of about $\pm 2\cdot\left(\right.$ `r round(cv_rmse, 2)` $\pm 2\cdot\left(\right.$ `r round(cv_rmse_sd, 2)`$\left.\left.\right)\right)$g, which is the same as $\pm$ `r round(2*(cv_rmse + (2*cv_rmse_sd)), 2)`g
+> We see that the *cross-validation* RMSE is about `r round(cv_rmse, 2)`, with a standard error of about `r round(cv_rmse_sd, 2)`, so we are confident our model will predict penguin body masses accurate within a conservative estimate of about $\pm 2\cdot\left(\right.$ `r round(cv_rmse, 2)` $\pm 2\cdot\left(\right.$ `r round(cv_rmse_sd, 2)`$\left.\left.\right)\right)$g, which is the same as $\pm$ `r round(2*(cv_rmse + (2*cv_rmse_sd)), 2)`g
 
 ## Implementing *Cross-Validation* in `{tidymodels}`
 

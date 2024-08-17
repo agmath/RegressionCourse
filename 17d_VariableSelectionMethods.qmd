@@ -24,6 +24,9 @@ tidymodels_prefer()
 penguins <- palmerpenguins::penguins
 
 ames <- read_csv("https://raw.githubusercontent.com/koalaverse/homlr/master/data/ames.csv")
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+options(scipen = 999)
 ```
 
 ## Recap
@@ -86,19 +89,19 @@ $$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \bet
 Solves the following optimization problem:
 
 $$\begin{array}{ll}\text{Minimize:} & \displaystyle{\sum_{\text{training data}}{\left(y_{\text{observed}} - \left(\beta_0 + \sum_{i = 1}^{k}{\beta_i x_i}\right)\right)^2}}\\
-\text{Subject To:} & \displaystyle{\sum_{i=1}^{k}{\left|\beta_i\right|} \leq C}\end{array}$$
+\text{Subject To:} & \displaystyle{\sum_{i=1}^{k}{\beta_i^2} \leq C}\end{array}$$
 
 Where $C$ can be thought of as a total coefficient budget. That is, it becomes very expensive for the model to assign lots of non-zero coefficients.
 
 ## Least Absolute Shrinkage and Selection Operator (LASSO)
 
-The difference between Ridge Regression and the LASSO is in how "spent budget" is calculated. Instead of summing the absolute values of the $\beta$ coefficients, we'll sum their squares. That is, using LASSO to fit a model of the form
+The difference between Ridge Regression and the LASSO is in how "spent budget" is calculated. Instead of summing the squares of the $\beta$ coefficients, we'll sum their absolute values. That is, using LASSO to fit a model of the form
 $$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
 Solves the following optimization problem:
 $$\begin{array}{ll}\text{Minimize:} & \displaystyle{\sum_{\text{training data}}{\left(y_{\text{observed}} - \left(\beta_0 + \sum_{i = 1}^{k}{\beta_i x_i}\right)\right)^2}}\\
-\text{Subject To:} & \displaystyle{\sum_{i=1}^{k}{\beta_i^2} \leq C}\end{array}$$
+\text{Subject To:} & \displaystyle{\sum_{i=1}^{k}{\left|\beta_i\right|} \leq C}\end{array}$$
 
-Where $C$ can again be thought of as a total coefficient budget. Because it squares the $\beta$ coefficients in the calculation of "budget used", the LASSO penalizes large coefficients more than Ridge Regression does. Furthermore, due to the mathematics behind these algorithms, models fit using the LASSO result in small coefficients being sent to $0$. That is, the LASSO can be used as a *variable selection procedure*. Models fit with Ridge Regression often leave several predictors having very small coefficients so, while they don't have much influence in the overall model predictions, they do still remain in the model.
+Where $C$ can again be thought of as a total coefficient budget. Because it squares the $\beta$ coefficients in the calculation of "budget used". Furthermore, due to the mathematics behind these algorithms, models fit using the LASSO result in small coefficients being sent to $0$. That is, the LASSO can be used as a *variable selection procedure*. Models fit with Ridge Regression often leave several predictors having very small coefficients so, while they don't have much influence in the overall model predictions, they do still remain in the model.
 
 ### Some Feature PreProcessing Concerns
 
@@ -161,7 +164,7 @@ ames_test <- testing(ames_split)
 
 ames_folds <- vfold_cv(ames_train, v = 5)
 
-ridge_reg_spec <- linear_reg(mixture = 0, penalty = 0.1) %>%
+ridge_reg_spec <- linear_reg(mixture = 0, penalty = 1e4) %>%
   set_engine("glmnet")
 
 reg_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
@@ -197,14 +200,14 @@ ridge_reg_fit %>%
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-From the regression output above, we can see lots of very small coefficients attached to the majority of our available predictors.
+From the regression output above, we can see some predictors getting large coefficients, while others recieve coefficients on a smaller scale.
 
 ### Implementing the LASSO
 
 The work required to construct a LASSO model is nearly identical. We simply use `mixture = 1` in the model specification to signal that we want to use the LASSO constraint instead of the ridge constraint. 
 
 ```{r}
-lasso_reg_spec <- linear_reg(mixture = 1, penalty = 0.1) %>%
+lasso_reg_spec <- linear_reg(mixture = 1, penalty = 1e4) %>%
   set_engine("glmnet")
 
 lasso_reg_wf <- workflow() %>%

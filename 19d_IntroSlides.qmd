@@ -980,7 +980,7 @@ It also includes interactions between both `species` and `island` with flipper l
 ```{r}
 #| echo: true
 #| eval: true
-#| code-line-numbers: "|1-3|5|7-8|10-14|10|11-12|13|14|16-18|20-21"
+#| code-line-numbers: "|1-3|1|5|7-8|10-14|10|11-12|13|14|16-18|20-21"
 
 penguins_split <- initial_split(penguins, prop = 0.9)
 penguins_train <- training(penguins_split)

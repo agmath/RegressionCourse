@@ -30,6 +30,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="22d_IntroSlides_files/libs/revealjs/dist/theme/quarto.css">
   <link href="22d_IntroSlides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -321,6 +386,8 @@
       margin-right: 0; 
     }
   </style>
+  <script src="22d_IntroSlides_files/libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="22d_IntroSlides_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -352,9 +419,466 @@ code.sourceCode {
 </section>
 <section id="recap" class="slide level2">
 <h2>Recap</h2>
+<div class="fragment">
+<p>We’ve spent the last several weeks investigating and applying <em>linear</em> (and most recently <em>generalized linear</em>) regression models.</p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k\]</span></p>
+</div>
+<div class="fragment">
+<p>We’ve come a long way!</p>
+<ul>
+<li class="fragment">Simple linear regressors <span class="math inline">\(\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x\)</span></li>
+<li class="fragment">Adding support for multiple numerical predictors</li>
+<li class="fragment">Allowing for the inclusion of categorical predictors via dummy encodings or scoring</li>
+<li class="fragment">Accommodating curvature and non-constant associations via higher-order terms</li>
+<li class="fragment">Using elbow plots to identify appropriate levels of model flexibility</li>
+<li class="fragment">Using cross-validation to obtain more stable results and more accurate performance estimates</li>
+<li class="fragment">Engaging in regularization to constrain our models and reduce the likelihood of overfitting</li>
+</ul>
+</div>
+</section>
+<section id="we-did-it" class="slide level2">
+<h2>We Did It!</h2>
+<center>
+<iframe src="https://giphy.com/embed/dijK6WYRdSoJEikGPS" width="480" height="269" style="" frameborder="0" class="giphy-embed" allowfullscreen="">
+</iframe>
+<p>
+<a href="https://giphy.com/gifs/nba-celebrate-we-did-it-jayson-tatum-dijK6WYRdSoJEikGPS">via GIPHY</a>
+</p>
+</center>
+<div class="fragment">
+<center>
+<p><font size="120pt">You should feel accomplished!</font></p>
+</center>
+</div>
+</section>
+<section id="we-did-it-1" class="slide level2">
+<h2>We Did It!</h2>
+<center>
+<iframe src="https://giphy.com/embed/YV03rwFKoxyEH9nVhb" width="480" height="480" style="" frameborder="0" class="giphy-embed" allowfullscreen="">
+</iframe>
+<p>
+<a href="https://giphy.com/gifs/VCGConstruction-theres-more-but-wait-did-you-hear-YV03rwFKoxyEH9nVhb">via GIPHY</a>
+</p>
+</center>
+</section>
+<section id="alternative-regression-models" class="slide level2">
+<h2>Alternative Regression Models</h2>
+<div class="fragment">
+<p><em>Regression</em> simply means modeling a numerical response</p>
+</div>
+<div class="fragment">
+<p>Linear regression is not the only way to predict a numerical outcome</p>
+</div>
+<div class="fragment">
+<p>There are dozens of other model classes suitable for regression problems</p>
+<ul>
+<li class="fragment">Decision tree regressors</li>
+<li class="fragment">Nearest neighbor regressors</li>
+<li class="fragment">Support vector machines</li>
+<li class="fragment">etc.</li>
+</ul>
+</div>
+<div class="fragment">
+<p>We could even utilize an <em>ensemble</em> of models to make predictions – two super common examples are</p>
+<ul>
+<li class="fragment">Random forests</li>
+<li class="fragment">Gradient boosting</li>
+</ul>
+</div>
+<div class="fragment">
+<p>Luckily, since the <code>{tidymodels}</code> syntax is standardized, we already know how to fit these model and ensembles!</p>
+</div>
+</section>
+<section id="a-crash-course-in-four-new-model-classes" class="slide level2">
+<h2>A Crash Course in Four New Model Classes</h2>
+<div class="fragment">
+<p><strong>KNN Regressors:</strong> Nearest neighbor models assume that observations are <em>most like</em> those “closest” to them.</p>
+<ul>
+<li class="fragment">Identify the “<span class="math inline">\(k\)</span>” closest training observations to the new observation whose response we want to predict</li>
+<li class="fragment">Average the responses over those <span class="math inline">\(k\)</span> neighbors, and that’s the predicted response</li>
+<li class="fragment"><strong>Note:</strong> These models are very sensitive to their parameter <span class="math inline">\(k\)</span></li>
+</ul>
+</div>
+<div class="fragment">
+<p><strong>Decision Tree Regressors:</strong> Decision trees mimic human decision-making in an “<em>if this, then that</em>” structure</p>
+<ul>
+<li class="fragment">Decision trees are very interpretable and easy to explain to non-experts</li>
+<li class="fragment">Tree-based models are very prone to overfitting, so we must use regularization to constrain them</li>
+</ul>
+</div>
+</section>
+<section id="a-crash-course-in-four-new-model-classes-1" class="slide level2">
+<h2>A Crash Course in Four New Model Classes</h2>
+<div class="fragment">
+<p>An <em>ensemble</em> of models is a collection of models that, together, make a single predicted response</p>
+</div>
+<div class="fragment">
+<p><strong>Random Forests:</strong> A collection of trees, in parallel, individually making very poor predictions but, when averaged, make an unreasonably accurate prediction</p>
+<center>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/iOucwX7Z1HU?si=eAD9up5kUpboVm4P" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
+</iframe>
+</center>
+</div>
+</section>
+<section id="a-crash-course-in-four-new-model-classes-2" class="slide level2">
+<h2>A Crash Course in Four New Model Classes</h2>
+<p>An <em>ensemble</em> of models is a collection of models that, together, make a single predicted response</p>
+<p><strong>Random Forests:</strong> A collection of trees, in parallel, individually making very poor predictions but, when averaged, make an unreasonably accurate prediction</p>
+<ul>
+<li class="fragment">Random forests require each tree to be trained on a slightly different dataset – these are obtained using a procedure called <em>bootstrapping</em></li>
+<li class="fragment">For each tree, and at each decision juncture, only a random subset of the predictors are available for the tree to utilize</li>
+</ul>
+<div class="fragment">
+<p><strong>Gradient Boosting Ensembles:</strong> A sequence of very weak (extremely high-bias) learners in series that aim to slowly chip away at the reducible error in predictions</p>
+<ul>
+<li class="fragment">The first model predicts the response</li>
+<li class="fragment">The second model predicts the errors made by the first model</li>
+<li class="fragment">The third model predicts the remaining error made by the first two models, and so on…</li>
+</ul>
+</div>
+<div class="fragment">
+<p>Gradient boosting ensembles are very sensitive to the number of boosting rounds and can overfit, if the number of iterations is too high</p>
+</div>
+</section>
+<section id="five-model-classes-competing" class="slide level2">
+<h2>Five Model Classes, Competing</h2>
+<div class="fragment">
+<p>Let’s try building</p>
+<ul>
+<li class="fragment">a linear regression model,</li>
+<li class="fragment">a nearest neighbor regressor,</li>
+<li class="fragment">a decision tree regressor,</li>
+<li class="fragment">a random forest, and</li>
+<li class="fragment">a gradient boosting ensemble of trees</li>
+</ul>
+</div>
+<div class="fragment">
+<p>to predict the selling price of a home in Ames, Iowa</p>
+</div>
+</section>
+<section id="the-ames-data" class="slide level2">
+<h2>The Ames Data</h2>
+<div class="fragment">
+<p>We’ve used the Ames data quite a bit already, let’s read it in, filter out the observations with a missing selling price, split the data into training and test sets, and create cross-validation folds</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>ames_known_price <span class="ot">&lt;-</span> ames <span class="sc">%&gt;%</span></span>
+<span id="cb1-2"><a href=""></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Sale_Price))</span>
+<span id="cb1-3"><a href=""></a></span>
+<span id="cb1-4"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb1-5"><a href=""></a></span>
+<span id="cb1-6"><a href=""></a>ames_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(ames_known_price, <span class="at">prop =</span> <span class="fl">0.9</span>)</span>
+<span id="cb1-7"><a href=""></a></span>
+<span id="cb1-8"><a href=""></a>ames_train <span class="ot">&lt;-</span> <span class="fu">training</span>(ames_split)</span>
+<span id="cb1-9"><a href=""></a>ames_test <span class="ot">&lt;-</span> <span class="fu">testing</span>(ames_split)</span>
+<span id="cb1-10"><a href=""></a></span>
+<span id="cb1-11"><a href=""></a>ames_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(ames_train, <span class="at">v =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="creating-our-model-specifications" class="slide level2">
+<h2>Creating Our Model Specifications</h2>
+<div class="fragment">
+<p>Let’s create all five of our model specifications</p>
+</div>
+<div class="fragment">
+<p>Several of these models can be used for both <em>regression</em> and <em>classification</em>, so in addition to <code>set_engine()</code>, we’ll also <code>set_mode("regression")</code> for them</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>lr_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-2"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb2-3"><a href=""></a></span>
+<span id="cb2-4"><a href=""></a>dt_spec <span class="ot">&lt;-</span> <span class="fu">decision_tree</span>(<span class="at">tree_depth =</span> <span class="dv">10</span>, <span class="at">min_n =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-5"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"rpart"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-6"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)</span>
+<span id="cb2-7"><a href=""></a></span>
+<span id="cb2-8"><a href=""></a>knn_spec <span class="ot">&lt;-</span> <span class="fu">nearest_neighbor</span>(<span class="at">neighbors =</span> <span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-9"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"kknn"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-10"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>) </span>
+<span id="cb2-11"><a href=""></a></span>
+<span id="cb2-12"><a href=""></a>rf_spec <span class="ot">&lt;-</span> <span class="fu">rand_forest</span>(<span class="at">mtry =</span> <span class="dv">9</span>, <span class="at">trees =</span> <span class="dv">50</span>, <span class="at">min_n =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-13"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"ranger"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-14"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)</span>
+<span id="cb2-15"><a href=""></a></span>
+<span id="cb2-16"><a href=""></a>xgb_spec <span class="ot">&lt;-</span> <span class="fu">boost_tree</span>(<span class="at">mtry =</span> <span class="dv">9</span>, <span class="at">trees =</span> <span class="dv">20</span>, <span class="at">tree_depth =</span> <span class="dv">2</span>, <span class="at">learn_rate =</span> <span class="fl">0.1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-17"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"xgboost"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-18"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="defining-recipes" class="slide level2">
+<h2>Defining Recipes</h2>
+<div class="fragment">
+<p>Each of these models has different requirements, so we’ll need model-specific recipes</p>
+</div>
+<div class="fragment">
+<p>KNN is distance-based, so all predictors should be numeric and scaled</p>
+</div>
+<div class="fragment">
+<p>All of the tree-based models (decision tree, random forest, gradient boosting ensemble) can share a recipe</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>lr_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(Sale_Price <span class="sc">~</span> ., <span class="at">data =</span> ames_train) <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href=""></a>  <span class="fu">step_impute_median</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href=""></a>  <span class="fu">step_other</span>(<span class="fu">all_nominal_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href=""></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal_predictors</span>())</span>
+<span id="cb3-5"><a href=""></a></span>
+<span id="cb3-6"><a href=""></a>knn_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(Sale_Price <span class="sc">~</span> ., <span class="at">data =</span> ames_train) <span class="sc">%&gt;%</span></span>
+<span id="cb3-7"><a href=""></a>  <span class="fu">step_impute_median</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb3-8"><a href=""></a>  <span class="fu">step_rm</span>(<span class="fu">all_nominal_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb3-9"><a href=""></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>())</span>
+<span id="cb3-10"><a href=""></a></span>
+<span id="cb3-11"><a href=""></a>tree_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(Sale_Price <span class="sc">~</span> ., <span class="at">data =</span> ames_train) <span class="sc">%&gt;%</span></span>
+<span id="cb3-12"><a href=""></a>  <span class="fu">step_impute_median</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb3-13"><a href=""></a>  <span class="fu">step_other</span>(<span class="fu">all_nominal_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb3-14"><a href=""></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal_predictors</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="a-workflow-set" class="slide level2">
+<h2>A Workflow <em>Set</em></h2>
+<div class="fragment">
+<p>Since we are comparing several models, we can make our lives easier by using a workflow <em>set</em> instead of an individual workflow</p>
+</div>
+<div class="fragment">
+<p>Doing this will allow us to cross-validate all of the models at once</p>
+</div>
+<div class="fragment">
+<p>We’ll create a list of models, a list of recipes, and then package the lists together into the workflow set</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>rec_list <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb4-2"><a href=""></a>  <span class="at">lr =</span> lr_rec, </span>
+<span id="cb4-3"><a href=""></a>  <span class="at">knn =</span> knn_rec,</span>
+<span id="cb4-4"><a href=""></a>  <span class="at">dt =</span> tree_rec,</span>
+<span id="cb4-5"><a href=""></a>  <span class="at">rf =</span> tree_rec,</span>
+<span id="cb4-6"><a href=""></a>  <span class="at">xgb =</span> tree_rec</span>
+<span id="cb4-7"><a href=""></a>)</span>
+<span id="cb4-8"><a href=""></a></span>
+<span id="cb4-9"><a href=""></a>model_list <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb4-10"><a href=""></a>  <span class="at">lr =</span> lr_spec,</span>
+<span id="cb4-11"><a href=""></a>  <span class="at">knn =</span> knn_spec,</span>
+<span id="cb4-12"><a href=""></a>  <span class="at">dt =</span> dt_spec,</span>
+<span id="cb4-13"><a href=""></a>  <span class="at">rf =</span> rf_spec,</span>
+<span id="cb4-14"><a href=""></a>  <span class="at">xgb =</span> xgb_spec</span>
+<span id="cb4-15"><a href=""></a>)</span>
+<span id="cb4-16"><a href=""></a></span>
+<span id="cb4-17"><a href=""></a>my_models_wfs <span class="ot">&lt;-</span> <span class="fu">workflow_set</span>(rec_list, model_list, <span class="at">cross =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="fit-and-assess-the-workflow-set" class="slide level2">
+<h2>Fit and Assess the Workflow Set</h2>
+<div class="fragment">
+<p>Now that we’ve got our model specifications and recipes packages into our set of workflows, it’s time to assess them</p>
+</div>
+<div class="fragment">
+<p>As you might expect, we’ll use cross-validation for this</p>
+</div>
+<div class="fragment">
+<p>Cross-validating over the <em>workflow set</em> is a bit more complicated than cross-validating an individual workflow</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>grid_ctrl <span class="ot">&lt;-</span> <span class="fu">control_grid</span>(</span>
+<span id="cb5-2"><a href=""></a>  <span class="at">save_pred =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-3"><a href=""></a>  <span class="at">parallel_over =</span> <span class="st">"everything"</span>,</span>
+<span id="cb5-4"><a href=""></a>  <span class="at">save_workflow =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-5"><a href=""></a>)</span>
+<span id="cb5-6"><a href=""></a></span>
+<span id="cb5-7"><a href=""></a>grid_results <span class="ot">&lt;-</span> my_models_wfs <span class="sc">%&gt;%</span></span>
+<span id="cb5-8"><a href=""></a>  <span class="fu">workflow_map</span>(</span>
+<span id="cb5-9"><a href=""></a>    <span class="at">seed =</span> <span class="dv">123</span>,</span>
+<span id="cb5-10"><a href=""></a>    <span class="at">resamples =</span> ames_folds,</span>
+<span id="cb5-11"><a href=""></a>    <span class="at">control =</span> grid_ctrl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="okay-so-now-what" class="slide level2">
+<h2>Okay, So Now What?</h2>
+<div class="fragment">
+<p>Let’s check the results of our cross-validation assessments</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a>grid_results <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href=""></a>  <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="22d_IntroSlides_files/figure-revealjs/unnamed-chunk-7-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="okay-so-now-what-1" class="slide level2">
+<h2>Okay, So Now What?</h2>
+<p>Let’s check the results of our cross-validation assessments</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a>grid_results <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href=""></a>  <span class="fu">rank_results</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">rank</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">model</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">rmse_mean</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">rmse_sd</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">rsq_mean</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">rsq_sd</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">rand_forest</td>
+<td style="text-align: right;">28606.09</td>
+<td style="text-align: right;">28606.09</td>
+<td style="text-align: right;">0.8871876</td>
+<td style="text-align: right;">0.8871876</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">linear_reg</td>
+<td style="text-align: right;">34551.38</td>
+<td style="text-align: right;">34551.38</td>
+<td style="text-align: right;">0.8233698</td>
+<td style="text-align: right;">0.8233698</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">nearest_neighbor</td>
+<td style="text-align: right;">37943.26</td>
+<td style="text-align: right;">37943.26</td>
+<td style="text-align: right;">0.7832813</td>
+<td style="text-align: right;">0.7832813</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">decision_tree</td>
+<td style="text-align: right;">44615.48</td>
+<td style="text-align: right;">44615.48</td>
+<td style="text-align: right;">0.6973082</td>
+<td style="text-align: right;">0.6973082</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">boost_tree</td>
+<td style="text-align: right;">50919.70</td>
+<td style="text-align: right;">50919.70</td>
+<td style="text-align: right;">0.7764053</td>
+<td style="text-align: right;">0.7764053</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<div class="fragment">
+<p>I’ve done a bit more to reformat the table than the code I’m showing you will produce</p>
+</div>
+<div class="fragment">
+<p>In any case, it looks like our <em>random forest</em> is a pretty clear winner here!</p>
+</div>
+</section>
+<section id="what-now" class="slide level2">
+<h2>What Now?</h2>
+<div class="fragment">
+<p>Let’s extract that best model from the <code>grid_results</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>best_results <span class="ot">&lt;-</span> grid_results <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href=""></a>  <span class="fu">extract_workflow_set_result</span>(<span class="st">"rf_rf"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href=""></a>  <span class="fu">select_best</span>(<span class="at">metric =</span> <span class="st">"rmse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<p>Now we’ll finalize the workflow for our best (random forest) model-recipe combination, and fit the result to our training/testing split</p>
+</div>
+<div class="fragment">
+<p>The result is a fitted model along with predictions for the test observations</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>rf_test_results <span class="ot">&lt;-</span> grid_results <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href=""></a>  <span class="fu">extract_workflow</span>(<span class="st">"rf_rf"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href=""></a>  <span class="fu">finalize_workflow</span>(best_results) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href=""></a>  <span class="fu">last_fit</span>(<span class="at">split =</span> ames_split)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="visualizing-random-forest-performance" class="slide level2">
+<h2>Visualizing Random Forest Performance</h2>
+<div class="fragment">
+<p>Let’s check out how this model does!</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a>rf_test_results <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href=""></a>  <span class="fu">collect_predictions</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href=""></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb10-4"><a href=""></a>  <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="dv">1</span>, <span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">"gray50"</span>, <span class="at">lty =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb10-5"><a href=""></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> Sale_Price, <span class="at">y =</span> .pred), <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb10-6"><a href=""></a>  <span class="fu">coord_obs_pred</span>() <span class="sc">+</span></span>
+<span id="cb10-7"><a href=""></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"observed"</span>, <span class="at">y =</span> <span class="st">"predicted"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="22d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>The closer the points are to the 45-degree line, the more accurate the model’s predictions</p>
+</div>
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li class="fragment">There are more model classes available to us than just linear regression</li>
+<li class="fragment">The <code>{tidymodels}</code> framework provides a streamlined syntax for fitting, assessing, and utilizing lots of the most common types of model (including ensembles)</li>
+<li class="fragment">We can use our old approaches to define, assess, and compare models one-by-one</li>
+<li class="fragment">We can also utilize <em>workflow sets</em> to assess multiple model and recipe combinations at once</li>
+</ul>
+<div class="fragment">
+<p>I hope you’ll explore some of these model classes on your own – especially in our competitions and on your final projects</p>
+</div>
+</section>
+<section id="next-up" class="slide level2">
+<h2>Next Up…</h2>
+<div class="fragment">
+<p>You may have noticed that, ever since we discussed regularization methods, we’ve been setting parameters prior to our models seeing any data</p>
+<ul>
+<li class="fragment"><code>mixture</code></li>
+<li class="fragment"><code>penalty</code></li>
+<li class="fragment"><code>mtry</code></li>
+<li class="fragment"><code>trees</code></li>
+<li class="fragment"><code>neighbors</code></li>
+<li class="fragment">etc.</li>
+</ul>
+</div>
+<div class="fragment">
+<p>How do we know that we’ve chosen the best values?</p>
+</div>
+<div class="fragment">
+<p>How do we even know that we’ve chosen appropriate values?</p>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
+</div>
 </div>
 </div>
 </section>

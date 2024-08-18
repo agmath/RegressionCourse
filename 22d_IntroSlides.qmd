@@ -487,10 +487,6 @@ rf_test_results %>%
   labs(x = "observed", y = "predicted")
 ```
 
-. . . 
-
-The closer the points are to the 45-degree line, the more accurate the model's predictions
-
 ## Summary
 
 + There are more model classes available to us than just linear regression

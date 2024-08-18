@@ -405,20 +405,20 @@ grid_results %>%
   bind_cols(
     grid_results %>%
       rank_results() %>%
-      select(model, .metric, mean) %>%
-      pivot_wider(names_from = .metric, values_from = mean) %>%
+      select(model, .metric, std_err) %>%
+      pivot_wider(names_from = .metric, values_from = std_err) %>%
       rename(
-        rmse_sd = rmse,
-        rsq_sd = rsq
+        rmse_se = rmse,
+        rsq_se = rsq
         ) %>%
       select(
-        rmse_sd,
-        rsq_sd
+        rmse_se,
+        rsq_se
       )
     ) %>%
   arrange(rmse_mean) %>%
   mutate(rank = row_number()) %>%
-  select(rank, model, rmse_mean, rmse_sd, rsq_mean, rsq_sd) %>%
+  select(rank, model, rmse_mean, rmse_se, rsq_mean, rsq_se) %>%
   kable() %>%
   kable_styling()
 ```

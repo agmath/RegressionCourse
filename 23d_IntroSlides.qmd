@@ -51,23 +51,808 @@ code.sourceCode {
 
 . . .
 
-You may have noticed that, ever since we discussed regularization methods, we've been setting parameters prior to our models seeing any data
+We've discussed several new model classes recently
+
+. . . 
+
+With each class, we've been required to set model parameters manually, prior to the model seeing any data
+
+. . .
+
+**Ridge Regression and LASSO:**
+
+::::{.columns}
+
+:::{.column width="50%"}
 
 + `mixture`
+
+:::
+
+:::{.columns width="50%"}
+
 + `penalty`
-+ `mtry`
-+ `trees`
+
+:::
+
+::::
+
+. . .
+
+**Nearest Neighbor Regressors:**
+
 + `neighbors`
+
+. . . 
+
+**Tree-Based Models:** 
+
++ `max_depth`
+
+. . .
+
+**Ensembles (Random Forest, Boosted Trees):**
+
+::::{.columns}
+
+:::{.column width="33%"}
+
++ `mtry`
+
+:::
+
+:::{.column width="33%"}
+
++ `trees`
+
+:::
+
+:::{.column width="33%"}
+
++ `learn_rate`
+
+:::
+
+::::
+
 + etc.
 
 . . .
 
-How do we know that we've chosen the best values?
-
-. . . 
-
-How do we even know that we've chosen appropriate values?
+Every modeling choice we make should be justified...
 
 . . .
 
-We've taken care to not leave things up to chance and to make sure all of our choices can be justified -- can we get the data to justify the choices
+How can we make justifiable choices for these parameters?
+
+## Model Hyperparameters
+
+. . . 
+
+A *hyperparameter* is a model parameter (setting) that must be chosen prior to the model being fit to training data
+
+. . . 
+
+That is, *hyperparameters* are set outside of the model fitting process
+
+. . . 
+
+If these parameters need to be determined prior to seeing data, how can we optimize (or even justify) our choices?
+
+## Keep Calm, and ...
+
+## Keep Calm, and Cross-Validate
+
+. . . 
+
+I told you that cross-validation was useful for more than just estimating more stable performance estimates
+
+. . . 
+
+With cross-validation, we can try multiple combinations of hyperparameter settings
+
+. . . 
+
+The cross-validation procedure results in performance estimates (and standard error estimates) for each model and hyperparameter combination
+
+. . . 
+
+From here, we can identify not only the best model, but also the best hyperparameter choices
+
+. . . 
+
+We'll call this process *tuning*
+
+## Tuning a Decision Tree Regressor
+
+. . . 
+
+Decision tree regressors are a great first model class to tune because optimizing the `max_depth` parameter is intuitive
+
+. . . 
+
+The *deeper* a decision tree, the more *flexible* it is, and the more likely it is to overfit
+
+. . . 
+
+If a tree is *too shallow* though, it will be underfit
+
+. . . 
+
+Let's tune a tree to identify the optimal depth for predicting selling prices of homes in the Ames, Iowa data
+
+## Reading, Filtering, and Splitting the Data
+
+```{r}
+#| echo: true
+#| eval: true
+
+ames_known_prices <- ames %>%
+  filter(!is.na(Sale_Price))
+
+set.seed(123)
+
+ames_split <- initial_split(ames, prop = 0.9)
+
+ames_train <- training(ames_split)
+ames_test <- testing(ames_split)
+
+ames_folds <- vfold_cv(ames_train, v = 5)
+```
+
+## Defining a Model with Tuning Parameters
+
+. . . 
+
+Now that we have our data, let's define our model. Most of this is done exactly as before
+
+. . . 
+
+The only difference is that we'll indicate parameters to be *tuned* by setting them to `tune()`
+
+```{r}
+#| echo: true
+#| eval: true
+
+dt_spec <- decision_tree(tree_depth = tune()) %>%
+  set_engine("rpart") %>%
+  set_mode("regression")
+
+dt_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_impute_median(all_numeric_predictors())
+
+dt_wf <- workflow() %>%
+  add_model(dt_spec) %>%
+  add_recipe(dt_rec)
+  
+```
+
+## Tuning a Model
+
+. . . 
+
+Now that we've defined our model, we are ready to tune it
+
+. . . 
+
+We can't use `fit()` or `fit_resamples()` for this -- we'll need to `tune_grid()` instead
+
+. . .
+
+The *grid* in `tune_grid()` refers to the fact that we'll need to define a grid (collection) of hyperparameter combinations for the model to tune over
+
+. . . 
+
+We can use the `grid_regular()` function to create a *regular* grid of sensible values to try for each hyperparameter
+
+. . . 
+
+```{r}
+#| echo: true
+#| eval: true
+
+tree_grid <- grid_regular(
+  tree_depth(),
+  levels = 10
+)
+```
+
+## A Note on Complexity
+
+. . . 
+
+It is important to realize what we are asking for here... 
+
+. . . 
+
+The `levels` argument of `grid_regular()` determines the number of hyperparameter settings for *each* hyperparameter to be tuned
+
++ Since we are tuning just a single hyperparameter, we'll obtain just 10 settings
++ If we were tuning two hyperparameters, then we'd obtain $10\times 10 = 100$ combinations of hyperparameter settings!
+
+. . . 
+
+In addition to all of these hyperparameter settings, remember that we're using cross-validation to assess the resulting models
+
++ In this case, we have chosen to use 5-fold cross-validation
+
+. . . 
+
+All this together means that we are about to train and assess $10\times 5 = 50$ decision trees
+
+. . . 
+
+The more hyperparameters we tune, the finer our grid, the more cross-validation folds we utilize, the longer our tuning procedure will take
+
+## Let's Tune!
+
+. . . 
+
+Okay, let's use cross validation to tune our decision tree and find an optimal choice for the maximum tree depth
+
+. . . 
+
+```{r}
+#| eval: false
+#| echo: true
+
+dt_tune_results <- dt_wf %>%
+  tune_grid(
+    grid = tree_grid,
+    resamples = ames_folds
+  )
+
+dt_tune_results %>%
+  show_best(n = 10)
+```
+
+. . . 
+
+```{r}
+#| eval: true
+#| echo: false
+
+dt_tune_results <- dt_wf %>%
+  tune_grid(
+    grid = tree_grid,
+    resamples = ames_folds
+  )
+
+dt_tune_results %>%
+  show_best(n = 10) %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Visualizing the Tuning Results
+
+. . . 
+
+We see that several tree depths result in models that perform similarly to one another
+
+. . .
+
+Eventually, including additional flexibility doesn't translate into improvements in our model performance metrics
+
+. . . 
+
+```{r}
+#| echo: true
+#| eval: true
+
+dt_tune_results %>%
+  autoplot()
+```
+
+## Finalizing the Workflow and Fitting the Best Tree
+
+. . .
+
+Now that we've obtained our performance metrics and ranked our hyperparameter "combinations", we can 
+
+1. finalize our workflow with the best parameter choices, and
+2. fit that model to our training data
+
+. . . 
+
+```{r}
+#| echo: true
+#| eval: true
+
+best_tree <- dt_tune_results %>%
+  select_best(metric = "rmse")
+
+dt_wf_final <- dt_wf %>%
+  finalize_workflow(best_tree)
+
+dt_fit <- dt_wf_final %>%
+  fit(ames_train)
+
+dt_fit
+```
+
+## Visualizing the Decision Tree
+
+. . . 
+
+A major strength of decision trees is how interpretable and intuitive they are (if we can see them)
+
+. . . 
+
+```{r}
+#| echo: true
+#| eval: true
+
+library(rpart.plot)
+
+dt_fit_for_plot <- dt_fit %>%
+  extract_fit_engine()
+
+rpart.plot(dt_fit_for_plot)
+```
+
+## Perfect -- More Tunes!!!
+
+<center>
+
+<iframe src="https://giphy.com/embed/ZYVgTUU3ceUxO" width="480" height="480" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/skrillex-live-rock-n-roll-ZYVgTUU3ceUxO">via GIPHY</a></p>
+
+</center>
+
+## Tuning Over a Workflow Set
+
+. . . 
+
+So we've got a decision tree model optimized over the tree depth
+
+. . . 
+
+All we know is that this is the optimal *decision tree*
+
+. . . 
+
+What about those other models we talked about??
+
++ A LASSO?
++ A Random Forest?
++ A Gradient Boosting Ensemble?
+
+. . . 
+
+Let's tune all of these models!
+
+## Creating the Model Specifications
+
+. . . 
+
+```{r}
+#| echo: true
+#| eval: true
+
+lasso_spec <- linear_reg(penalty = tune(), mixture = 1) %>%
+  set_engine("glmnet")
+
+rf_spec <- rand_forest(mtry = tune(), trees = tune()) %>%
+  set_engine("ranger") %>%
+  set_mode("regression")
+
+xgb_spec <- boost_tree(mtry = tune(), trees = tune(), learn_rate = tune()) %>%
+  set_engine("xgboost") %>%
+  set_mode("regression")
+```
+
+## A Recipe and Workflow Set
+
+. . . 
+
+Let's use the same *recipe* for all of the models
+
+. . . 
+
+```{r}
+#| echo: true
+#| eval: true
+
+rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_impute_knn(all_predictors()) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_dummy(all_nominal_predictors())
+```
+
+. . . 
+
+Now let's create the recipe and model lists
+
+```{r}
+#| echo: true
+#| eval: true
+
+rec_list <- list(rec = rec)
+model_list <- list(lasso = lasso_spec, rf = rf_spec, xgb = xgb_spec)
+```
+
+. . . 
+
+And package the lists together into a workflow set
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+
+model_wfs <- workflow_set(rec_list, model_list, cross = TRUE)
+```
+
+## Constructing a Hyperparameter Grid
+
+. . . 
+
+We need to define our *hyperparameter grid* which declares the combinations of hyperparameters we will tune over
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: true
+
+param_grid <- grid_regular(
+  penalty(),
+  mtry(range = c(1, 10)),
+  trees(),
+  learn_rate(),
+  levels = 4
+)
+```
+
+:::
+
+:::{.column width="50%"}
+
+Note that we've just defined a regular grid of $4^4 = 256$ hyperparameter combinations
+
+:::
+
+::::
+
+. . . 
+
+We're cross-validating our models over five folds and we have three model classes being fit, so now counting model classes, grid combinations, and folds, we have $3\times 5\times 256 = 3840$ model fits to run
+
+. . . 
+
+This total ignores that our ensembles consist of 50 - 250 models themselves
+
+. . . 
+
+<center>
+
+That's a lot of models!
+
+<iframe src="https://giphy.com/embed/l3q2Bz3mZjEAl4VEY" width="480" height="266" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/nyfw-nyfw-feb-2017-l3q2Bz3mZjEAl4VEY">via GIPHY</a></p>
+
+</center>
+
+## Tuning the Models in the Workflow Set
+
+. . .
+
+We'll start by defining the grid controls
+
+. . . 
+
+```{r}
+#| echo: true
+#| eval: true
+
+grid_ctrl <- control_grid(
+  save_pred = TRUE,
+  parallel_over = "everything",
+  save_workflow = TRUE
+)
+```
+
+. . . 
+
+Using *parallel processing* will help reduce the time it takes to tune all of our models over all the hyperparameter combinations -- let's tune!
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+
+n_cores <- parallel::detectCores()
+cluster <- parallel::makeCluster(n_cores - 1, type = "PSOCK")
+doParallel::registerDoParallel(cluster)
+
+tictoc::tic()
+
+wfs_tune_results <- model_wfs %>%
+  workflow_map(
+    seed = 123,
+    resamples = ames_folds,
+    grid = 10,
+    control = grid_ctrl
+  )
+
+tictoc::toc()
+```
+
+## Visualizing Results
+
+```{r}
+#| echo: true
+#| eval: true
+#| fig-align: center
+
+wfs_tune_results %>%
+  autoplot()
+```
+
+## Our Best Model
+
+. . .
+
+It looks like the *gradient boosting ensemble* produced our best results in terms of both RMSE and $R^2$
+
+. . .
+
+Let's verify this for RMSE
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
+wfs_tune_results %>% 
+  rank_results() %>%
+  filter(.metric == "rmse")
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+wfs_tune_results %>% 
+  rank_results() %>%
+  head(n = 20) %>%
+  filter(.metric == "rmse") %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Seeing Best Hyperparameter Combinations
+
+```{r}
+#| echo: true
+#| eval: true
+#| fig-align: center
+#| fig-width: 12
+
+wfs_tune_results %>%
+  autoplot(metric = "rmse", id = "rec_xgb")
+```
+
+## Extracting Best Hyperparameter Combinations
+
+. . .
+
+Let's extract those best hyperparameter settings
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
+best_model <- wfs_tune_results %>%
+  rank_results("rmse", select_best = TRUE) %>%
+  head(1) %>%
+  pull(wflow_id)
+
+best_wf <- wfs_tune_results %>%
+  extract_workflow_set_result(best_model)
+  
+best_params <- best_wf %>%
+  select_best(metric = "rmse")
+
+best_params
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+best_model <- wfs_tune_results %>%
+  rank_results("rmse", select_best = TRUE) %>%
+  head(1) %>%
+  pull(wflow_id)
+
+best_wf <- wfs_tune_results %>%
+  extract_workflow_set_result(best_model)
+  
+best_params <- best_wf %>%
+  select_best(metric = "rmse")
+
+best_params %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Let's Fit this Best Model
+
+. . . 
+
+We know our best-performing model was a *gradient boosting ensemble*, and we've stored our optimized hyperparameters in `best_params`
+
+. . .
+
+Let's construct and fit that model!
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+
+best_params <- best_params %>%
+  as.list()
+
+set.seed(123)
+
+xgb_spec <- boost_tree(
+  trees = best_params$trees,
+  mtry = best_params$mtry,
+  learn_rate = best_params$learn_rate
+) %>%
+  set_engine("xgboost") %>%
+  set_mode("regression")
+
+xgb_wf <- workflow() %>%
+  add_model(xgb_spec) %>%
+  add_recipe(rec)
+
+xgb_fit <- xgb_wf %>%
+  fit(ames_train)
+```
+
+## Extracting Important Predictors
+
+. . . 
+
+Ensembles are not generally known for their interpretability
+
+. . .
+
+We can, however, identify the predictors which are most important to the ensemble using the `vip()` function from the `{vip}` package
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: true
+
+library(vip)
+
+xgb_fit %>%
+  extract_fit_engine() %>%
+  vip()
+```
+
+## Assessing Performance
+
+. . .
+
+Let's assess our model's performance on our test data
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: true
+
+xgb_results <- xgb_fit %>%
+  augment(ames_test) %>%
+  select(Sale_Price, .pred)
+
+xgb_results %>%
+  ggplot() + 
+  geom_point(aes(x = Sale_Price, y = .pred),
+             alpha = 0.5) +
+  geom_abline(slope = 1, intercept = 0,
+              linetype = "dashed", alpha = 0.75) +
+  labs(
+    title = "Predictions versus Actuals",
+    x = "Sale Price",
+    y = "Prediction"
+  ) + 
+  coord_equal()
+```
+
+:::
+
+:::{.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: false
+
+xgb_results %>%
+  rmse(Sale_Price, .pred)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+xgb_results %>%
+  rmse(Sale_Price, .pred) %>%
+  kable() %>%
+  kable_styling()
+```
+
+:::
+
+::::
+
+## Recap
+
++ We can use cross-validation to *tune hyperparameters*
+  
+  + This means that, after tuning, we can justify our hyperparameter choices
+
++ We can tune over a *workflow set* which contains combinations of model specifications and recipes
+
+  + This allows us to not only find an optimal model from a particular class, but an optimal model (including class and hyperpameter settings) from a collection
+  
++ Tuning allows you to improve "off the shelf" models, often by a significant margin
+
++ Our best untuned model to predict `Sale_Price` was a *Random Forest* that had a cross-validation RMSE of \$28,606.09, while this *tuned gradient boosting ensemble* had a cross-validation RMSE of \$24,224.78
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<center>
+
+<iframe src="https://giphy.com/embed/7yojoQtevjOCI" width="480" height="346" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/profile-notoverthehill-tomdds-7yojoQtevjOCI">via GIPHY</a></p>
+
+</center>
+
+:::
+
+:::{.column width="50%"}
+
+<center>
+
+<br/>
+<br/>
+<font size="120pt">Go forth and model responsibly!</font>
+
+</center>
+
+:::
+
+::::
+
+## Stop Parallelization
+
+```{r}
+#| echo: true
+#| eval: true
+
+parallel::stopCluster(cluster)
+```

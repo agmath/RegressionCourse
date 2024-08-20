@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-18">
+  <meta name="dcterms.date" content="2024-08-20">
   <title>Hyperparameters and Tuning</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -30,6 +30,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="23d_IntroSlides_files/libs/revealjs/dist/theme/quarto.css">
   <link href="23d_IntroSlides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -321,6 +386,8 @@
       margin-right: 0; 
     }
   </style>
+  <script src="23d_IntroSlides_files/libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="23d_IntroSlides_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -337,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 18, 2024</p>
+  <p class="date">August 20, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -353,28 +420,965 @@ code.sourceCode {
 <section id="motivation" class="slide level2">
 <h2>Motivation</h2>
 <div class="fragment">
-<p>You may have noticed that, ever since we discussed regularization methods, we’ve been setting parameters prior to our models seeing any data</p>
+<p>We’ve discussed several new model classes recently</p>
+</div>
+<div class="fragment">
+<p>With each class, we’ve been required to set model parameters manually, prior to the model seeing any data</p>
+</div>
+<div class="fragment">
+<p><strong>Ridge Regression and LASSO:</strong></p>
+<div class="columns">
+<div class="column" style="width:50%;">
 <ul>
 <li class="fragment"><code>mixture</code></li>
+</ul>
+</div><div class="columns" width="50%">
+<ul>
 <li class="fragment"><code>penalty</code></li>
-<li class="fragment"><code>mtry</code></li>
-<li class="fragment"><code>trees</code></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p><strong>Nearest Neighbor Regressors:</strong></p>
+<ul>
 <li class="fragment"><code>neighbors</code></li>
+</ul>
+</div>
+<div class="fragment">
+<p><strong>Tree-Based Models:</strong></p>
+<ul>
+<li class="fragment"><code>max_depth</code></li>
+</ul>
+</div>
+<div class="fragment">
+<p><strong>Ensembles (Random Forest, Boosted Trees):</strong></p>
+<div class="columns">
+<div class="column" style="width:33%;">
+<ul>
+<li class="fragment"><code>mtry</code></li>
+</ul>
+</div><div class="column" style="width:33%;">
+<ul>
+<li class="fragment"><code>trees</code></li>
+</ul>
+</div><div class="column" style="width:33%;">
+<ul>
+<li class="fragment"><code>learn_rate</code></li>
+</ul>
+</div>
+</div>
+<ul>
 <li class="fragment">etc.</li>
 </ul>
 </div>
 <div class="fragment">
-<p>How do we know that we’ve chosen the best values?</p>
+<p>Every modeling choice we make should be justified…</p>
 </div>
 <div class="fragment">
-<p>How do we even know that we’ve chosen appropriate values?</p>
+<p>How can we make justifiable choices for these parameters?</p>
+</div>
+</section>
+<section id="model-hyperparameters" class="slide level2">
+<h2>Model Hyperparameters</h2>
+<div class="fragment">
+<p>A <em>hyperparameter</em> is a model parameter (setting) that must be chosen prior to the model being fit to training data</p>
 </div>
 <div class="fragment">
-<p>We’ve taken care to not leave things up to chance and to make sure all of our choices can be justified – can we get the data to justify the choices</p>
+<p>That is, <em>hyperparameters</em> are set outside of the model fitting process</p>
+</div>
+<div class="fragment">
+<p>If these parameters need to be determined prior to seeing data, how can we optimize (or even justify) our choices?</p>
+</div>
+</section>
+<section id="keep-calm-and" class="slide level2">
+<h2>Keep Calm, and …</h2>
+</section>
+<section id="keep-calm-and-cross-validate" class="slide level2">
+<h2>Keep Calm, and Cross-Validate</h2>
+<div class="fragment">
+<p>I told you that cross-validation was useful for more than just estimating more stable performance estimates</p>
+</div>
+<div class="fragment">
+<p>With cross-validation, we can try multiple combinations of hyperparameter settings</p>
+</div>
+<div class="fragment">
+<p>The cross-validation procedure results in performance estimates (and standard error estimates) for each model and hyperparameter combination</p>
+</div>
+<div class="fragment">
+<p>From here, we can identify not only the best model, but also the best hyperparameter choices</p>
+</div>
+<div class="fragment">
+<p>We’ll call this process <em>tuning</em></p>
+</div>
+</section>
+<section id="tuning-a-decision-tree-regressor" class="slide level2">
+<h2>Tuning a Decision Tree Regressor</h2>
+<div class="fragment">
+<p>Decision tree regressors are a great first model class to tune because optimizing the <code>max_depth</code> parameter is intuitive</p>
+</div>
+<div class="fragment">
+<p>The <em>deeper</em> a decision tree, the more <em>flexible</em> it is, and the more likely it is to overfit</p>
+</div>
+<div class="fragment">
+<p>If a tree is <em>too shallow</em> though, it will be underfit</p>
+</div>
+<div class="fragment">
+<p>Let’s tune a tree to identify the optimal depth for predicting selling prices of homes in the Ames, Iowa data</p>
+</div>
+</section>
+<section id="reading-filtering-and-splitting-the-data" class="slide level2">
+<h2>Reading, Filtering, and Splitting the Data</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>ames_known_prices <span class="ot">&lt;-</span> ames <span class="sc">%&gt;%</span></span>
+<span id="cb1-2"><a href=""></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Sale_Price))</span>
+<span id="cb1-3"><a href=""></a></span>
+<span id="cb1-4"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb1-5"><a href=""></a></span>
+<span id="cb1-6"><a href=""></a>ames_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(ames, <span class="at">prop =</span> <span class="fl">0.9</span>)</span>
+<span id="cb1-7"><a href=""></a></span>
+<span id="cb1-8"><a href=""></a>ames_train <span class="ot">&lt;-</span> <span class="fu">training</span>(ames_split)</span>
+<span id="cb1-9"><a href=""></a>ames_test <span class="ot">&lt;-</span> <span class="fu">testing</span>(ames_split)</span>
+<span id="cb1-10"><a href=""></a></span>
+<span id="cb1-11"><a href=""></a>ames_folds <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(ames_train, <span class="at">v =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="defining-a-model-with-tuning-parameters" class="slide level2">
+<h2>Defining a Model with Tuning Parameters</h2>
+<div class="fragment">
+<p>Now that we have our data, let’s define our model. Most of this is done exactly as before</p>
+</div>
+<div class="fragment">
+<p>The only difference is that we’ll indicate parameters to be <em>tuned</em> by setting them to <code>tune()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>dt_spec <span class="ot">&lt;-</span> <span class="fu">decision_tree</span>(<span class="at">tree_depth =</span> <span class="fu">tune</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb2-2"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"rpart"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-3"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)</span>
+<span id="cb2-4"><a href=""></a></span>
+<span id="cb2-5"><a href=""></a>dt_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(Sale_Price <span class="sc">~</span> ., <span class="at">data =</span> ames_train) <span class="sc">%&gt;%</span></span>
+<span id="cb2-6"><a href=""></a>  <span class="fu">step_other</span>(<span class="fu">all_nominal_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb2-7"><a href=""></a>  <span class="fu">step_impute_median</span>(<span class="fu">all_numeric_predictors</span>())</span>
+<span id="cb2-8"><a href=""></a></span>
+<span id="cb2-9"><a href=""></a>dt_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-10"><a href=""></a>  <span class="fu">add_model</span>(dt_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb2-11"><a href=""></a>  <span class="fu">add_recipe</span>(dt_rec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="tuning-a-model" class="slide level2">
+<h2>Tuning a Model</h2>
+<div class="fragment">
+<p>Now that we’ve defined our model, we are ready to tune it</p>
+</div>
+<div class="fragment">
+<p>We can’t use <code>fit()</code> or <code>fit_resamples()</code> for this – we’ll need to <code>tune_grid()</code> instead</p>
+</div>
+<div class="fragment">
+<p>The <em>grid</em> in <code>tune_grid()</code> refers to the fact that we’ll need to define a grid (collection) of hyperparameter combinations for the model to tune over</p>
+</div>
+<div class="fragment">
+<p>We can use the <code>grid_regular()</code> function to create a <em>regular</em> grid of sensible values to try for each hyperparameter</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>tree_grid <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(</span>
+<span id="cb3-2"><a href=""></a>  <span class="fu">tree_depth</span>(),</span>
+<span id="cb3-3"><a href=""></a>  <span class="at">levels =</span> <span class="dv">10</span></span>
+<span id="cb3-4"><a href=""></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="a-note-on-complexity" class="slide level2">
+<h2>A Note on Complexity</h2>
+<div class="fragment">
+<p>It is important to realize what we are asking for here…</p>
+</div>
+<div class="fragment">
+<p>The <code>levels</code> argument of <code>grid_regular()</code> determines the number of hyperparameter settings for <em>each</em> hyperparameter to be tuned</p>
+<ul>
+<li class="fragment">Since we are tuning just a single hyperparameter, we’ll obtain just 10 settings</li>
+<li class="fragment">If we were tuning two hyperparameters, then we’d obtain <span class="math inline">\(10\times 10 = 100\)</span> combinations of hyperparameter settings!</li>
+</ul>
+</div>
+<div class="fragment">
+<p>In addition to all of these hyperparameter settings, remember that we’re using cross-validation to assess the resulting models</p>
+<ul>
+<li class="fragment">In this case, we have chosen to use 5-fold cross-validation</li>
+</ul>
+</div>
+<div class="fragment">
+<p>All this together means that we are about to train and assess <span class="math inline">\(10\times 5 = 50\)</span> decision trees</p>
+</div>
+<div class="fragment">
+<p>The more hyperparameters we tune, the finer our grid, the more cross-validation folds we utilize, the longer our tuning procedure will take</p>
+</div>
+</section>
+<section id="lets-tune" class="slide level2">
+<h2>Let’s Tune!</h2>
+<div class="fragment">
+<p>Okay, let’s use cross validation to tune our decision tree and find an optimal choice for the maximum tree depth</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>dt_tune_results <span class="ot">&lt;-</span> dt_wf <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href=""></a>  <span class="fu">tune_grid</span>(</span>
+<span id="cb4-3"><a href=""></a>    <span class="at">grid =</span> tree_grid,</span>
+<span id="cb4-4"><a href=""></a>    <span class="at">resamples =</span> ames_folds</span>
+<span id="cb4-5"><a href=""></a>  )</span>
+<span id="cb4-6"><a href=""></a></span>
+<span id="cb4-7"><a href=""></a>dt_tune_results <span class="sc">%&gt;%</span></span>
+<span id="cb4-8"><a href=""></a>  <span class="fu">show_best</span>(<span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">tree_depth</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.metric</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.estimator</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">mean</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std_err</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.config</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">42790.68</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1405.718</td>
+<td style="text-align: left;">Preprocessor1_Model04</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">42790.68</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1405.718</td>
+<td style="text-align: left;">Preprocessor1_Model05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">42790.68</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1405.718</td>
+<td style="text-align: left;">Preprocessor1_Model06</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">42790.68</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1405.718</td>
+<td style="text-align: left;">Preprocessor1_Model07</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">11</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">42790.68</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1405.718</td>
+<td style="text-align: left;">Preprocessor1_Model08</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">13</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">42790.68</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1405.718</td>
+<td style="text-align: left;">Preprocessor1_Model09</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">15</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">42790.68</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1405.718</td>
+<td style="text-align: left;">Preprocessor1_Model10</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">43199.74</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1561.103</td>
+<td style="text-align: left;">Preprocessor1_Model03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">54524.10</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1996.825</td>
+<td style="text-align: left;">Preprocessor1_Model02</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">63378.95</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">2704.432</td>
+<td style="text-align: left;">Preprocessor1_Model01</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div>
+</section>
+<section id="visualizing-the-tuning-results" class="slide level2">
+<h2>Visualizing the Tuning Results</h2>
+<div class="fragment">
+<p>We see that several tree depths result in models that perform similarly to one another</p>
+</div>
+<div class="fragment">
+<p>Eventually, including additional flexibility doesn’t translate into improvements in our model performance metrics</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>dt_tune_results <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href=""></a>  <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-7-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="finalizing-the-workflow-and-fitting-the-best-tree" class="slide level2">
+<h2>Finalizing the Workflow and Fitting the Best Tree</h2>
+<div class="fragment">
+<p>Now that we’ve obtained our performance metrics and ranked our hyperparameter “combinations”, we can</p>
+<ol type="1">
+<li class="fragment">finalize our workflow with the best parameter choices, and</li>
+<li class="fragment">fit that model to our training data</li>
+</ol>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a>best_tree <span class="ot">&lt;-</span> dt_tune_results <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href=""></a>  <span class="fu">select_best</span>(<span class="at">metric =</span> <span class="st">"rmse"</span>)</span>
+<span id="cb6-3"><a href=""></a></span>
+<span id="cb6-4"><a href=""></a>dt_wf_final <span class="ot">&lt;-</span> dt_wf <span class="sc">%&gt;%</span></span>
+<span id="cb6-5"><a href=""></a>  <span class="fu">finalize_workflow</span>(best_tree)</span>
+<span id="cb6-6"><a href=""></a></span>
+<span id="cb6-7"><a href=""></a>dt_fit <span class="ot">&lt;-</span> dt_wf_final <span class="sc">%&gt;%</span></span>
+<span id="cb6-8"><a href=""></a>  <span class="fu">fit</span>(ames_train)</span>
+<span id="cb6-9"><a href=""></a></span>
+<span id="cb6-10"><a href=""></a>dt_fit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>══ Workflow [trained] ══════════════════════════════════════════════════════════
+Preprocessor: Recipe
+Model: decision_tree()
+
+── Preprocessor ────────────────────────────────────────────────────────────────
+2 Recipe Steps
+
+• step_other()
+• step_impute_median()
+
+── Model ───────────────────────────────────────────────────────────────────────
+n= 2637 
+
+node), split, n, deviance, yval
+      * denotes terminal node
+
+ 1) root 2637 17265230000000 180593.4  
+   2) Garage_Cars&lt; 2.5 2283  6780674000000 160859.2  
+     4) Year_Built&lt; 1984.5 1545  3055030000000 140112.9  
+       8) Fireplaces&lt; 0.5 907   781422900000 121247.8 *
+       9) Fireplaces&gt;=0.5 638  1491915000000 166932.2  
+        18) Gr_Liv_Area&lt; 1798.5 489   564099700000 151927.1 *
+        19) Gr_Liv_Area&gt;=1798.5 149   456383700000 216177.0 *
+     5) Year_Built&gt;=1984.5 738  1668528000000 204291.5  
+      10) Total_Bsmt_SF&lt; 1417.5 579   793749400000 191809.7  
+        20) Gr_Liv_Area&lt; 1752.5 433   291811200000 177956.7 *
+        21) Gr_Liv_Area&gt;=1752.5 146   172403500000 232894.2 *
+      11) Total_Bsmt_SF&gt;=1417.5 159   456087700000 249744.2 *
+   3) Garage_Cars&gt;=2.5 354  3861633000000 307861.9  
+     6) Total_Bsmt_SF&lt; 1721.5 253  1480048000000 271516.1  
+      12) Year_Remod_Add&lt; 1977.5 29    40650500000 147827.6 *
+      13) Year_Remod_Add&gt;=1977.5 224   938291200000 287529.4  
+        26) Gr_Liv_Area&lt; 2322 150   271537500000 259100.1 *
+        27) Gr_Liv_Area&gt;=2322 74   299777400000 345156.2 *
+     7) Total_Bsmt_SF&gt;=1721.5 101  1210171000000 398906.3  
+      14) Gr_Liv_Area&lt; 2217 65   232462900000 353933.4 *
+      15) Gr_Liv_Area&gt;=2217 36   608872000000 480107.3 *</code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="visualizing-the-decision-tree" class="slide level2">
+<h2>Visualizing the Decision Tree</h2>
+<div class="fragment">
+<p>A major strength of decision trees is how interpretable and intuitive they are (if we can see them)</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a><span class="fu">library</span>(rpart.plot)</span>
+<span id="cb8-2"><a href=""></a></span>
+<span id="cb8-3"><a href=""></a>dt_fit_for_plot <span class="ot">&lt;-</span> dt_fit <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href=""></a>  <span class="fu">extract_fit_engine</span>()</span>
+<span id="cb8-5"><a href=""></a></span>
+<span id="cb8-6"><a href=""></a><span class="fu">rpart.plot</span>(dt_fit_for_plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="perfect-more-tunes" class="slide level2">
+<h2>Perfect – More Tunes!!!</h2>
+<center>
+<iframe src="https://giphy.com/embed/ZYVgTUU3ceUxO" width="480" height="480" style="" frameborder="0" class="giphy-embed" allowfullscreen="">
+</iframe>
+<p>
+<a href="https://giphy.com/gifs/skrillex-live-rock-n-roll-ZYVgTUU3ceUxO">via GIPHY</a>
+</p>
+</center>
+</section>
+<section id="tuning-over-a-workflow-set" class="slide level2">
+<h2>Tuning Over a Workflow Set</h2>
+<div class="fragment">
+<p>So we’ve got a decision tree model optimized over the tree depth</p>
+</div>
+<div class="fragment">
+<p>All we know is that this is the optimal <em>decision tree</em></p>
+</div>
+<div class="fragment">
+<p>What about those other models we talked about??</p>
+<ul>
+<li class="fragment">A LASSO?</li>
+<li class="fragment">A Random Forest?</li>
+<li class="fragment">A Gradient Boosting Ensemble?</li>
+</ul>
+</div>
+<div class="fragment">
+<p>Let’s tune all of these models!</p>
+</div>
+</section>
+<section id="creating-the-model-specifications" class="slide level2">
+<h2>Creating the Model Specifications</h2>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>lasso_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>(<span class="at">penalty =</span> <span class="fu">tune</span>(), <span class="at">mixture =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"glmnet"</span>)</span>
+<span id="cb9-3"><a href=""></a></span>
+<span id="cb9-4"><a href=""></a>rf_spec <span class="ot">&lt;-</span> <span class="fu">rand_forest</span>(<span class="at">mtry =</span> <span class="fu">tune</span>(), <span class="at">trees =</span> <span class="fu">tune</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb9-5"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"ranger"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-6"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)</span>
+<span id="cb9-7"><a href=""></a></span>
+<span id="cb9-8"><a href=""></a>xgb_spec <span class="ot">&lt;-</span> <span class="fu">boost_tree</span>(<span class="at">mtry =</span> <span class="fu">tune</span>(), <span class="at">trees =</span> <span class="fu">tune</span>(), <span class="at">learn_rate =</span> <span class="fu">tune</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb9-9"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"xgboost"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-10"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="a-recipe-and-workflow-set" class="slide level2">
+<h2>A Recipe and Workflow Set</h2>
+<div class="fragment">
+<p>Let’s use the same <em>recipe</em> for all of the models</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a>rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(Sale_Price <span class="sc">~</span> ., <span class="at">data =</span> ames_train) <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href=""></a>  <span class="fu">step_impute_knn</span>(<span class="fu">all_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href=""></a>  <span class="fu">step_other</span>(<span class="fu">all_nominal_predictors</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href=""></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal_predictors</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<p>Now let’s create the recipe and model lists</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>rec_list <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">rec =</span> rec)</span>
+<span id="cb11-2"><a href=""></a>model_list <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">lasso =</span> lasso_spec, <span class="at">rf =</span> rf_spec, <span class="at">xgb =</span> xgb_spec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<p>And package the lists together into a workflow set</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href=""></a>model_wfs <span class="ot">&lt;-</span> <span class="fu">workflow_set</span>(rec_list, model_list, <span class="at">cross =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="constructing-a-hyperparameter-grid" class="slide level2">
+<h2>Constructing a Hyperparameter Grid</h2>
+<div class="fragment">
+<p>We need to define our <em>hyperparameter grid</em> which declares the combinations of hyperparameters we will tune over</p>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href=""></a>param_grid <span class="ot">&lt;-</span> <span class="fu">grid_regular</span>(</span>
+<span id="cb13-2"><a href=""></a>  <span class="fu">penalty</span>(),</span>
+<span id="cb13-3"><a href=""></a>  <span class="fu">mtry</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>)),</span>
+<span id="cb13-4"><a href=""></a>  <span class="fu">trees</span>(),</span>
+<span id="cb13-5"><a href=""></a>  <span class="fu">learn_rate</span>(),</span>
+<span id="cb13-6"><a href=""></a>  <span class="at">levels =</span> <span class="dv">4</span></span>
+<span id="cb13-7"><a href=""></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Note that we’ve just defined a regular grid of <span class="math inline">\(4^4 = 256\)</span> hyperparameter combinations</p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>We’re cross-validating our models over five folds and we have three model classes being fit, so now counting model classes, grid combinations, and folds, we have <span class="math inline">\(3\times 5\times 256 = 3840\)</span> model fits to run</p>
+</div>
+<div class="fragment">
+<p>This total ignores that our ensembles consist of 50 - 250 models themselves</p>
+</div>
+<div class="fragment">
+<center>
+<p>That’s a lot of models!</p>
+<iframe src="https://giphy.com/embed/l3q2Bz3mZjEAl4VEY" width="480" height="266" style="" frameborder="0" class="giphy-embed" allowfullscreen="">
+</iframe>
+<p>
+<a href="https://giphy.com/gifs/nyfw-nyfw-feb-2017-l3q2Bz3mZjEAl4VEY">via GIPHY</a>
+</p>
+</center>
+</div>
+</section>
+<section id="tuning-the-models-in-the-workflow-set" class="slide level2">
+<h2>Tuning the Models in the Workflow Set</h2>
+<div class="fragment">
+<p>We’ll start by defining the grid controls</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href=""></a>grid_ctrl <span class="ot">&lt;-</span> <span class="fu">control_grid</span>(</span>
+<span id="cb14-2"><a href=""></a>  <span class="at">save_pred =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb14-3"><a href=""></a>  <span class="at">parallel_over =</span> <span class="st">"everything"</span>,</span>
+<span id="cb14-4"><a href=""></a>  <span class="at">save_workflow =</span> <span class="cn">TRUE</span></span>
+<span id="cb14-5"><a href=""></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<p>Using <em>parallel processing</em> will help reduce the time it takes to tune all of our models over all the hyperparameter combinations – let’s tune!</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href=""></a>n_cores <span class="ot">&lt;-</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>()</span>
+<span id="cb15-2"><a href=""></a>cluster <span class="ot">&lt;-</span> parallel<span class="sc">::</span><span class="fu">makeCluster</span>(n_cores <span class="sc">-</span> <span class="dv">1</span>, <span class="at">type =</span> <span class="st">"PSOCK"</span>)</span>
+<span id="cb15-3"><a href=""></a>doParallel<span class="sc">::</span><span class="fu">registerDoParallel</span>(cluster)</span>
+<span id="cb15-4"><a href=""></a></span>
+<span id="cb15-5"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">tic</span>()</span>
+<span id="cb15-6"><a href=""></a></span>
+<span id="cb15-7"><a href=""></a>wfs_tune_results <span class="ot">&lt;-</span> model_wfs <span class="sc">%&gt;%</span></span>
+<span id="cb15-8"><a href=""></a>  <span class="fu">workflow_map</span>(</span>
+<span id="cb15-9"><a href=""></a>    <span class="at">seed =</span> <span class="dv">123</span>,</span>
+<span id="cb15-10"><a href=""></a>    <span class="at">resamples =</span> ames_folds,</span>
+<span id="cb15-11"><a href=""></a>    <span class="at">grid =</span> <span class="dv">10</span>,</span>
+<span id="cb15-12"><a href=""></a>    <span class="at">control =</span> grid_ctrl</span>
+<span id="cb15-13"><a href=""></a>  )</span>
+<span id="cb15-14"><a href=""></a></span>
+<span id="cb15-15"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>283.034 sec elapsed</code></pre>
+</div>
+</div>
+</div>
+</section>
+<section id="visualizing-results" class="slide level2">
+<h2>Visualizing Results</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href=""></a>wfs_tune_results <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href=""></a>  <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="our-best-model" class="slide level2">
+<h2>Our Best Model</h2>
+<div class="fragment">
+<p>It looks like the <em>gradient boosting ensemble</em> produced our best results in terms of both RMSE and <span class="math inline">\(R^2\)</span></p>
+</div>
+<div class="fragment">
+<p>Let’s verify this for RMSE</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href=""></a>wfs_tune_results <span class="sc">%&gt;%</span> </span>
+<span id="cb18-2"><a href=""></a>  <span class="fu">rank_results</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href=""></a>  <span class="fu">filter</span>(.metric <span class="sc">==</span> <span class="st">"rmse"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">wflow_id</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.config</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.metric</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">mean</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std_err</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">preprocessor</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">model</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">rank</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">rec_xgb</td>
+<td style="text-align: left;">Preprocessor1_Model01</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: right;">24224.78</td>
+<td style="text-align: right;">1938.537</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">recipe</td>
+<td style="text-align: left;">boost_tree</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rec_xgb</td>
+<td style="text-align: left;">Preprocessor1_Model02</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: right;">24363.12</td>
+<td style="text-align: right;">1900.693</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">recipe</td>
+<td style="text-align: left;">boost_tree</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rec_xgb</td>
+<td style="text-align: left;">Preprocessor1_Model05</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: right;">24956.13</td>
+<td style="text-align: right;">1813.097</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">recipe</td>
+<td style="text-align: left;">boost_tree</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rec_xgb</td>
+<td style="text-align: left;">Preprocessor1_Model09</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: right;">26054.81</td>
+<td style="text-align: right;">1925.600</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">recipe</td>
+<td style="text-align: left;">boost_tree</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rec_xgb</td>
+<td style="text-align: left;">Preprocessor1_Model04</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: right;">26337.22</td>
+<td style="text-align: right;">2047.802</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">recipe</td>
+<td style="text-align: left;">boost_tree</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rec_xgb</td>
+<td style="text-align: left;">Preprocessor1_Model06</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: right;">26486.26</td>
+<td style="text-align: right;">2144.283</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">recipe</td>
+<td style="text-align: left;">boost_tree</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rec_xgb</td>
+<td style="text-align: left;">Preprocessor1_Model07</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: right;">27236.39</td>
+<td style="text-align: right;">2223.623</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">recipe</td>
+<td style="text-align: left;">boost_tree</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rec_rf</td>
+<td style="text-align: left;">Preprocessor1_Model04</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: right;">27650.31</td>
+<td style="text-align: right;">2035.178</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">recipe</td>
+<td style="text-align: left;">rand_forest</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rec_rf</td>
+<td style="text-align: left;">Preprocessor1_Model06</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: right;">27656.36</td>
+<td style="text-align: right;">2063.729</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">recipe</td>
+<td style="text-align: left;">rand_forest</td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rec_rf</td>
+<td style="text-align: left;">Preprocessor1_Model01</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: right;">27657.55</td>
+<td style="text-align: right;">2066.855</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">recipe</td>
+<td style="text-align: left;">rand_forest</td>
+<td style="text-align: right;">10</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div>
+</section>
+<section id="seeing-best-hyperparameter-combinations" class="slide level2">
+<h2>Seeing Best Hyperparameter Combinations</h2>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href=""></a>wfs_tune_results <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href=""></a>  <span class="fu">autoplot</span>(<span class="at">metric =</span> <span class="st">"rmse"</span>, <span class="at">id =</span> <span class="st">"rec_xgb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-20-1.png" class="quarto-figure quarto-figure-center r-stretch" width="1152"></section>
+<section id="extracting-best-hyperparameter-combinations" class="slide level2">
+<h2>Extracting Best Hyperparameter Combinations</h2>
+<div class="fragment">
+<p>Let’s extract those best hyperparameter settings</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href=""></a>best_model <span class="ot">&lt;-</span> wfs_tune_results <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href=""></a>  <span class="fu">rank_results</span>(<span class="st">"rmse"</span>, <span class="at">select_best =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href=""></a>  <span class="fu">head</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-4"><a href=""></a>  <span class="fu">pull</span>(wflow_id)</span>
+<span id="cb20-5"><a href=""></a></span>
+<span id="cb20-6"><a href=""></a>best_wf <span class="ot">&lt;-</span> wfs_tune_results <span class="sc">%&gt;%</span></span>
+<span id="cb20-7"><a href=""></a>  <span class="fu">extract_workflow_set_result</span>(best_model)</span>
+<span id="cb20-8"><a href=""></a>  </span>
+<span id="cb20-9"><a href=""></a>best_params <span class="ot">&lt;-</span> best_wf <span class="sc">%&gt;%</span></span>
+<span id="cb20-10"><a href=""></a>  <span class="fu">select_best</span>(<span class="at">metric =</span> <span class="st">"rmse"</span>)</span>
+<span id="cb20-11"><a href=""></a></span>
+<span id="cb20-12"><a href=""></a>best_params</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">mtry</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">trees</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">learn_rate</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.config</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">1370</td>
+<td style="text-align: right;">0.0144195</td>
+<td style="text-align: left;">Preprocessor1_Model01</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div>
+</section>
+<section id="lets-fit-this-best-model" class="slide level2">
+<h2>Let’s Fit this Best Model</h2>
+<div class="fragment">
+<p>We know our best-performing model was a <em>gradient boosting ensemble</em>, and we’ve stored our optimized hyperparameters in <code>best_params</code></p>
+</div>
+<div class="fragment">
+<p>Let’s construct and fit that model!</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href=""></a>best_params <span class="ot">&lt;-</span> best_params <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href=""></a>  <span class="fu">as.list</span>()</span>
+<span id="cb21-3"><a href=""></a></span>
+<span id="cb21-4"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb21-5"><a href=""></a></span>
+<span id="cb21-6"><a href=""></a>xgb_spec <span class="ot">&lt;-</span> <span class="fu">boost_tree</span>(</span>
+<span id="cb21-7"><a href=""></a>  <span class="at">trees =</span> best_params<span class="sc">$</span>trees,</span>
+<span id="cb21-8"><a href=""></a>  <span class="at">mtry =</span> best_params<span class="sc">$</span>mtry,</span>
+<span id="cb21-9"><a href=""></a>  <span class="at">learn_rate =</span> best_params<span class="sc">$</span>learn_rate</span>
+<span id="cb21-10"><a href=""></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-11"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"xgboost"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-12"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)</span>
+<span id="cb21-13"><a href=""></a></span>
+<span id="cb21-14"><a href=""></a>xgb_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-15"><a href=""></a>  <span class="fu">add_model</span>(xgb_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb21-16"><a href=""></a>  <span class="fu">add_recipe</span>(rec)</span>
+<span id="cb21-17"><a href=""></a></span>
+<span id="cb21-18"><a href=""></a>xgb_fit <span class="ot">&lt;-</span> xgb_wf <span class="sc">%&gt;%</span></span>
+<span id="cb21-19"><a href=""></a>  <span class="fu">fit</span>(ames_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="extracting-important-predictors" class="slide level2">
+<h2>Extracting Important Predictors</h2>
+<div class="fragment">
+<p>Ensembles are not generally known for their interpretability</p>
+</div>
+<div class="fragment">
+<p>We can, however, identify the predictors which are most important to the ensemble using the <code>vip()</code> function from the <code>{vip}</code> package</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href=""></a><span class="fu">library</span>(vip)</span>
+<span id="cb22-2"><a href=""></a></span>
+<span id="cb22-3"><a href=""></a>xgb_fit <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href=""></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb22-5"><a href=""></a>  <span class="fu">vip</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-24-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="assessing-performance" class="slide level2">
+<h2>Assessing Performance</h2>
+<div class="fragment">
+<p>Let’s assess our model’s performance on our test data</p>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href=""></a>xgb_results <span class="ot">&lt;-</span> xgb_fit <span class="sc">%&gt;%</span></span>
+<span id="cb23-2"><a href=""></a>  <span class="fu">augment</span>(ames_test) <span class="sc">%&gt;%</span></span>
+<span id="cb23-3"><a href=""></a>  <span class="fu">select</span>(Sale_Price, .pred)</span>
+<span id="cb23-4"><a href=""></a></span>
+<span id="cb23-5"><a href=""></a>xgb_results <span class="sc">%&gt;%</span></span>
+<span id="cb23-6"><a href=""></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb23-7"><a href=""></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> Sale_Price, <span class="at">y =</span> .pred),</span>
+<span id="cb23-8"><a href=""></a>             <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb23-9"><a href=""></a>  <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="dv">1</span>, <span class="at">intercept =</span> <span class="dv">0</span>,</span>
+<span id="cb23-10"><a href=""></a>              <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">alpha =</span> <span class="fl">0.75</span>) <span class="sc">+</span></span>
+<span id="cb23-11"><a href=""></a>  <span class="fu">labs</span>(</span>
+<span id="cb23-12"><a href=""></a>    <span class="at">title =</span> <span class="st">"Predictions versus Actuals"</span>,</span>
+<span id="cb23-13"><a href=""></a>    <span class="at">x =</span> <span class="st">"Sale Price"</span>,</span>
+<span id="cb23-14"><a href=""></a>    <span class="at">y =</span> <span class="st">"Prediction"</span></span>
+<span id="cb23-15"><a href=""></a>  ) <span class="sc">+</span> </span>
+<span id="cb23-16"><a href=""></a>  <span class="fu">coord_equal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-25-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href=""></a>xgb_results <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href=""></a>  <span class="fu">rmse</span>(Sale_Price, .pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">.metric</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.estimator</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">.estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">18593.77</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="recap" class="slide level2">
+<h2>Recap</h2>
+<ul>
+<li class="fragment"><p>We can use cross-validation to <em>tune hyperparameters</em></p>
+<ul>
+<li class="fragment">This means that, after tuning, we can justify our hyperparameter choices</li>
+</ul></li>
+<li class="fragment"><p>We can tune over a <em>workflow set</em> which contains combinations of model specifications and recipes</p>
+<ul>
+<li class="fragment">This allows us to not only find an optimal model from a particular class, but an optimal model (including class and hyperpameter settings) from a collection</li>
+</ul></li>
+<li class="fragment"><p>Tuning allows you to improve “off the shelf” models, often by a significant margin</p></li>
+<li class="fragment"><p>Our best untuned model to predict <code>Sale_Price</code> was a <em>Random Forest</em> that had a cross-validation RMSE of $28,606.09, while this <em>tuned gradient boosting ensemble</em> had a cross-validation RMSE of $24,224.78</p></li>
+</ul>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<center>
+<iframe src="https://giphy.com/embed/7yojoQtevjOCI" width="480" height="346" style="" frameborder="0" class="giphy-embed" allowfullscreen="">
+</iframe>
+<p>
+<a href="https://giphy.com/gifs/profile-notoverthehill-tomdds-7yojoQtevjOCI">via GIPHY</a>
+</p>
+</center>
+</div><div class="column" style="width:50%;">
+<center>
+<p><br> <br> <font size="120pt">Go forth and model responsibly!</font></p>
+</center>
+</div>
+</div>
+</div>
+</section>
+<section id="stop-parallelization" class="slide level2">
+<h2>Stop Parallelization</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href=""></a>parallel<span class="sc">::</span><span class="fu">stopCluster</span>(cluster)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
-</div>
 </div>
 </div>
 </section>

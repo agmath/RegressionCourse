@@ -392,11 +392,11 @@ dt_fit_for_plot <- dt_fit %>%
 rpart.plot(dt_fit_for_plot)
 ```
 
-## Perfect -- More Tunes!!!
+## Can We Get More Tunes???
 
 <center>
 
-<iframe src="https://giphy.com/embed/ZYVgTUU3ceUxO" width="480" height="480" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/skrillex-live-rock-n-roll-ZYVgTUU3ceUxO">via GIPHY</a></p>
+<iframe src="https://giphy.com/embed/elQ5RkAm90DZpirhRg" width="480" height="480" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/windows-windows95-windows95man-elQ5RkAm90DZpirhRg">via GIPHY</a></p>
 
 </center>
 
@@ -531,8 +531,6 @@ This total ignores that our ensembles consist of 50 - 250 models themselves
 . . . 
 
 <center>
-
-That's a lot of models!
 
 <iframe src="https://giphy.com/embed/l3q2Bz3mZjEAl4VEY" width="480" height="266" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/nyfw-nyfw-feb-2017-l3q2Bz3mZjEAl4VEY">via GIPHY</a></p>
 

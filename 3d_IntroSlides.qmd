@@ -238,3 +238,11 @@ Use this time to continue playing with the `ames` housing data
 . . .
 
 Don't worry if your document looks quite plain for now, we'll have a full class meeting devoted to using markdown syntax in Quarto effectively
+
+## Next Time...
+
+<center>
+
+<font size="120pt"><br/>Data Visualization</font>
+
+</center>

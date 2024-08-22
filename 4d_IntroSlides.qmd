@@ -311,4 +311,10 @@ data %>% #the data to be plotted
 
 > In that notebook, I split the available data into *training* and *testing* sets -- we'll talk about why later on.
 
+## Next Time...
 
+<center>
+
+<font size="120pt"><br/>A *Workshop Day* on Quarto and R</font>
+
+</center>

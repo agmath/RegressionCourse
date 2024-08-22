@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-06">
+  <meta name="dcterms.date" content="2024-08-22">
   <title>Data Viz and ggplot() Intro</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -402,7 +402,18 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 6, 2024</p>
+  <p class="date">August 22, 2024</p>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<style type="text/css">
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+</style>
+</div>
 </section>
 <section id="the-highlights" class="slide level2">
 <h2>The Highlights</h2>
@@ -419,11 +430,11 @@ Dr.&nbsp;Gilbert
 <section id="a-good-viz-tells-a-clear-story" class="slide level2">
 <h2>A Good Viz Tells a Clear Story</h2>
 
-<img data-src="4d_IntroSlides_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch"></section>
+<img data-src="4d_IntroSlides_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
 <section id="a-bad-viz-doesnt" class="slide level2">
 <h2>A Bad Viz Doesn’t</h2>
 
-<img data-src="4d_IntroSlides_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"></section>
+<img data-src="4d_IntroSlides_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section>
 <section id="suggested-viz-choices" class="slide level2">
 <h2>Suggested Viz Choices</h2>
 <ul>
@@ -471,6 +482,18 @@ Dr.&nbsp;Gilbert
 <li class="fragment"><p>Every plot should include labels</p></li>
 <li class="fragment"><p>Find <a href="https://github.com/rstudio/cheatsheets/blob/main/data-visualization.pdf">a <code>ggplot</code> cheatsheet here</a></p></li>
 </ul>
+</section>
+<section id="lets-do-this" class="slide level2">
+<h2>Let’s Do This!</h2>
+<ol type="1">
+<li class="fragment"><p>Open RStudio</p></li>
+<li class="fragment"><p>Check the top-right corner, next to the translucent blue box icon to verify that you are working in your <code>MAT300</code> project space</p>
+<ul>
+<li class="fragment">If you see <code>None</code> there instead of your project name, open your project by navigating to <code>File -&gt; Open Project</code> or by using the dropdown menu near the project box</li>
+</ul></li>
+<li class="fragment"><p>Open your Quarto Notebook from last time</p></li>
+<li class="fragment"><p>Add some questions that you think could be answered using a data visualization and describe the relevant viz type</p></li>
+</ol>
 </section>
 <section id="suggested-viz-choices-revisited" class="slide level2">
 <h2>Suggested Viz Choices, Revisited</h2>
@@ -541,6 +564,14 @@ Dr.&nbsp;Gilbert
 </ul></li>
 </ul>
 </section>
+<section id="try-it" class="slide level2">
+<h2>Try It!</h2>
+<div class="fragment">
+<center>
+<p><font size="120pt"> <br> <span class="math inline">\(\bigstar\)</span> Now that you know about data visualization types, build basic plots to answer at least two of the questions you wrote out earlier</font></p>
+</center>
+</div>
+</section>
 <section id="on-labels" class="slide level2">
 <h2>On Labels</h2>
 <ul>
@@ -558,6 +589,14 @@ Dr.&nbsp;Gilbert
 </ul></li>
 </ul>
 </section>
+<section id="try-it-1" class="slide level2">
+<h2>Try It!</h2>
+<div class="fragment">
+<center>
+<p><font size="120pt"> <br> <span class="math inline">\(\bigstar\)</span> Now that you know about labeling options in the <code>labs()</code> layer, update your plots with meaningful labels</font></p>
+</center>
+</div>
+</section>
 <section id="organizing-plots-with-patchwork" class="slide level2">
 <h2>Organizing Plots with <code>{patchwork}</code></h2>
 <ul>
@@ -572,24 +611,41 @@ Dr.&nbsp;Gilbert
 </ul></li>
 </ol>
 </section>
-<section id="lets-do-this" class="slide level2">
-<h2>Let’s Do This</h2>
+<section id="try-it-2" class="slide level2">
+<h2>Try It!</h2>
+<div class="fragment">
+<center>
+<p><font size="120pt"> <br> <span class="math inline">\(\bigstar\)</span> Use <code>{patchwork}</code> to experiment with different arrangements of your plots</font></p>
+</center>
+</div>
+</section>
+<section id="additional-practice" class="slide level2">
+<h2>Additional Practice</h2>
+<ol type="1">
+<li class="fragment"><p>Ask at least four more questions that can be answered using data visualization</p>
 <ul>
-<li class="fragment"><p>Again, you have a fully complete notebook using the <code>penguins</code> data on the webpage.</p>
-<ul>
-<li class="fragment">In that notebook, I split the available data into <em>training</em> and <em>testing</em> sets – we’ll talk about why later on.</li>
-<li class="fragment">For this activity, we won’t bother.</li>
+<li class="fragment">At least one <em>univiariate</em> question and at least one <em>multivariate</em> question</li>
+<li class="fragment">Add them to your notebook and describe why they are interesting questions</li>
 </ul></li>
-<li class="fragment"><p>Open your <code>ames</code> data notebook from last time.</p></li>
-<li class="fragment"><p>We’ll ask and answer some questions there using data visualization.</p>
+<li class="fragment"><p>Construct relevant visuals (including meaningful labels) to answer your questions</p>
 <ul>
-<li class="fragment">Ask at least two <em>univariate</em> questions.</li>
-<li class="fragment">Move to <em>multivariate</em> questions.</li>
+<li class="fragment">Experiment with plot arrangements using <code>{patchwork}</code> if you like</li>
+<li class="fragment">Render your notebook to see the results when <code>{patchwork}</code> is used versus when it is not</li>
+<li class="fragment">Decide what you like better in this case</li>
 </ul></li>
-</ul>
+<li class="fragment"><p>Provide interpretations of the plots you are seeing</p></li>
+</ol>
+<div class="fragment">
+<p><strong>Reminder:</strong> You have a fully complete notebook using the <code>penguins</code> data on the class webpage.</p>
+</div>
+<div class="fragment">
+<blockquote>
+<p>In that notebook, I split the available data into <em>training</em> and <em>testing</em> sets – we’ll talk about why later on.</p>
+</blockquote>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
+</div>
 </div>
 </div>
 </section>
@@ -624,7 +680,7 @@ Dr.&nbsp;Gilbert
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
-'smaller': false,
+'smaller': true,
  
         // Display controls in the bottom right corner
         controls: false,

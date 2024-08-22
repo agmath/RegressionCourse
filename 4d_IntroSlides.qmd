@@ -1,7 +1,9 @@
 ---
 title: "Data Viz and `ggplot()` Intro"
 author: Dr. Gilbert
-format: revealjs
+format: 
+  revealjs:
+    smaller: true
 date: today
 date-format: long
 theme: serif
@@ -16,6 +18,13 @@ library(patchwork)
 options(kable_styling_bootstrap_options = c("hover", "striped"))
 
 theme_set(theme_bw(base_size = 20))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
 ```
 
 ## The Highlights
@@ -159,6 +168,17 @@ data %>% #the data to be plotted
 + Every plot should include labels
 + Find [a `ggplot` cheatsheet here](https://github.com/rstudio/cheatsheets/blob/main/data-visualization.pdf)
 
+## Let's Do This!
+
+1. Open RStudio
+2. Check the top-right corner, next to the translucent blue box icon to verify that you are working in your `MAT300` project space
+
+    + If you see `None` there instead of your project name, open your project by navigating to `File -> Open Project` or by using the dropdown menu near the project box
+    
+3. Open your Quarto Notebook from last time
+
+4. Add some questions that you think could be answered using a data visualization and describe the relevant viz type
+
 ## Suggested Viz Choices, Revisited
 
 + Single Numerical Variable
@@ -214,6 +234,16 @@ data %>% #the data to be plotted
 
   + Remember, specific *geoms* permit only specific *aesthetics*
   
+## Try It!
+
+. . . 
+
+<center>
+
+<font size="120pt"> <br/> $\bigstar$ Now that you know about data visualization types, build basic plots to answer at least two of the questions you wrote out earlier</font>
+
+</center>
+
 ## On Labels
 
 + The `labs()` layer permits global plot labels and labels for any mapped aesthetic
@@ -228,6 +258,16 @@ data %>% #the data to be plotted
   + `fill`
   + etc.
   
+## Try It!
+
+. . . 
+
+<center>
+
+<font size="120pt"> <br/> $\bigstar$ Now that you know about labeling options in the `labs()` layer, update your plots with meaningful labels</font>
+
+</center>
+  
 ## Organizing Plots with `{patchwork}`
 
 + Often you'll want to arrange plots together, rather than printing them out one at a time
@@ -238,15 +278,37 @@ data %>% #the data to be plotted
 
     + For example, `(p1 + p2) / p3` will arrange plots `p1` and `p2` side-by-side, with plot `p3` underneath them.
     
-## Let's Do This
+## Try It!
 
-+ Again, you have a fully complete notebook using the `penguins` data on the webpage.
+. . . 
 
-  + In that notebook, I split the available data into *training* and *testing* sets -- we'll talk about why later on.
-  + For this activity, we won't bother.
+<center>
 
-+ Open your `ames` data notebook from last time.
-+ We'll ask and answer some questions there using data visualization.
+<font size="120pt"> <br/> $\bigstar$ Use `{patchwork}` to experiment with different arrangements of your plots</font>
 
-  + Ask at least two *univariate* questions.
-  + Move to *multivariate* questions.
+</center>
+
+## Additional Practice
+
+1. Ask at least four more questions that can be answered using data visualization 
+
+    + At least one *univiariate* question and at least one *multivariate* question
+    + Add them to your notebook and describe why they are interesting questions
+    
+2. Construct relevant visuals (including meaningful labels) to answer your questions
+
+    + Experiment with plot arrangements using `{patchwork}` if you like
+    + Render your notebook to see the results when `{patchwork}` is used versus when it is not
+    + Decide what you like better in this case
+
+3. Provide interpretations of the plots you are seeing
+
+. . .
+
+**Reminder:** You have a fully complete notebook using the `penguins` data on the class webpage.
+
+. . .
+
+> In that notebook, I split the available data into *training* and *testing* sets -- we'll talk about why later on.
+
+

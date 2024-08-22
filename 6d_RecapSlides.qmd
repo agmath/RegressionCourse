@@ -308,7 +308,42 @@ order_df %>%
   kable_styling()
 ```
 
-## Commonly Utilized Tools {.smaller}
+. . .
+
+**How Did We Do It?** We joined the data together using a `left_join()`
+
++ There are multiple types of join (*left*, *right*, *inner*, *full*, *anti*, etc.)
++ A *left* join begins with the data frame on the left (prior to the join function, if piping), and adds on information (columns) from the table on the right
++ Joins require a key column(s) in both tables to identify when a match exists and information should be appended to the corresponding row
+
+. . .
+
+The `left_join()` function requires:
+
++ the two data frames being joined together
++ the column(s) over which record-matches should be identified
+
+## Try It!
+
+<center>
+
+<font size="120pt"><br/>$\bigstar$ Try using `left_join()` to fill in the code chunk in *Challenge 5: Data Across Multiple Tables* to join the `orders`, `clients`, and `products` data frames together
+
+</font>
+
+</center>
+
+. . .
+
+<center>
+
+<font size="120pt"><br/> As usual, you'll try this first and then we'll finish up together
+
+</font>
+
+</center>
+
+## Summary: Commonly Utilized Data Wrangling Tools
 
 + Tools for dealing with inconsistent data entry
   + `mutate()` with `ifelse()`, `case_when()`, `str_replace()`, etc.
@@ -330,3 +365,11 @@ order_df %>%
   + `left_join()`, `full_join()`, `inner_join()`, `anti_join()`, etc.
   + Almost always `left_join()`
 
+## Next Time... 
+
+<center>
+
+<font size="120pt"><br/> An Introduction to the `{tidymodels}` Modeling Framework
+</font>
+
+</center>

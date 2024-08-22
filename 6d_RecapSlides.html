@@ -1071,9 +1071,37 @@ $ favorite_color &lt;chr&gt; "blue", "purple", "orang", "blue", "blue", "orange"
 
 </div>
 </div>
+<div class="fragment">
+<p><strong>How Did We Do It?</strong> We joined the data together using a <code>left_join()</code></p>
+<ul>
+<li class="fragment">There are multiple types of join (<em>left</em>, <em>right</em>, <em>inner</em>, <em>full</em>, <em>anti</em>, etc.)</li>
+<li class="fragment">A <em>left</em> join begins with the data frame on the left (prior to the join function, if piping), and adds on information (columns) from the table on the right</li>
+<li class="fragment">Joins require a key column(s) in both tables to identify when a match exists and information should be appended to the corresponding row</li>
+</ul>
+</div>
+<div class="fragment">
+<p>The <code>left_join()</code> function requires:</p>
+<ul>
+<li class="fragment">the two data frames being joined together</li>
+<li class="fragment">the column(s) over which record-matches should be identified</li>
+</ul>
+</div>
 </section>
-<section id="commonly-utilized-tools" class="slide level2 smaller">
-<h2>Commonly Utilized Tools</h2>
+<section id="try-it-2" class="slide level2">
+<h2>Try It!</h2>
+<center>
+<p><font size="120pt"><br><span class="math inline">\(\bigstar\)</span> Try using <code>left_join()</code> to fill in the code chunk in <em>Challenge 5: Data Across Multiple Tables</em> to join the <code>orders</code>, <code>clients</code>, and <code>products</code> data frames together</font></p><font size="120pt">
+</font><p><font size="120pt"></font></p>
+</center>
+<div class="fragment">
+<center>
+<p><font size="120pt"><br> As usual, you’ll try this first and then we’ll finish up together</font></p><font size="120pt">
+</font><p><font size="120pt"></font></p>
+</center>
+</div>
+</section>
+<section id="summary-commonly-utilized-data-wrangling-tools" class="slide level2">
+<h2>Summary: Commonly Utilized Data Wrangling Tools</h2>
 <ul>
 <li class="fragment"><p>Tools for dealing with inconsistent data entry</p>
 <ul>
@@ -1097,6 +1125,12 @@ $ favorite_color &lt;chr&gt; "blue", "purple", "orang", "blue", "blue", "orange"
 <li class="fragment">Almost always <code>left_join()</code></li>
 </ul></li>
 </ul>
+</section>
+<section id="next-time" class="slide level2">
+<h2>Next Time…</h2>
+<center>
+<p><font size="120pt"><br> An Introduction to the <code>{tidymodels}</code> Modeling Framework </font></p>
+</center>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 

@@ -1,7 +1,9 @@
 ---
 title: "Welcome to R; A Quick Overview"
 author: Dr. Gilbert
-format: revealjs
+format: 
+  revealjs:
+    smaller: true
 date: today
 date-format: long
 theme: serif
@@ -13,6 +15,13 @@ library(tidyverse)
 library(tidymodels)
 
 theme_set(theme_bw(base_size = 20))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
 ```
 
 ## The Highlights
@@ -36,6 +45,19 @@ theme_set(theme_bw(base_size = 20))
 
   + Notebooks allow us to fully document and share analyses even with non-technical people.
   
+## Let's Get Started
+
+1. Open RStudio
+2. Create a new *project* by navigating to `File -> New Project`
+
+    + Choose to create the project in a new directory (folder)
+    + Name this something like `MAT300` -- you'll include all of your notebooks for our class in this project
+    + **Note:** If you'd like to use GitHub and manage your project space using a repository, come see me in *office hours* or reach out on *Slack* and I'll help you get set up.
+  
+3. Now that you are in your new project space, create a new Quarto Document by navigating to `File -> New File -> Quarto Document`
+
+    + You can edit the fields, or accept the defaults -- it's up to you
+  
 ## The R Dialects
 
 There are three main dialects in R
@@ -45,6 +67,10 @@ There are three main dialects in R
 + Tidy-R / `tidyverse` (readability and consistency)
 
   + We use this one. When you search for help -- include "*tidyverse*" in your query.
+  
+. . .
+
+> **Note:** *R dialects* just refers to how we choose to write R code and which functions we prioritize -- dialects can be (and often are) mixed.
 
 ## Installing and Loading Packages
 
@@ -56,18 +82,50 @@ There are three main dialects in R
 + `library(PACKAGE_NAME)` to load the package
 
   + Do this near the top of your Quarto Document, in a *setup* chunk
+  
+. . .
+
+$\bigstar$ Install the `{tidyverse}` and load it in your Quarto Notebook
 
 ## Reading in Data
 
-+ **ASIDE:** We store objects in R with the arrow operator (`<-`)
+. . .
 
-  + ie. `x <- 2`
+**ASIDE:** We store objects in R with the arrow operator (`<-`)
 
-+ `data <- read_csv("PATH_TO_CSV_FILE")` to read in data from a CSV file and store it as `data`
+. . .
 
-  + Requires the `{tidyverse}` (or at least `{readr}`) to be loaded
-  + Similar functions exist for reading other file formats
-  + Some require other packages (`{readxl}` or `{haven}` are common)
+```{r}
+#| echo: true
+#| eval: false
+
+x <- 2
+```
+
+. . .
+
+**Reading Data:** To read data, we use a function of the form `read_*()`.
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
+data <- read_csv("PATH_TO_CSV_FILE")
+```
+
++ Requires the `{tidyverse}` (or at least `{readr}`) to be loaded
++ Similar functions exist for reading other file formats
++ Some require other packages (`{readxl}` or `{haven}` are common)
+
+. . .
+
+$\bigstar$ Read the `ames` dataset into your Quarto Notebook [from this link](https://raw.githubusercontent.com/koalaverse/homlr/master/data/ames.csv)
+
+. . .
+
+I'll post the link in Slack
   
 ## First Interactions with Data
 
@@ -75,11 +133,26 @@ There are three main dialects in R
 + `glimpse()` to view dimensions and data types
 + `skim()` from `{skimr}` for much more detail
 
+. . . 
+
+$\bigstar$ Try these functions on your `ames` data
+
 ## The Pipe Operator 
 
 + Pipes (`%>%` or `|>`) make code more readable and allow chaining of functions together
 + Object to the left of the pipe becomes first argument to the function after the pipe
 + Read the pipe to mean "*and then*"
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+#| code-line-numbers: "|1|2|"
+
+ames %>%
+  head()
+```
 
 ## Manipulating and Transforming Data
 
@@ -89,9 +162,20 @@ There are three main dialects in R
 + `groupby()` to create groups in a table
 + `mutate()` to create new columns or change existing ones
 
+. . .
+
+$\bigstar$ How might we use these functions? Let's ask some questions and then try to answer them using the functions above.
+
+. . . 
+
+Add your work to your Quarto Notebook
+
 ## All Changes are Temporary
 
-```{{r}}
+```{r}
+#| echo: true
+#| eval: false
+
 penguins %>%
   filter(species == "Gentoo") %>%
   groupby(island) %>%
@@ -100,16 +184,21 @@ penguins %>%
   )
 ```
 
-+ Start with the `penguins` data frame, and then
-+ filter to just the Gentoo species, and then
-+ group by island, and then
++ Start with the `penguins` data frame, *and then*
++ filter to just the Gentoo species, *and then*
++ group by island, *and then*
 + calculate average penguin body mass for each group
 
 **Note:** `penguins` data frame is not permanently altered here
 
 ## Until We Make Them Permanent
 
-```{{r}}
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
 penguins <- penguins %>%
   filter(species == "Gentoo") %>%
   groupby(island) %>%
@@ -118,35 +207,34 @@ penguins <- penguins %>%
   )
 ```
 
-+ Now the change is permanent because we've stored the result
+. . .
 
-  + Notice the use of the arrow operator (`<-`)
-  + Be careful overwriting existing objects -- think about whether you:
+Now the change is permanent because we've stored the result
+
++ Notice the use of the arrow operator (`<-`)
++ Be careful overwriting existing objects -- think about whether you:
   
-    + might need the old object again
-    + would be better off creating a new object (variable)
-    + even need to store the result at all
+  + might need the old object again
+  + would be better off creating a new object (variable)
+  + even need to store the result at all
     
-## Let's Do This
+## Let's Practice
 
-+ You have a fully complete notebook using the `mpg` data on the webpage
-+ Let's use the `ames` data today -- I posted a link to it in Slack
+. . .
 
-## Instructions (Setup)
+**Reminder:** You have a fully complete (and documented) notebook using the `mpg` data on the course webpage
 
-1. Open RStudio, create a new R Project -- you can use this one project for our entire course
-2. Download, open, and save the Student Notes Template in your project. 
-3. Create a copy of the template named `IntroToR` or something else descriptive.
-4. Confirm to install any missing packages using the yellow banner at the top of the Quarto Document.
+. . .
 
-## Instructions (Analysis)
+Use this time to continue playing with the `ames` housing data
 
-5. Run the code in the `setup` chunk
-6. Use `read_csv()` and the file path from Slack to read the `ames` data into your R session
+1. Write down and answer some interesting questions that might use functionality discussed in this slide deck -- start simple and then build up to questions that might be more complex
+2. Try documenting your work by including text descriptions in addition to the code chunks
+3. Save your QMD file
+4. Use the blue *render* button to convert your markdown document into a beautiful HTML document and enjoy the fruits of your labor!
 
-    + Make sure it shows up in your *Environment*
-7. Take an initial look at the data
-8. Write down some interesting questions that might use functionality discussed in this slide deck
+    + 🤔 Ponder an existence where you never need to open MS Word again! 🤔
 
-    + Start with a few very simple questions and then build more involved ones
-9. We'll answer those questions by using the functionality we saw here
+. . .
+
+Don't worry if your document looks quite plain for now, we'll have a full class meeting devoted to using markdown syntax in Quarto effectively

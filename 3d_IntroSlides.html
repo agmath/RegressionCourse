@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-13">
+  <meta name="dcterms.date" content="2024-08-22">
   <title>Welcome to R; A Quick Overview</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -402,7 +402,18 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 13, 2024</p>
+  <p class="date">August 22, 2024</p>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<style type="text/css">
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+</style>
+</div>
 </section>
 <section id="the-highlights" class="slide level2">
 <h2>The Highlights</h2>
@@ -430,6 +441,22 @@ Dr.&nbsp;Gilbert
 </ul></li>
 </ul>
 </section>
+<section id="lets-get-started" class="slide level2">
+<h2>Let’s Get Started</h2>
+<ol type="1">
+<li class="fragment"><p>Open RStudio</p></li>
+<li class="fragment"><p>Create a new <em>project</em> by navigating to <code>File -&gt; New Project</code></p>
+<ul>
+<li class="fragment">Choose to create the project in a new directory (folder)</li>
+<li class="fragment">Name this something like <code>MAT300</code> – you’ll include all of your notebooks for our class in this project</li>
+<li class="fragment"><strong>Note:</strong> If you’d like to use GitHub and manage your project space using a repository, come see me in <em>office hours</em> or reach out on <em>Slack</em> and I’ll help you get set up.</li>
+</ul></li>
+<li class="fragment"><p>Now that you are in your new project space, create a new Quarto Document by navigating to <code>File -&gt; New File -&gt; Quarto Document</code></p>
+<ul>
+<li class="fragment">You can edit the fields, or accept the defaults – it’s up to you</li>
+</ul></li>
+</ol>
+</section>
 <section id="the-r-dialects" class="slide level2">
 <h2>The R Dialects</h2>
 <p>There are three main dialects in R</p>
@@ -441,6 +468,11 @@ Dr.&nbsp;Gilbert
 <li class="fragment">We use this one. When you search for help – include “<em>tidyverse</em>” in your query.</li>
 </ul></li>
 </ul>
+<div class="fragment">
+<blockquote>
+<p><strong>Note:</strong> <em>R dialects</em> just refers to how we choose to write R code and which functions we prioritize – dialects can be (and often are) mixed.</p>
+</blockquote>
+</div>
 </section>
 <section id="installing-and-loading-packages" class="slide level2">
 <h2>Installing and Loading Packages</h2>
@@ -455,21 +487,39 @@ Dr.&nbsp;Gilbert
 <li class="fragment">Do this near the top of your Quarto Document, in a <em>setup</em> chunk</li>
 </ul></li>
 </ul>
+<div class="fragment">
+<p><span class="math inline">\(\bigstar\)</span> Install the <code>{tidyverse}</code> and load it in your Quarto Notebook</p>
+</div>
 </section>
 <section id="reading-in-data" class="slide level2">
 <h2>Reading in Data</h2>
-<ul>
-<li class="fragment"><p><strong>ASIDE:</strong> We store objects in R with the arrow operator (<code>&lt;-</code>)</p>
-<ul>
-<li class="fragment">ie. <code>x &lt;- 2</code></li>
-</ul></li>
-<li class="fragment"><p><code>data &lt;- read_csv("PATH_TO_CSV_FILE")</code> to read in data from a CSV file and store it as <code>data</code></p>
+<div class="fragment">
+<p><strong>ASIDE:</strong> We store objects in R with the arrow operator (<code>&lt;-</code>)</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>x <span class="ot">&lt;-</span> <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<p><strong>Reading Data:</strong> To read data, we use a function of the form <code>read_*()</code>.</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"PATH_TO_CSV_FILE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <ul>
 <li class="fragment">Requires the <code>{tidyverse}</code> (or at least <code>{readr}</code>) to be loaded</li>
 <li class="fragment">Similar functions exist for reading other file formats</li>
 <li class="fragment">Some require other packages (<code>{readxl}</code> or <code>{haven}</code> are common)</li>
-</ul></li>
 </ul>
+</div>
+<div class="fragment">
+<p><span class="math inline">\(\bigstar\)</span> Read the <code>ames</code> dataset into your Quarto Notebook <a href="https://raw.githubusercontent.com/koalaverse/homlr/master/data/ames.csv">from this link</a></p>
+</div>
+<div class="fragment">
+<p>I’ll post the link in Slack</p>
+</div>
 </section>
 <section id="first-interactions-with-data" class="slide level2">
 <h2>First Interactions with Data</h2>
@@ -478,6 +528,9 @@ Dr.&nbsp;Gilbert
 <li class="fragment"><code>glimpse()</code> to view dimensions and data types</li>
 <li class="fragment"><code>skim()</code> from <code>{skimr}</code> for much more detail</li>
 </ul>
+<div class="fragment">
+<p><span class="math inline">\(\bigstar\)</span> Try these functions on your <code>ames</code> data</p>
+</div>
 </section>
 <section id="the-pipe-operator" class="slide level2">
 <h2>The Pipe Operator</h2>
@@ -486,6 +539,12 @@ Dr.&nbsp;Gilbert
 <li class="fragment">Object to the left of the pipe becomes first argument to the function after the pipe</li>
 <li class="fragment">Read the pipe to mean “<em>and then</em>”</li>
 </ul>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" data-code-line-numbers="|1|2|"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>ames <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href=""></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
 </section>
 <section id="manipulating-and-transforming-data" class="slide level2">
 <h2>Manipulating and Transforming Data</h2>
@@ -496,37 +555,45 @@ Dr.&nbsp;Gilbert
 <li class="fragment"><code>groupby()</code> to create groups in a table</li>
 <li class="fragment"><code>mutate()</code> to create new columns or change existing ones</li>
 </ul>
+<div class="fragment">
+<p><span class="math inline">\(\bigstar\)</span> How might we use these functions? Let’s ask some questions and then try to answer them using the functions above.</p>
+</div>
+<div class="fragment">
+<p>Add your work to your Quarto Notebook</p>
+</div>
 </section>
 <section id="all-changes-are-temporary" class="slide level2">
 <h2>All Changes are Temporary</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href=""></a><span class="in">```{r}</span></span>
-<span id="cb1-2"><a href=""></a><span class="in">penguins %&gt;%</span></span>
-<span id="cb1-3"><a href=""></a><span class="in">  filter(species == "Gentoo") %&gt;%</span></span>
-<span id="cb1-4"><a href=""></a><span class="in">  groupby(island) %&gt;%</span></span>
-<span id="cb1-5"><a href=""></a><span class="in">  summarize(</span></span>
-<span id="cb1-6"><a href=""></a><span class="in">    avg_mass = mean(body_mass_g)</span></span>
-<span id="cb1-7"><a href=""></a><span class="in">  )</span></span>
-<span id="cb1-8"><a href=""></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href=""></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Gentoo"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href=""></a>  <span class="fu">groupby</span>(island) <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href=""></a>  <span class="fu">summarize</span>(</span>
+<span id="cb4-5"><a href=""></a>    <span class="at">avg_mass =</span> <span class="fu">mean</span>(body_mass_g)</span>
+<span id="cb4-6"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <ul>
-<li class="fragment">Start with the <code>penguins</code> data frame, and then</li>
-<li class="fragment">filter to just the Gentoo species, and then</li>
-<li class="fragment">group by island, and then</li>
+<li class="fragment">Start with the <code>penguins</code> data frame, <em>and then</em></li>
+<li class="fragment">filter to just the Gentoo species, <em>and then</em></li>
+<li class="fragment">group by island, <em>and then</em></li>
 <li class="fragment">calculate average penguin body mass for each group</li>
 </ul>
 <p><strong>Note:</strong> <code>penguins</code> data frame is not permanently altered here</p>
 </section>
 <section id="until-we-make-them-permanent" class="slide level2">
 <h2>Until We Make Them Permanent</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href=""></a><span class="in">```{r}</span></span>
-<span id="cb2-2"><a href=""></a><span class="in">penguins &lt;- penguins %&gt;%</span></span>
-<span id="cb2-3"><a href=""></a><span class="in">  filter(species == "Gentoo") %&gt;%</span></span>
-<span id="cb2-4"><a href=""></a><span class="in">  groupby(island) %&gt;%</span></span>
-<span id="cb2-5"><a href=""></a><span class="in">  summarize(</span></span>
-<span id="cb2-6"><a href=""></a><span class="in">    avg_mass = mean(body_mass_g)</span></span>
-<span id="cb2-7"><a href=""></a><span class="in">  )</span></span>
-<span id="cb2-8"><a href=""></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ul>
-<li class="fragment"><p>Now the change is permanent because we’ve stored the result</p>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>penguins <span class="ot">&lt;-</span> penguins <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href=""></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Gentoo"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href=""></a>  <span class="fu">groupby</span>(island) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href=""></a>  <span class="fu">summarize</span>(</span>
+<span id="cb5-5"><a href=""></a>    <span class="at">avg_mass =</span> <span class="fu">mean</span>(body_mass_g)</span>
+<span id="cb5-6"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div class="fragment">
+<p>Now the change is permanent because we’ve stored the result</p>
 <ul>
 <li class="fragment"><p>Notice the use of the arrow operator (<code>&lt;-</code>)</p></li>
 <li class="fragment"><p>Be careful overwriting existing objects – think about whether you:</p>
@@ -535,43 +602,32 @@ Dr.&nbsp;Gilbert
 <li class="fragment">would be better off creating a new object (variable)</li>
 <li class="fragment">even need to store the result at all</li>
 </ul></li>
-</ul></li>
 </ul>
+</div>
 </section>
-<section id="lets-do-this" class="slide level2">
-<h2>Let’s Do This</h2>
-<ul>
-<li class="fragment">You have a fully complete notebook using the <code>mpg</code> data on the webpage</li>
-<li class="fragment">Let’s use the <code>ames</code> data today – I posted a link to it in Slack</li>
-</ul>
-</section>
-<section id="instructions-setup" class="slide level2">
-<h2>Instructions (Setup)</h2>
+<section id="lets-practice" class="slide level2">
+<h2>Let’s Practice</h2>
+<div class="fragment">
+<p><strong>Reminder:</strong> You have a fully complete (and documented) notebook using the <code>mpg</code> data on the course webpage</p>
+</div>
+<div class="fragment">
+<p>Use this time to continue playing with the <code>ames</code> housing data</p>
 <ol type="1">
-<li class="fragment">Open RStudio, create a new R Project – you can use this one project for our entire course</li>
-<li class="fragment">Download, open, and save the Student Notes Template in your project.</li>
-<li class="fragment">Create a copy of the template named <code>IntroToR</code> or something else descriptive.</li>
-<li class="fragment">Confirm to install any missing packages using the yellow banner at the top of the Quarto Document.</li>
-</ol>
-</section>
-<section id="instructions-analysis" class="slide level2">
-<h2>Instructions (Analysis)</h2>
-<ol start="5" type="1">
-<li class="fragment"><p>Run the code in the <code>setup</code> chunk</p></li>
-<li class="fragment"><p>Use <code>read_csv()</code> and the file path from Slack to read the <code>ames</code> data into your R session</p>
+<li class="fragment"><p>Write down and answer some interesting questions that might use functionality discussed in this slide deck – start simple and then build up to questions that might be more complex</p></li>
+<li class="fragment"><p>Try documenting your work by including text descriptions in addition to the code chunks</p></li>
+<li class="fragment"><p>Save your QMD file</p></li>
+<li class="fragment"><p>Use the blue <em>render</em> button to convert your markdown document into a beautiful HTML document and enjoy the fruits of your labor!</p>
 <ul>
-<li class="fragment">Make sure it shows up in your <em>Environment</em></li>
+<li class="fragment">🤔 Ponder an existence where you never need to open MS Word again! 🤔</li>
 </ul></li>
-<li class="fragment"><p>Take an initial look at the data</p></li>
-<li class="fragment"><p>Write down some interesting questions that might use functionality discussed in this slide deck</p>
-<ul>
-<li class="fragment">Start with a few very simple questions and then build more involved ones</li>
-</ul></li>
-<li class="fragment"><p>We’ll answer those questions by using the functionality we saw here</p></li>
 </ol>
+</div>
+<div class="fragment">
+<p>Don’t worry if your document looks quite plain for now, we’ll have a full class meeting devoted to using markdown syntax in Quarto effectively</p>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
+</div>
 </div>
 </div>
 </section>
@@ -606,7 +662,7 @@ Dr.&nbsp;Gilbert
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
-'smaller': false,
+'smaller': true,
  
         // Display controls in the bottom right corner
         controls: false,

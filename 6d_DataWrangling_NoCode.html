@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.43">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2024-08-22">
+
+<title>Data Wrangling and Tidy Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="6d_DataWrangling_NoCode_files/libs/clipboard/clipboard.min.js"></script>
+<script src="6d_DataWrangling_NoCode_files/libs/quarto-html/quarto.js"></script>
+<script src="6d_DataWrangling_NoCode_files/libs/quarto-html/popper.min.js"></script>
+<script src="6d_DataWrangling_NoCode_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="6d_DataWrangling_NoCode_files/libs/quarto-html/anchor.min.js"></script>
+<link href="6d_DataWrangling_NoCode_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="6d_DataWrangling_NoCode_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="6d_DataWrangling_NoCode_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="6d_DataWrangling_NoCode_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="6d_DataWrangling_NoCode_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="6d_DataWrangling_NoCode_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="6d_DataWrangling_NoCode_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#objectives" id="toc-objectives" class="nav-link active" data-scroll-target="#objectives">Objectives</a></li>
+  <li><a href="#set-up" id="toc-set-up" class="nav-link" data-scroll-target="#set-up">Set-Up</a>
+  <ul class="collapse">
+  <li><a href="#challenge-1-inconsistent-data-recording" id="toc-challenge-1-inconsistent-data-recording" class="nav-link" data-scroll-target="#challenge-1-inconsistent-data-recording">Challenge 1: Inconsistent Data Recording</a></li>
+  <li><a href="#challenge-2-unexpected-data-types" id="toc-challenge-2-unexpected-data-types" class="nav-link" data-scroll-target="#challenge-2-unexpected-data-types">Challenge 2: Unexpected Data Types</a></li>
+  <li><a href="#challenge-3-multivariable-columns" id="toc-challenge-3-multivariable-columns" class="nav-link" data-scroll-target="#challenge-3-multivariable-columns">Challenge 3: Multivariable Columns</a></li>
+  <li><a href="#challenge-4-wide--and-long-format-data" id="toc-challenge-4-wide--and-long-format-data" class="nav-link" data-scroll-target="#challenge-4-wide--and-long-format-data">Challenge 4: Wide- and Long-Format Data</a></li>
+  <li><a href="#data-across-multiple-tables" id="toc-data-across-multiple-tables" class="nav-link" data-scroll-target="#data-across-multiple-tables">Data Across Multiple Tables</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="6d_DataWrangling_NoCode.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Data Wrangling and Tidy Data</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 22, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("randomNames") #cannot have install.packages() in a notebook</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomNames)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">kable_styling_bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"hover"</span>, <span class="st">"striped"</span>))</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_bw</span>())</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>ikea <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-11-03/ikea.csv'</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="do">###############################</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#Generate Data</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="do">###############################</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">300</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>items <span class="ot">&lt;-</span> ikea <span class="sc">%&gt;%</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(category) <span class="sc">%&gt;%</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">5</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(category)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>items_dup <span class="ot">&lt;-</span> items <span class="sc">%&gt;%</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">append</span>(<span class="fu">c</span>(<span class="st">"Outdoor Furniture"</span>, <span class="st">"Nursary Furnature"</span>))</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>products <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">items =</span> items_dup, <span class="at">prices =</span> <span class="fu">c</span>(<span class="st">"$125"</span>, <span class="st">"$675"</span>, <span class="st">"$1,350"</span>, <span class="st">"$475"</span>, <span class="st">"$725"</span>, <span class="st">"$675"</span>, <span class="st">"$475"</span>))</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>clients <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">client_id =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">1</span>), </span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>                  <span class="at">name =</span> <span class="fu">randomNames</span>(<span class="dv">10</span>),</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>                  <span class="at">phone_number =</span> <span class="fu">paste0</span>(<span class="st">"("</span>,</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>                                        <span class="fu">sample</span>(<span class="dv">111</span><span class="sc">:</span><span class="dv">777</span>, <span class="dv">10</span>),</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>                                        <span class="st">") "</span>,</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>                                        <span class="fu">sample</span>(<span class="dv">111</span><span class="sc">:</span><span class="dv">777</span>, <span class="dv">10</span>),</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>                                        <span class="st">"-"</span>,</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>                                        <span class="fu">sample</span>(<span class="dv">1111</span><span class="sc">:</span><span class="dv">7777</span>, <span class="dv">10</span>)))</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>numRows <span class="ot">&lt;-</span> <span class="dv">126735</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>orders <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">client_id =</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">size =</span> numRows, <span class="at">replace =</span> <span class="cn">TRUE</span>), <span class="at">product =</span> <span class="fu">sample</span>(items, <span class="at">size =</span> numRows, <span class="at">replace =</span> <span class="cn">TRUE</span>), <span class="at">quantity =</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">rpois</span>(numRows, <span class="at">lambda =</span> <span class="dv">2</span>))</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>purchase_history <span class="ot">&lt;-</span> <span class="fu">crossing</span>(<span class="at">client_id =</span> clients<span class="sc">$</span>client_id, <span class="at">items =</span> products<span class="sc">$</span>items, <span class="at">year =</span> <span class="fu">c</span>(<span class="st">"2018"</span>, <span class="st">"2019"</span>, <span class="st">"2020"</span>, <span class="st">"2021"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">quantity =</span> <span class="dv">150</span> <span class="sc">+</span> (<span class="sc">-</span><span class="dv">1</span>)<span class="sc">^</span>(<span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="dv">280</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>))<span class="sc">*</span><span class="fu">rpois</span>(<span class="dv">280</span>, <span class="dv">50</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(products) <span class="sc">%&gt;%</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prices =</span> <span class="fu">str_replace</span>(prices, <span class="st">"</span><span class="sc">\\</span><span class="st">$"</span>, <span class="st">""</span>),</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>         <span class="at">prices =</span> <span class="fu">str_replace</span>(prices, <span class="st">","</span>, <span class="st">""</span>),</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>         <span class="at">prices =</span> <span class="fu">as.numeric</span>(prices),</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>         <span class="at">total_purchased =</span> quantity<span class="sc">*</span>prices) <span class="sc">%&gt;%</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>quantity, <span class="sc">-</span> prices)</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="co">#purchase_history</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>historical_purchases <span class="ot">&lt;-</span> purchase_history <span class="sc">%&gt;%</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(client_id, year) <span class="sc">%&gt;%</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">total_value =</span> <span class="fu">sum</span>(total_purchased)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> year, <span class="at">values_from =</span> total_value)</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="do">##################################</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="co">#End Data Generation</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a><span class="do">##################################</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="co">#Remove all intermediate variables</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">setdiff</span>(<span class="fu">ls</span>(), <span class="fu">c</span>(<span class="st">"clients"</span>, <span class="st">"orders"</span>, <span class="st">"products"</span>, <span class="st">"purchase_history"</span>, <span class="st">"historical_purchases"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="objectives" class="level2">
+<h2 class="anchored" data-anchor-id="objectives">Objectives</h2>
+<p>This notebook gives an overview of some of the most common <em>problems</em> that data come with, and some methods for dealing with those issues.</p>
+<ul>
+<li>Inconsistent data recording issues</li>
+<li>Unexpected data types</li>
+<li>Multi-variable columns</li>
+<li>Wide- and Long-format data</li>
+<li>Data across multiple tables</li>
+</ul>
+</section>
+<section id="set-up" class="level2">
+<h2 class="anchored" data-anchor-id="set-up">Set-Up</h2>
+<p>Run all of the code in the initial code chunk, line by line. You will likely encounter an error on line 20 because you don’t have the <code>randomNames</code> package installed on your machine. In line 19, un-comment <code>install.packages("randomNames")</code> and run it. Now re-run line 20 and continue running each line in the code chunk. You can examine the code if you like, but it is not necessary.</p>
+<p>The code generates several tables of data, exhibiting some common challenges when dealing with data. The result of running the code in that chunk will be five tables in your <em>Global Environment</em>: <code>clients</code>, <code>orders</code>, <code>products</code>, <code>purchase_history</code>, and <code>historical_purchases</code>. Use your basic data exploration functions (<code>glimpse()</code>, <code>head()</code>, <code>tail()</code>, <code>summary()</code>, etc.) to understand these data frames.</p>
+<section id="challenge-1-inconsistent-data-recording" class="level3">
+<h3 class="anchored" data-anchor-id="challenge-1-inconsistent-data-recording">Challenge 1: Inconsistent Data Recording</h3>
+<p>Take a look at the <code>products</code> data frame. The data frame only has seven rows, but among those rows are seemingly duplicated records. Luckily, while the item categories are duplicated (with different spelling and capitalization), the prices are consistent. We have several options available:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>products <span class="sc">%&gt;%</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">items</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">prices</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TV &amp; media furniture</td>
+<td style="text-align: left;">$125</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Outdoor furniture</td>
+<td style="text-align: left;">$675</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Beds</td>
+<td style="text-align: left;">$1,350</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Nursery furniture</td>
+<td style="text-align: left;">$475</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sideboards, buffets &amp; console tables</td>
+<td style="text-align: left;">$725</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Outdoor Furniture</td>
+<td style="text-align: left;">$675</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nursary Furnature</td>
+<td style="text-align: left;">$475</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<ul>
+<li><p>Manually drop the duplicated rows</p>
+<ul>
+<li>Our data frame is small enough for this, but with a larger data frame, this might be tedious.</li>
+<li>If this course of action is to be taken, we must make sure that we are not accidentally deleting data.</li>
+</ul></li>
+<li><p>We can use <code>case_when()</code> to manually override the values in some cells.</p></li>
+</ul>
+<p>There are certainly other things we could do as well. These two approaches are shown below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Filter out the duplicated rows</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Use Case/When to overwrite values and then filter to distinct rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>case_when()</code> approach is more applicable than simply removing the rows, because it isn’t often that we would actually like to remove rows. We actually do mean to remove rows here, though. Choose your favorite method and overwrite the <code>products</code> data frame with a version of itself that does not have the duplicated rows.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#update the products data frame here</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="challenge-2-unexpected-data-types" class="level3">
+<h3 class="anchored" data-anchor-id="challenge-2-unexpected-data-types">Challenge 2: Unexpected Data Types</h3>
+<p>Perhaps you’ve noticed that the <code>prices</code> column in the <code>products</code> data frame, is being interpreted as a <em>character</em> data type. We would prefer for that column to be a numeric variable so that we can run computations with it. There are two issues causing the <code>prices</code> to be characters – the dollar sign ($) and the comma separator. We’ll need to remove those and convert the column to a numeric value.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>products <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">items</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">prices</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TV &amp; media furniture</td>
+<td style="text-align: left;">$125</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Outdoor furniture</td>
+<td style="text-align: left;">$675</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Beds</td>
+<td style="text-align: left;">$1,350</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Nursery furniture</td>
+<td style="text-align: left;">$475</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sideboards, buffets &amp; console tables</td>
+<td style="text-align: left;">$725</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Outdoor Furniture</td>
+<td style="text-align: left;">$675</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nursary Furnature</td>
+<td style="text-align: left;">$475</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>We’ll make use of the <code>str_replace()</code> function for this. This function allows us to search for a sub-string and, if it is found, replace it with a new substring. We’ll replace any found dollar signs and commas with nothing…effectively erasing them. Once this is done, we’ll use <code>as.numeric()</code> to change the data type. As a reminder, we are changing an existing column in our data frame here, so we’ll make use of <code>mutate()</code>.</p>
+<p>The dollar sign is a special character in <code>R</code>, so we needed to escape it with <code>\\$</code> to convey that we want to match a literal dollar sign. Edit the code cell above so that the changes you made to the <code>prices</code> column are saved and the <code>products</code> data frame is updated.</p>
+</section>
+<section id="challenge-3-multivariable-columns" class="level3">
+<h3 class="anchored" data-anchor-id="challenge-3-multivariable-columns">Challenge 3: Multivariable Columns</h3>
+<p>We’ll take a look at the <code>clients</code> data frame. The <code>name</code> column contains <code>lastName, firstName</code> for each client.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>clients <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">client_id</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">name</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">phone_number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Taylor, Trevor</td>
+<td style="text-align: left;">(284) 350-2197</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">Silva, Jonathan</td>
+<td style="text-align: left;">(768) 647-3338</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">De Lara, Maria</td>
+<td style="text-align: left;">(249) 478-2990</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">Knobel, Justin</td>
+<td style="text-align: left;">(699) 237-5637</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">Weber, Kevin</td>
+<td style="text-align: left;">(243) 263-2235</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">el-Mattar, Najma</td>
+<td style="text-align: left;">(738) 441-7703</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">Campbell, Justin</td>
+<td style="text-align: left;">(750) 177-2744</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">al-Barakat, Shamaail</td>
+<td style="text-align: left;">(584) 518-7284</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">Schell, Jakob</td>
+<td style="text-align: left;">(332) 722-4831</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">Fields, Briana</td>
+<td style="text-align: left;">(417) 162-2994</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>Perhaps we’d like to have separate columns for <code>first_name</code> and <code>last_name</code>. We can use the <code>separate()</code> function for this.</p>
+<p>This function will separate over all instances of the separator, so we’ll need a new column name for each of the resulting parts. As a reminder, we use <code>c()</code> in <code>R</code> when providing a list of values.</p>
+</section>
+<section id="challenge-4-wide--and-long-format-data" class="level3">
+<h3 class="anchored" data-anchor-id="challenge-4-wide--and-long-format-data">Challenge 4: Wide- and Long-Format Data</h3>
+<p><em>Tidy</em> data is data that satisfies the following properties:</p>
+<ul>
+<li>Every column is a measured variable.</li>
+<li>Each row corresponds to a single record or observational unit.</li>
+</ul>
+<p>Data is said to be in a wide format if columns aren’t necessarily measured variables. Instead, the columns themselves correspond to a variable. While we typically prefer long-format data for analysis, there are certainly uses for wide-formats. In particular, financial data is usually presented or stored in wide format. Additionally, it is possible for data to be <em>too</em> long. We can use <code>pivot_longer()</code> to move from wide-format to long format and we can use <code>pivot_wider()</code> to move from long format to wide.</p>
+<p>Let’s take a look at the <code>historical_purchases</code> data frame.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>historical_purchases <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()  <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">client_id</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">2018</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">2019</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">2020</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">2021</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">833875</td>
+<td style="text-align: right;">791600</td>
+<td style="text-align: right;">673325</td>
+<td style="text-align: right;">640800</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">713725</td>
+<td style="text-align: right;">800850</td>
+<td style="text-align: right;">566900</td>
+<td style="text-align: right;">662300</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">662375</td>
+<td style="text-align: right;">575775</td>
+<td style="text-align: right;">514150</td>
+<td style="text-align: right;">597475</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">563050</td>
+<td style="text-align: right;">814400</td>
+<td style="text-align: right;">615950</td>
+<td style="text-align: right;">645775</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">684500</td>
+<td style="text-align: right;">708400</td>
+<td style="text-align: right;">604825</td>
+<td style="text-align: right;">835100</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">644025</td>
+<td style="text-align: right;">734475</td>
+<td style="text-align: right;">809775</td>
+<td style="text-align: right;">759575</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>That data frame contains purchase totals for each client across multiple years. The data is in <em>wide</em> format because, for example <code>"2018"</code> is not a variable we can measure for each <code>client_id</code>. That column name, <code>"2018"</code> is the value of a hidden <code>year</code> variable. We’ll use <code>pivot_longer()</code> to transform our data, creating a <code>year</code> column and <code>total_purchases</code> column.</p>
+<p>Now our data frame has become <em>longer</em>! The <code>year</code> variable is currently stored as a character, we can convert it to a number using <code>mutate()</code> and <code>as.numeric()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Convert year to a numeric variable</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Just so you can see how <code>pivot_wider()</code> works, let’s pivot this tidy data frame back to a wide format, but include a column for each <code>client_id</code> rather than <code>year</code>.</p>
+<p>Moving between wide and long formats is a pretty useful skill. I use it often when I am summarizing data and would like to display a summary table in a report. These summary tables sometimes look more pleasing and are easier to digest in a wide format.</p>
+</section>
+<section id="data-across-multiple-tables" class="level3">
+<h3 class="anchored" data-anchor-id="data-across-multiple-tables">Data Across Multiple Tables</h3>
+<p>It isn’t often the case that all of your data is neatly confined to a single table. In fact, there are very good database-design and infrastructure reasons for this not to be the case. Database Engineers and Administrators work very hard to <em>normalize</em> their databases. This normalization doesn’t have anything to do with finding means or scaling – it is a design strategy that removes redundancy and reduces storage size requirements.</p>
+<p>The advantage to space-saving is fairly obvious, but the redundancy-reduction may not be. Consider, for example that one of our clients updated their phone number. If we had all of our data stored in a single table, then we would need to update their phone number in every single record corresponding to that client. Because our data has been normalized, however, the only place phone numbers are stored is in the <code>clients</code> data frame. We only need to update that client’s phone number in that one small table, because that is the only place the phone number has been stored.</p>
+<p>The drawback to working with data stored this way is that we’ll need to pull information from across multiple tables in order to obtain the data we’d like to work with. For example, perhaps we’d like a version of the <code>orders</code> data frame which includes the ordering client’s name and phone number, along with the total dollar value of the order they made. The data we need is spread across the <code>orders</code>, <code>clients</code>, and <code>products</code> data frames.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>orders <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">client_id</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">product</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Outdoor furniture</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">Outdoor furniture</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">TV &amp; media furniture</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">Beds</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">TV &amp; media furniture</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">Outdoor furniture</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>clients  <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">client_id</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">name</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">phone_number</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Taylor, Trevor</td>
+<td style="text-align: left;">(284) 350-2197</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">Silva, Jonathan</td>
+<td style="text-align: left;">(768) 647-3338</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">De Lara, Maria</td>
+<td style="text-align: left;">(249) 478-2990</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">Knobel, Justin</td>
+<td style="text-align: left;">(699) 237-5637</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">Weber, Kevin</td>
+<td style="text-align: left;">(243) 263-2235</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">el-Mattar, Najma</td>
+<td style="text-align: left;">(738) 441-7703</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">Campbell, Justin</td>
+<td style="text-align: left;">(750) 177-2744</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">al-Barakat, Shamaail</td>
+<td style="text-align: left;">(584) 518-7284</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">Schell, Jakob</td>
+<td style="text-align: left;">(332) 722-4831</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">Fields, Briana</td>
+<td style="text-align: left;">(417) 162-2994</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>products <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">items</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">prices</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TV &amp; media furniture</td>
+<td style="text-align: left;">$125</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Outdoor furniture</td>
+<td style="text-align: left;">$675</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Beds</td>
+<td style="text-align: left;">$1,350</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Nursery furniture</td>
+<td style="text-align: left;">$475</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sideboards, buffets &amp; console tables</td>
+<td style="text-align: left;">$725</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Outdoor Furniture</td>
+<td style="text-align: left;">$675</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nursary Furnature</td>
+<td style="text-align: left;">$475</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>We can use “joins” to bring all of this information into a single table using the following steps.</p>
+<ul>
+<li>Begin with the <code>orders</code> table.</li>
+<li>Add columns for the client’s name and phone number by <em>joining</em> the <code>clients</code> data frame onto the <code>orders</code> table.</li>
+<li>Add a column for product <code>prices</code> by <em>joining</em> the <code>products</code> data frame onto the resulting table.</li>
+<li>Use <code>mutate()</code> to compute the total dollar value for each order.</li>
+</ul>
+<p>There are lots of different types of joins that can be made between data frames. I find that what I usually want is a <code>left_join()</code> – that is, start with the table on the left and lets join new variables on to it. We’ll be using that here. The <code>left_join()</code> will add new variables on to our data frame by matching values on shared columns (or columns that we explicitly define as shared via the <code>by</code> argument).</p>
+<p>When using joins, it is important to verify that everything has worked as you expected. While not fool-proof, I usually check to ensure that the number of columns and number of rows in the resulting data frame are what I expected.</p>
+</section>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>There’s lots of ways our data can be inconvenient. Wrangling data is a really important skill to gain. This notebook gave you exposure to some of the most common data wrangling/cleaning tasks.</p>
+<ul>
+<li><p>Using <code>case_when()</code> to update individual values within a column, using some criteria.</p></li>
+<li><p>Using <code>distinct()</code> to remove duplicate rows in a data frame.</p>
+<ul>
+<li>Be careful when removing rows of data. Make sure that you are truly removing duplicate records rather than distinct records which are identical by chance.</li>
+</ul></li>
+<li><p>Using <code>str_replace()</code> to remove or replace characters in a column.</p></li>
+<li><p>Using <code>as.numeric()</code> to convert a column to a numeric data type.</p>
+<ul>
+<li>We can also use <code>as.character()</code> to convert a column to a string data type or <code>as.factor()</code> to convert explicitly to a categorical variable.</li>
+</ul></li>
+<li><p>Using <code>separate()</code> in the case that a column contains more than one variable.</p>
+<ul>
+<li>We can use <code>unite()</code> to combine multiple columns into a single column.</li>
+</ul></li>
+<li><p>Use <code>pivot_longer()</code> to convert from wide-format to long-format.</p>
+<ul>
+<li>We can use <code>pivot_wider()</code> to convert from long to wide.</li>
+</ul></li>
+<li><p>If our data is split across multiple tables, we can use <code>*_join()</code> to join variables from multiple tables together into a single table.</p>
+<ul>
+<li>There are lots of varieties of join – the <code>left_join()</code> begins with the table on the left and adds variables on to it. This is by far the most frequent join that I’ve used.</li>
+</ul></li>
+</ul>
+<p>This notebook hasn’t covered every wrangling tool you’ll need, but it has given you a toolbox that will help in a variety of common scenarios.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -207,7 +207,7 @@ Just so you can see how `pivot_wider()` works, let's pivot this tidy data frame 
 
 Moving between wide and long formats is a pretty useful skill. I use it often when I am summarizing data and would like to display a summary table in a report. These summary tables sometimes look more pleasing and are easier to digest in a wide format.
 
-### Data Across Multiple Tables
+### Challenge 5: Data Across Multiple Tables
 
 It isn't often the case that all of your data is neatly confined to a single table. In fact, there are very good database-design and infrastructure reasons for this not to be the case. Database Engineers and Administrators work very hard to *normalize* their databases. This normalization doesn't have anything to do with finding means or scaling -- it is a design strategy that removes redundancy and reduces storage size requirements.
 

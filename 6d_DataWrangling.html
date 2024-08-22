@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-08-03">
+<meta name="dcterms.date" content="2024-08-22">
 
 <title>Data Wrangling and Tidy Data</title>
 <style>
@@ -89,7 +89,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#challenge-2-unexpected-data-types" id="toc-challenge-2-unexpected-data-types" class="nav-link" data-scroll-target="#challenge-2-unexpected-data-types">Challenge 2: Unexpected Data Types</a></li>
   <li><a href="#challenge-3-multivariable-columns" id="toc-challenge-3-multivariable-columns" class="nav-link" data-scroll-target="#challenge-3-multivariable-columns">Challenge 3: Multivariable Columns</a></li>
   <li><a href="#challenge-4-wide--and-long-format-data" id="toc-challenge-4-wide--and-long-format-data" class="nav-link" data-scroll-target="#challenge-4-wide--and-long-format-data">Challenge 4: Wide- and Long-Format Data</a></li>
-  <li><a href="#data-across-multiple-tables" id="toc-data-across-multiple-tables" class="nav-link" data-scroll-target="#data-across-multiple-tables">Data Across Multiple Tables</a></li>
+  <li><a href="#challenge-5-data-across-multiple-tables" id="toc-challenge-5-data-across-multiple-tables" class="nav-link" data-scroll-target="#challenge-5-data-across-multiple-tables">Challenge 5: Data Across Multiple Tables</a></li>
   </ul></li>
   <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
   </ul>
@@ -110,7 +110,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 3, 2024</p>
+      <p class="date">August 22, 2024</p>
     </div>
   </div>
   
@@ -884,8 +884,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Moving between wide and long formats is a pretty useful skill. I use it often when I am summarizing data and would like to display a summary table in a report. These summary tables sometimes look more pleasing and are easier to digest in a wide format.</p>
 </section>
-<section id="data-across-multiple-tables" class="level3">
-<h3 class="anchored" data-anchor-id="data-across-multiple-tables">Data Across Multiple Tables</h3>
+<section id="challenge-5-data-across-multiple-tables" class="level3">
+<h3 class="anchored" data-anchor-id="challenge-5-data-across-multiple-tables">Challenge 5: Data Across Multiple Tables</h3>
 <p>It isn’t often the case that all of your data is neatly confined to a single table. In fact, there are very good database-design and infrastructure reasons for this not to be the case. Database Engineers and Administrators work very hard to <em>normalize</em> their databases. This normalization doesn’t have anything to do with finding means or scaling – it is a design strategy that removes redundancy and reduces storage size requirements.</p>
 <p>The advantage to space-saving is fairly obvious, but the redundancy-reduction may not be. Consider, for example that one of our clients updated their phone number. If we had all of our data stored in a single table, then we would need to update their phone number in every single record corresponding to that client. Because our data has been normalized, however, the only place phone numbers are stored is in the <code>clients</code> data frame. We only need to update that client’s phone number in that one small table, because that is the only place the phone number has been stored.</p>
 <p>The drawback to working with data stored this way is that we’ll need to pull information from across multiple tables in order to obtain the data we’d like to work with. For example, perhaps we’d like a version of the <code>orders</code> data frame which includes the ordering client’s name and phone number, along with the total dollar value of the order they made. The data we need is spread across the <code>orders</code>, <code>clients</code>, and <code>products</code> data frames.</p>

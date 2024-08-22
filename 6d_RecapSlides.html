@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-13">
+  <meta name="dcterms.date" content="2024-08-22">
   <title>Data Dirty Work: Wrangling</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -339,7 +339,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 13, 2024</p>
+  <p class="date">August 22, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -354,19 +354,25 @@ code {
 </section>
 <section id="a-quote-and-setting-expectations" class="slide level2">
 <h2>A Quote and Setting Expectations</h2>
-<ul>
-<li class="fragment"><p>“<em>Life is dirty. So is your data. Get used to it.</em>” – Thomas LaRock</p></li>
-<li class="fragment"><p>Breakdown of Data Science work:</p>
+<div class="fragment">
+<p>“<em>Life is dirty. So is your data. Get used to it.</em>” – Thomas LaRock</p>
+</div>
+<div class="fragment">
+<p>Breakdown of Data Science work:</p>
 <ul>
 <li class="fragment">80% data cleaning</li>
 <li class="fragment">20% analysing, modeling, and interpreting</li>
-</ul></li>
-<li class="fragment"><p>Building models is easy.</p>
-<ul>
-<li class="fragment">Formatting your data appropriately is difficult.</li>
-<li class="fragment">Interpreting your models takes care.</li>
-</ul></li>
 </ul>
+</div>
+<div class="fragment">
+<p>Building models is easy</p>
+</div>
+<div class="fragment">
+<p>Formatting your data appropriately is difficult</p>
+</div>
+<div class="fragment">
+<p>Interpreting your models takes care</p>
+</div>
 </section>
 <section id="the-highlights" class="slide level2">
 <h2>The Highlights</h2>
@@ -381,6 +387,15 @@ code {
 <li class="fragment">Features are stored across different tables</li>
 </ul></li>
 </ul>
+</section>
+<section id="play-along" class="slide level2">
+<h2>Play Along</h2>
+<ol type="1">
+<li class="fragment">Navigate to <a href="https://agmath.github.io/RegressionCourse.html">the course webpage</a></li>
+<li class="fragment">Download the <em>Incomplete Quarto</em> version of the Data Wrangling Workshop notebook</li>
+<li class="fragment">Open RStudio and ensure that you are working in your <code>MAT300</code> project</li>
+<li class="fragment">Open the file you just downloaded and save it to your project space</li>
+</ol>
 </section>
 <section id="tidy-data" class="slide level2">
 <h2>Tidy Data</h2>
@@ -460,7 +475,7 @@ $ favorite_color &lt;chr&gt; "blue", "purple", "orang", "Blue", "BLUE", "orange"
 </div>
 </div>
 </section>
-<section id="a-better-version" class="slide level2 scrollable">
+<section id="a-better-version" class="slide level2">
 <h2>A Better Version</h2>
 <div class="cell">
 <div class="cell-output-display">
@@ -540,9 +555,32 @@ $ salary         &lt;dbl&gt; 55000.00, 58500.00, 60000.00, 22.75, 1400.00, 72250
 $ favorite_color &lt;chr&gt; "blue", "purple", "orang", "blue", "blue", "orange"</code></pre>
 </div>
 </div>
+</section>
+<section id="a-better-version-1" class="slide level2">
+<h2>A Better Version</h2>
+<p>To obtain this <em>tidier</em> version of our data frame, we…</p>
+<ol type="1">
+<li class="fragment">split the date column into separate <code>month</code>, <code>day</code>, and <code>year</code> columns with <code>separate()</code></li>
+<li class="fragment">removed the $ signs and commas from the <code>salary</code> column with <code>str_replace()</code></li>
+<li class="fragment">fixed “case” discrepancies in the color column with <code>mutate()</code> and <code>tolower()</code></li>
+<li class="fragment">Converted the <code>month</code>, <code>day</code>, <code>year</code>, and <code>salary</code> columns to numerics with <code>as.numeric()</code></li>
+</ol>
+<div class="fragment">
+<p><strong>Questions:</strong> Problems with this small data frame still remain. What are they?</p>
+</div>
+</section>
+<section id="try-it" class="slide level2">
+<h2>Try It!</h2>
+<div class="fragment">
+<center>
+<p><font size="120pt"><br><span class="math inline">\(\bigstar\)</span> Try solving Challenges 1 - 3 in the Data Wrangling notebook you just downloaded</font></p><font size="120pt">
 <ul>
-<li class="fragment">Problems still remain. What are they?</li>
+<li class="fragment">See if you can figure out how to use the functions from the previous slide on your own</li>
+<li class="fragment">After you’ve tried, we’ll solve one challenge at a time together, with an opportunity for you to try on your own in between</li>
 </ul>
+</font><p><font size="120pt"></font></p>
+</center>
+</div>
 </section>
 <section id="a-dataset-that-is-too-wide" class="slide level2">
 <h2>A Dataset That Is Too Wide</h2>
@@ -615,7 +653,7 @@ $ favorite_color &lt;chr&gt; "blue", "purple", "orang", "blue", "blue", "orange"
 </div>
 </div>
 </section>
-<section id="a-better-version-1" class="slide level2 scrollable">
+<section id="a-better-version-2" class="slide level2 scrollable">
 <h2>A Better Version</h2>
 <div class="cell">
 <div class="cell-output-display">
@@ -835,7 +873,7 @@ $ favorite_color &lt;chr&gt; "blue", "purple", "orang", "blue", "blue", "orange"
 </div>
 </div>
 </section>
-<section id="a-better-version-2" class="slide level2">
+<section id="a-better-version-3" class="slide level2">
 <h2>A Better Version</h2>
 <div class="cell">
 <div class="cell-output-display">
@@ -869,6 +907,36 @@ $ favorite_color &lt;chr&gt; "blue", "purple", "orang", "blue", "blue", "orange"
 
 </div>
 </div>
+</section>
+<section id="switching-between-wide-and-long-formats" class="slide level2">
+<h2>Switching Between Wide and Long Formats</h2>
+<div class="fragment">
+<p>We have two functions that help us make data frames wider or longer</p>
+<ol type="1">
+<li class="fragment"><p><code>pivot_longer()</code> converts from <em>wide</em> to <em>long</em> format</p>
+<ul>
+<li class="fragment"><code>id_cols</code>: a list of columns that should remain fixed (un-pivoted) in the resulting data frame</li>
+<li class="fragment"><code>names_to</code>: the name of a new column in which the original column names should be placed</li>
+<li class="fragment"><code>values_to</code>: the name of a new column in which will contain the values underneath the pivoted columns in the original data frame</li>
+</ul></li>
+<li class="fragment"><p><code>pivot_wider()</code> converts from <em>long</em> to <em>wide</em> format</p>
+<ul>
+<li class="fragment"><code>names_from</code>: the existing column whose levels will become the column names</li>
+<li class="fragment"><code>values_from</code>: the existing column whose values will be placed under the new column headings</li>
+</ul></li>
+</ol>
+</div>
+</section>
+<section id="try-it-1" class="slide level2">
+<h2>Try It!</h2>
+<center>
+<p><font size="120pt"><br><span class="math inline">\(\bigstar\)</span> Try using <code>pivot_wider()</code> and <code>pivot_longer()</code> to fill in the code chunks in <em>Challenge 4: Wide- and Long-Format Data</em></font></p><font size="120pt">
+<ul>
+<li class="fragment">Like last time, see if you can figure out how to use the functions from the previous slide on your own</li>
+<li class="fragment">After you’ve tried, we’ll complete each task one-by-one (together), with an opportunity for you to try on your own in between</li>
+</ul>
+</font><p><font size="120pt"></font></p>
+</center>
 </section>
 <section id="data-across-different-tables" class="slide level2 scrollable">
 <h2>Data Across Different Tables</h2>

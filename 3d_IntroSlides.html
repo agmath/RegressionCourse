@@ -515,10 +515,15 @@ code.sourceCode {
 </ul>
 </div>
 <div class="fragment">
-<p><span class="math inline">\(\bigstar\)</span> Read the <code>ames</code> dataset into your Quarto Notebook <a href="https://raw.githubusercontent.com/koalaverse/homlr/master/data/ames.csv">from this link</a></p>
+<p><span class="math inline">\(\bigstar\)</span> Read this <code>usedCars</code> dataset into your Quarto Notebook <a href="https://raw.githubusercontent.com/agmath/agmath.github.io/master/data/classification/cars.csv">from this link</a></p>
 </div>
 <div class="fragment">
 <p>I’ll post the link in Slack</p>
+</div>
+<div class="fragment">
+<blockquote>
+<p><strong>Note:</strong> This used cars data was uploaded to Kaggle by Sujith K Mandala. The <a href="https://www.kaggle.com/datasets/sujithmandala/second-hand-car-price-prediction">original dataset can be found here</a>.</p>
+</blockquote>
 </div>
 </section>
 <section id="first-interactions-with-data" class="slide level2">
@@ -529,7 +534,7 @@ code.sourceCode {
 <li class="fragment"><code>skim()</code> from <code>{skimr}</code> for much more detail</li>
 </ul>
 <div class="fragment">
-<p><span class="math inline">\(\bigstar\)</span> Try these functions on your <code>ames</code> data</p>
+<p><span class="math inline">\(\bigstar\)</span> Try these functions on your <code>usedCars</code> data</p>
 </div>
 </section>
 <section id="the-pipe-operator" class="slide level2">
@@ -541,7 +546,7 @@ code.sourceCode {
 </ul>
 <div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3" data-code-line-numbers="|1|2|"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>ames <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb3" data-code-line-numbers="|1|2|"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>penguins <span class="sc">%&gt;%</span></span>
 <span id="cb3-2"><a href=""></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
@@ -608,10 +613,10 @@ code.sourceCode {
 <section id="lets-practice" class="slide level2">
 <h2>Let’s Practice</h2>
 <div class="fragment">
-<p><strong>Reminder:</strong> You have a fully complete (and documented) notebook using the <code>mpg</code> data on the course webpage</p>
+<p><strong>Reminder:</strong> You have a fully complete (and documented) notebook using the <code>mpg</code> data on the course webpage – note this data is different than the <code>usedCars</code> data you worked with today</p>
 </div>
 <div class="fragment">
-<p>Use this time to continue playing with the <code>ames</code> housing data</p>
+<p>Use this time to continue playing with the <code>usedCars</code> pricing data</p>
 <ol type="1">
 <li class="fragment"><p>Write down and answer some interesting questions that might use functionality discussed in this slide deck – start simple and then build up to questions that might be more complex</p></li>
 <li class="fragment"><p>Try documenting your work by including text descriptions in addition to the code chunks</p></li>

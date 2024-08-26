@@ -365,7 +365,7 @@ If you've successfully completed all of the tasks listed in this slide deck, try
     iii) Can you plot a histogram and/or density plot of the *residuals*?
     iv) Analyse the plot you just created -- what do you notice? Is this what you expected?
     
-## Next Time 
+## Next Time...
 
 <center>
 

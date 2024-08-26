@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-13">
+  <meta name="dcterms.date" content="2024-08-26">
   <title>Statistical Inference in Regression</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 13, 2024</p>
+  <p class="date">August 26, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -493,13 +493,29 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <h2>Global Test for Model Utility in Pictures</h2>
 <p><span class="math display">\[\begin{array}{lcl} H_0 &amp; : &amp; \beta_1 = \beta_2 = \cdots = \beta_k = 0\\
 H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]</span></p>
-
-<img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
-<p>Are our <em>sloped</em> lines better models than the horizontal line?</p>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Are our <em>sloped</em> models better (more justifiable) models than the horizontal line?</p>
 <ul>
-<li class="fragment"><em>Sloped</em> lines use predictor information</li>
-<li class="fragment">Horizontal line just predicts mean response</li>
+<li class="fragment"><p><em>Sloped</em> models use predictor information</p></li>
+<li class="fragment"><p>Horizontal models just predict average response, ignoring all observation-specific features</p>
+<ul>
+<li class="fragment">They assume that having information about features of an observation gives no advantage in predicting its response</li>
+</ul></li>
 </ul>
+</div>
+</div>
 </div>
 </section>
 <section id="tests-on-individual-model-terms" class="slide level2">
@@ -608,14 +624,38 @@ H_a &amp; : &amp; \beta_i \neq 0\end{array}\]</span></p>
 <p>Are these wrong too?</p>
 </div>
 </section>
+<section id="confidence-intervals-predictions-1" class="slide level2">
+<h2>Confidence Intervals (Predictions)</h2>
+<p>The formula for confidence intervals on predictions is complex!</p>
+<p><span class="math display">\[\displaystyle{\left(\tt{point~estimate}\right)\pm t^*_{\text{df}}\cdot \left(\tt{RMSE}\right)\left(\sqrt{\frac{1}{n} + \frac{(x_{new} - \bar{x})^2}{\sum{\left(x - \bar{x}\right)^2}}}\right)}\]</span></p>
+<p>We’ll use R to construct these intervals for us.</p>
+
+<img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><p>Are these wrong too? No – confidence intervals bound the <em>average response</em> over all observations having given input features.</p>
+</section>
 <section id="prediction-intervals" class="slide level2">
 <h2>Prediction Intervals</h2>
-
-<img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
+<div class="fragment">
+<p>So, can we build intervals which contain predictions on the level of an individual observation?</p>
+</div>
+<div class="fragment">
+<p>Sure – but there’s added uncertainty in making those types of predictions</p>
+</div>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="confidence-and-prediction-intervals-for-model-predictions" class="slide level2">
 <h2>Confidence and Prediction Intervals for Model Predictions</h2>
 
-<img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
+<img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section>
 <section id="summary" class="slide level2">
 <h2>Summary</h2>
 <p>Below are the most common applications of statistical inference in regression modeling.</p>
@@ -638,6 +678,18 @@ H_a &amp; : &amp; \beta_i \neq 0\end{array}\]</span></p>
 </ul></li>
 </ul></li>
 </ul>
+<div class="fragment">
+<p>We’ll be utilizing all of these ideas throughout our course.</p>
+</div>
+<div class="fragment">
+<p>We’ll leverage R functionality to obtain intervals or to calculate test statistics and <span class="math inline">\(p\)</span>-values though, since it is much faster than doing any of this by hand.</p>
+</div>
+</section>
+<section id="next-time" class="slide level2">
+<h2>Next Time…</h2>
+<center>
+<p><font size="120pt"> Hypothesizing, Constructing, Assessing, and Interpreting Simple Linear Regression Models </font></p>
+</center>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 

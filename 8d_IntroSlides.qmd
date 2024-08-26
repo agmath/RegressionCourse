@@ -107,13 +107,21 @@ lin_reg_fit %>%
 $$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \cdots = \beta_k = 0\\
 H_a & : & \text{At least one } \beta_i \text{ is non-zero}\end{array}$$
 
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
 ```{r}
 #| echo: false
 #| eval: true
 #| fig-align: center
+#| fig.height: 10
 
 p1 <- ggplot() + 
-  geom_point(aes(x = x1, y = y1)) + 
+  geom_point(aes(x = x1, y = y1),
+             size = 3) + 
   geom_hline(yintercept = mean(y1), 
              color = "red", 
              linetype = "dashed", 
@@ -127,7 +135,8 @@ p1 <- ggplot() +
        y = "y1")
 
 p2 <- ggplot() + 
-  geom_point(aes(x = x1, y = y2)) + 
+  geom_point(aes(x = x1, y = y2),
+             size = 3) + 
   geom_hline(yintercept = mean(y2), 
              color = "red", 
              linetype = "dashed", 
@@ -140,15 +149,23 @@ p2 <- ggplot() +
        x = "x1",
        y = "y2")
 
-p1 + p2
+p1 / p2
 ```
 
-. . . 
+:::
 
-Are our *sloped* lines better models than the horizontal line?
+:::{.column width="50%"}
 
-+ *Sloped* lines use predictor information
-+ Horizontal line just predicts mean response
+Are our *sloped* models better (more justifiable) models than the horizontal line?
+
++ *Sloped* models use predictor information
++ Horizontal models just predict average response, ignoring all observation-specific features
+
+  + They assume that having information about features of an observation gives no advantage in predicting its response
+
+::: 
+
+::::
 
 ## Tests on Individual Model Terms
 
@@ -317,7 +334,51 @@ ggplot() +
 
 Are these wrong too?
 
+## Confidence Intervals (Predictions)
+
+The formula for confidence intervals on predictions is complex! 
+
+$$\displaystyle{\left(\tt{point~estimate}\right)\pm t^*_{\text{df}}\cdot \left(\tt{RMSE}\right)\left(\sqrt{\frac{1}{n} + \frac{(x_{new} - \bar{x})^2}{\sum{\left(x - \bar{x}\right)^2}}}\right)}$$
+
+We'll use R to construct these intervals for us.
+
+```{r}
+#| fig-align: center
+#| fig.height: 5
+
+ggplot() +
+  geom_ribbon(data = x_plot,
+              aes(x = x1,
+                  ymin = .conf_lower,
+                  ymax = .conf_upper),
+              fill = "grey",
+              alpha = 0.75) +
+  geom_line(data = x_plot,
+            aes(x = x1,
+                y = .pred),
+            color = "blue",
+            lwd = 1.25) + 
+  geom_point(aes(x = x1_new, y = y1_new)) +
+  labs(
+    title = "Model with Confidence Intervals",
+    x = "x1",
+    y = "y"
+  )
+```
+
+Are these wrong too? No -- confidence intervals bound the *average response* over all observations having given input features.
+
 ## Prediction Intervals
+
+. . .
+
+So, can we build intervals which contain predictions on the level of an individual observation?
+
+. . . 
+
+Sure -- but there's added uncertainty in making those types of predictions
+
+. . .
 
 ```{r}
 ggplot() +
@@ -392,4 +453,21 @@ Below are the most common applications of statistical inference in regression mo
   
     + Confidence Intervals for *average response*
     + Prediction Intervals for *individual response*
+    
+. . . 
+
+We'll be utilizing all of these ideas throughout our course.
+
+. . . 
+
+We'll leverage R functionality to obtain intervals or to calculate test statistics and $p$-values though, since it is much faster than doing any of this by hand.
+
+## Next Time... 
+
+<center> 
+
+<font size="120pt"> Hypothesizing, Constructing, Assessing, and Interpreting Simple Linear Regression Models
+</font>
+
+</center>
     

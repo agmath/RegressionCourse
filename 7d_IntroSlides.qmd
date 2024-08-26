@@ -51,11 +51,52 @@ num_pts <- 20
 x <- runif(num_pts, min = 0, max = 100)
 y <- 7*x + 2 + rnorm(num_pts, mean = 0, sd = 100)
 
+motivation_df <- tibble(
+  x = x,
+  y = y
+)
+
+mot_lr_spec <- linear_reg() 
+mot_lr_rec <- recipe(y ~ x, data = motivation_df)
+mot_lr_wf <- workflow() %>%
+  add_model(mot_lr_spec) %>%
+  add_recipe(mot_lr_rec)
+
+mot_lr_fit <- mot_lr_wf %>%
+  fit(motivation_df)
+
+plot_data <- tibble(
+  x = seq(0, 100, length.out = 250),
+)
+
+plot_data <- mot_lr_fit %>%
+  augment(plot_data) %>%
+  bind_cols(
+    mot_lr_fit %>%
+      predict(plot_data, type = "conf_int") %>%
+      rename(.conf_lower = .pred_lower,
+             .conf_upper = .pred_upper)
+  ) %>%
+  bind_cols(
+    mot_lr_fit %>%
+      predict(plot_data, type = "pred_int")
+  )
+
 ggplot() + 
-  geom_point(aes(x = x, y = y)) + 
-  geom_smooth(aes(x = x, y = y),
-              method = "lm",
-              color = "blue") + 
+  geom_ribbon(data = plot_data,
+              aes(x = x, ymin = .pred_lower, ymax = .pred_upper),
+              fill = "grey",
+              alpha = 0.3) + 
+  geom_ribbon(data = plot_data,
+              aes(x = x, ymin = .conf_lower, ymax = .conf_upper),
+              fill = "grey",
+              alpha = 0.6) + 
+  geom_line(data = plot_data,
+            aes(x = x, y = .pred),
+            color = "blue",
+            lwd = 2) +
+  geom_point(data = motivation_df,
+             aes(x = x, y = y)) + 
   labs(title = "Let's Model y, given x", 
        x = "x",
        y = "y")
@@ -103,6 +144,23 @@ test <- testing(data_splits) #collect validation rows into data frame
 
 Make sure to **always** set a seed. It ensures that you obtain the same training and testing data each time you run your notebook/model.
 
+. . . 
+
+<center>
+
+$\bigstar$ Let's try it! $\bigstar$
+
+</center>
+
+1. Open RStudio and your MAT300 project 
+2. Create a new Quarto Document which will contain your first attempt at modeling
+
+    + Edit the fields, YAML, and text if you would like.
+    
+3. Load the `{tidyverse}` and `{tidymodels}` packages
+4. Read in the `usedCars` data that we've been working with recently
+5. Adapt the code on this slide to split your `usedCars` data into `training` and `test` sets.
+
 ## Build and Fit a Model
 
 ```{r}
@@ -126,6 +184,20 @@ lin_reg_wf <- workflow() %>% #create workflow
 lin_reg_fit <- lin_reg_wf %>%
   fit(train)
 ```
+
+. . . 
+
+<center>
+
+$\bigstar$ Let's try it! $\bigstar$
+
+</center>
+
+1. Construct a linear regression model *specification*
+2. Choose one of the available (numeric) predictors of selling price for the `usedCars` in your data set and construct a *recipe* to predict price using that single predictor
+3. Package your *model* and *recipe* together into a *workflow*
+4. Fit the *workflow* to your training data
+
 
 ## Global Model Assessment on Training Data {.smaller}
 
@@ -173,8 +245,18 @@ lin_reg_fit %>%
 
 ::::
 
+. . .
 
-## Term-Based Assessments {.smaller}
+<center>
+
+$\bigstar$ Let's try it! $\bigstar$
+
+</center>
+
+1. Use `glance()` to view global model assessment metrics for your model
+
+
+## Term-Based Assessments
 
 ```{r}
 #| echo: true
@@ -199,6 +281,16 @@ lin_reg_fit %>%
 . . .
 
 You can conduct inference and interpret model coefficients from here as well!
+
+<center>
+
+$\bigstar$ Let's try it! $\bigstar$
+
+
+</center>
+
+1. Extract the *term-based* model assessment metrics from your fitted model object
+2. Pay special attention to the `estimate`, `std.error`, and `p.value` columns of the output -- what can you use these for?
 
 ## Making Predictions
 
@@ -230,6 +322,53 @@ lin_reg_fit %>%
 
 To add a new `.pred` column to the `new_data` data frame. 
 
-## Let's Do This!
+. . .
 
-Let's explore our newfound modeling abilities with some simple linear regression models on the `ames` data.
+<center>
+
+$\bigstar$ Let's try this! $\bigstar$
+
+</center>
+
+1. Find the minimum and maximum observed training values for your numeric predictor
+2. Create a single-column data frame using `tibble()` and `seq()`
+
+    + Make sure to name the column with the exact name of your chosen predictor
+    + Verify that you stored this resulting data frame as a new object
+
+3. Use `predict()` and `augment()` to make price predictions for these fictitious (*counterfactual*) cars
+
+    + Do you see the difference between `predict()` and `augment()`?
+    + Can you get interval bounds rather than predictions using `predict()`?
+
+## Additional Tasks
+
+. . . 
+
+If you've successfully completed all of the tasks listed in this slide deck, try the following:
+
+1. Plotting model predictions
+
+    i) A *scatterplot* of the original training data
+    ii) A *lineplot* showing the model's predictions
+    iii) An interval band showing the confidence intervals for predictions (*hint*. use `geom_ribbon()`)
+    iv) An interval band showng the prediction intervals for predictions
+    v) Meaningful plot labels
+    vi) Interpret the resulting plot
+    
+2. For the plot above, do you have a preference for the order in which you include the geometry layers?
+
+3. Calculating and analysing *training residuals* 
+
+    i) Can you add a column of predictions to your training data set? 
+    ii) Can you *mutate* a new column of prediction errors (*residuals*) onto your training data set?
+    iii) Can you plot a histogram and/or density plot of the *residuals*?
+    iv) Analyse the plot you just created -- what do you notice? Is this what you expected?
+    
+## Next Time 
+
+<center>
+
+<font size="120pt">A review of hypothesis testing and confidence intervals</font>
+
+</center>

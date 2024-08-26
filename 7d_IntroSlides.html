@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-13">
+  <meta name="dcterms.date" content="2024-08-26">
   <title>{tidymodels} Overview</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 13, 2024</p>
+  <p class="date">August 26, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -458,6 +458,21 @@ code.sourceCode {
 <div class="fragment">
 <p>Make sure to <strong>always</strong> set a seed. It ensures that you obtain the same training and testing data each time you run your notebook/model.</p>
 </div>
+<div class="fragment">
+<center>
+<p><span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+</center>
+<ol type="1">
+<li class="fragment"><p>Open RStudio and your MAT300 project</p></li>
+<li class="fragment"><p>Create a new Quarto Document which will contain your first attempt at modeling</p>
+<ul>
+<li class="fragment">Edit the fields, YAML, and text if you would like.</li>
+</ul></li>
+<li class="fragment"><p>Load the <code>{tidyverse}</code> and <code>{tidymodels}</code> packages</p></li>
+<li class="fragment"><p>Read in the <code>usedCars</code> data that we’ve been working with recently</p></li>
+<li class="fragment"><p>Adapt the code on this slide to split your <code>usedCars</code> data into <code>training</code> and <code>test</code> sets.</p></li>
+</ol>
+</div>
 </section>
 <section id="build-and-fit-a-model" class="slide level2">
 <h2>Build and Fit a Model</h2>
@@ -477,6 +492,17 @@ code.sourceCode {
 <span id="cb2-13"><a href=""></a><span class="co">#Fit the workflow to the training data</span></span>
 <span id="cb2-14"><a href=""></a>lin_reg_fit <span class="ot">&lt;-</span> lin_reg_wf <span class="sc">%&gt;%</span></span>
 <span id="cb2-15"><a href=""></a>  <span class="fu">fit</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="fragment">
+<center>
+<p><span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+</center>
+<ol type="1">
+<li class="fragment">Construct a linear regression model <em>specification</em></li>
+<li class="fragment">Choose one of the available (numeric) predictors of selling price for the <code>usedCars</code> in your data set and construct a <em>recipe</em> to predict price using that single predictor</li>
+<li class="fragment">Package your <em>model</em> and <em>recipe</em> together into a <em>workflow</em></li>
+<li class="fragment">Fit the <em>workflow</em> to your training data</li>
+</ol>
 </div>
 </section>
 <section id="global-model-assessment-on-training-data" class="slide level2 smaller">
@@ -565,8 +591,16 @@ code.sourceCode {
 </ul>
 </div>
 </div>
+<div class="fragment">
+<center>
+<p><span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+</center>
+<ol type="1">
+<li class="fragment">Use <code>glance()</code> to view global model assessment metrics for your model</li>
+</ol>
+</div>
 </section>
-<section id="term-based-assessments" class="slide level2 smaller">
+<section id="term-based-assessments" class="slide level2">
 <h2>Term-Based Assessments</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>lin_reg_fit <span class="sc">%&gt;%</span> <span class="co">#Begin with a fitted model</span></span>
@@ -629,6 +663,13 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <p>You can conduct inference and interpret model coefficients from here as well!</p>
+<center>
+<p><span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+</center>
+<ol type="1">
+<li class="fragment">Extract the <em>term-based</em> model assessment metrics from your fitted model object</li>
+<li class="fragment">Pay special attention to the <code>estimate</code>, <code>std.error</code>, and <code>p.value</code> columns of the output – what can you use these for?</li>
+</ol>
 </div>
 </section>
 <section id="making-predictions" class="slide level2">
@@ -649,10 +690,55 @@ code.sourceCode {
 </div>
 <p>To add a new <code>.pred</code> column to the <code>new_data</code> data frame.</p>
 </div>
+<div class="fragment">
+<center>
+<p><span class="math inline">\(\bigstar\)</span> Let’s try this! <span class="math inline">\(\bigstar\)</span></p>
+</center>
+<ol type="1">
+<li class="fragment"><p>Find the minimum and maximum observed training values for your numeric predictor</p></li>
+<li class="fragment"><p>Create a single-column data frame using <code>tibble()</code> and <code>seq()</code></p>
+<ul>
+<li class="fragment">Make sure to name the column with the exact name of your chosen predictor</li>
+<li class="fragment">Verify that you stored this resulting data frame as a new object</li>
+</ul></li>
+<li class="fragment"><p>Use <code>predict()</code> and <code>augment()</code> to make price predictions for these fictitious (<em>counterfactual</em>) cars</p>
+<ul>
+<li class="fragment">Do you see the difference between <code>predict()</code> and <code>augment()</code>?</li>
+<li class="fragment">Can you get interval bounds rather than predictions using <code>predict()</code>?</li>
+</ul></li>
+</ol>
+</div>
 </section>
-<section id="lets-do-this" class="slide level2">
-<h2>Let’s Do This!</h2>
-<p>Let’s explore our newfound modeling abilities with some simple linear regression models on the <code>ames</code> data.</p>
+<section id="additional-tasks" class="slide level2">
+<h2>Additional Tasks</h2>
+<div class="fragment">
+<p>If you’ve successfully completed all of the tasks listed in this slide deck, try the following:</p>
+<ol type="1">
+<li class="fragment"><p>Plotting model predictions</p>
+<ol type="i">
+<li class="fragment">A <em>scatterplot</em> of the original training data</li>
+<li class="fragment">A <em>lineplot</em> showing the model’s predictions</li>
+<li class="fragment">An interval band showing the confidence intervals for predictions (<em>hint</em>. use <code>geom_ribbon()</code>)</li>
+<li class="fragment">An interval band showng the prediction intervals for predictions</li>
+<li class="fragment">Meaningful plot labels</li>
+<li class="fragment">Interpret the resulting plot</li>
+</ol></li>
+<li class="fragment"><p>For the plot above, do you have a preference for the order in which you include the geometry layers?</p></li>
+<li class="fragment"><p>Calculating and analysing <em>training residuals</em></p>
+<ol type="i">
+<li class="fragment">Can you add a column of predictions to your training data set?</li>
+<li class="fragment">Can you <em>mutate</em> a new column of prediction errors (<em>residuals</em>) onto your training data set?</li>
+<li class="fragment">Can you plot a histogram and/or density plot of the <em>residuals</em>?</li>
+<li class="fragment">Analyse the plot you just created – what do you notice? Is this what you expected?</li>
+</ol></li>
+</ol>
+</div>
+</section>
+<section id="next-time" class="slide level2">
+<h2>Next Time</h2>
+<center>
+<p><font size="120pt">A review of hypothesis testing and confidence intervals</font></p>
+</center>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 

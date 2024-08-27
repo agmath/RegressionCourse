@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-13">
+  <meta name="dcterms.date" content="2024-08-27">
   <title>Multiple Linear Regression: Construction, Assessment, and Interpretation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 13, 2024</p>
+  <p class="date">August 27, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -439,6 +439,18 @@ code.sourceCode {
 <p>If all this seems nearly identical to our discussion on <em>simple linear regression</em> models, it is.</p>
 </div>
 </section>
+<section id="playing-along" class="slide level2">
+<h2>Playing Along</h2>
+<center>
+<p><font size="120pt"><br></font></p><font size="120pt">
+<ol type="1">
+<li class="fragment">Open the notebook that contains your simple linear regression model for predicting used car prices</li>
+<li class="fragment">Run all of the code in that notebook</li>
+<li class="fragment">Add a section to that notebook on <em>multiple linear regression models</em></li>
+</ol>
+</font><p><font size="120pt"></font></p>
+</center>
+</section>
 <section id="what-is-multiple-linear-regression" class="slide level2">
 <h2>What is Multiple Linear Regression?</h2>
 
@@ -463,6 +475,19 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <p><strong>Question 5 (Inferential):</strong> Controlling for flipper length, bill length, and bill depth, what is the association between observation year and penguin body mass?</p>
+</div>
+</section>
+<section id="multiple-linear-regression" class="slide level2">
+<h2>Multiple Linear Regression</h2>
+<div class="fragment">
+<center>
+<p><font size="120pt"> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p>
+</center>
+<ol type="1">
+<li class="fragment">Write out the form of a possible multiple linear regressor with at least two numerical predictors of car price</li>
+<li class="fragment">Describe the predictive and inferential tasks that your model addresses</li>
+<li class="fragment">Write the <em>predictive</em> and <em>inferential</em> questions being asked/answered by your model</li>
+</ol>
 </div>
 </section>
 <section id="what-are-we-assuming" class="slide level2">
@@ -522,8 +547,21 @@ code.sourceCode {
 </div>
 </div>
 </section>
+<section id="building-a-multiple-linear-regression-model-with-tidymodels-1" class="slide level2">
+<h2>Building a Multiple Linear Regression Model with <code>{tidymodels}</code></h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span> </font></p>
+</center>
+<ol type="1">
+<li class="fragment">Create the model <em>specification</em> for your multiple linear regressor</li>
+<li class="fragment">Create the <em>recipe</em> for your model</li>
+<li class="fragment">Package that model and recipe together into a <em>workflow</em></li>
+<li class="fragment"><em>Fit</em> the model to your training data</li>
+</ol>
+</section>
 <section id="the-estimated-model" class="slide level2">
 <h2>The Estimated Model</h2>
+<div class="fragment">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href=""></a>  <span class="fu">extract_fit_engine</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -582,15 +620,27 @@ code.sourceCode {
 
 </div>
 </div>
+</div>
 <div class="fragment">
 <p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{body mass}\right] = 232658.77~ + &amp;~52.75\cdot\left(\text{flipper length}\right) + 1.52\cdot\left(\text{bill length}\right) + \\
 &amp;~28.59\cdot\left(\text{bill depth}\right) - 119.32\cdot\left(\text{year}\right)
 \end{align}\]</span></p>
 </div>
+<div class="fragment">
+<center>
+<font size="120pt"> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span> </font>
+</center>
+<ol type="1">
+<li class="fragment">Extract the estimated model fit for your multiple linear regressor</li>
+<li class="fragment">Write down the equation for the estimated model</li>
+</ol>
+</div>
 </section>
 <section id="global-test-for-model-utility" class="slide level2">
 <h2>Global Test for Model Utility</h2>
+<div class="fragment">
 <p>Does our model include any useful information in predicting / explaining penguin body mass?</p>
+</div>
 <div class="fragment">
 <p><span class="math display">\[\begin{array}{lcl} H_0 &amp; : &amp; \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\
 H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]</span></p>
@@ -647,10 +697,22 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <div class="fragment">
 <p>We’ll reject the null hypothesis and accept that our model contains at least one useful predictor of penguin body mass!</p>
 </div>
+<div class="fragment">
+<center>
+<font size="120pt"> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span> </font>
+</center>
+<ol type="1">
+<li class="fragment">Write the hypotheses for the <em>global test for model utility</em> for your model</li>
+<li class="fragment">Obtain the relevant test statistic and <span class="math inline">\(p\)</span>-value</li>
+<li class="fragment">Interpret the results</li>
+</ol>
+</div>
 </section>
 <section id="utility-of-model-terms" class="slide level2">
 <h2>Utility of Model Terms</h2>
+<div class="fragment">
 <p>We’ll run tests <span class="math inline">\(\begin{array}{lcl} H_0 &amp; : &amp; \beta_i = 0\\ H_a &amp; : &amp; \beta_i \neq 0\end{array}\)</span> to determine whether each individual term has utility.</p>
+</div>
 <div class="fragment">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
@@ -724,6 +786,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </section>
 <section id="updating-the-model-and-retesting-terms" class="slide level2">
 <h2>Updating the Model and Retesting Terms</h2>
+<div class="fragment">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>mlr_rec <span class="ot">&lt;-</span> mlr_rec <span class="sc">%&gt;%</span></span>
 <span id="cb8-2"><a href=""></a>  <span class="fu">step_rm</span>(bill_length_mm)</span>
@@ -734,6 +797,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <span id="cb8-7"><a href=""></a></span>
 <span id="cb8-8"><a href=""></a>mlr_fit <span class="ot">&lt;-</span> mlr_wf <span class="sc">%&gt;%</span></span>
 <span id="cb8-9"><a href=""></a>  <span class="fu">fit</span>(penguins_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </div>
 <div class="fragment">
 <div class="cell">
@@ -795,6 +859,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </section>
 <section id="updating-the-model-and-retesting-terms-1" class="slide level2">
 <h2>Updating the Model and Retesting Terms</h2>
+<div class="fragment">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a>mlr_rec <span class="ot">&lt;-</span> mlr_rec <span class="sc">%&gt;%</span></span>
 <span id="cb10-2"><a href=""></a>  <span class="fu">step_rm</span>(bill_depth_mm)</span>
@@ -805,6 +870,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <span id="cb10-7"><a href=""></a></span>
 <span id="cb10-8"><a href=""></a>mlr_fit <span class="ot">&lt;-</span> mlr_wf <span class="sc">%&gt;%</span></span>
 <span id="cb10-9"><a href=""></a>  <span class="fu">fit</span>(penguins_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </div>
 <div class="fragment">
 <div class="cell">
@@ -860,8 +926,23 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <p><span class="math display">\[\mathbb{E}\left[\text{body mass}\right] = 227916.27 + 50.87\cdot\left(\text{flipper length}\right) - 116.5\cdot\left(\text{year}\right)\]</span></p>
 </div>
 </section>
+<section id="term-based-tests-and-model-updates" class="slide level2">
+<h2>Term-Based Tests and Model Updates</h2>
+<div class="fragment">
+<center>
+<font size="120pt"> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span> </font>
+</center>
+<ol type="1">
+<li class="fragment">Extract the estimated model fit for your multiple linear regressor</li>
+<li class="fragment">Examine the tests for significance of individual model terms</li>
+<li class="fragment">If any of your model terms are not significant, remove them one-by-one, using our <em>backward elimination</em> strategy</li>
+<li class="fragment">Once all remaining model terms are statistically significant, write down the estimated model form</li>
+</ol>
+</div>
+</section>
 <section id="additional-training-performance-metrics" class="slide level2">
 <h2>Additional [Training] Performance Metrics</h2>
+<div class="fragment">
 <div class="columns">
 <div class="column" style="width:45%;">
 <div class="cell">
@@ -943,9 +1024,23 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </ul>
 </div>
 </div>
+</div>
+</section>
+<section id="additional-training-performance-metrics-1" class="slide level2">
+<h2>Additional [Training] Performance Metrics</h2>
+<div class="fragment">
+<center>
+<font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span> <br></font>
+</center>
+<ol type="1">
+<li class="fragment">Use <code>glance()</code> to obtain the <em>global performance metrics</em> for your model</li>
+<li class="fragment">Identify and interpret the <span class="math inline">\(p\)</span>-value, <span class="math inline">\(R^2_{\text{adj}}\)</span>, and <em>training RMSE</em> values</li>
+</ol>
+</div>
 </section>
 <section id="additional-validation-performance-metrics" class="slide level2">
 <h2>Additional [Validation] Performance Metrics</h2>
+<div class="fragment">
 <div class="columns">
 <div class="column" style="width:40%;">
 <div class="cell">
@@ -993,16 +1088,56 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </ul>
 </div>
 </div>
+</div>
+</section>
+<section id="additional-validation-performance-metrics-1" class="slide level2">
+<h2>Additional [Validation] Performance Metrics</h2>
+<div class="fragment">
+<center>
+<font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span><br> </font>
+</center>
+<ol type="1">
+<li class="fragment">Obtain and interpret the RMSE and <span class="math inline">\(R^2\)</span> values for your model on the <em>test</em> data</li>
+</ol>
+</div>
 </section>
 <section id="residual-analysis" class="slide level2">
 <h2>Residual Analysis</h2>
-
-<img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-23-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
+<div class="fragment">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-23-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
 <p>Again, some slight right skew in the distribution of residuals and some associations between the residuals and the predictors, predictions, and response.</p>
+</div>
+</section>
+<section id="residual-analysis-1" class="slide level2">
+<h2>Residual Analysis</h2>
+<div class="fragment">
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment"><p>Calculate <em>residuals</em> for your model</p>
+<ol type="i">
+<li class="fragment">You’ll need to add a column of model predictions to your training set</li>
+<li class="fragment">Then you’ll need to compute the residuals (prediction errors) and hold them in another new column</li>
+</ol></li>
+<li class="fragment"><p>Use graphical techniques to analyze the residuals for your model</p></li>
+</ol>
 </div>
 </section>
 <section id="model-interpretations" class="slide level2">
 <h2>Model Interpretations</h2>
+<div class="fragment">
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
@@ -1043,6 +1178,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 
 </div>
 </div>
+</div>
 <div class="fragment">
 <p><span class="math display">\[\mathbb{E}\left[\text{body mass}\right] \approx 227916.27 + 50.87\cdot\left(\text{flipper length}\right) - 116.5\cdot\left(\text{year}\right)\]</span></p>
 </div>
@@ -1058,13 +1194,32 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </ul>
 </div>
 </section>
+<section id="model-interpretations-1" class="slide level2">
+<h2>Model Interpretations</h2>
+<div class="fragment">
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment"><p>Extract the estimated model fit for your multiple linear regressor</p></li>
+<li class="fragment"><p>Write down the equation for the estimated model</p></li>
+<li class="fragment"><p>Provide interpretations of each of your estimated coefficients</p>
+<ul>
+<li class="fragment">Is an interpretation of your model’s intercept meaningful?</li>
+</ul></li>
+</ol>
+</div>
+</section>
 <section id="using-the-model-to-make-predictions" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
+<div class="fragment">
 <p>Consider the following questions:</p>
 <ol type="1">
 <li class="fragment">In 2009, what is the body mass of a penguin whose flipper length is 212mm?</li>
 <li class="fragment">In 2009, what is the average body mass of <em>all</em> penguins whose flipper lengths are 212mm?</li>
 </ol>
+</div>
 <div class="fragment">
 <p>As with last time, the answer to the first question requires a <em>prediction interval</em>, while answering the second uses a <em>confidence interval</em>.</p>
 </div>
@@ -1129,6 +1284,23 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </section>
 <section id="using-the-model-to-make-predictions-2" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
+<div class="fragment">
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment"><p>Identify the characteristics of a car whose price you are interested in predicting</p>
+<ul>
+<li class="fragment">Formulate these characteristics into a question and add it to your notebook</li>
+</ul></li>
+<li class="fragment"><p>Use <code>tibble()</code> to create a new data frame containing the characteristics of that vehicle whose price you wanted to predict</p></li>
+<li class="fragment"><p>Use your model to predict the price of that car</p></li>
+</ol>
+</div>
+</section>
+<section id="using-the-model-to-make-predictions-3" class="slide level2">
+<h2>Using the Model to Make Predictions</h2>
 <p>What is <font color="green">the body mass of a penguin observed in 2009, whose flipper length is 212mm</font>?</p>
 <div class="columns">
 <div class="column" style="width:50%;">
@@ -1173,9 +1345,28 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </div>
 </div>
 </section>
-<section id="using-the-model-to-make-predictions-3" class="slide level2">
+<section id="using-the-model-to-make-predictions-4" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
+<div class="fragment">
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment"><p>Update the prediction you just made to obtain a <em>prediction interval</em> rather than a <em>point estimate</em> for the estimated car price</p>
+<ul>
+<li class="fragment">You may want to keep your original code as well, for comparison and future reference</li>
+</ul></li>
+<li class="fragment"><p>Interpret the resulting interval</p></li>
+</ol>
+</div>
+</section>
+<section id="using-the-model-to-make-predictions-5" class="slide level2">
+<h2>Using the Model to Make Predictions</h2>
+<div class="fragment">
 <p>What is <font color="purple">the <em>average</em> body mass of <em>all</em> penguins observed in 2009 and whose flipper lengths were 212mm</font>?</p>
+</div>
+<div class="fragment">
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
@@ -1207,6 +1398,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </div>
 </div>
 </div>
+</div>
 <div class="fragment">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
@@ -1219,7 +1411,27 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </div>
 </div>
 </section>
-<section id="using-the-model-to-make-predictions-4" class="slide level2">
+<section id="using-the-model-to-make-predictions-6" class="slide level2">
+<h2>Using the Model to Make Predictions</h2>
+<div class="fragment">
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment"><p>Make another update to obtain a <em>confidence interval</em> for the estimated car price</p>
+<ul>
+<li class="fragment">Again, you likely want to keep your existing code rather than just edit it</li>
+</ul></li>
+<li class="fragment"><p>Interpret the resulting interval and compare it to the previous interval you constructed</p>
+<ul>
+<li class="fragment">Why are the intervals different?</li>
+<li class="fragment">What is each interval used for?</li>
+</ul></li>
+</ol>
+</div>
+</section>
+<section id="using-the-model-to-make-predictions-7" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
 <p>What is <font color="green">the body mass of a penguin observed in 2009 with flipper length 212mm</font>?</p>
 <ul>
@@ -1241,7 +1453,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </div>
 </div>
 </section>
-<section id="using-the-model-to-make-predictions-5" class="slide level2">
+<section id="using-the-model-to-make-predictions-8" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
 
 <img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-35-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
@@ -1257,9 +1469,19 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <li class="fragment">The coefficient on each predictor can be interpreted as a slope(<span class="math inline">\(^*\)</span>).</li>
 <li class="fragment">We can predict responses for a single observation, or an average over all observations having the same values of the predictors.</li>
 </ul>
+</section>
+<section id="next-time" class="slide level2">
+<h2>Next Time…</h2>
+<div class="fragment">
+<center>
+<p><font size="120pt"><br></font></p><font size="120pt">
+<p>Residual Analysis and Model Quality</p>
+</font>
+</center>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
+</div>
 </div>
 </div>
 </section>

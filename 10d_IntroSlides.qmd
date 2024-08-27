@@ -63,6 +63,20 @@ code.sourceCode {
 
 If all this seems nearly identical to our discussion on *simple linear regression* models, it is.
 
+## Playing Along
+
+<center>
+
+<font size="120pt"><br/>
+
+1. Open the notebook that contains your simple linear regression model for predicting used car prices
+2. Run all of the code in that notebook
+3. Add a section to that notebook on *multiple linear regression models*
+
+</font>
+
+</center>
+
 ## What is Multiple Linear Regression?
 
 ```{r}
@@ -128,6 +142,20 @@ Why choose just one predictor when we could have them all?
 . . .
 
 **Question 5 (Inferential):** Controlling for flipper length, bill length, and bill depth, what is the association between observation year and penguin body mass?
+
+## Multiple Linear Regression
+
+. . .
+
+<center>
+
+<font size="120pt"> $\bigstar$ Let's try it! $\bigstar$</font>
+
+</center>
+
+1. Write out the form of a possible multiple linear regressor with at least two numerical predictors of car price
+2. Describe the predictive and inferential tasks that your model addresses
+3. Write the *predictive* and *inferential* questions being asked/answered by your model
 
 ## What Are We Assuming?
 
@@ -198,7 +226,24 @@ mlr_fit <- mlr_wf %>%
   fit(penguins_train)
 ```
 
+## Building a Multiple Linear Regression Model with `{tidymodels}`
+
+<center>
+
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+</font>
+
+</center>
+
+1. Create the model *specification* for your multiple linear regressor
+2. Create the *recipe* for your model
+3. Package that model and recipe together into a *workflow*
+4. *Fit* the model to your training data
+
 ## The Estimated Model
+
+. . .
 
 ```{r}
 #| echo: true
@@ -225,7 +270,20 @@ mlr_fit %>%
 &~28.59\cdot\left(\text{bill depth}\right) - 119.32\cdot\left(\text{year}\right)
 \end{align}
 
+. . . 
+
+<center>
+<font size="120pt">
+$\bigstar$ Let's try it! $\bigstar$
+</font>
+</center>
+
+1. Extract the estimated model fit for your multiple linear regressor
+2. Write down the equation for the estimated model
+
 ## Global Test for Model Utility
+
+. . . 
 
 Does our model include any useful information in predicting / explaining penguin body mass?
 
@@ -262,7 +320,21 @@ The $p$-value on this test is so small that it rounds to 0.
 
 We'll reject the null hypothesis and accept that our model contains at least one useful predictor of penguin body mass!
 
+. . . 
+
+<center>
+<font size="120pt">
+$\bigstar$ Let's try it! $\bigstar$
+</font>
+</center>
+
+1. Write the hypotheses for the *global test for model utility* for your model
+2. Obtain the relevant test statistic and $p$-value
+3. Interpret the results
+
 ## Utility of Model Terms
+
+. . . 
 
 We'll run tests $\begin{array}{lcl} H_0 & : & \beta_i = 0\\ H_a & : & \beta_i \neq 0\end{array}$ to determine whether each individual term has utility.
 
@@ -301,6 +373,8 @@ Removing one of the model terms will update all of the values in the model outpu
 We'll remove `bill_length_mm` since it has the largest $p$-value and revisit the resulting table.
 
 ## Updating the Model and Retesting Terms
+
+. . . 
 
 ```{r}
 #| echo: true
@@ -344,6 +418,8 @@ mlr_fit %>%
 The `bill_depth_mm` term is still not significant. Let's remove it as well.
 
 ## Updating the Model and Retesting Terms
+
+. . . 
 
 ```{r}
 #| echo: true
@@ -390,7 +466,24 @@ Now, all remaining terms are significant.
 
 $$\mathbb{E}\left[\text{body mass}\right] = 227916.27 + 50.87\cdot\left(\text{flipper length}\right) - 116.5\cdot\left(\text{year}\right)$$
 
+## Term-Based Tests and Model Updates
+
+. . . 
+
+<center>
+<font size="120pt">
+$\bigstar$ Let's try it! $\bigstar$
+</font>
+</center>
+
+1. Extract the estimated model fit for your multiple linear regressor
+2. Examine the tests for significance of individual model terms
+3. If any of your model terms are not significant, remove them one-by-one, using our *backward elimination* strategy
+4. Once all remaining model terms are statistically significant, write down the estimated model form
+
 ## Additional [Training] Performance Metrics
+
+. . . 
 
 ::::{.columns}
 
@@ -432,7 +525,22 @@ mlr_fit %>%
 
 ::::
 
+## Additional [Training] Performance Metrics
+
+. . . 
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+<br/></font>
+</center>
+
+1. Use `glance()` to obtain the *global performance metrics* for your model
+2. Identify and interpret the $p$-value, $R^2_{\text{adj}}$, and *training RMSE* values
+
 ## Additional [Validation] Performance Metrics
+
+. . . 
 
 ::::{.columns}
 
@@ -482,7 +590,21 @@ mlr_fit %>%
 
 ::::
 
+## Additional [Validation] Performance Metrics
+
+. . . 
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$<br/>
+</font>
+</center>
+
+1. Obtain and interpret the RMSE and $R^2$ values for your model on the *test* data
+
 ## Residual Analysis
+
+. . . 
 
 ```{r}
 #| echo: false
@@ -553,7 +675,28 @@ p1 / ((p2 + p3) / (p4 + p5)) + plot_annotation(title = "Residual Plots")
 
 Again, some slight right skew in the distribution of residuals and some associations between the residuals and the predictors, predictions, and response.
 
+## Residual Analysis
+
+. . . 
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Calculate *residuals* for your model
+
+    i) You'll need to add a column of model predictions to your training set
+    ii) Then you'll need to compute the residuals (prediction errors) and hold them in another new column
+    
+2. Use graphical techniques to analyze the residuals for your model
+
 ## Model Interpretations
+
+. . . 
 
 ```{r}
 #| echo: false
@@ -582,7 +725,27 @@ $$\mathbb{E}\left[\text{body mass}\right] \approx 227916.27 + 50.87\cdot\left(\t
 
 + (*Year*) Holding flipper length constant, we expect an elapsed year to be associated with about a 116.5g decrease in penguin body mass, on average.
 
+## Model Interpretations 
+
+. . . 
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Extract the estimated model fit for your multiple linear regressor
+2. Write down the equation for the estimated model
+3. Provide interpretations of each of your estimated coefficients
+
+    + Is an interpretation of your model's intercept meaningful?
+
 ## Using the Model to Make Predictions
+
+. . . 
 
 Consider the following questions:
 
@@ -735,6 +898,26 @@ ggplot() +
 
 ## Using the Model to Make Predictions
 
+. . . 
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Identify the characteristics of a car whose price you are interested in predicting
+
+    + Formulate these characteristics into a question and add it to your notebook
+
+2. Use `tibble()` to create a new data frame containing the characteristics of that vehicle whose price you wanted to predict
+
+3. Use your model to predict the price of that car
+
+## Using the Model to Make Predictions
+
 What is <font color="green">the body mass of a penguin observed in 2009, whose flipper length is 212mm</font>?
 
 ::::{.columns}
@@ -812,7 +995,29 @@ ggplot() +
 
 ## Using the Model to Make Predictions
 
+. . . 
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Update the prediction you just made to obtain a *prediction interval* rather than a *point estimate* for the estimated car price
+
+    + You may want to keep your original code as well, for comparison and future reference
+
+2. Interpret the resulting interval
+
+## Using the Model to Make Predictions
+
+. . . 
+
 What is <font color="purple">the *average* body mass of *all* penguins observed in 2009 and whose flipper lengths were 212mm</font>?
+
+. . . 
 
 ::::{.columns}
 
@@ -886,6 +1091,26 @@ ggplot() +
        color = "Interval")
 ```
 
+## Using the Model to Make Predictions
+
+. . . 
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Make another update to obtain a *confidence interval* for the estimated car price
+
+    + Again, you likely want to keep your existing code rather than just edit it
+
+2. Interpret the resulting interval and compare it to the previous interval you constructed
+
+    + Why are the intervals different?
+    + What is each interval used for?
 
 ## Using the Model to Make Predictions
 
@@ -1021,3 +1246,15 @@ ggplot() +
 + The coefficient on each predictor can be interpreted as a slope($^*$).
 + We can predict responses for a single observation, or an average over all observations having the same values of the predictors.
 
+## Next Time...
+
+. . . 
+
+
+<center>
+<font size="120pt"><br/>
+
+Residual Analysis and Model Quality
+
+</font>
+</center>

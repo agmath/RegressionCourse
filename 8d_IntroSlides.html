@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-26">
+  <meta name="dcterms.date" content="2024-08-27">
   <title>Statistical Inference in Regression</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 26, 2024</p>
+  <p class="date">August 27, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -433,10 +433,25 @@ code.sourceCode {
 </ul></li>
 </ul>
 </section>
+<section id="playing-along" class="slide level2">
+<h2>Playing Along</h2>
+<center>
+<p><font size="120pt"><br></font></p><font size="120pt">
+<ol type="1">
+<li class="fragment"><p>Open your notebook from last time</p></li>
+<li class="fragment"><p>As we discuss the different hypothesis test and interval analyses we’ll be encountering in the regression context, analyze the corresponding items for your models in that notebook</p></li>
+</ol>
+</font><p><font size="120pt"></font></p>
+</center>
+</section>
 <section id="global-test-for-model-utility" class="slide level2">
 <h2>Global Test for Model Utility</h2>
+<div class="fragment">
 <p><span class="math display">\[y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k + \varepsilon\\ ~~~~\text{or}~~~~\\ \mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k\]</span></p>
+</div>
+<div class="fragment">
 <p>Does our model contain any useful information about predicting/explaining our response variable at all?</p>
+</div>
 <div class="fragment">
 <p><strong>Hypotheses:</strong></p>
 <p><span class="math display">\[\begin{array}{lcl} H_0 &amp; : &amp; \beta_1 = \beta_2 = \cdots = \beta_k = 0\\
@@ -511,7 +526,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <li class="fragment"><p><em>Sloped</em> models use predictor information</p></li>
 <li class="fragment"><p>Horizontal models just predict average response, ignoring all observation-specific features</p>
 <ul>
-<li class="fragment">They assume that having information about features of an observation gives no advantage in predicting its response</li>
+<li class="fragment">They assume that having information about features of an observation gives no advantage in predicting/explaining its response</li>
 </ul></li>
 </ul>
 </div>
@@ -520,8 +535,12 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </section>
 <section id="tests-on-individual-model-terms" class="slide level2">
 <h2>Tests on Individual Model Terms</h2>
+<div class="fragment">
 <p><span class="math display">\[y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k + \varepsilon\\ ~~~~\text{or}~~~~\\ \mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k\]</span></p>
+</div>
+<div class="fragment">
 <p>Okay, so our model has some utility. Do we really need all of those terms?</p>
+</div>
 <div class="fragment">
 <p><strong>Hypotheses:</strong></p>
 <p><span class="math display">\[\begin{array}{lcl} H_0 &amp; : &amp; \beta_i = 0\\
@@ -595,14 +614,26 @@ H_a &amp; : &amp; \beta_i \neq 0\end{array}\]</span></p>
 </section>
 <section id="model-predictions" class="slide level2">
 <h2>Model Predictions</h2>
-
-<img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"><div class="fragment">
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
 <p>They’re all wrong!</p>
 </div>
 </section>
 <section id="confidence-intervals-predictions" class="slide level2">
 <h2>Confidence Intervals (Predictions)</h2>
+<div class="fragment">
 <p>The formula for confidence intervals on predictions is complex!</p>
+</div>
 <div class="fragment">
 <p><span class="math display">\[\displaystyle{\left(\tt{point~estimate}\right)\pm t^*_{\text{df}}\cdot \left(\tt{RMSE}\right)\left(\sqrt{\frac{1}{n} + \frac{(x_{new} - \bar{x})^2}{\sum{\left(x - \bar{x}\right)^2}}}\right)}\]</span></p>
 </div>
@@ -654,8 +685,18 @@ H_a &amp; : &amp; \beta_i \neq 0\end{array}\]</span></p>
 </section>
 <section id="confidence-and-prediction-intervals-for-model-predictions" class="slide level2">
 <h2>Confidence and Prediction Intervals for Model Predictions</h2>
-
-<img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="summary" class="slide level2">
 <h2>Summary</h2>
 <p>Below are the most common applications of statistical inference in regression modeling.</p>
@@ -688,7 +729,7 @@ H_a &amp; : &amp; \beta_i \neq 0\end{array}\]</span></p>
 <section id="next-time" class="slide level2">
 <h2>Next Time…</h2>
 <center>
-<p><font size="120pt"> Hypothesizing, Constructing, Assessing, and Interpreting Simple Linear Regression Models </font></p>
+<p><font size="120pt"><br> Hypothesizing, Constructing, Assessing, and Interpreting Simple Linear Regression Models </font></p>
 </center>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">

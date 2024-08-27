@@ -69,9 +69,28 @@ code.sourceCode {
   + Confidence Intervals
   + Prediction Intervals
 
+## Playing Along
+
+<center>
+
+<font size="120pt"><br/>
+
+1. Open your notebook from last time
+
+2. As we discuss the different hypothesis test and interval analyses we'll be encountering in the regression context, analyze the corresponding items for your models in that notebook
+
+</font>
+
+</center>
+
+
 ## Global Test for Model Utility
 
+. . .
+
 $$y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k + \varepsilon\\ ~~~~\text{or}~~~~\\ \mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+
+. . .
 
 Does our model contain any useful information about predicting/explaining our response variable at all?
 
@@ -161,7 +180,7 @@ Are our *sloped* models better (more justifiable) models than the horizontal lin
 + *Sloped* models use predictor information
 + Horizontal models just predict average response, ignoring all observation-specific features
 
-  + They assume that having information about features of an observation gives no advantage in predicting its response
+  + They assume that having information about features of an observation gives no advantage in predicting/explaining its response
 
 ::: 
 
@@ -169,7 +188,11 @@ Are our *sloped* models better (more justifiable) models than the horizontal lin
 
 ## Tests on Individual Model Terms
 
+. . . 
+
 $$y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k + \varepsilon\\ ~~~~\text{or}~~~~\\ \mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+
+. . . 
 
 Okay, so our model has some utility. Do we really need all of those terms?
 
@@ -239,6 +262,8 @@ lin_reg_fit %>%
 
 ## Model Predictions
 
+. . .
+
 ```{r}
 std_err <- lin_reg_fit %>%
   glance() %>%
@@ -291,6 +316,8 @@ ggplot() +
 They're all wrong!
 
 ## Confidence Intervals (Predictions)
+
+. . .
 
 The formula for confidence intervals on predictions is complex! 
 
@@ -403,6 +430,8 @@ ggplot() +
 
 ## Confidence and Prediction Intervals for Model Predictions
 
+. . . 
+
 ```{r}
 int_fills <- c("confidence" = "orange",
                "prediction" = "purple")
@@ -466,7 +495,7 @@ We'll leverage R functionality to obtain intervals or to calculate test statisti
 
 <center> 
 
-<font size="120pt"> Hypothesizing, Constructing, Assessing, and Interpreting Simple Linear Regression Models
+<font size="120pt"><br/> Hypothesizing, Constructing, Assessing, and Interpreting Simple Linear Regression Models
 </font>
 
 </center>

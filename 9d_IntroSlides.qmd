@@ -57,10 +57,13 @@ code.sourceCode {
 
 ## What is Simple Linear Regression?
 
+. . .
+
 ```{r}
 #| message: false
 #| warning: false
 #| fig-align: center
+#| fig-height: 4
 
 p1 <- penguins_train %>%
   ggplot() +
@@ -101,6 +104,7 @@ p1 + p2
 #| message: false
 #| warning: false
 #| fig-align: center
+#| fig-height: 4
 
 p1 + p2
 ```
@@ -116,6 +120,8 @@ Simple linear regression predicts a response as a linear function of a single pr
 $$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot \left(\text{flipper length}\right)\\ \textbf{or}\\ \mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot \left(\text{bill depth}\right)$$
 
 ## What is Simple Linear Regression?
+
+. . .
 
 ```{r}
 #| message: false
@@ -171,12 +177,34 @@ p1 + p2
 
 $$\mathbb{E}\left[\text{body mass}\right] = -5769 + 49.7\left(\text{flipper length}\right)\\ \textbf{or}\\ \mathbb{E}\left[\text{body mass}\right] = 7697 - 203\left(\text{bill depth}\right)$$
 
+## Let's Play Along
+
+. . .
+
+<center>
+
+$\bigstar$ As usual, I recommend that you play along during our discussion! $\bigstar$
+
+</center>
+
+
+
+1. Open RStudio
+2. Verify that you are working within your `MAT300` project space
+3. Open your most recent notebook -- the one where you built a simple linear regressor to predict the price of a used car
+4. Run all of the code chunks in that notebook
+5. Describe the *inferential* and *predictive* questions you implicitly asked in pursuing the construction of that model
+
 ## What Are We Assuming?
+
+. . .
 
 ```{r}
 #| message: false
 #| warning: false
 #| fig-align: center
+#| fig-height: 2.5
+#| fig-width: 8
 
 p1
 ```
@@ -199,7 +227,11 @@ $$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{fl
 
 ## Global and Term-Based Model Assessments
 
+. . .
+
 **Global Test for Model Utility:** $\begin{array}{lcl} H_0 & : & \beta_1 = 0\\ H_a & : &\beta_1 \neq 0\end{array}$
+
+. . .
 
 ```{r}
 lin_reg_flip_fit %>%
@@ -211,6 +243,8 @@ lin_reg_flip_fit %>%
 . . . 
 
 **Individual Term-Based Assessment:** $\begin{array}{lcl} H_0 & : & \beta_1 = 0\\ H_a & : &\beta_1 \neq 0\end{array}$
+
+. . .
 
 ```{r}
 lin_reg_flip_fit %>%
@@ -265,6 +299,28 @@ lin_reg_flip_fit %>%
 
 ::::
 
+## Accessing and Interpreting Global and Term-Based Performance Metrics
+
+. . . 
+
+<center>
+
+$\bigstar$ Let's try it! $\bigstar$ 
+
+</center>
+
+1. Obtain the global model performance metrics for your model
+
+    + *Hint*. You'll need the `glance()` function for this
+    
+2. Analyse and interpret the result
+
+3. Obtain the individual term-based model assessment metrics
+
+    + *Hint*. You'll need to use `extract_fit_engine()` here
+
+4. Analyse and interpret the result
+
 ## Additional [Validation] Performance Metrics
 
 ::::{.columns}
@@ -315,7 +371,20 @@ lin_reg_flip_fit %>%
 
 ::::
 
+## Performance Metrics on Validation Data
+
+<center>
+
+<font size="120pt"> $\bigstar$ Let's try it! $\bigstar$</font>
+
+</center>
+
+1. Use the code from the previous slide to obtain model performance metrics measured on the validation data (the `test` set)
+2. How do the training and validation metrics compare with one another?
+
 ## Residual Analysis
+
+. . .
 
 ```{r}
 #| echo: false
@@ -379,6 +448,24 @@ The residuals look approximately normal -- with some right skew. There does seem
 
 Patterns in residual plots indicate that we could make a better model.
 
+## Conducting a Residual Analysis
+
+<center>
+
+<font size="120pt"> $\bigstar$ Let's try it! $\bigstar$</font>
+
+</center>
+
+1. Attach your model's predictions to your training data
+2. Compute a residuals (prediction errors) column
+3. Visualize the distribution of residuals
+4. Create a plot between residuals and the response
+5. Create a plot between residuals and the predictions
+6. Create a plot between the residuals and the predictor
+7. Interpret the plots you've constructed
+
+    + What do you notice about the plots between resduals and predictor and residuals and predictions? Why might this be?
+
 ## Model Interpretations
 
 ```{r}
@@ -407,6 +494,21 @@ $$\mathbb{E}\left[\text{body mass}\right] = -5768.76 + 49.67\cdot\left(\text{fli
   
 + (*Flipper Length*) We expect a 1mm increase in flipper length to be associated with about a 49.67g increase in penguin body mass, on average.
 
+## Model Interpretations
+
+<center>
+
+<font size="120pt"> $\bigstar$ Let's try it! $\bigstar$</font>
+
+</center>
+
+1. Extract your model fit
+2. Provide interpretations of the model coefficients
+
+    + Is an interpretation of the intercept meaningful for your model?
+    
+3. Include your discussions in your Quarto Notebook
+
 ## Using the Model to Make Predictions
 
 Consider the following questions:
@@ -434,6 +536,12 @@ as the answer to both -- we have 0% confidence in this!
 
 ## Using the Model to Make Predictions
 
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
 ```{r}
 #| echo: true
 #| eval: false
@@ -445,6 +553,10 @@ new_penguin <- tibble(
 lin_reg_flip_fit %>%
   predict(new_penguin)
 ```
+
+:::
+
+:::{.column width="50%"}
 
 ```{r}
 #| echo: false
@@ -476,6 +588,12 @@ lin_reg_flip_fit %>%
   kable() %>%
   kable_styling()
 ```
+
+:::
+
+::::
+
+. . .
 
 ```{r}
 #| message: false
@@ -685,6 +803,25 @@ ggplot() +
        y = "Body Mass (g)",
        color = "Interval")
 ```
+
+## Using the Model to Make Predictions
+
+. . .
+
+<center> 
+
+<font size="120pt"> Let's try this!</font>
+
+</center>
+
+1. Write down two predictive questions associated with used car prices that could be answered with your model
+2. Can you differentiate versions of those questions that could be answered by *confidence* versus *prediction* intervals? What is the difference?
+3. Compute your model's prediction for a particular value of the predictor you chose
+4. Similarly, compute the lower and upper bounds for bound confidence and prediction intervals for your chosen value
+5. **(Challenge)** Can you plot the result?
+6. Interpret your model's predictions
+
+    + Clearly differentiate the model prediction, versus the bounds for the confidence interval, versus the bounds for the prediction interval
 
 ## Summary
 

@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-13">
+  <meta name="dcterms.date" content="2024-08-26">
   <title>Simple Linear Regression: Construction, Assessment, and Interpretation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 13, 2024</p>
+  <p class="date">August 26, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -434,8 +434,18 @@ code.sourceCode {
 </section>
 <section id="what-is-simple-linear-regression" class="slide level2">
 <h2>What is Simple Linear Regression?</h2>
-
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-2-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
+<div class="fragment">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-2-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
 <p><strong>Question 1 (Inferential):</strong> What, if anything, is the relationship between penguin flipper length and body mass?</p>
 </div>
 <div class="fragment">
@@ -461,15 +471,50 @@ code.sourceCode {
 </section>
 <section id="what-is-simple-linear-regression-2" class="slide level2">
 <h2>What is Simple Linear Regression?</h2>
-
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
+<div class="fragment">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
 <p><span class="math display">\[\mathbb{E}\left[\text{body mass}\right] = -5769 + 49.7\left(\text{flipper length}\right)\\ \textbf{or}\\ \mathbb{E}\left[\text{body mass}\right] = 7697 - 203\left(\text{bill depth}\right)\]</span></p>
+</div>
+</section>
+<section id="lets-play-along" class="slide level2">
+<h2>Let’s Play Along</h2>
+<div class="fragment">
+<center>
+<p><span class="math inline">\(\bigstar\)</span> As usual, I recommend that you play along during our discussion! <span class="math inline">\(\bigstar\)</span></p>
+</center>
+<ol type="1">
+<li class="fragment">Open RStudio</li>
+<li class="fragment">Verify that you are working within your <code>MAT300</code> project space</li>
+<li class="fragment">Open your most recent notebook – the one where you built a simple linear regressor to predict the price of a used car</li>
+<li class="fragment">Run all of the code chunks in that notebook</li>
+<li class="fragment">Describe the <em>inferential</em> and <em>predictive</em> questions you implicitly asked in pursuing the construction of that model</li>
+</ol>
 </div>
 </section>
 <section id="what-are-we-assuming" class="slide level2">
 <h2>What Are We Assuming?</h2>
-
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-5-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
+<div class="fragment">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-5-1.png" class="quarto-figure quarto-figure-center" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
 <p><span class="math display">\[\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{flipper length}\right)\]</span></p>
 </div>
 <div class="fragment">
@@ -486,7 +531,10 @@ code.sourceCode {
 </section>
 <section id="global-and-term-based-model-assessments" class="slide level2">
 <h2>Global and Term-Based Model Assessments</h2>
+<div class="fragment">
 <p><strong>Global Test for Model Utility:</strong> <span class="math inline">\(\begin{array}{lcl} H_0 &amp; : &amp; \beta_1 = 0\\ H_a &amp; : &amp;\beta_1 \neq 0\end{array}\)</span></p>
+</div>
+<div class="fragment">
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
@@ -527,8 +575,11 @@ code.sourceCode {
 
 </div>
 </div>
+</div>
 <div class="fragment">
 <p><strong>Individual Term-Based Assessment:</strong> <span class="math inline">\(\begin{array}{lcl} H_0 &amp; : &amp; \beta_1 = 0\\ H_a &amp; : &amp;\beta_1 \neq 0\end{array}\)</span></p>
+</div>
+<div class="fragment">
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
@@ -650,6 +701,26 @@ code.sourceCode {
 </div>
 </div>
 </section>
+<section id="accessing-and-interpreting-global-and-term-based-performance-metrics" class="slide level2">
+<h2>Accessing and Interpreting Global and Term-Based Performance Metrics</h2>
+<div class="fragment">
+<center>
+<p><span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+</center>
+<ol type="1">
+<li class="fragment"><p>Obtain the global model performance metrics for your model</p>
+<ul>
+<li class="fragment"><em>Hint</em>. You’ll need the <code>glance()</code> function for this</li>
+</ul></li>
+<li class="fragment"><p>Analyse and interpret the result</p></li>
+<li class="fragment"><p>Obtain the individual term-based model assessment metrics</p>
+<ul>
+<li class="fragment"><em>Hint</em>. You’ll need to use <code>extract_fit_engine()</code> here</li>
+</ul></li>
+<li class="fragment"><p>Analyse and interpret the result</p></li>
+</ol>
+</div>
+</section>
 <section id="additional-validation-performance-metrics" class="slide level2">
 <h2>Additional [Validation] Performance Metrics</h2>
 <div class="columns">
@@ -700,15 +771,53 @@ code.sourceCode {
 </div>
 </div>
 </section>
+<section id="performance-metrics-on-validation-data" class="slide level2">
+<h2>Performance Metrics on Validation Data</h2>
+<center>
+<p><font size="120pt"> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p>
+</center>
+<ol type="1">
+<li class="fragment">Use the code from the previous slide to obtain model performance metrics measured on the validation data (the <code>test</code> set)</li>
+<li class="fragment">How do the training and validation metrics compare with one another?</li>
+</ol>
+</section>
 <section id="residual-analysis" class="slide level2">
 <h2>Residual Analysis</h2>
-
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
+<div class="fragment">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
 <p>The residuals look approximately normal – with some right skew. There does seem to be an association between the residuals and response, predictions, and flipper length though.</p>
 </div>
 <div class="fragment">
 <p>Patterns in residual plots indicate that we could make a better model.</p>
 </div>
+</section>
+<section id="conducting-a-residual-analysis" class="slide level2">
+<h2>Conducting a Residual Analysis</h2>
+<center>
+<p><font size="120pt"> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p>
+</center>
+<ol type="1">
+<li class="fragment"><p>Attach your model’s predictions to your training data</p></li>
+<li class="fragment"><p>Compute a residuals (prediction errors) column</p></li>
+<li class="fragment"><p>Visualize the distribution of residuals</p></li>
+<li class="fragment"><p>Create a plot between residuals and the response</p></li>
+<li class="fragment"><p>Create a plot between residuals and the predictions</p></li>
+<li class="fragment"><p>Create a plot between the residuals and the predictor</p></li>
+<li class="fragment"><p>Interpret the plots you’ve constructed</p>
+<ul>
+<li class="fragment">What do you notice about the plots between resduals and predictor and residuals and predictions? Why might this be?</li>
+</ul></li>
+</ol>
 </section>
 <section id="model-interpretations" class="slide level2">
 <h2>Model Interpretations</h2>
@@ -760,6 +869,20 @@ code.sourceCode {
 </ul>
 </div>
 </section>
+<section id="model-interpretations-1" class="slide level2">
+<h2>Model Interpretations</h2>
+<center>
+<p><font size="120pt"> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p>
+</center>
+<ol type="1">
+<li class="fragment"><p>Extract your model fit</p></li>
+<li class="fragment"><p>Provide interpretations of the model coefficients</p>
+<ul>
+<li class="fragment">Is an interpretation of the intercept meaningful for your model?</li>
+</ul></li>
+<li class="fragment"><p>Include your discussions in your Quarto Notebook</p></li>
+</ol>
+</section>
 <section id="using-the-model-to-make-predictions" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
 <p>Consider the following questions:</p>
@@ -783,6 +906,9 @@ code.sourceCode {
 </section>
 <section id="using-the-model-to-make-predictions-1" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>new_penguin <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
 <span id="cb3-2"><a href=""></a>  <span class="at">flipper_length_mm =</span> <span class="dv">212</span></span>
@@ -791,6 +917,7 @@ code.sourceCode {
 <span id="cb3-5"><a href=""></a>lin_reg_flip_fit <span class="sc">%&gt;%</span></span>
 <span id="cb3-6"><a href=""></a>  <span class="fu">predict</span>(new_penguin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div><div class="column" style="width:50%;">
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
@@ -809,8 +936,21 @@ code.sourceCode {
 
 </div>
 </div>
-
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-16-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-16-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="using-the-model-to-make-predictions-2" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
 <p>What is <font color="green">the body mass of a penguin whose flipper length is 212mm</font>?</p>
@@ -881,6 +1021,25 @@ code.sourceCode {
 </ul>
 
 <img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-23-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="using-the-model-to-make-predictions-5" class="slide level2">
+<h2>Using the Model to Make Predictions</h2>
+<div class="fragment">
+<center>
+<p><font size="120pt"> Let’s try this!</font></p>
+</center>
+<ol type="1">
+<li class="fragment"><p>Write down two predictive questions associated with used car prices that could be answered with your model</p></li>
+<li class="fragment"><p>Can you differentiate versions of those questions that could be answered by <em>confidence</em> versus <em>prediction</em> intervals? What is the difference?</p></li>
+<li class="fragment"><p>Compute your model’s prediction for a particular value of the predictor you chose</p></li>
+<li class="fragment"><p>Similarly, compute the lower and upper bounds for bound confidence and prediction intervals for your chosen value</p></li>
+<li class="fragment"><p><strong>(Challenge)</strong> Can you plot the result?</p></li>
+<li class="fragment"><p>Interpret your model’s predictions</p>
+<ul>
+<li class="fragment">Clearly differentiate the model prediction, versus the bounds for the confidence interval, versus the bounds for the prediction interval</li>
+</ul></li>
+</ol>
+</div>
+</section>
 <section id="summary" class="slide level2">
 <h2>Summary</h2>
 <ul>

@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-26">
+  <meta name="dcterms.date" content="2024-08-27">
   <title>Simple Linear Regression: Construction, Assessment, and Interpretation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 26, 2024</p>
+  <p class="date">August 27, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -953,11 +953,19 @@ code.sourceCode {
 </section>
 <section id="using-the-model-to-make-predictions-2" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
+<div class="fragment">
 <p>What is <font color="green">the body mass of a penguin whose flipper length is 212mm</font>?</p>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:45%;">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>lin_reg_flip_fit <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href=""></a>  <span class="fu">predict</span>(new_penguin, <span class="at">type =</span> <span class="st">"pred_int"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-2"><a href=""></a>  <span class="fu">predict</span>(new_penguin, </span>
+<span id="cb4-3"><a href=""></a>          <span class="at">type =</span> <span class="st">"pred_int"</span>, </span>
+<span id="cb4-4"><a href=""></a>          <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div><div class="column" style="width:55%;">
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
@@ -978,15 +986,34 @@ code.sourceCode {
 
 </div>
 </div>
-
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-19-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-19-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="using-the-model-to-make-predictions-3" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
+<div class="fragment">
 <p>What is <font color="purple">the <em>average</em> body mass of <em>all</em> penguins whose flipper length is 212mm</font>?</p>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:45%;">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>lin_reg_flip_fit <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href=""></a>  <span class="fu">predict</span>(new_penguin, <span class="at">type =</span> <span class="st">"conf_int"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div><div class="column" style="width:55%;">
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
@@ -1007,8 +1034,21 @@ code.sourceCode {
 
 </div>
 </div>
-
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-22-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-22-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="using-the-model-to-make-predictions-4" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
 <p>What is <font color="green">the body mass of a penguin whose flipper length is 212mm</font>?</p>
@@ -1019,8 +1059,18 @@ code.sourceCode {
 <ul>
 <li class="fragment">Somewhere between 4699.4g and 4823.9g, with 95% confidence.</li>
 </ul>
-
-<img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-23-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<div class="fragment">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="9d_IntroSlides_files/figure-revealjs/unnamed-chunk-23-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="using-the-model-to-make-predictions-5" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
 <div class="fragment">

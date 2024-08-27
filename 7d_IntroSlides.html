@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-26">
+  <meta name="dcterms.date" content="2024-08-27">
   <title>{tidymodels} Overview</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 26, 2024</p>
+  <p class="date">August 27, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -589,15 +589,10 @@ code.sourceCode {
 <li class="fragment"><code>df.residual</code></li>
 <li class="fragment"><code>nobs</code></li>
 </ul>
-</div>
-</div>
-<div class="fragment">
-<center>
-<p><span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
-</center>
 <ol type="1">
-<li class="fragment">Use <code>glance()</code> to view global model assessment metrics for your model</li>
+<li class="fragment"><span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span> Use <code>glance()</code> to view global model assessment metrics for your model</li>
 </ol>
+</div>
 </div>
 </section>
 <section id="term-based-assessments" class="slide level2">
@@ -690,7 +685,9 @@ code.sourceCode {
 </div>
 <p>To add a new <code>.pred</code> column to the <code>new_data</code> data frame.</p>
 </div>
-<div class="fragment">
+</section>
+<section id="making-predictions-1" class="slide level2">
+<h2>Making Predictions</h2>
 <center>
 <p><span class="math inline">\(\bigstar\)</span> Let’s try this! <span class="math inline">\(\bigstar\)</span></p>
 </center>
@@ -707,23 +704,22 @@ code.sourceCode {
 <li class="fragment">Can you get interval bounds rather than predictions using <code>predict()</code>?</li>
 </ul></li>
 </ol>
-</div>
 </section>
 <section id="additional-tasks" class="slide level2">
 <h2>Additional Tasks</h2>
 <div class="fragment">
 <p>If you’ve successfully completed all of the tasks listed in this slide deck, try the following:</p>
 <ol type="1">
-<li class="fragment"><p>Plotting model predictions</p>
+<li class="fragment"><p>Plotting and interpreting model predictions</p>
 <ol type="i">
 <li class="fragment">A <em>scatterplot</em> of the original training data</li>
 <li class="fragment">A <em>lineplot</em> showing the model’s predictions</li>
-<li class="fragment">An interval band showing the confidence intervals for predictions (<em>hint</em>. use <code>geom_ribbon()</code>)</li>
-<li class="fragment">An interval band showng the prediction intervals for predictions</li>
+<li class="fragment">An interval band showing the <em>confidence intervals</em> for predictions (<em>hint</em>. use <code>geom_ribbon()</code>)</li>
+<li class="fragment">An interval band showng the <em>prediction intervals</em> for predictions</li>
 <li class="fragment">Meaningful plot labels</li>
 <li class="fragment">Interpret the resulting plot</li>
 </ol></li>
-<li class="fragment"><p>For the plot above, do you have a preference for the order in which you include the geometry layers?</p></li>
+<li class="fragment"><p>Do you have a preference for the order in which you include the geometry layers?</p></li>
 <li class="fragment"><p>Calculating and analysing <em>training residuals</em></p>
 <ol type="i">
 <li class="fragment">Can you add a column of predictions to your training data set?</li>

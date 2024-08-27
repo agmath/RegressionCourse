@@ -241,20 +241,11 @@ lin_reg_fit %>%
 + `df.residual`
 + `nobs`
 
+1. $\bigstar$ Let's try it! $\bigstar$ Use `glance()` to view global model assessment metrics for your model
+
 :::
 
 ::::
-
-. . .
-
-<center>
-
-$\bigstar$ Let's try it! $\bigstar$
-
-</center>
-
-1. Use `glance()` to view global model assessment metrics for your model
-
 
 ## Term-Based Assessments
 
@@ -322,7 +313,7 @@ lin_reg_fit %>%
 
 To add a new `.pred` column to the `new_data` data frame. 
 
-. . .
+## Making Predictions
 
 <center>
 
@@ -347,16 +338,16 @@ $\bigstar$ Let's try this! $\bigstar$
 
 If you've successfully completed all of the tasks listed in this slide deck, try the following:
 
-1. Plotting model predictions
+1. Plotting and interpreting model predictions
 
     i) A *scatterplot* of the original training data
     ii) A *lineplot* showing the model's predictions
-    iii) An interval band showing the confidence intervals for predictions (*hint*. use `geom_ribbon()`)
-    iv) An interval band showng the prediction intervals for predictions
+    iii) An interval band showing the *confidence intervals* for predictions (*hint*. use `geom_ribbon()`)
+    iv) An interval band showng the *prediction intervals* for predictions
     v) Meaningful plot labels
     vi) Interpret the resulting plot
     
-2. For the plot above, do you have a preference for the order in which you include the geometry layers?
+2. Do you have a preference for the order in which you include the geometry layers?
 
 3. Calculating and analysing *training residuals* 
 

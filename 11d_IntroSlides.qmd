@@ -244,7 +244,8 @@ The residual plots indicate some *badness*
 + Residuals don't seem to be random
 
   + Residuals show patterns with respect to some predictors and the response
-  + Variance of residuals is not constant
+
++ Variance of residuals is not constant
 
 
 ## The Highlights
@@ -414,7 +415,11 @@ We seem to have fixed the issue of non-constant variance with respect to model p
 
 ## Types of Residual Plot: Residuals versus Predictors
 
+. . . 
+
 **Purpose:** A plot exploring potential associations between residuals and our utilized predictors tells us whether associations between the predictor and response are non-linear.
+
+. . .
 
 **Why Care:** We can adjust how we utilize our predictors in-model to obtain better predictive performance and descriptive properties.
 

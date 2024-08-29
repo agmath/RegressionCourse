@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-13">
+  <meta name="dcterms.date" content="2024-08-29">
   <title>Inclusion and Interpretation of Catgorical Predictors in Linear Regression Models</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 13, 2024</p>
+  <p class="date">August 29, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -514,6 +514,18 @@ code.sourceCode {
 <li class="fragment"><p>Fitting a model with categorical and numerical variables</p></li>
 <li class="fragment"><p>Interpreting models with categorical predictors</p></li>
 </ul>
+</section>
+<section id="playing-along" class="slide level2">
+<h2>Playing Along</h2>
+<p>As always, you are encouraged to implement the ideas and techniques discussed here with your own data. You should…</p>
+<ol type="1">
+<li class="fragment">Open RStudio and ensure that you are working within your <code>MAT300</code> project space</li>
+<li class="fragment">Open the notebook which includes your models for used car prices</li>
+<li class="fragment">Run all of the code in that notebook</li>
+</ol>
+<div class="fragment">
+<p>You’ll add to that notebook here</p>
+</div>
 </section>
 <section id="analysis-of-variance" class="slide level2">
 <h2>ANalysis Of VAriance</h2>
@@ -772,6 +784,24 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <p>Does penguin body mass vary by species?</p>
 <p><span class="math display">\[\mathbb{E}\left[\text{body mass}\right] \approx 3703.95 - 18.45\cdot\left(\text{speciesChinstrap}\right) + 1298.23\cdot\left(\text{speciesGentoo}\right)\]</span></p>
 
+<!-- 
+
+## ANalysis Of VAriance as Linear Regression
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Identify a categorical predictor of price in your used cars data set
+2. Build a model using only that categorical predictor
+3. Determine the result of your ANOVA test
+4. Write down the estimated form of the model
+
+-->
 <img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-14-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="categorical-predictors-in-models" class="slide level2">
 <h2>Categorical Predictors in Models</h2>
@@ -1059,6 +1089,19 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <p><strong>Disadvantage:</strong> Requires more <span class="math inline">\(\beta\)</span>-coefficients (one less than the number of unique levels)</p>
 </div>
 </section>
+<section id="strategies-for-using-categorical-predictors" class="slide level2">
+<h2>Strategies for Using Categorical Predictors</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">Choose one categorical predictor of price for a used car in your dataset</li>
+<li class="fragment">How many levels of your categorical variable are there?</li>
+<li class="fragment">Is a scoring method meaningful for the levels of your variable? Why or why not?</li>
+<li class="fragment">What would a dummy-encoding of your categorical variable look like? How many indicator columns would be introduced?</li>
+</ol>
+</section>
 <section id="back-to-our-model-from-earlier" class="slide level2">
 <h2>Back to Our Model from Earlier</h2>
 <div class="cell">
@@ -1141,6 +1184,26 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <p>I then used our usual code to construct the <em>workflow</em> and <em>fit</em> the model to our training data.</p>
 </div>
 </section>
+<section id="including-categorical-predictors-with-tidymodels-1" class="slide level2">
+<h2>Including Categorical Predictors with <code>{tidymodels}</code></h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+</font>
+</center>
+<ol type="1">
+<li class="fragment"><p>Add a new section to your notebook on the use of categorical predictors in models</p></li>
+<li class="fragment"><p>Set up a linear regression model which uses your chosen categorical variable as the sole predictor of car price</p>
+<ul>
+<li class="fragment">Create a model <em>specification</em></li>
+<li class="fragment">Create a <em>recipe</em> and use the <code>step_dummy()</code> feature-engineering step in order to convert your categorical column into a collection of indicator columns</li>
+<li class="fragment">Package your <em>specification</em> and <em>recipe</em> together into a <em>workflow</em></li>
+<li class="fragment">Fit the <em>workflow</em> to the <em>training data</em></li>
+</ul></li>
+<li class="fragment"><p>Examine the <em>global</em> and <em>term-based</em> model metrics</p></li>
+<li class="fragment"><p>Write down the equation of the model</p></li>
+<li class="fragment"><p>Determine the resulting model for several of the levels of your categorical variable</p></li>
+</ol>
+</section>
 <section id="something-more-interesting" class="slide level2">
 <h2>Something More Interesting</h2>
 <p>Let’s build a model that better corresponds to the plot we began this discussion with…</p>
@@ -1180,6 +1243,17 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <span id="cb6-2"><a href=""></a>  <span class="fu">fit</span>(penguins_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
+</section>
+<section id="models-with-numerical-and-categorical-predictors" class="slide level2">
+<h2>Models with Numerical and Categorical Predictors</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">Create an instance of a modeling <em>workflow</em> which uses at least one numerical predictor and at least one categorical predictor</li>
+<li class="fragment">Fit your workflow to your training data</li>
+</ol>
 </section>
 <section id="assessing-our-new-model" class="slide level2">
 <h2>Assessing Our New Model</h2>
@@ -1440,6 +1514,18 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 </div>
 </div>
 </section>
+<section id="assessing-and-comparing-models" class="slide level2">
+<h2>Assessing and Comparing Models</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">Obtain and interpret your <em>global</em> and <em>term-based</em> model metrics</li>
+<li class="fragment">Compare your model’s training metrics to those of your previous models</li>
+<li class="fragment">Obtain performance metrics for this new model using the <em>test</em> data. How does this model perform on unknown test observations compared to your previous models?</li>
+</ol>
+</section>
 <section id="visualizing-model-coefficients" class="slide level2">
 <h2>Visualizing Model Coefficients</h2>
 <div class="cell">
@@ -1506,6 +1592,17 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 </div>
 </div>
 </section>
+<section id="visualizing-coefficients" class="slide level2">
+<h2>Visualizing Coefficients</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">Try to construct a plot which allows you to visualize your model coefficients and their plausible ranges.</li>
+<li class="fragment">What does the plot tell you about each model term?</li>
+</ol>
+</section>
 <section id="interpreting-this-model" class="slide level2">
 <h2>Interpreting this Model</h2>
 <div class="cell">
@@ -1566,6 +1663,17 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 </ul></li>
 </ul>
 </section>
+<section id="interpreting-the-model" class="slide level2">
+<h2>Interpreting the Model</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">If you haven’t done so already, write down your estimated model form.</li>
+<li class="fragment">Interpret the <em>intercept</em> (if appropriate) and the estimated effect of each <em>predictor</em> on the response.</li>
+</ol>
+</section>
 <section id="making-predictions-with-this-model" class="slide level2">
 <h2>Making Predictions with this Model</h2>
 <div class="cell">
@@ -1623,6 +1731,21 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 </blockquote>
 </div>
 </section>
+<section id="making-and-visualizing-model-predictions" class="slide level2">
+<h2>Making and Visualizing Model Predictions</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment"><p>Create a <em>counterfactual</em> set of new observations using <code>crossing()</code></p></li>
+<li class="fragment"><p>Use your model to make predictions for those new observations</p>
+<ul>
+<li class="fragment">Include <em>confidence intervals</em> and <em>prediction intervals</em> as well</li>
+</ul></li>
+<li class="fragment"><p>Create a graphical representation of your model’s predictions, including confidence- and prediction-bands</p></li>
+</ol>
+</section>
 <section id="additional-feature-engineering-steps-for-categorical-predictors" class="slide level2">
 <h2>Additional Feature-Engineering Steps for Categorical Predictors</h2>
 <ul>
@@ -1631,15 +1754,32 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 <li class="fragment">If we expect to have levels which are infrequently observed, we can group those levels together into an “<code>other</code>” level with <code>step_other()</code></li>
 </ul>
 </section>
-<section id="lets-do-this" class="slide level2">
-<h2>Let’s Do This!</h2>
-<ol type="1">
-<li class="fragment"><p>Fit a model to predict penguin body mass using species, bill length, bill depth, flipper length, and year to predict penguin body mass</p></li>
-<li class="fragment"><p>Conduct global and term-based model assessments</p></li>
-<li class="fragment"><p>Compute the <span class="math inline">\(R^2\)</span> and RMSE values on the test data for both this new model and our models from earlier in this slide deck. What model has the best performance on the unseen test data?</p></li>
-<li class="fragment"><p>Once you’ve identified that best model, provide an interpretation of the model coefficients</p></li>
-<li class="fragment"><p>Now go back and do all of these, but use year as a categorical predictor rather than a numeric one.</p></li>
-</ol>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li class="fragment"><p>We can include categorical predictors in a model to differentiate predictions across the levels of that variable</p></li>
+<li class="fragment"><p>Including categorical predictors in a model requires the use of an encoding scheme in order to convert levels to numerical values</p>
+<ul>
+<li class="fragment"><p><em>Scoring</em> assigns a distinct number to each category</p>
+<ul>
+<li class="fragment">Implement it by adding <code>step_ordinalscore()</code> as a feature engineering step in a <em>recipe</em></li>
+</ul></li>
+<li class="fragment"><p><em>Dummy encodings</em> replace a categorical predictor with a collection of binary (0/1) variables indicating the levels of the categorical predictor</p>
+<ul>
+<li class="fragment">We can use the dummy variable technique by adding <code>step_dummy()</code> as a feature engineering step in a <em>recipe</em></li>
+</ul></li>
+<li class="fragment"><p>In the case of rare levels, we may want to also include <code>step_other()</code>, <code>step_unknown()</code>, or <code>step_novel()</code> as recipe steps as well</p></li>
+</ul></li>
+<li class="fragment"><p>A linear regression model including a single categorical variable as the sole predictor is equivalent to ANOVA</p></li>
+<li class="fragment"><p>For a linear regression model with at least one numerical predictor, the result of the inclusion of a categorical variable in the model is a shift in <em>intercept</em> (a vertical shift) for each of the levels of the categorical predictor</p></li>
+</ul>
+</section>
+<section id="next-time" class="slide level2">
+<h2>Next Time…</h2>
+<center>
+<p><font size="120pt"><br> Model-Building, Assessment, and Interpretation Workshop</font></p><font size="120pt">
+<br> </font>
+</center>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 

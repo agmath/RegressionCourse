@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-15">
+  <meta name="dcterms.date" content="2024-08-29">
   <title>Higher-Order Terms: Curvi-Linear Regression</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 15, 2024</p>
+  <p class="date">August 29, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -425,7 +425,7 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>boston <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(</span>
+<div class="sourceCode cell-code" id="cb1" data-code-line-numbers="|1-3|5-6|"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>boston <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(</span>
 <span id="cb1-2"><a href=""></a>  <span class="st">"https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv"</span></span>
 <span id="cb1-3"><a href=""></a>  )</span>
 <span id="cb1-4"><a href=""></a></span>
@@ -561,7 +561,7 @@ code.sourceCode {
 <section id="motivation-median-home-values" class="slide level2">
 <h2>Motivation: Median Home Values</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>boston_train <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb2" data-code-line-numbers="|1|1-2|3-7|4|3-7|8-10|11-12|"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>boston_train <span class="sc">%&gt;%</span></span>
 <span id="cb2-2"><a href=""></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
 <span id="cb2-3"><a href=""></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">x =</span> medv,</span>
 <span id="cb2-4"><a href=""></a>                     <span class="at">y =</span> ..density..),</span>
@@ -602,6 +602,33 @@ code.sourceCode {
 <h2>Motivation</h2>
 
 <img data-src="13d_IntroSlides_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
+<section id="highlights" class="slide level2">
+<h2>Highlights</h2>
+<ul>
+<li class="fragment">Examples of higher-order terms in models</li>
+<li class="fragment">What the inclusion of higher-order terms assumes about the relationship between the response and the corresponding predictor(s)</li>
+<li class="fragment">Main effects terms versus mixed effects terms</li>
+<li class="fragment">How to include polynomial terms in a <em>recipe</em> with <code>step_poly()</code></li>
+<li class="fragment">Term-based assessments of models with polynomial terms</li>
+<li class="fragment">Interpreting models that include polynomial terms</li>
+</ul>
+</section>
+<section id="playing-along" class="slide level2">
+<h2>Playing Along</h2>
+<div class="fragment">
+<p>You know by now that following along and writing/executing code during our in-class discussions is valuable.</p>
+</div>
+<div class="fragment">
+<p>For this notebook, either…</p>
+<ul>
+<li class="fragment">follow along with the Boston Housing data as we go (start a new notebook)</li>
+<li class="fragment">continue adding on to the notebook containing your models for used car prices</li>
+</ul>
+</div>
+<div class="fragment">
+<p>The choice is yours</p>
+</div>
+</section>
 <section id="curvi-linear-regression" class="slide level2">
 <h2>Curvi-Linear Regression</h2>
 <div class="fragment">
@@ -656,6 +683,22 @@ code.sourceCode {
 <span id="cb3-9"><a href=""></a>  <span class="fu">add_model</span>(mlr_me_spec) <span class="sc">%&gt;%</span></span>
 <span id="cb3-10"><a href=""></a>  <span class="fu">add_recipe</span>(mlr_me_rec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div>
+</section>
+<section id="curvi-linear-regression-4" class="slide level2">
+<h2>Curvi-Linear Regression</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<div class="fragment">
+<p>If you’re playing along with the used cars data…</p>
+<ol type="1">
+<li class="fragment">choose at least one of the available numeric predictors to include in polynomial terms</li>
+<li class="fragment">create an instance of a linear regression model <em>specification</em></li>
+<li class="fragment">create a <em>recipe</em> and append <code>step_poly()</code> to it in order to create the higher-order terms</li>
+<li class="fragment">package your model <em>specification</em> and <em>recipe</em> together into a <em>workflow</em></li>
+</ol>
 </div>
 </section>
 <section id="fit-and-assess-model" class="slide level2">
@@ -927,6 +970,21 @@ code.sourceCode {
 </ul>
 </div>
 </section>
+<section id="fitting-assessing-and-updating-the-model" class="slide level2">
+<h2>Fitting, Assessing, and Updating the Model (🔁)</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<div class="fragment">
+<p>Again, if you are playing along with your used cars data…</p>
+<ol type="1">
+<li class="fragment">fit your model <em>workflow</em> to your training data</li>
+<li class="fragment">conduct both <em>global</em> and <em>term-based</em> model assessments</li>
+<li class="fragment">reduce, refit, and reassess your model as needed</li>
+</ol>
+</div>
+</section>
 <section id="visualizing-model-predictions-training-data" class="slide level2">
 <h2>Visualizing Model Predictions [Training Data]</h2>
 <div class="cell">
@@ -998,6 +1056,20 @@ code.sourceCode {
 <li class="fragment">One surface for when the neighborhood is on the Charles River, and another for neighborhoods off of it</li>
 <li class="fragment">The cross-sections for each surface at different <code>age</code> thresholds are <em>parallel</em></li>
 </ul>
+</div>
+</section>
+<section id="visualizing-model-predictions" class="slide level2">
+<h2>Visualizing Model Predictions</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<div class="fragment">
+<p>For those still following along with the used cars data…</p>
+<ol type="1">
+<li class="fragment">plot your model’s fitted values along with the observed selling prices for your training data</li>
+<li class="fragment">plot of your model’s predictions in relation to a predictor that has a higher-order term in your model – vary the values of the other significant predictors across different thresholds to visualize their effect, as in the previous slide</li>
+</ol>
 </div>
 </section>
 <section id="interpreting-the-model" class="slide level2">
@@ -1149,6 +1221,19 @@ code.sourceCode {
 <p>Two class meetings from now, we’ll see how we can use the <code>{marginaleffects}</code> package to make our interpretations easier, especially for those of you without a calculus background.</p>
 </div>
 </section>
+<section id="interpreting-your-model" class="slide level2">
+<h2>Interpreting your Model</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<div class="fragment">
+<p>If you have a model that predicts prices of used cars…</p>
+<ol type="1">
+<li class="fragment">provide interpretations of the intercept (if relevant) and the association between each surviving predictor and the response</li>
+</ol>
+</div>
+</section>
 <section id="summary" class="slide level2">
 <h2>Summary</h2>
 <ul>
@@ -1165,6 +1250,12 @@ code.sourceCode {
 <li class="fragment">If a model <span class="math inline">\(\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x + \beta_2 x^2 + \cdots\)</span> includes a second degree term for the predictor <span class="math inline">\(x\)</span> and <span class="math inline">\(x\)</span> is not included in any model terms other than those shown, the effect of a unit increase in <span class="math inline">\(x\)</span> on the response <span class="math inline">\(y\)</span> is an increase of about <span class="math inline">\(\beta_1 + 2\beta_2 x\)</span></li>
 </ul></li>
 </ul>
+</section>
+<section id="next-time" class="slide level2">
+<h2>Next Time…</h2>
+<center>
+<font size="120pt"><br> Interaction Terms in Models (Mixed Effects) </font>
+</center>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 

@@ -54,6 +54,7 @@ This Boston housing dataset is quite famous (and problematic), and includes feat
 ```{r}
 #| echo: true
 #| eval: false
+#| code-line-numbers: "|1-3|5-6|"
 
 boston <- read_csv(
   "https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv"
@@ -78,6 +79,7 @@ boston %>%
 ```{r}
 #| echo: true
 #| eval: false
+#| code-line-numbers: "|1|1-2|3-7|4|3-7|8-10|11-12|"
 
 boston_train %>%
   ggplot() + 
@@ -195,6 +197,32 @@ ggplot() +
        y = "Median Values (000s)")
 ```
 
+## Highlights
+
++ Examples of higher-order terms in models
++ What the inclusion of higher-order terms assumes about the relationship between the response and the corresponding predictor(s)
++ Main effects terms versus mixed effects terms
++ How to include polynomial terms in a *recipe* with `step_poly()`
++ Term-based assessments of models with polynomial terms
++ Interpreting models that include polynomial terms
+
+## Playing Along
+
+. . . 
+
+You know by now that following along and writing/executing code during our in-class discussions is valuable.
+
+. . . 
+
+For this notebook, either...
+
++ follow along with the Boston Housing data as we go (start a new notebook)
++ continue adding on to the notebook containing your models for used car prices
+
+. . . 
+
+The choice is yours
+
 ## Curvi-Linear Regression
 
 . . .
@@ -261,6 +289,25 @@ mlr_me_wf <- workflow() %>%
   add_model(mlr_me_spec) %>%
   add_recipe(mlr_me_rec)
 ```
+
+## Curvi-Linear Regression
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+. . . 
+
+If you're playing along with the used cars data... 
+
+1. choose at least one of the available numeric predictors to include in polynomial terms
+2. create an instance of a linear regression model *specification*
+3. create a *recipe* and append `step_poly()` to it in order to create the higher-order terms
+4. package your model *specification* and *recipe* together into a *workflow*
 
 ## Fit and Assess Model
 
@@ -409,6 +456,24 @@ For example, if a term for `age` $\cdot$ `lstat` $^2$ is included in a model, th
 + `age` $\cdot$ `lstat`
 + `lstat` $^2$
 
+## Fitting, Assessing, and Updating the Model (🔁)
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+. . . 
+
+Again, if you are playing along with your used cars data...
+
+1. fit your model *workflow* to your training data
+2. conduct both *global* and *term-based* model assessments
+3. reduce, refit, and reassess your model as needed
+
 ## Visualizing Model Predictions [Training Data]
 
 ```{r}
@@ -514,6 +579,23 @@ mlr_me_fit %>%
 + The model consists of curved surfaces
 + One surface for when the neighborhood is on the Charles River, and another for neighborhoods off of it
 + The cross-sections for each surface at different `age` thresholds are *parallel*
+
+## Visualizing Model Predictions
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+. . .
+
+For those still following along with the used cars data...
+
+1. plot your model's fitted values along with the observed selling prices for your training data
+2. plot of your model's predictions in relation to a predictor that has a higher-order term in your model -- vary the values of the other significant predictors across different thresholds to visualize their effect, as in the previous slide
 
 ## Interpreting the Model
 
@@ -653,6 +735,22 @@ Taking the partial derivative is how you examine the effect of a change in any n
 
 Two class meetings from now, we'll see how we can use the `{marginaleffects}` package to make our interpretations easier, especially for those of you without a calculus background.
 
+## Interpreting your Model
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+. . . 
+
+If you have a model that predicts prices of used cars...
+
+1. provide interpretations of the intercept (if relevant) and the association between each surviving predictor and the response
+
 ## Summary
 
 + We can use *higher order* terms to model associations that are more complex than "straight line"
@@ -666,3 +764,11 @@ Two class meetings from now, we'll see how we can use the `{marginaleffects}` pa
 + To interpret models with higher-order terms, we'll need a bit of calculus (or help from a package like `{marginaleffects}`)
 
   + If a model $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x + \beta_2 x^2 + \cdots$ includes a second degree term for the predictor $x$ and $x$ is not included in any model terms other than those shown, the effect of a unit increase in $x$ on the response $y$ is an increase of about $\beta_1 + 2\beta_2 x$
+  
+## Next Time...
+
+<center>
+<font size="120pt"><br/>
+Interaction Terms in Models (Mixed Effects)
+</font>
+</center>

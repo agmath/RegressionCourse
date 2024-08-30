@@ -893,6 +893,7 @@ $\bigstar$ Let's try it! $\bigstar$
 ```{r}
 #| echo: true
 #| eval: true
+#| code-line-numbers: "|1-4|6-7|8-15|16-19|6-19|"
 
 new_data <- crossing(
   bill_length_mm = seq(32.1, 59.6, length.out = 250),
@@ -921,6 +922,7 @@ new_data <- lr_sbl_fit %>%
 #| echo: true
 #| eval: false
 #| fig-align: center
+#| code-line-numbers: "|1|2-4|5-7|8-10|11-13|2-13|14-17|18|19|"
 
 ggplot() + 
   geom_ribbon(data = new_data, 

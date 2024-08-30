@@ -685,7 +685,7 @@ We needed additional $\beta$-coefficients to accommodate our slope adjustments
 
 . . .
 
-**General Model:**
+**Overarching Model:**
 
 \begin{align}\mathbb{E}\left[\text{body mass}\right] = -2797.76 ~+~ &34.28\cdot\left(\text{flipper length}\right) - 129.71\cdot\left(\text{speciesChinstrap}\right) +\\ &- 4216.63\cdot\left(\text{speciesGentoo}\right) +\\
 &- 0.37\cdot\left(\text{flipper length}\right)\left(\text{speciesChinstrap}\right) +\\ 
@@ -705,7 +705,7 @@ We needed additional $\beta$-coefficients to accommodate our slope adjustments
 
 ## Interpreting this Interaction Model
 
-**General Model:**
+**Overarching Model:**
 
 \begin{align}\mathbb{E}\left[\text{body mass}\right] = -2797.76 ~+~ &34.28\cdot\left(\text{flipper length}\right) - 129.71\cdot\left(\text{speciesChinstrap}\right) +\\ &- 4216.63\cdot\left(\text{speciesGentoo}\right) +\\
 &- 0.37\cdot\left(\text{flipper length}\right)\left(\text{speciesChinstrap}\right) +\\ 
@@ -729,7 +729,7 @@ Note that this is not significantly different than the expected change for Adeli
 
 ## Interpreting this Interaction Model
 
-**General Model:**
+**Overarching Model:**
 
 \begin{align}\mathbb{E}\left[\text{body mass}\right] = -2797.76 ~+~ &34.28\cdot\left(\text{flipper length}\right) - 129.71\cdot\left(\text{speciesChinstrap}\right) +\\ &- 4216.63\cdot\left(\text{speciesGentoo}\right) +\\
 &- 0.37\cdot\left(\text{flipper length}\right)\left(\text{speciesChinstrap}\right) +\\ 

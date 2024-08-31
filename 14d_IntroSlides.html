@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-29">
+  <meta name="dcterms.date" content="2024-08-31">
   <title>Higher-Order Terms: Interactions in Regression</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 29, 2024</p>
+  <p class="date">August 31, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -456,7 +456,7 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <blockquote>
-<p>What if the effect of a change in one predictor on the response depends on the value of another predictor, as you saw with flipper length, species, and body mass on the previous slide?</p>
+<p>What if the effect of a change in one predictor on the response depends on the value of another predictor, as we came to suspect with flipper length, species, and body mass on the previous slide?</p>
 </blockquote>
 </div>
 <div class="fragment">
@@ -468,9 +468,9 @@ code.sourceCode {
 <div class="fragment">
 <p>There are three main types of <em>two-way interactions</em></p>
 <ul>
-<li class="fragment">An interaction between two categorical variables</li>
-<li class="fragment">An interaction between a categorical variable and a numerical variable</li>
-<li class="fragment">An interaction between two numerical variables</li>
+<li class="fragment"><strong>Categorical-Categorical:</strong> An interaction between two categorical variables</li>
+<li class="fragment"><strong>Categorical-Numerical:</strong> An interaction between a categorical variable and a numerical variable</li>
+<li class="fragment"><strong>Numerical-Numerical:</strong> An interaction between two numerical variables</li>
 </ul>
 </div>
 <div class="fragment">
@@ -488,6 +488,16 @@ code.sourceCode {
 <div class="fragment">
 <p>If a higher order term (ie. an interaction) is deemed significant, then all of its component lower order terms must be kept in the model, regardless of statistical significance</p>
 </div>
+</section>
+<section id="playing-along" class="slide level2">
+<h2>Playing Along</h2>
+<p>Hopefully, you’ve become accustomed to playing along with the used cars data set (or another data set you find more interesting) during our discussions. I encourage you to continue doing this.</p>
+<ol type="1">
+<li class="fragment">Open RStudio and verify that you are working within your <code>MAT300</code> project</li>
+<li class="fragment">Open the notebook you’ve been building onto since we began with our first discussion on <em>simple linear regression</em></li>
+<li class="fragment">Run all of the code in the notebook</li>
+<li class="fragment">Add a section on <em>models with interaction terms</em></li>
+</ol>
 </section>
 <section id="reminder-models-with-categorical-predictors" class="slide level2">
 <h2>Reminder: Models with Categorical Predictors</h2>
@@ -658,6 +668,19 @@ code.sourceCode {
 </div>
 </div>
 </section>
+<section id="building-a-model-with-interactions-1" class="slide level2">
+<h2>Building a Model with Interactions</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">Choose two categorical variables and one numerical variable to use in predicting the price of a car</li>
+<li class="fragment">Build the corresponding model <em>specification</em> and <em>recipe</em> which will accommodate an interaction between the two categorical predictors</li>
+<li class="fragment">Package your <em>specification</em> and <em>recipe</em> together into a <em>workflow</em></li>
+<li class="fragment"><em>Fit</em> your <em>workflow</em> to your training data</li>
+</ol>
+</section>
 <section id="the-estimated-model" class="slide level2">
 <h2>The Estimated Model</h2>
 <div class="fragment">
@@ -780,6 +803,17 @@ code.sourceCode {
 </div>
 </div>
 </section>
+<section id="the-estimated-model-1" class="slide level2">
+<h2>The Estimated Model</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">Obtain your estimated model and write it down</li>
+<li class="fragment">Try to plot your model if you would like</li>
+</ol>
+</section>
 <section id="additional-flexibility-with-interactions" class="slide level2">
 <h2>Additional Flexibility with Interactions</h2>
 <div class="fragment">
@@ -813,6 +847,17 @@ code.sourceCode {
 </div>
 </div>
 </div>
+</section>
+<section id="additional-flexibility-with-interactions-2" class="slide level2">
+<h2>Additional Flexibility with Interactions</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">Whether you plotted your model predictions or not, how many parallel lines does your interaction model consist of?</li>
+<li class="fragment">How many additional <span class="math inline">\(\beta\)</span>-coefficients were estimated for your interaction model, compared to the number of <span class="math inline">\(\beta\)</span>-coefficients that would have been estimated for a model with the same predictors but no interaction?</li>
+</ol>
 </section>
 <section id="mini-summary-interactions-between-categorical-variables" class="slide level2">
 <h2>Mini-Summary: Interactions Between Categorical Variables</h2>
@@ -869,7 +914,20 @@ code.sourceCode {
 </div>
 </div>
 </section>
-<section id="the-estimated-model-1" class="slide level2">
+<section id="building-the-model-1" class="slide level2">
+<h2>Building the Model</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">Drop one of your categorical predictors from your earlier model (if you’d like), and consider a model with just one numerical and one categorical predictor</li>
+<li class="fragment">Create a model <em>specification</em> and <em>recipe</em> that will accommodate an interaction between your numerical and categorical predictor (only one of them, even if your model has multiple…just to keep things relatively “simple”)</li>
+<li class="fragment">Package your <em>specification</em> and <em>recipe</em> together into a <em>workflow</em></li>
+<li class="fragment">Fit your <em>workflow</em> to your training data</li>
+</ol>
+</section>
+<section id="the-estimated-model-2" class="slide level2">
 <h2>The Estimated Model</h2>
 <div class="cell">
 <div class="cell-output-display">
@@ -957,7 +1015,19 @@ code.sourceCode {
 </div>
 </div>
 </section>
-<section id="additional-flexibility-with-interactions-2" class="slide level2">
+<section id="the-estimated-model-3" class="slide level2">
+<h2>The Estimated Model</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">As with the model you built previously, extract the estimated model from the fitted object</li>
+<li class="fragment">Write down the estimated model</li>
+<li class="fragment">If you would like, try to plot the model</li>
+</ol>
+</section>
+<section id="additional-flexibility-with-interactions-3" class="slide level2">
 <h2>Additional Flexibility with Interactions</h2>
 <div class="fragment">
 <p>Note that our new model, including an interaction between <code>species</code> and flipper length still includes only three lines</p>
@@ -978,6 +1048,9 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <p>We needed additional <span class="math inline">\(\beta\)</span>-coefficients to accommodate our slope adjustments</p>
+</div>
+<div class="fragment">
+<p><span class="math inline">\(\bigstar\)</span> How many additional <span class="math inline">\(\beta\)</span>-coefficients did your most recent interaction model require?</p>
 </div>
 </section>
 <section id="interpreting-this-interaction-model" class="slide level2">
@@ -1039,11 +1112,21 @@ code.sourceCode {
 </blockquote>
 </div>
 </section>
+<section id="interpreting-models-with-categorical-numerical-interactions" class="slide level2">
+<h2>Interpreting Models with Categorical-Numerical Interactions</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">Provide interpretations for your interaction model with respect to at least two of the levels of the categorical variable involved in your interaction</li>
+</ol>
+</section>
 <section id="mini-summary-interactions-between-a-categorical-and-a-numerical-variable" class="slide level2">
 <h2>Mini-Summary: Interactions Between a Categorical and a Numerical Variable</h2>
 <ul>
 <li class="fragment">Interactions between a categorical variable and a numerical variable can be used to investigate whether the effect of a unit increase in the numerical variable differs across the levels of the categorical variable</li>
-<li class="fragment">The result of including such an interaction is <strong>a unique model slope for each level of the categorical variable</strong></li>
+<li class="fragment">The result of including such an interaction is <strong>a unique model slope(<span class="math inline">\(^*\)</span>) for each level of the categorical variable</strong></li>
 </ul>
 </section>
 <section id="interactions-between-numerical-variables" class="slide level2">
@@ -1074,7 +1157,7 @@ code.sourceCode {
 \end{align}\]</span></p>
 </div>
 </section>
-<section id="building-the-model-1" class="slide level2">
+<section id="building-the-model-2" class="slide level2">
 <h2>Building the Model</h2>
 <div class="fragment">
 <p>No real changes here – we’ll use <code>step_interact()</code> again</p>
@@ -1097,7 +1180,18 @@ code.sourceCode {
 </div>
 </div>
 </section>
-<section id="the-estimated-model-2" class="slide level2">
+<section id="building-the-model-3" class="slide level2">
+<h2>Building the Model</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">Choose two numerical predictors of price which might have an interaction effect in determining price of the used cars in your data set</li>
+<li class="fragment">As with the previous models, define the model <em>specification</em> and <em>recipe</em>, then build and <em>fit</em> the <em>workflow</em> to your training data</li>
+</ol>
+</section>
+<section id="the-estimated-model-4" class="slide level2">
 <h2>The Estimated Model</h2>
 <div class="cell">
 <div class="cell-output-display">
@@ -1152,7 +1246,19 @@ code.sourceCode {
 <h2>The Estimated Model (Cont’d.)</h2>
 
 <img data-src="14d_IntroSlides_files/figure-revealjs/unnamed-chunk-20-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
-<section id="additional-flexibility-with-interactions-3" class="slide level2">
+<section id="the-estimated-model-5" class="slide level2">
+<h2>The Estimated Model</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">Extract the estimated model from the fitted object</li>
+<li class="fragment">Write down the equation for your estimated model</li>
+<li class="fragment">Construct a plot, if you would like to do so</li>
+</ol>
+</section>
+<section id="additional-flexibility-with-interactions-4" class="slide level2">
 <h2>Additional Flexibility with Interactions</h2>
 <div class="fragment">
 <p>This model consists of a warped surface.</p>
@@ -1168,6 +1274,9 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <p>We needed one additional <span class="math inline">\(\beta\)</span>-coefficient to accommodate the interaction</p>
+</div>
+<div class="fragment">
+<p><span class="math inline">\(\bigstar\)</span> How many additional <span class="math inline">\(\beta\)</span>-coefficients were required for your newest interaction model?</p>
 </div>
 </section>
 <section id="interpreting-this-interaction-model-3" class="slide level2">
@@ -1239,6 +1348,16 @@ code.sourceCode {
 \end{align}\]</span></p>
 </div>
 </section>
+<section id="interpreting-models-with-numerical-numerical-interactions" class="slide level2">
+<h2>Interpreting Models with Numerical-Numerical Interactions</h2>
+<center>
+<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
+<br> </font>
+</center>
+<ol type="1">
+<li class="fragment">Provide interpretations of the association between each of your numerical predictors and the response under this newest interaction model</li>
+</ol>
+</section>
 <section id="mini-summary-interactions-between-two-numerical-variables" class="slide level2">
 <h2>Mini-Summary: Interactions Between Two Numerical Variables</h2>
 <ul>
@@ -1273,10 +1392,18 @@ Sup. It's a dirty job, but someone's gotta provide plausible and defensible rati
 </blockquote>
 <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </center>
+</div>
+</section>
+<section id="next-time" class="slide level2">
+<h2>Next Time…</h2>
+<center>
+<p><font size="120pt"><br></font></p><font size="120pt">
+<p>Model Inference and Interpreation with the <code>{marginaleffects}</code> Package</p>
+</font>
+</center>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
-</div>
 </div>
 </div>
 </section>

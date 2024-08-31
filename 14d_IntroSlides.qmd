@@ -131,7 +131,7 @@ There is another way for an association between predictor and response to be non
 
 . . . 
 
-> What if the effect of a change in one predictor on the response depends on the value of another predictor, as you saw with flipper length, species, and body mass on the previous slide?
+> What if the effect of a change in one predictor on the response depends on the value of another predictor, as we came to suspect with flipper length, species, and body mass on the previous slide?
 
 . . .
 
@@ -143,9 +143,9 @@ We can handle this scenario using *interactions*
 
 There are three main types of *two-way interactions*
 
-+ An interaction between two categorical variables
-+ An interaction between a categorical variable and a numerical variable
-+ An interaction between two numerical variables
++ **Categorical-Categorical:** An interaction between two categorical variables
++ **Categorical-Numerical:** An interaction between a categorical variable and a numerical variable
++ **Numerical-Numerical:** An interaction between two numerical variables
 
 . . . 
 
@@ -164,6 +164,15 @@ As with all previously discussed topics, we conduct term-based assessments and r
 . . .
 
 If a higher order term (ie. an interaction) is deemed significant, then all of its component lower order terms must be kept in the model, regardless of statistical significance
+
+## Playing Along
+
+Hopefully, you've become accustomed to playing along with the used cars data set (or another data set you find more interesting) during our discussions. I encourage you to continue doing this.
+
+1. Open RStudio and verify that you are working within your `MAT300` project
+2. Open the notebook you've been building onto since we began with our first discussion on *simple linear regression*
+3. Run all of the code in the notebook
+4. Add a section on *models with interaction terms*
 
 ## Reminder: Models with Categorical Predictors
 
@@ -383,6 +392,21 @@ mlr_flsy_isy_fit <- mlr_flsy_isy_wf %>%
   fit(penguins_train)
 ```
 
+## Building a Model with Interactions
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Choose two categorical variables and one numerical variable to use in predicting the price of a car
+2. Build the corresponding model *specification* and *recipe* which will accommodate an interaction between the two categorical predictors
+3. Package your *specification* and *recipe* together into a *workflow*
+4. *Fit* your *workflow* to your training data
+
 ## The Estimated Model
 
 . . .
@@ -456,6 +480,19 @@ ggplot() +
   facet_grid(year ~ species)
 ```
 
+## The Estimated Model
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Obtain your estimated model and write it down
+2. Try to plot your model if you would like
+
 ## Additional Flexibility with Interactions
 
 . . .
@@ -518,6 +555,19 @@ ggplot() +
        linetype = "Year",
        shape = "Year")
 ```
+
+## Additional Flexibility with Interactions
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Whether you plotted your model predictions or not, how many parallel lines does your interaction model consist of?
+2. How many additional $\beta$-coefficients were estimated for your interaction model, compared to the number of $\beta$-coefficients that would have been estimated for a model with the same predictors but no interaction?
 
 ## Mini-Summary: Interactions Between Categorical Variables
 
@@ -584,6 +634,21 @@ mlr_fls_isfl_fit <- mlr_fls_isfl_wf %>%
   fit(penguins_train)
 ```
 
+## Building the Model
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Drop one of your categorical predictors from your earlier model (if you'd like), and consider a model with just one numerical and one categorical predictor
+2. Create a model *specification* and *recipe* that will accommodate an interaction between your numerical and categorical predictor (only one of them, even if your model has multiple...just to keep things relatively "simple")
+3. Package your *specification* and *recipe* together into a *workflow*
+4. Fit your *workflow* to your training data
+
 ## The Estimated Model
 
 ```{r}
@@ -645,6 +710,20 @@ ggplot() +
   facet_wrap(~species)
 ```
 
+## The Estimated Model
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. As with the model you built previously, extract the estimated model from the fitted object
+2. Write down the estimated model
+3. If you would like, try to plot the model
+
 ## Additional Flexibility with Interactions
 
 . . .
@@ -680,6 +759,10 @@ Those lines are no longer parallel, though
 . . . 
 
 We needed additional $\beta$-coefficients to accommodate our slope adjustments
+
+. . .
+
+$\bigstar$ How many additional $\beta$-coefficients did your most recent interaction model require?
 
 ## Interpreting this Interaction Model
 
@@ -747,10 +830,22 @@ Note that this is not significantly different than the expected change for Adeli
 
 > Given a Gentoo penguin, an increase of 1mm in flipper length is associated with an increase in expected body mass by about 55.67g
 
+## Interpreting Models with Categorical-Numerical Interactions
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Provide interpretations for your interaction model with respect to at least two of the levels of the categorical variable involved in your interaction
+
 ## Mini-Summary: Interactions Between a Categorical and a Numerical Variable
 
 + Interactions between a categorical variable and a numerical variable can be used to investigate whether the effect of a unit increase in the numerical variable differs across the levels of the categorical variable
-+ The result of including such an interaction is **a unique model slope for each level of the categorical variable**
++ The result of including such an interaction is **a unique model slope($^*$) for each level of the categorical variable**
 
 ## Interactions Between Numerical Variables
 
@@ -812,6 +907,18 @@ mlr_blbd_i_fit <- mlr_blbd_i_wf %>%
   fit(penguins_train)
 ```
 
+## Building the Model
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Choose two numerical predictors of price which might have an interaction effect in determining price of the used cars in your data set
+2. As with the previous models, define the model *specification* and *recipe*, then build and *fit* the *workflow* to your training data
 
 ## The Estimated Model
 
@@ -885,6 +992,20 @@ p2 <- ggplot() +
 (p1 / p2)
 ```
 
+## The Estimated Model
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Extract the estimated model from the fitted object
+2. Write down the equation for your estimated model
+3. Construct a plot, if you would like to do so
+
 ## Additional Flexibility with Interactions
 
 . . . 
@@ -906,6 +1027,10 @@ The effect of a unit increase in either bill length or depth, however, depends o
 . . .
 
 We needed one additional $\beta$-coefficient to accommodate the interaction
+
+. . . 
+
+$\bigstar$ How many additional $\beta$-coefficients were required for your newest interaction model?
 
 ## Interpreting this Interaction Model
 
@@ -988,6 +1113,18 @@ For this particular estimated model,
 \begin{align} 1581.33 - 38.33\cdot\left(40\right) &= 48.13\text{g}
 \end{align}
 
+## Interpreting Models with Numerical-Numerical Interactions
+
+<center>
+<font size="120pt"><br/>
+$\bigstar$ Let's try it! $\bigstar$
+
+<br/>
+</font>
+</center>
+
+1. Provide interpretations of the association between each of your numerical predictors and the response under this newest interaction model
+
 ## Mini-Summary: Interactions Between Two Numerical Variables
 
 + Interactions between two numerical variables can be used to investigate whether the effect of a unit increase in one numerical predictor depends on the level of the other
@@ -1014,4 +1151,13 @@ For this particular estimated model,
 
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Sup. It&#39;s a dirty job, but someone&#39;s gotta provide plausible and defensible rationales for nonmonotonic interactions. <a href="http://t.co/arCeYeK9Ot">pic.twitter.com/arCeYeK9Ot</a></p>&mdash; Research Wahlberg (@ResearchMark) <a href="https://twitter.com/ResearchMark/status/527489859636985857?ref_src=twsrc%5Etfw">October 29, 2014</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
+</center>
+
+## Next Time...
+
+<center><font size="120pt"><br/>
+
+Model Inference and Interpreation with the `{marginaleffects}` Package
+
+</font>
 </center>

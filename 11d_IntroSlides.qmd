@@ -1,5 +1,5 @@
 ---
-title: "Multiple Linear Regression: Construction, Assessment, and Interpretation"
+title: "Analysis of Residuals and Model Improvements"
 author: Dr. Gilbert
 format: 
   revealjs:
@@ -159,7 +159,7 @@ p3 <- ggplot() +
     y = "y"
   )
 
-(p1 + p2) / (p3) + plot_annotation(title = "Cross-sections of our model")
+(p1 + p2) / (p3) + plot_annotation(title = "Cross-sections of our fitted model")
 ```
 
 ## Motivation
@@ -261,7 +261,7 @@ The residual plots indicate some *badness*
   
   + Transformations of the response variable
   + Transformations of the predictor(s)
-  + ($\bigstar$ Later In Our Course $\bigstar$) Choosing a different model class
+  + ($\bigstar$ Later In Our Course $\bigstar$) Choosing a different model class altogether
   
 . . . 
 
@@ -411,7 +411,7 @@ We seem to have fixed the issue of non-constant variance with respect to model p
 
 . . . 
 
-...and improved, but not fixed, the issue of the association between residuals and the response.
+...and improved, but not eliminated, the issue of the association between residuals and the response.
 
 ## Types of Residual Plot: Residuals versus Predictors
 
@@ -483,13 +483,13 @@ p9 <- p4 + geom_smooth(aes(x3, y = residuals))
 
 . . . 
 
-Again, we'll make these model updates (I'll show you how in the coming days) and revisit our residual plots.
+Again, we'll make these model updates (I'll show you how in the coming days) and revisit our residual plots for the updated model.
 
 ## Updating Our Model (Transformed Predictors)
 
 . . . 
 
-As a reminder, in the residual plots below, we've chosen to model the logarithm of $y$ instead of modeling $y$ directly.
+As a reminder, in the residual plots below, we've chosen to model the logarithm of $y$ instead of modeling $y$ directly. We've also included a quadratic term corresponding to the `x2` predictor and we're using `sin(x3)` in the model instead of `x3` directly.
 
 . . . 
 
@@ -604,10 +604,10 @@ p6 <- p6 + geom_smooth(aes(x = .pred, y = residuals))
   + In the case of non-normally distributed residuals or non-constant variance, we can try *transformations of the response variable*
   + This includes modeling the logarithm of the response, taking the exponential of the response, the square root of the response, etc.
 
-+ If associations exist between the residuals and available predictors exist, then we've "left predictive power on the table"
++ If associations exist between the residuals and available predictors, then we've "left predictive power on the table"
 
   + We can explore *transformations of the predictors* in order to gain predictive accuracy and explanatory value
-  + This can include raising predictors to a power, combining predictors together, taking trigonometric functions of predictors -- anything you can justify!
+  + This can include raising predictors to a power, combining predictors together, applying trigonometric functions to predictors -- anything you can **justify**!
   
 + If associations exist between the residuals and either the response or the model's predicted values, then this means your model makes different errors depending on either the magnitude of the response or the magnitude of the predictions (ie. big response, big error / small response, small error)
 

@@ -11,8 +11,8 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-29">
-  <title>Multiple Linear Regression: Construction, Assessment, and Interpretation</title>
+  <meta name="dcterms.date" content="2024-08-31">
+  <title>Analysis of Residuals and Model Improvements</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -327,7 +327,7 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Multiple Linear Regression: Construction, Assessment, and Interpretation</h1>
+  <h1 class="title">Analysis of Residuals and Model Improvements</h1>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -337,7 +337,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 29, 2024</p>
+  <p class="date">August 31, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -428,7 +428,7 @@ code.sourceCode {
 <ul>
 <li class="fragment">Transformations of the response variable</li>
 <li class="fragment">Transformations of the predictor(s)</li>
-<li class="fragment">(<span class="math inline">\(\bigstar\)</span> Later In Our Course <span class="math inline">\(\bigstar\)</span>) Choosing a different model class</li>
+<li class="fragment">(<span class="math inline">\(\bigstar\)</span> Later In Our Course <span class="math inline">\(\bigstar\)</span>) Choosing a different model class altogether</li>
 </ul></li>
 </ul>
 <div class="fragment">
@@ -504,7 +504,7 @@ code.sourceCode {
 <p>We seem to have fixed the issue of non-constant variance with respect to model predictions (fitted values)</p>
 </div>
 <div class="fragment">
-<p>…and improved, but not fixed, the issue of the association between residuals and the response.</p>
+<p>…and improved, but not eliminated, the issue of the association between residuals and the response.</p>
 </div>
 </section>
 <section id="types-of-residual-plot-residuals-versus-predictors" class="slide level2">
@@ -564,13 +564,13 @@ code.sourceCode {
 </div>
 </div>
 <div class="fragment">
-<p>Again, we’ll make these model updates (I’ll show you how in the coming days) and revisit our residual plots.</p>
+<p>Again, we’ll make these model updates (I’ll show you how in the coming days) and revisit our residual plots for the updated model.</p>
 </div>
 </section>
 <section id="updating-our-model-transformed-predictors" class="slide level2">
 <h2>Updating Our Model (Transformed Predictors)</h2>
 <div class="fragment">
-<p>As a reminder, in the residual plots below, we’ve chosen to model the logarithm of <span class="math inline">\(y\)</span> instead of modeling <span class="math inline">\(y\)</span> directly.</p>
+<p>As a reminder, in the residual plots below, we’ve chosen to model the logarithm of <span class="math inline">\(y\)</span> instead of modeling <span class="math inline">\(y\)</span> directly. We’ve also included a quadratic term corresponding to the <code>x2</code> predictor and we’re using <code>sin(x3)</code> in the model instead of <code>x3</code> directly.</p>
 </div>
 <div class="fragment">
 <div class="cell">
@@ -621,10 +621,10 @@ code.sourceCode {
 <li class="fragment">In the case of non-normally distributed residuals or non-constant variance, we can try <em>transformations of the response variable</em></li>
 <li class="fragment">This includes modeling the logarithm of the response, taking the exponential of the response, the square root of the response, etc.</li>
 </ul></li>
-<li class="fragment"><p>If associations exist between the residuals and available predictors exist, then we’ve “left predictive power on the table”</p>
+<li class="fragment"><p>If associations exist between the residuals and available predictors, then we’ve “left predictive power on the table”</p>
 <ul>
 <li class="fragment">We can explore <em>transformations of the predictors</em> in order to gain predictive accuracy and explanatory value</li>
-<li class="fragment">This can include raising predictors to a power, combining predictors together, taking trigonometric functions of predictors – anything you can justify!</li>
+<li class="fragment">This can include raising predictors to a power, combining predictors together, applying trigonometric functions to predictors – anything you can <strong>justify</strong>!</li>
 </ul></li>
 <li class="fragment"><p>If associations exist between the residuals and either the response or the model’s predicted values, then this means your model makes different errors depending on either the magnitude of the response or the magnitude of the predictions (ie. big response, big error / small response, small error)</p>
 <ul>

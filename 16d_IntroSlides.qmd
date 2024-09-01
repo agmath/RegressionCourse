@@ -1,0 +1,762 @@
+---
+title: "Interpretation of Marginal Effects with `{marginaleffects}`"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+    
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(patchwork)
+library(kableExtra)
+library(memer)
+library(marginaleffects)
+tidymodels_prefer()
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+options(scipen = 999)
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 14))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a:link {
+color: purple;
+}
+```
+
+## Motivation
+
+. . .
+
+Recently, we've introduced utilization of higher-order terms to add *flexibility* to our models
+
+. . .
+
+```{r}
+my_data <- tibble(
+  x = seq(0, 10, length.out = 100),
+  y_quad = -(x - 11)^2 + 100,
+  y_lin1 = 3*x + 1,
+  y_lin2 = 2.25*x + 1.5,
+  y_lin3 = 3.5*x
+)
+
+p1 <- my_data %>%
+  ggplot() +
+  geom_line(aes(x = x, y = y_quad),
+            color = "blue",
+            lwd = 1.5) +
+  labs(x = "x",
+       y = "y",
+       title = "A Curvi-Linear Model")
+
+p2 <- my_data %>%
+  ggplot() +
+  geom_line(aes(x = x, y = y_lin1),
+            color = "purple",
+            lwd = 1.25) + 
+  geom_line(aes(x = x, y = y_lin2),
+            color = "darkgreen",
+            lwd = 1.25) + 
+  geom_line(aes(x = x, y = y_lin3),
+            color = "orange",
+            lwd = 1.25) + 
+  labs(x = "x",
+       y = "y",
+       title = "A Model with Interaction")
+
+p1 + p2 + plot_annotation(title = "Two Higher-Order Models")
+```
+
+. . . 
+
+The use of these higher-order terms allows us to model more complex relationships between predictor(s) and our response, but this comes at costs...
+
+. . .
+
+Models including higher-order terms are more difficult to interpret
+
+. . . 
+
+> **Note:** There are other costs/risks too, but we'll save those for another day
+
+## Motivation
+
+. . . 
+
+Interpreting the expected effect of a unit increase in a predictor on our response requires calculus
+
+. . . 
+
+**Interpreting a "Quadratic Predictor":** Recall that if a model contains a predictor $x$ such that $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x + \beta_2 x^2 + \cdots$, where $x$ appears in no terms other than those listed, then
+
+. . . 
+
+> The expected effect of a unit increase in $x$ on the response $y$ is an increase of about $\beta_1 + 2x\beta_2$
+
+. . . 
+
+**Interpreting a Predictor Involved in Interaction:** If a model contains a predictor $x$ which is involved in an interaction with another predictor $w$, such that $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x + \beta_2 xw + \cdots$ and $x$ appears in no other terms, then 
+
+. . . 
+
+> The expected effect of a unit increase in $x$ on the response $y$ is an increase of about $\beta_1 + \beta_2 w$
+
+. . . 
+
+Both of these expressions are obtained by taking the *partial derivative of our model with respect to the predictor $x$*
+
+## Motivation
+
+. . . 
+
+Calculus isn't a requirement for this course, but those of you who don't have a background in it are somewhat disadvantaged with the tools for interpretation that I've given you so far
+
+. . . 
+
+You could memorize the $\beta_1 + 2x\beta_2$ and $\beta_1 + w\beta_2$ expressions for the interpretation of a predictor used in a quadratic term and a predictor involved in an interaction, respectively
+
+. . . 
+
+But if we move to more complex models, then you'd need to memorize more complex expressions
+
+. . . 
+
+**For Example:** Given the model 
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1 x_2 + \beta_4x_1^2 + \beta_5x_1^2x_2$$ 
+
+. . . 
+
+the expected effect of a unit increase in $x_1$ on the response $y$ is an increase of about $\beta_1 + x_2\beta_3 + 2x_1\beta_4 + 2x_1 x_2\beta_5$
+
+. . . 
+
+Memorizing expressions is an inefficient use of our time and brain capacity
+
+## Motivation
+
+. . . 
+
+Knowing some calculus makes our interpretation work easier and makes you more versatile, but...
+
+. . . 
+
+You don't need to learn calculus right now -- consider learning it in the future though!
+
+. . .
+
+Luckily, the `{marginaleffects}` package can help us in the immediate term
+
+. . . 
+
+**Note:** Even with `{marginaleffects}`, I suggest eventually learning some basic calculus if you are interested in statistical modeling. Having that background can help you identify suspicious results rather than blindly reporting the results of a function call.
+
+. . . 
+
+> **Additional Resource:** Andrew Heiss has [a truly excellent and detailed blog post on marginal effects and calculus](https://www.andrewheiss.com/blog/2022/05/20/marginalia/), including how to use `{marginaleffects}` (and similar packages), comparisons of different types of marginal effects, and how to interpret results
+
+## Highlights
+
++ We have just one goal here -- learn how to use `{marginaleffects}` to help us analyze the effect of a unit increase in a predictor on a response
++ We'll start with a *simple linear regression model* so that we know everything is working correctly
++ Next, we'll move to a curvilinear model with a second-degree term on the sole predictor, $x$
++ We'll then fit a super-flexible fifth-degree model with a sole predictor, $x$, and see how `{marginaleffects}` reports the *marginal effect of $x$ on $y$*
++ Finally, we'll move to a pair of interaction models -- one with a linear association and the other with a curved association
+
+## Marginal Effects for Simple Linear Regression
+
+. . . 
+
+```{r}
+#| fig-height: 4
+
+nobs <- 100
+my_data <- tibble(
+  x = runif(nobs, 0, 10),
+  y = 3*x + 1 + rnorm(nobs, 0, 5)
+)
+
+my_data %>%
+  ggplot() + 
+  geom_point(aes(x = x, y = y))
+```
+
+. . . 
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 \cdot x$$
+
+. . . 
+
+We know what to expect here -- the effect of a unit increase in $x$ should be an expected increase in $y$ by about $\beta_1$
+
+. . . 
+
+That is, *the marginal effect of $x$ on $y$* is constant, for this model
+
+. . . 
+
+Let's fit our simple linear regression model to this data and then examine the *marginal effects*
+
+## Marginal Effects for Simple Linear Regression
+
+. . . 
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+lr_rec <- recipe(y ~ x, data = my_data)
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf %>%
+  fit(my_data)
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 24)
+```
+
+. . . 
+
+Now that we have our model, let's use `{marginaleffects}` to determine the marginal effect of $x$ on $y$
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="70%"}
+
+```{r}
+#| fig.height: 5
+#| echo: true
+#| code-fold: true
+
+mfx <- lr_fit %>%
+  extract_fit_engine() %>%
+  slopes(my_data) %>%
+  tibble()
+
+mfx %>%
+  ggplot() + 
+  geom_ribbon(aes(x = x, 
+                  ymin = conf.low, 
+                  ymax = conf.high),
+              fill = "grey",
+              alpha = 0.5) +
+  geom_line(aes(x = x, 
+                y = estimate),
+            color = "black",
+            linetype = "dashed") +
+  coord_cartesian(
+    ylim = c(-0.5, 5)
+    ) + 
+  labs(x = "x",
+       y = "Marginal Effect of x on y")
+```
+
+:::
+
+:::{.column width="30%"}
+
+<br/>
+<br/>
+<br/>
+<br/>
+As expected, a constant *marginal effect* at a height of $\beta_1$
+
+:::
+
+::::
+
+## Marginal Effects for a Model with a Quadratic Term
+
+. . . 
+
+```{r}
+nobs <- 50
+
+my_data <- tibble(
+  x = runif(nobs, 0, 10),
+  y = -(x - 11)^2 + 100 + rnorm(nobs, 0, 25)
+)
+
+my_data %>%
+  ggplot() + 
+  geom_point(aes(x = x, y = y))
+```
+
+. . . 
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x + \beta_2 x^2$$
+
+. . . 
+
+Again, we know what to expect -- the effect of a unit increase in $x$ should be an expected increase in $y$ by about $\beta_1 + 2x\beta_2$
+
+. . . 
+
+That is, *the marginal effect of $x$ on $y$* will change based on the value of $x$ for this model
+
+. . .
+
+As we did with the last scenario, we'll fit our model and examine the *marginal effects*
+
+## Marginal Effects for a Model with a Quadratic Term
+
+. . . 
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+lr_rec <- recipe(y ~ x, data = my_data) %>%
+  step_poly(x, degree = 2, options = list(raw = TRUE))
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf %>%
+  fit(my_data)
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 24)
+```
+
+. . .
+
+We'll use `{marginaleffects}` to determine the marginal effect of $x$ on $y$ for this model
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="70%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+mfx <- slopes(lr_fit, 
+              newdata = my_data,
+              variable = "x") %>%
+  tibble() %>%
+  mutate(x = my_data$x)
+
+mfx %>%
+  ggplot() + 
+  geom_ribbon(aes(x = x, 
+                  ymin = conf.low, 
+                  ymax = conf.high),
+              fill = "grey",
+              alpha = 0.5) +
+  geom_line(aes(x = x, 
+                y = estimate),
+            color = "black",
+            linetype = "dashed") +
+  labs(x = "x",
+       y = "Marginal Effect of x on y")
+```
+
+:::
+
+:::{.column width="30%"}
+
+<br/>
+<br/>
+<br/>
+Again, as expected, the *marginal effect* of $x$ on $y$ varies with the value of $x$ -- we can compute the *marginal effect* using the expression $\beta_1 + 2x\beta_2$
+
+:::
+
+::::
+
+## Marginal Effect for a Model with a Fifth-Degree Term
+
+. . . 
+
+```{r}
+my_data <- tibble(
+  x = runif(nobs, 0, 10),
+  y = -(x - 1)*(x-3)*(x - 5)*(x - 8)*(x - 11) + rnorm(nobs, 0, 100)
+)
+
+my_data %>%
+  ggplot() + 
+  geom_point(aes(x = x, y = y))
+```
+
+. . . 
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + \beta_5 x^5$$
+
+. . .
+
+The effect of a unit increase in $x$ here will be an expected increase in $y$ of about $\beta_1 + 2x\beta_2 + 3x^2\beta_3 + 4x^3\beta_4 + 5x^4\beta_5$
+
+. . . 
+
+Let's see what `{marginaleffects}` does for us...
+
+## Marginal Effects for a Model with a Fifth-Degree Term
+
+. . . 
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+lr_rec <- recipe(y ~ x, data = my_data) %>%
+  step_poly(x, degree = 5, options = list(raw = TRUE))
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf %>%
+  fit(my_data)
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 18)
+```
+
+Now we'll call on `{marginaleffects}` 
+
+::::{.columns}
+
+:::{.column width="70%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+mfx <- slopes(lr_fit, 
+              newdata = my_data,
+              variable = "x") %>%
+  tibble() %>%
+  mutate(x = my_data$x)
+
+mfx %>%
+  ggplot() + 
+  geom_ribbon(aes(x = x, 
+                  ymin = conf.low, 
+                  ymax = conf.high),
+              fill = "grey",
+              alpha = 0.5) +
+  geom_line(aes(x = x, 
+                y = estimate),
+            color = "black",
+            linetype = "dashed") +
+  labs(x = "x",
+       y = "Marginal Effect of x on y")
+```
+
+:::
+
+:::{.column width="30%"}
+
+<br/>
+<br/>
+<br/>
+<br/>
+We see again that the *marginal effect* of $x$ on $y$ depends on the value of $x$
+
+:::
+
+::::
+
+## Marginal Effects for a Model with Linear Interactions
+
+. . . 
+
+```{r}
+set.seed(123)
+
+my_data <- tibble(
+  x = runif(nobs, 0, 10),
+  level_1 = 3*x + 1 + rnorm(nobs, 0, 2),
+  level_2 = 2.25*x + 1.5 + rnorm(nobs, 0, 2),
+  level_3 = 3.75*x + rnorm(nobs, 0, 2)
+) %>%
+  pivot_longer(-x, names_to = "cat_var", values_to = "y") %>%
+  rename(x1 = x,
+         x2 = cat_var)
+
+my_data %>%
+  ggplot() + 
+  geom_point(aes(x = x1, y = y , color = x2),
+             show.legend = FALSE) + 
+  facet_wrap(~x2, ncol = 3)
+```
+
+. . . 
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2\cdot\left(\text{level 2}\right) + \beta_3\cdot\left(\text{level 3}\right) + \beta_4\cdot x_1\left(\text{level 2}\right) + \beta_5\cdot x_1\left(\text{level 3}\right)$$
+
+. . . 
+
+Here, we know that the effect of a unit increase in $x_1$ depends on the observed level of $x_2$
+
+. . . 
+
+That is, the *marginal effect of $x_1$ on $y$* depends on the level of $x_2$ -- let's see what `{marginaleffects}` gives us
+
+## Marginal Effects for a Model with Linear Interactions
+
+. . . 
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+lr_rec <- recipe(y ~ ., data = my_data) %>%
+  step_dummy(x2) %>%
+  step_interact(~ x1:starts_with("x2"))
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf %>%
+  fit(my_data)
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 18)
+```
+
+. . . 
+
+Let's check on the *marginal effects* with `{marginaleffects}`
+
+## Marginal Effects for a Model with a Linear Interaction
+
+Let's check on the *marginal effects* with `{marginaleffects}`
+
+. . . 
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig.height: 3.5
+
+mfx <- slopes(lr_fit, 
+              newdata = my_data,
+              variable = "x1") %>%
+  tibble() %>%
+  mutate(x1 = my_data$x1,
+         x2 = my_data$x2)
+
+mfx %>%
+  ggplot() + 
+  geom_ribbon(aes(x = x1, 
+                  ymin = conf.low, 
+                  ymax = conf.high),
+              fill = "grey",
+              alpha = 0.5) +
+  geom_line(aes(x = x1, 
+                y = estimate),
+            color = "black",
+            linetype = "dashed") +
+  labs(x = "x1",
+       y = "Marginal Effect of x1 on y") + 
+  facet_wrap(~x2)
+```
+
+. . . 
+
+We can see the differences in slopes (*marginal effects*) across the three levels of $x_2$
+
++ **level_1:** $\beta_1 \approx 3.076$
++ **level_2:** $\beta_1 + \beta_4 \approx 3.076 - 0.764 = 2.312$
++ **level_3:** $\beta_1 + \beta_5 \approx 3.076 + 0.733 = 3.809$
+
+## Marginal Effects for a Model with Curvi-Linear Interactions
+
+. . . 
+
+```{r}
+#| fig.height: 3.5
+
+set.seed(123)
+
+my_data <- tibble(
+  x = runif(nobs, 0, 10),
+  level_1 = -1.25*(x - 11)^2 + 100 + rnorm(nobs, 0, 15),
+  level_2 = -(x - 9.5)^2 + 100 + rnorm(nobs, 0, 15),
+  level_3 = -0.5*(x - 10)^2 + 100 + rnorm(nobs, 0, 15)
+) %>%
+  pivot_longer(-x, names_to = "cat_var", values_to = "y") %>%
+  rename(x1 = x,
+         x2 = cat_var)
+
+my_data %>%
+  ggplot() + 
+  geom_point(aes(x = x1, y = y , color = x2),
+             show.legend = FALSE) + 
+  facet_wrap(~x2, ncol = 3)
+```
+
+. . . 
+
+\begin{align} \mathbb{E}\left[y\right] = \beta_0 +~ &\beta_1 x_1 + \beta_2 x_1^2 + \beta_3\cdot\left(\text{level 2}\right) + \beta_4\cdot\left(\text{level 3}\right) +\\ 
+&\beta_5\cdot x_1\left(\text{level 2}\right) + \beta_6\cdot x_1\left(\text{level 3}\right) +\\ 
+&\beta_7\cdot x_1^2\left(\text{level 2}\right) + \beta_8\cdot x_1^2\left(\text{level 3}\right)\end{align}
+
+. . . 
+
+Let's fit the model and see how `{marginaleffects}` helps us analyze the expected effect of a unit change in $x_1$ across the different levels of $x_2$
+
+## Marginal Effects for a Model with Curvi-Linear Interactions
+
+. . . 
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+lr_rec <- recipe(y ~ ., data = my_data) %>%
+  step_dummy(x2) %>%
+  step_poly(x1, degree = 2, options = list(raw = TRUE)) %>%
+  step_interact(~ starts_with("x1"):starts_with("x2"))
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf %>%
+  fit(my_data)
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 24)
+```
+
+. . . 
+
+Let's check on the *marginal effects* with `{marginaleffects}`
+
+## Marginal Effects for a Model with a Linear Interaction
+
+Let's check on the *marginal effects* with `{marginaleffects}`
+
+. . . 
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| fig.height: 3.5
+
+mfx <- slopes(lr_fit, 
+              newdata = my_data,
+              variable = "x1") %>%
+  tibble() %>%
+  mutate(x1 = my_data$x1,
+         x2 = my_data$x2)
+
+mfx %>%
+  ggplot() + 
+  geom_ribbon(aes(x = x1, 
+                  ymin = conf.low, 
+                  ymax = conf.high),
+              fill = "grey",
+              alpha = 0.5) +
+  geom_line(aes(x = x1, 
+                y = estimate),
+            color = "black",
+            linetype = "dashed") +
+  labs(x = "x1",
+       y = "Marginal Effect of x1 on y") + 
+  facet_wrap(~x2)
+```
+
+. . . 
+
+We can see the differences in slopes (*marginal effects*) and the differences in *change* in slopes across the three levels of $x_2$ here
+
+. . . 
+
+What would have been challenging to investigate without the use of calculus is made easier with `{marginaleffects}`
+
+## Summary
+
++ Interpreting the effect of a unit change in a predictor on the response is called interpreting that predictor's *marginal effect*
++ Interpreting a predictor's *marginal effect* requires computing the *partial derivative* of our model with respect to that predictor -- a topic from calculus
++ The `{marginaleffects}` package can help us obtain and interpret *marginal effects* without having to know or use calculus
++ In order to obtain *marginal effects* for a fitted model we...
+
+    i) Begin with the fitted model object
+    ii) Extract the fit using `extract_fit_engine()`
+    iii) Pass the result to the `slopes()` function from `{marginaleffects}`
+    iv) Provide our training data as the `newdata` argument and identify the variable we are calculating *marginal effects* for
+    v) Plot the results (optional)
+    
+. . .     
+
+> **Note:** Currently, the `slopes()` function doesn't pass the values of the predictors to its resulting data frame correctly -- I've filed an *issue* on this with the developer and we are working on a fix for it -- for now, you can just `mutate()` over the incorrect predictor values with the values from the training data frame
+
+## Next Time...
+
+. . .
+
+<center><font size="120pt"><br/>
+
+In-Class Halloween Modeling Competition
+</font>
+
+</center>
+
+. . . 
+
+<center>
+
+<font size="60pt">
+
+There will be prizes...
+
+</font>
+
+</center>
+
+. . . 
+
+<center>
+
+<iframe src="https://giphy.com/embed/SqIFuwPiZgvBgx6Uvl" width="480" height="480" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/SqIFuwPiZgvBgx6Uvl">via GIPHY</a></p>
+
+</center>

@@ -1100,3 +1100,12 @@ Remember that greater levels of flexibility are associated with
 . . . 
 
 If the improvements in model performance are small enough that they don't outweigh these risks, we should choose the simpler (*more parsimonious*) model even if it doesn't have the absolute best performance on the unseen test data
+
+## Next Time...
+
+<center><font size="120pt"><br/>
+
+Cross-Validation
+
+</font>
+</center>

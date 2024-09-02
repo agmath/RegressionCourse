@@ -943,7 +943,7 @@ The following observations are worth calling out
 
 + *Cross-validation* results in performance estimates, but does not result in a fitted model!
 
-  + For each fold, prior to fitting our model, the model fitted prior is obliterated
+  + For each fold, before fitting our model, the model fitted prior is obliterated
   + **Important Restatement:** *Cross-validation* assesses models; it does not fit them
   
 ## Implementing *Cross-Validation* in `{tidymodels}`
@@ -974,7 +974,7 @@ We'll build a fairly complex model that includes all of the available predictors
 
 . . .
 
-It also includes interactions between both `species` and `island` with flipper length and bill length as well as between bill length and bill depth
+It also includes interactions between `species` and both flipper length and bill length as well as an interaction between bill length and bill depth
 
 . . .
 
@@ -1079,7 +1079,7 @@ lr_results %>%
 
 + We split our training data into *folds*, using each fold once as a *hold-out* set, training a model on the remaining folds, and assessing the model on the hold-out fold to obtain multiple models and multiple performance assessments
 
-  + Since we have multiple model assessments, some may be on *"hard" tests* and others may be on *"easy" tests* so that the average performance is a reliable estimate
+  + Since we have multiple model assessments, some may be on *"hard" tests* while others are on *"easy" tests* so the average performance is a more reliable metric
   + In taking this cross-validation approach, we no longer need separate *test* and *validation* sets
   + We can include more of our data as part of the *training* set, which means we get to *learn* from more data as well
 
@@ -1091,6 +1091,13 @@ lr_results %>%
 
 ## Let's Do This!
 
-Let's try out cross-validation on the `ames` housing data that we were using earlier this semester
+Let's try out cross-validation on the used cars data that we were using earlier this semester
 
+## Next Time...
 
+<center><font size="120pt"><br/>
+
+Cross-Validation Workshop
+
+</font>
+</center>

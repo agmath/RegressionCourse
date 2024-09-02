@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-17">
+  <meta name="dcterms.date" content="2024-09-01">
   <title>Introduction to Regularization: Ridge Regression and the LASSO</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 17, 2024</p>
+  <p class="date">September 1, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -442,6 +442,22 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <p>There is also an opposite approach, called <em>forward selection</em></p>
+</div>
+</section>
+<section id="playing-along" class="slide level2">
+<h2>Playing Along</h2>
+<div class="fragment">
+<p>We’ll switch to using the <code>ames</code> dataset for this discussion</p>
+</div>
+<div class="fragment">
+<p>That dataset contains features and selling prices for 2,930 homes sold in Ames, Iowa between 2006 and 2010</p>
+<ol type="1">
+<li class="fragment"><p>Open your <code>MAT300</code> project in RStudio and create a new Quarto document</p></li>
+<li class="fragment"><p>Use a <em>setup</em> chunk to load the <code>{tidyverse}</code> and <code>{tidymodels}</code></p></li>
+<li class="fragment"><p>The <code>ames</code> data set is contained in the <code>{modeldata}</code> package, which is loaded with <code>{tidymodels}</code> – take a preliminary look at this dataset</p></li>
+<li class="fragment"><p>Split your data into <em>training</em> and <em>test</em> sets</p></li>
+<li class="fragment"><p>Create five or ten cross-validation folds</p></li>
+</ol>
 </div>
 </section>
 <section id="a-shopping-analogy" class="slide level2">
@@ -2283,6 +2299,14 @@ code.sourceCode {
 <li class="fragment">We define a <code>penalty</code> parameter which determines the amount of regularization (constraint) applied to the model</li>
 </ul></li>
 </ul>
+</section>
+<section id="next-time" class="slide level2">
+<h2>Next Time…</h2>
+<center>
+<p><font size="120pt"><br></font></p><font size="120pt">
+<p>Other Classes of Regression Model</p>
+</font>
+</center>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 

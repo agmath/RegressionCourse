@@ -79,6 +79,26 @@ This approach, called *backward elimination*, is commonly utilized
 
 There is also an opposite approach, called *forward selection*
 
+## Playing Along
+
+. . . 
+
+We'll switch to using the `ames` dataset for this discussion
+
+. . . 
+
+That dataset contains features and selling prices for 2,930 homes sold in Ames, Iowa between 2006 and 2010
+
+1. Open your `MAT300` project in RStudio and create a new Quarto document
+
+2. Use a *setup* chunk to load the `{tidyverse}` and `{tidymodels}`
+
+3. The `ames` data set is contained in the `{modeldata}` package, which is loaded with `{tidymodels}` -- take a preliminary look at this dataset
+
+4. Split your data into *training* and *test* sets
+
+5. Create five or ten cross-validation folds
+
 ## A Shopping Analogy
 
 . . .
@@ -575,5 +595,12 @@ lasso_reg_fit %>%
   + We set `mixture = 0` for *Ridge Regression* and `mixture = 1` for the *LASSO*
   + We define a `penalty` parameter which determines the amount of regularization (constraint) applied to the model
 
+## Next Time...
 
+<center><font size="120pt"><br/>
+
+Other Classes of Regression Model
+
+</font>
+</center>
 

@@ -22,16 +22,17 @@ library(memer)
 library(marginaleffects)
 tidymodels_prefer()
 
-penguins <- palmerpenguins::penguins
-
-penguins <- penguins %>%
-  mutate(flipper_length_mm = as.numeric(flipper_length_mm),
-         body_mass_g = as.numeric(body_mass_g))
+ames_known_prices <- ames %>%
+  filter(!is.na(Sale_Price))
 
 set.seed(123)
-penguin_splits <- initial_split(penguins)
-penguins_train <- training(penguin_splits)
-penguins_test <- testing(penguin_splits)
+
+ames_split <- initial_split(ames, prop = 0.9)
+
+ames_train <- training(ames_split)
+ames_test <- testing(ames_split)
+
+ames_folds <- vfold_cv(ames_train, v = 5)
 
 options(kable_styling_bootstrap_options = c("hover", "striped"))
 options(scipen = 999)
@@ -163,6 +164,16 @@ From here, we can identify not only the best model, but also the best hyperparam
 
 We'll call this process *tuning*
 
+## Playing Along
+
+. . . 
+
+Again, we'll continue with the `ames` data
+
+1. Open your notebook from our last two meetings
+2. Run all of the existing code
+3. Add a new section to your notebook on *hyperparameters and model tuning*
+
 ## Tuning a Decision Tree Regressor
 
 . . . 
@@ -181,30 +192,11 @@ If a tree is *too shallow* though, it will be underfit
 
 Let's tune a tree to identify the optimal depth for predicting selling prices of homes in the Ames, Iowa data
 
-## Reading, Filtering, and Splitting the Data
-
-```{r}
-#| echo: true
-#| eval: true
-
-ames_known_prices <- ames %>%
-  filter(!is.na(Sale_Price))
-
-set.seed(123)
-
-ames_split <- initial_split(ames, prop = 0.9)
-
-ames_train <- training(ames_split)
-ames_test <- testing(ames_split)
-
-ames_folds <- vfold_cv(ames_train, v = 5)
-```
-
 ## Defining a Model with Tuning Parameters
 
 . . . 
 
-Now that we have our data, let's define our model. Most of this is done exactly as before
+Most of model tuning is done exactly as we approached assessing models robustly with cross-validation
 
 . . . 
 
@@ -392,7 +384,7 @@ dt_fit_for_plot <- dt_fit %>%
 rpart.plot(dt_fit_for_plot)
 ```
 
-## Can We Get More Tunes???
+## Crank Up the Tunes!!!
 
 <center>
 
@@ -845,6 +837,20 @@ xgb_results %>%
 :::
 
 ::::
+
+## What's Next??? 
+
+. . . 
+
+**Next Time:** Hyperparameters, tuning, and other regressors workshop
+
+. . . 
+
+**Then:** Thanksgiving In-Class Modeling Competition (there will be prizes, again!)
+
+. . . 
+
+**After That:** Final projects for the remainder of the semester
 
 ## Stop Parallelization
 

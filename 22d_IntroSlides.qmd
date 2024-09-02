@@ -22,16 +22,17 @@ library(memer)
 library(marginaleffects)
 tidymodels_prefer()
 
-penguins <- palmerpenguins::penguins
-
-penguins <- penguins %>%
-  mutate(flipper_length_mm = as.numeric(flipper_length_mm),
-         body_mass_g = as.numeric(body_mass_g))
+ames_known_price <- ames %>%
+  filter(!is.na(Sale_Price))
 
 set.seed(123)
-penguin_splits <- initial_split(penguins)
-penguins_train <- training(penguin_splits)
-penguins_test <- testing(penguin_splits)
+
+ames_split <- initial_split(ames_known_price, prop = 0.9)
+
+ames_train <- training(ames_split)
+ames_test <- testing(ames_split)
+
+ames_folds <- vfold_cv(ames_train, v = 10)
 
 options(kable_styling_bootstrap_options = c("hover", "striped"))
 options(scipen = 999)
@@ -117,11 +118,11 @@ There are dozens of other model classes suitable for regression problems
 We could even utilize an *ensemble* of models to make predictions -- two super common examples are
 
 + Random forests
-+ Gradient boosting
++ Gradient boosting ensembles
 
 . . .
 
-Luckily, since the `{tidymodels}` syntax is standardized, we already know how to fit these model and ensembles!
+Luckily, since the `{tidymodels}` syntax is standardized, we already know how to fit these models and ensembles!
 
 ## A Crash Course in Four New Model Classes
 
@@ -189,34 +190,15 @@ Let's try building
 + a random forest, and
 + a gradient boosting ensemble of trees
 
-. . .
-
-to predict the selling price of a home in Ames, Iowa
-
-## The Ames Data
+## Playing Along
 
 . . .
 
-We've used the Ames data quite a bit already, let's read it in, filter out the observations with a missing selling price, split the data into training and test sets, and create cross-validation folds
+We used the `ames` data last time and we'll continue with it today. 
 
-. . .
+1. Open your notebook from last time and run all of the code in it.
 
-```{r}
-#| echo: true
-#| eval: true
-
-ames_known_price <- ames %>%
-  filter(!is.na(Sale_Price))
-
-set.seed(123)
-
-ames_split <- initial_split(ames_known_price, prop = 0.9)
-
-ames_train <- training(ames_split)
-ames_test <- testing(ames_split)
-
-ames_folds <- vfold_cv(ames_train, v = 10)
-```
+2. Add a section on *other regression models*
 
 ## Creating Our Model Specifications
 
@@ -498,7 +480,7 @@ rf_test_results %>%
 
 I hope you'll explore some of these model classes on your own -- especially in our competitions and on your final projects
 
-## Next Up...
+## Next Time...
 
 . . . 
 
@@ -518,3 +500,12 @@ How do we know that we've chosen the best values?
 . . . 
 
 How do we even know that we've chosen appropriate values?
+
+. . . 
+
+<center><font size="120pt"><br/>
+
+Hyperparameter Tuning
+</font>
+</center>
+

@@ -39,7 +39,7 @@ code.sourceCode {
 
 + We'll interact with R via RStudio in MAT300.
 
-  + In the future, you can use R with other IDEs, like VS code.
+  + In the future, you can use R with other IDEs, like VScode or *Positron*.
   
 + We'll be using Quarto Documents/Notebooks for everything we do.
 

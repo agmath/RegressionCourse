@@ -261,13 +261,13 @@ In this case, we have $\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x$ and 
 
 . . . 
 
-$$\sum_{i = 1}^{n}{\left(y_{\text{obs}} - y_{\text{pred}}\right)^2}$$
+$$\sum_{i = 1}^{n}{\left(y_{\text{obs}_i} - y_{\text{pred}_i}\right)^2}$$
 
 ## How it works
 
 In this case, we have $\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x$ and we find $\beta_0$ (intercept) and $\beta_1$ (slope) to minimize the quantity
 
-$$\sum_{i = 1}^{n}{\left(y_{\text{obs}} - \left(\beta_0 + \beta_1\cdot x_{\text{obs}}\right)\right)^2}$$
+$$\sum_{i = 1}^{n}{\left(y_{\text{obs}_i} - \left(\beta_0 + \beta_1\cdot x_{\text{obs}_i}\right)\right)^2}$$
 
 + Changing $\beta_0$ and/or $\beta_1$ will change this sum.
 
@@ -334,7 +334,48 @@ $\displaystyle{\mathbb{E}\left[y\right] = 3783.21 - 45.3\cdot x}$
 + As $x$ increases, we expect $y$ to decrease (on average).
 + Given a unit increase in $x$, we expect $y$ to decrease by about $45.3$ units.
 
-## Can we find a *better* model?
+## Interpreting the Model
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "What does the model tell us?",
+       x = "x", y = "y")
+```
+
+:::
+
+:::{.column width="50%}
+
+$\displaystyle{\mathbb{E}\left[y\right] = 3783.21 - 45.3\cdot x}$
+
+:::
+
+::::
+
+:::{.nonincremental}
+
++ The <font color="purple">expected</font> value of $y$ when $x = 0$ is $3783.21$.
++ As $x$ increases, we <font color="purple">expect</font> $y$ to decrease (on average).
++ Given a unit increase in $x$, we <font color="purple">expect</font> $y$ to decrease by <font color="purple">about</font> $45.3$ units.
+
+:::
+
+. . .
+
+**Approach to Model Interpretation:** In general, we'll interpret the intercept (when appropriate) and the <font color="purple">expected</font> effect of a unit change in each predictor on the response
+
+## Can we find a *better* model? 
 
 . . . 
 

@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-09-05">
+  <meta name="dcterms.date" content="2024-09-06">
   <title>Overview of Statistical Learning (and Competition Overview)</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -337,7 +337,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">September 5, 2024</p>
+  <p class="date">September 6, 2024</p>
 </section>
 <section id="statistical-learning-in-pictures" class="slide level2">
 <h2>Statistical Learning in Pictures</h2>
@@ -441,13 +441,13 @@ Dr.&nbsp;Gilbert
 <p>In this case, we have <span class="math inline">\(\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x\)</span> and we find <span class="math inline">\(\beta_0\)</span> (intercept) and <span class="math inline">\(\beta_1\)</span> (slope) to minimize the quantity</p>
 </div>
 <div class="fragment">
-<p><span class="math display">\[\sum_{i = 1}^{n}{\left(y_{\text{obs}} - y_{\text{pred}}\right)^2}\]</span></p>
+<p><span class="math display">\[\sum_{i = 1}^{n}{\left(y_{\text{obs}_i} - y_{\text{pred}_i}\right)^2}\]</span></p>
 </div>
 </section>
 <section id="how-it-works-1" class="slide level2">
 <h2>How it works</h2>
 <p>In this case, we have <span class="math inline">\(\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x\)</span> and we find <span class="math inline">\(\beta_0\)</span> (intercept) and <span class="math inline">\(\beta_1\)</span> (slope) to minimize the quantity</p>
-<p><span class="math display">\[\sum_{i = 1}^{n}{\left(y_{\text{obs}} - \left(\beta_0 + \beta_1\cdot x_{\text{obs}}\right)\right)^2}\]</span></p>
+<p><span class="math display">\[\sum_{i = 1}^{n}{\left(y_{\text{obs}_i} - \left(\beta_0 + \beta_1\cdot x_{\text{obs}_i}\right)\right)^2}\]</span></p>
 <ul>
 <li class="fragment">Changing <span class="math inline">\(\beta_0\)</span> and/or <span class="math inline">\(\beta_1\)</span> will change this sum.</li>
 </ul>
@@ -481,9 +481,10 @@ Dr.&nbsp;Gilbert
 </ul>
 </div>
 </section>
-<section id="can-we-find-a-better-model" class="slide level2">
-<h2>Can we find a <em>better</em> model?</h2>
-<div class="fragment">
+<section id="interpreting-the-model-1" class="slide level2">
+<h2>Interpreting the Model</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -493,12 +494,39 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 </div>
+</div><div class="column" style="width:&quot;50%;">
+<p><span class="math inline">\(\displaystyle{\mathbb{E}\left[y\right] = 3783.21 - 45.3\cdot x}\)</span></p>
+</div>
+</div>
+<div>
+<ul>
+<li>The <font color="purple">expected</font> value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x = 0\)</span> is <span class="math inline">\(3783.21\)</span>.</li>
+<li>As <span class="math inline">\(x\)</span> increases, we <font color="purple">expect</font> <span class="math inline">\(y\)</span> to decrease (on average).</li>
+<li>Given a unit increase in <span class="math inline">\(x\)</span>, we <font color="purple">expect</font> <span class="math inline">\(y\)</span> to decrease by <font color="purple">about</font> <span class="math inline">\(45.3\)</span> units.</li>
+</ul>
+</div>
+<div class="fragment">
+<p><strong>Approach to Model Interpretation:</strong> In general, we’ll interpret the intercept (when appropriate) and the <font color="purple">expected</font> effect of a unit change in each predictor on the response</p>
+</div>
+</section>
+<section id="can-we-find-a-better-model" class="slide level2">
+<h2>Can we find a <em>better</em> model?</h2>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
 </div>
 </section>
 <section id="can-we-interpret-this-model" class="slide level2">
 <h2>Can we interpret this model?</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-13-1.png" width="960" class="r-stretch"><ul>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"><ul>
 <li class="fragment">The equation is <span class="math inline">\(\mathbb{E}\left[y\right] \approx 1202 - 4911x +3156x^2 + 784x^3 +\\ 409x^4 -215x^5 -7x^6 -516x^7\)</span></li>
 <li class="fragment">No thanks…</li>
 </ul>
@@ -506,11 +534,11 @@ Dr.&nbsp;Gilbert
 <section id="do-we-expect-this-model-to-generalize-well" class="slide level2">
 <h2>Do we expect this model to generalize well?</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"></section>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"></section>
 <section id="do-we-expect-this-model-to-generalize-well-1" class="slide level2">
 <h2>Do we expect this model to generalize well?</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"><ul>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch"><ul>
 <li class="fragment">Especially near <span class="math inline">\(x = 0\)</span> and <span class="math inline">\(x = 100\)</span></li>
 </ul>
 </section>
@@ -521,7 +549,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-16-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-17-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -531,7 +559,7 @@ Dr.&nbsp;Gilbert
 <section id="is-there-a-happy-medium-1" class="slide level2">
 <h2>Is there a happy medium?</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-17-1.png" width="960" class="r-stretch"><ul>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"><ul>
 <li class="fragment"><p>Fits old and new observations similarly well</p></li>
 <li class="fragment"><p>Equation <span class="math inline">\(\displaystyle{\mathbb{E}\left[y\right] \approx 1202 -4912x + 3156x^2}\)</span></p>
 <ul>
@@ -548,7 +576,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-18-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-19-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -572,7 +600,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-19-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-20-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -597,7 +625,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-20-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-21-1.png" width="960"></p>
 </figure>
 </div>
 </div>

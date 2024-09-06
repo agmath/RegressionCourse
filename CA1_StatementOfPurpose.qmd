@@ -18,10 +18,11 @@ This is your first of six (6) assignments associated with our in-class competiti
 
 4. Download the three data sets -- you'll need `train_data.csv` for this assignment, `comp_data.csv` contains the actual competition data and will be used once we learn how to construct models, and `sample_submission.csv` just gives you an example of what your submission file should look like when you go to submit predictions for scoring later in our semester.
 
-    + Move these files from your `Downloads` folder to a convenient location on your computer. You'll be accessing these files often.
+    + Move these files from your `Downloads` folder to the directory managing your *R Project* for this course.
 
 5. Download and open the Quarto (`qmd`) version of the `AnalyticsReportShell` in RStudio.
 
+    + Save this file to the directory managing your *R Project* for this course as well. 
     + Edit the `author` line in the YAML header to be your name.
 
 6. In that notebook, do the following to load the data.

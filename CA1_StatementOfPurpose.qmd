@@ -16,19 +16,19 @@ This is your first of six (6) assignments associated with our in-class competiti
 
 3. Read the information on the various tabs of the competition page to get familiar with the task at hand.
 
-4. Download the three data sets -- you'll need `dataFA24.csv` for this assignment, `compFA24.csv` contains the actual competition data and will be used once we learn how to construct models, and `sampFA24.csv` just gives you an example of what your submission file should look like when you go to submit predictions for scoring later in our semester.
+4. Download the three data sets -- you'll need `train_data.csv` for this assignment, `comp_data.csv` contains the actual competition data and will be used once we learn how to construct models, and `sample_submission.csv` just gives you an example of what your submission file should look like when you go to submit predictions for scoring later in our semester.
 
-  + Move these files from your `Downloads` folder to a convenient location on your computer. You'll be accessing these files often.
+    + Move these files from your `Downloads` folder to a convenient location on your computer. You'll be accessing these files often.
 
 5. Download and open the Quarto (`qmd`) version of the `AnalyticsReportShell` in RStudio.
 
-  + Edit the `author` line in the YAML header to be your name.
+    + Edit the `author` line in the YAML header to be your name.
 
 6. In that notebook, do the following to load the data.
 
-  + In the `setup` chunk at the top of the notebook, use `library(tidyverse)` to load the `{tidyverse}` functionality. Run that line with `ctrl+Enter` or `cmd+Enter` to load the `{tidyverse}` into your R Session.
-  + Use `read_csv()` along with the path to the `dataFA24.csv` file on your computer to read that file into your notebook. Don't forget to store your data into a named variable so that you can continue to access it. 
-  + Use the `head()` function on your data to print out the first six rows of your data set. Remember to use `ctrl+Enter` or `cmd+Enter` to run your code.
+    + In the `setup` chunk at the top of the notebook, use `library(tidyverse)` to load the `{tidyverse}` functionality. Run that line with `ctrl+Enter` or `cmd+Enter` to load the `{tidyverse}` into your R Session.
+    + Use `read_csv()` along with the path to the `train_data.csv` file on your computer to read that file into your notebook. Don't forget to store your data into a named variable so that you can continue to access it. 
+    + Use the `head()` function on your data to print out the first six rows of your data set. Remember to use `ctrl+Enter` or `cmd+Enter` to run your code.
 
 You should see the first six rows of data printed out below your code chunk. 
 

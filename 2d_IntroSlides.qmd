@@ -634,21 +634,25 @@ ggplot() +
 
 ## Necessary Assumptions
 
-+ For model and predictions
+. . .
 
-  + Training data are random and representative of population.
+For model and predictions
 
-    + Otherwise, we should not be modeling this way.
++ Training data are random and representative of population.
 
-  + Residuals (prediction errors) are normally distributed with mean $\mu = 0$ and constant standard deviation $\sigma$.
+  + Otherwise, we should not be modeling this way.
 
-    + Allows construction of confidence intervals around predictions (making our models *right*).
++ Residuals (prediction errors) are normally distributed with mean $\mu = 0$ and constant standard deviation $\sigma$.
+
+  + Allows construction of confidence intervals around predictions (making our models *right*).
 
 ## Necessary Assumptions
 
-+ For interpretations of coefficients (statistical learning / inference)
+. . .
 
-  + No multicollinearity (predictors aren't correlated with one another)
+For interpretations of coefficients (statistical learning / inference)
+
++ No multicollinearity (predictors aren't correlated with one another)
   
 ## Summary
 

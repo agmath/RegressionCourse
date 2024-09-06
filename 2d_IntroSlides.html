@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-13">
+  <meta name="dcterms.date" content="2024-09-05">
   <title>Overview of Statistical Learning (and Competition Overview)</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -337,18 +337,28 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 13, 2024</p>
+  <p class="date">September 5, 2024</p>
 </section>
 <section id="statistical-learning-in-pictures" class="slide level2">
 <h2>Statistical Learning in Pictures</h2>
-
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch"></section>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-1-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="statistical-learning-in-pictures-1" class="slide level2">
 <h2>Statistical Learning in Pictures</h2>
 
 <img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"><ul>
 <li class="fragment"><p><strong>Goal:</strong> Build a model <span class="math inline">\(\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x}\)</span> to predict <span class="math inline">\(y\)</span>, given <span class="math inline">\(x\)</span>.</p></li>
-<li class="fragment"><p><strong>General Goal:</strong> Build a model <span class="math inline">\(\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k}\)</span> to predict <span class="math inline">\(y\)</span> given features <span class="math inline">\(x_1, \cdots, x_k\)</span>.</p>
+<li class="fragment"><p><strong>Generalized Goal:</strong> Build a model <span class="math inline">\(\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k}\)</span> to predict <span class="math inline">\(y\)</span> given features <span class="math inline">\(x_1, \cdots, x_k\)</span>.</p>
 <ul>
 <li class="fragment"><span class="math inline">\(\beta_i\)</span>’s are <em>parameters</em>, <em>learned</em> from training data.</li>
 </ul></li>
@@ -356,18 +366,38 @@ Dr.&nbsp;Gilbert
 </section>
 <section id="statistical-learning-in-pictures-2" class="slide level2">
 <h2>Statistical Learning in Pictures</h2>
-
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"><ul>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-3-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
 <li class="fragment">This model doesn’t capture the general trend between our observed <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> pairs.</li>
 </ul>
+</div>
 </section>
 <section id="statistical-learning-in-pictures-3" class="slide level2">
 <h2>Statistical Learning in Pictures</h2>
-
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"><ul>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
 <li class="fragment">Better job capturing the general trend (<em>sort of</em>).</li>
 <li class="fragment">Larger <span class="math inline">\(x\)</span> values are associated with smaller <span class="math inline">\(y\)</span> values.</li>
 </ul>
+</div>
 </section>
 <section id="statistical-learning-in-pictures-4" class="slide level2">
 <h2>Statistical Learning in Pictures</h2>
@@ -407,8 +437,12 @@ Dr.&nbsp;Gilbert
 </section>
 <section id="how-it-works" class="slide level2">
 <h2>How it works</h2>
+<div class="fragment">
 <p>In this case, we have <span class="math inline">\(\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x\)</span> and we find <span class="math inline">\(\beta_0\)</span> (intercept) and <span class="math inline">\(\beta_1\)</span> (slope) to minimize the quantity</p>
+</div>
+<div class="fragment">
 <p><span class="math display">\[\sum_{i = 1}^{n}{\left(y_{\text{obs}} - y_{\text{pred}}\right)^2}\]</span></p>
+</div>
 </section>
 <section id="how-it-works-1" class="slide level2">
 <h2>How it works</h2>
@@ -424,18 +458,43 @@ Dr.&nbsp;Gilbert
 <img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
 <section id="interpreting-the-model" class="slide level2">
 <h2>Interpreting the Model</h2>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:&quot;50%;">
 <p><span class="math inline">\(\displaystyle{\mathbb{E}\left[y\right] = 3783.21 - 45.3\cdot x}\)</span></p>
-
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"><ul>
+</div>
+</div>
+<ul>
 <li class="fragment">The expected value of <span class="math inline">\(y\)</span> when <span class="math inline">\(x = 0\)</span> is <span class="math inline">\(3783.21\)</span>.</li>
 <li class="fragment">As <span class="math inline">\(x\)</span> increases, we expect <span class="math inline">\(y\)</span> to decrease (on average).</li>
 <li class="fragment">Given a unit increase in <span class="math inline">\(x\)</span>, we expect <span class="math inline">\(y\)</span> to decrease by about <span class="math inline">\(45.3\)</span> units.</li>
 </ul>
+</div>
 </section>
 <section id="can-we-find-a-better-model" class="slide level2">
 <h2>Can we find a <em>better</em> model?</h2>
-
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="can-we-interpret-this-model" class="slide level2">
 <h2>Can we interpret this model?</h2>
 
@@ -457,8 +516,18 @@ Dr.&nbsp;Gilbert
 </section>
 <section id="is-there-a-happy-medium" class="slide level2">
 <h2>Is there a happy medium?</h2>
-
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch"></section>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-16-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="is-there-a-happy-medium-1" class="slide level2">
 <h2>Is there a happy medium?</h2>
 
@@ -472,31 +541,74 @@ Dr.&nbsp;Gilbert
 </section>
 <section id="how-do-we-know-what-model-is-right" class="slide level2">
 <h2>How do we know what model is <em>right</em>?</h2>
-
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"><ul>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-18-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<ul>
 <li class="fragment">The <font color="purple">purple</font> model is <em>too straight</em></li>
 <li class="fragment">The <font color="orange">orange</font> model is <em>too wiggly</em></li>
 <li class="fragment">The <font color="green">green</font> model is <em>just right</em></li>
 </ul>
+</div>
+</div>
+</div>
 </section>
 <section id="how-do-we-know-what-model-is-right-1" class="slide level2">
 <h2>How do we know what model is <em>right</em>?</h2>
-
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"><ul>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-19-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<ul>
 <li class="fragment"><p>We don’t want to wait for new data to know we are wrong.</p>
 <ul>
 <li class="fragment">Use some of our available data for training</li>
 <li class="fragment">And the rest for validation</li>
 </ul></li>
 </ul>
+</div>
+</div>
+</div>
 </section>
-<section id="but-our-predictions-are-all-wrongliterally" class="slide level2">
-<h2>But our predictions are all wrong…literally!</h2>
-
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch"><ul>
+<section id="okay-but-our-predictions-are-all-wrongliterally" class="slide level2">
+<h2>Okay, but our predictions are all wrong…literally!</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-20-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<ul>
 <li class="fragment"><em>All models are wrong, but some are useful</em>, George Box (1976)</li>
 <li class="fragment">Predictions will be wrong but, with some assumptions, they have value</li>
 </ul>
+</div>
+</div>
 </section>
 <section id="necessary-assumptions" class="slide level2">
 <h2>Necessary Assumptions</h2>

@@ -17,6 +17,8 @@ theme_set(theme_bw(base_size = 20))
 
 ## Statistical Learning in Pictures
 
+. . . 
+
 ```{r}
 #| echo: false
 #| message: false
@@ -54,11 +56,13 @@ ggplot() +
 ```
 
 + **Goal:** Build a model $\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x}$ to predict $y$, given $x$.
-+ **General Goal:** Build a model $\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k}$ to predict $y$ given features $x_1, \cdots, x_k$.
++ **Generalized Goal:** Build a model $\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k}$ to predict $y$ given features $x_1, \cdots, x_k$.
 
   + $\beta_i$'s are *parameters*, *learned* from training data.
 
 ## Statistical Learning in Pictures
+
+. . .
 
 ```{r}
 #| echo: false
@@ -82,6 +86,8 @@ ggplot() +
 + This model doesn't capture the general trend between our observed $x$ and $y$ pairs.
 
 ## Statistical Learning in Pictures
+
+. . . 
 
 ```{r}
 #| echo: false
@@ -249,7 +255,11 @@ ggplot() +
 
 ## How it works
 
+. . . 
+
 In this case, we have $\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x$ and we find $\beta_0$ (intercept) and $\beta_1$ (slope) to minimize the quantity
+
+. . . 
 
 $$\sum_{i = 1}^{n}{\left(y_{\text{obs}} - y_{\text{pred}}\right)^2}$$
 
@@ -291,7 +301,11 @@ ggplot() +
 
 ## Interpreting the Model
 
-$\displaystyle{\mathbb{E}\left[y\right] = 3783.21 - 45.3\cdot x}$
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
 
 ```{r}
 ggplot() + 
@@ -306,11 +320,23 @@ ggplot() +
        x = "x", y = "y")
 ```
 
+:::
+
+:::{.column width="50%}
+
+$\displaystyle{\mathbb{E}\left[y\right] = 3783.21 - 45.3\cdot x}$
+
+:::
+
+::::
+
 + The expected value of $y$ when $x = 0$ is $3783.21$.
 + As $x$ increases, we expect $y$ to decrease (on average).
 + Given a unit increase in $x$, we expect $y$ to decrease by about $45.3$ units.
 
 ## Can we find a *better* model?
+
+. . . 
 
 ```{r}
 #| echo: false
@@ -417,6 +443,8 @@ ggplot() +
 
 ## Is there a happy medium?
 
+. . . 
+
 ```{r}
 #| echo: false
 #| message: false
@@ -479,7 +507,15 @@ ggplot() +
   
 ## How do we know what model is *right*?
 
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
 ```{r}
+#| fig.height: 8
+
 ggplot() + 
   geom_point(aes(x = x, y = y),
              size = 3) + 
@@ -503,13 +539,29 @@ ggplot() +
        y = "y")
 ```
 
+:::
+
+:::{.column width="50%"}
+
 + The <font color="purple">purple</font> model is *too straight*
 + The <font color="orange">orange</font> model is *too wiggly*
 + The <font color="green">green</font> model is *just right*
 
+:::
+
+::::
+
 ## How do we know what model is *right*?
 
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
 ```{r}
+#| fig.height: 8
+
 ggplot() + 
   geom_point(aes(x = x, y = y),
              size = 3) + 
@@ -532,14 +584,28 @@ ggplot() +
        y = "y")
 ```
 
+:::
+
+:::{.column width="50%"}
+
 + We don't want to wait for new data to know we are wrong.
 
   + Use some of our available data for training
   + And the rest for validation
 
-## But our predictions are all wrong...literally!
+:::
+
+::::
+
+## Okay, but our predictions are all wrong...literally!
+
+::::{.columns}
+
+:::{.column width="50%"}
 
 ```{r}
+#| fig.height: 8
+
 ggplot() + 
   geom_point(aes(x = x, y = y),
              size = 3,
@@ -555,8 +621,16 @@ ggplot() +
        y = "y")
 ```
 
+:::
+
+:::{.column width="50%"}
+
 + *All models are wrong, but some are useful*, George Box (1976)
 + Predictions will be wrong but, with some assumptions, they have value
+
+:::
+
+::::
 
 ## Necessary Assumptions
 

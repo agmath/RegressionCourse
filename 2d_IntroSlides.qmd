@@ -2,6 +2,7 @@
 title: "Overview of Statistical Learning (and Competition Overview)"
 author: Dr. Gilbert
 format: revealjs
+fontsize: 24pt
 date: today
 date-format: long
 theme: serif

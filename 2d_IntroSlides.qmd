@@ -699,10 +699,12 @@ For interpretations of coefficients (statistical learning / inference)
 
 + Building models $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$
 + Predicting a *numerical* response ($y$) given features ($x_i$)
-+ Need data to build the models -- some for training, some for validation.
-+ Model predictions will be wrong.
-+ As long as standard deviation of residuals (prediction errors) is constant, we can build meaningful confidence intervals for predictions.
-+ Can interpret models to gain insight into relationships between predictor(s) and response.
++ Need data to build the models -- some for training, some for validation
+
+  + The $\beta_i$'s are *parameters* whose values are *learned/estimated* from *training* data
++ Model predictions will be wrong
++ As long as standard deviation of residuals (prediction errors) is constant, we can build meaningful confidence intervals for predictions
++ Can interpret models to gain insight into relationships between predictor(s) and response
 
 ## Competition Information
 

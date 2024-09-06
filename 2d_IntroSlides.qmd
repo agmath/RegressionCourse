@@ -752,4 +752,6 @@ For interpretations of coefficients (statistical learning / inference)
 + An introduction to R
 + Getting our hands dirty!
 
-+ **Homework:** Competition Assignment 1 -- join the competition, read the details, download the data, and write a *Statement of Purpose*.
+. . . 
+
+**Homework:** Start Competition Assignment 1 -- join the competition, read the details, download the data, and start writing a *Statement of Purpose*

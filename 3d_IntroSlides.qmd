@@ -242,7 +242,7 @@ Now the change is permanent because we've stored the result
 Use this time to continue playing with the `usedCars` pricing data
 
 1. Write down and answer some interesting questions that might use functionality discussed in this slide deck -- start simple and then build up to questions that might be more complex
-2. Try documenting your work by including text descriptions in addition to the code chunks
+2. Document your work by including text descriptions alongside the code chunks
 3. Save your QMD file
 4. Use the blue *render* button to convert your markdown document into a beautiful HTML document and enjoy the fruits of your labor!
 

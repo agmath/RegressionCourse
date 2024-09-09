@@ -13,6 +13,7 @@ incremental: true
 ```{r global-options, include=FALSE}
 library(tidyverse)
 library(tidymodels)
+library(countdown)
 
 theme_set(theme_bw(base_size = 20))
 ```
@@ -141,6 +142,10 @@ I'll post the link in Slack
 
 $\bigstar$ Try these functions on your `usedCars` data
 
+```{r}
+countdown(minutes = 2)
+```
+
 ## The Pipe Operator 
 
 + Pipes (`%>%` or `|>`) make code more readable and allow chaining of functions together
@@ -173,6 +178,10 @@ $\bigstar$ How might we use these functions? Let's ask some questions and then t
 . . . 
 
 Add your work to your Quarto Notebook
+
+```{r}
+countdown(minutes = 5)
+```
 
 ## All Changes are Temporary
 

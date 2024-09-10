@@ -171,6 +171,14 @@ penguins %>%
   head()
 ```
 
+. . . 
+
+$\bigstar$ Rewrite the functions you used to explore your data with *pipes*
+
+```{r}
+countdown(minutes = 3)
+```
+
 ## Manipulating and Transforming Data
 
 + `filter()` to return only desired records
@@ -187,9 +195,25 @@ $\bigstar$ How might we use these functions? Write down some questions that coul
 countdown(minutes = 5)
 ```
 
-. . . 
+## Manipulating and Transforming Data
+
+:::{.nonincremental}
+
++ `filter()` to return only desired records
++ `select()` to return only desired columns
++ `summarize()` to compute summaries on a table
++ `groupby()` to create groups in a table
++ `mutate()` to create new columns or change existing ones
+
+:::
+
+$\bigstar$ How might we use these functions? Write down some questions that could be answered using the functions described above. Start with a couple very simple questions and then work up to questions whose answers might be more complex to find.
 
 $\bigstar$ We'll try answering some of those questions now!
+
+```{r}
+countdown(minutes = 10)
+```
 
 ## All Changes are Temporary
 
@@ -249,12 +273,13 @@ Now the change is permanent because we've stored the result
 
 Use this time to continue playing with the `airbnb` pricing data
 
-1. Write down and answer additional interesting questions that might use functionality discussed in this slide deck -- start simple and then build up to questions that might be more complex
-2. Document your work by including text descriptions alongside the code chunks
-3. Save your QMD file
-4. Use the blue *render* button to convert your markdown document into a beautiful HTML document and enjoy the fruits of your labor!
+1. Save your QMD file
+1. Use the blue *render* button to convert your markdown document into a beautiful HTML document and enjoy the fruits of your labor!
 
     + 🤔 Ponder an existence where you never need to open MS Word again! 🤔
+    
+1. Write down and answer additional interesting questions that might use functionality discussed in this slide deck -- start simple and then build up to questions that might be more complex
+1. Document your work by including text descriptions alongside the code chunks
 
 . . .
 

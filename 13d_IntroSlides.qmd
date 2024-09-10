@@ -217,7 +217,7 @@ You know by now that following along and writing/executing code during our in-cl
 For this notebook, either...
 
 + follow along with the Boston Housing data as we go (start a new notebook)
-+ continue adding on to the notebook containing your models for used car prices
++ continue adding on to the notebook containing your models for rental prices
 
 . . . 
 
@@ -302,7 +302,7 @@ $\bigstar$ Let's try it! $\bigstar$
 
 . . . 
 
-If you're playing along with the used cars data... 
+If you're playing along with the Air BnB data... 
 
 1. choose at least one of the available numeric predictors to include in polynomial terms
 2. create an instance of a linear regression model *specification*
@@ -468,7 +468,7 @@ $\bigstar$ Let's try it! $\bigstar$
 
 . . . 
 
-Again, if you are playing along with your used cars data...
+Again, if you are playing along with your Air BnB data...
 
 1. fit your model *workflow* to your training data
 2. conduct both *global* and *term-based* model assessments
@@ -592,9 +592,9 @@ $\bigstar$ Let's try it! $\bigstar$
 
 . . .
 
-For those still following along with the used cars data...
+For those still following along with the Air BnB data...
 
-1. plot your model's fitted values along with the observed selling prices for your training data
+1. plot your model's fitted values along with the observed rental prices for your training data
 2. plot of your model's predictions in relation to a predictor that has a higher-order term in your model -- vary the values of the other significant predictors across different thresholds to visualize their effect, as in the previous slide
 
 ## Interpreting the Model
@@ -747,7 +747,7 @@ $\bigstar$ Let's try it! $\bigstar$
 
 . . . 
 
-If you have a model that predicts prices of used cars...
+If you have a model that predicts prices of Air BnB rentals...
 
 1. provide interpretations of the intercept (if relevant) and the association between each surviving predictor and the response
 

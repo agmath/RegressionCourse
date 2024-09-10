@@ -184,7 +184,7 @@ countdown(minutes = 3)
 + `filter()` to return only desired records
 + `select()` to return only desired columns
 + `summarize()` to compute summaries on a table
-+ `groupby()` to create groups in a table
++ `group_by()` to create groups in a table
 + `mutate()` to create new columns or change existing ones
 
 . . .
@@ -202,7 +202,7 @@ countdown(minutes = 5)
 + `filter()` to return only desired records
 + `select()` to return only desired columns
 + `summarize()` to compute summaries on a table
-+ `groupby()` to create groups in a table
++ `group_by()` to create groups in a table
 + `mutate()` to create new columns or change existing ones
 
 :::
@@ -223,7 +223,7 @@ countdown(minutes = 10)
 
 penguins %>%
   filter(species == "Gentoo") %>%
-  groupby(island) %>%
+  group_by(island) %>%
   summarize(
     avg_mass = mean(body_mass_g)
   )
@@ -246,7 +246,7 @@ penguins %>%
 
 penguins <- penguins %>%
   filter(species == "Gentoo") %>%
-  groupby(island) %>%
+  group_by(island) %>%
   summarize(
     avg_mass = mean(body_mass_g)
   )

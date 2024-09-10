@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-29">
+  <meta name="dcterms.date" content="2024-09-09">
   <title>Inclusion and Interpretation of Catgorical Predictors in Linear Regression Models</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 29, 2024</p>
+  <p class="date">September 9, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -520,7 +520,7 @@ code.sourceCode {
 <p>As always, you are encouraged to implement the ideas and techniques discussed here with your own data. You should…</p>
 <ol type="1">
 <li class="fragment">Open RStudio and ensure that you are working within your <code>MAT300</code> project space</li>
-<li class="fragment">Open the notebook which includes your models for used car prices</li>
+<li class="fragment">Open the notebook which includes your models for Air BnB rentals</li>
 <li class="fragment">Run all of the code in that notebook</li>
 </ol>
 <div class="fragment">
@@ -796,7 +796,7 @@ $\bigstar$ Let's try it! $\bigstar$
 </font>
 </center>
 
-1. Identify a categorical predictor of price in your used cars data set
+1. Identify a categorical predictor of price in your Air BnB data set
 2. Build a model using only that categorical predictor
 3. Determine the result of your ANOVA test
 4. Write down the estimated form of the model
@@ -1096,7 +1096,7 @@ $\bigstar$ Let's try it! $\bigstar$
 <br> </font>
 </center>
 <ol type="1">
-<li class="fragment">Choose one categorical predictor of price for a used car in your dataset</li>
+<li class="fragment">Choose one categorical predictor of price for a rental in your dataset</li>
 <li class="fragment">How many levels of your categorical variable are there?</li>
 <li class="fragment">Is a scoring method meaningful for the levels of your variable? Why or why not?</li>
 <li class="fragment">What would a dummy-encoding of your categorical variable look like? How many indicator columns would be introduced?</li>
@@ -1192,7 +1192,7 @@ $\bigstar$ Let's try it! $\bigstar$
 </center>
 <ol type="1">
 <li class="fragment"><p>Add a new section to your notebook on the use of categorical predictors in models</p></li>
-<li class="fragment"><p>Set up a linear regression model which uses your chosen categorical variable as the sole predictor of car price</p>
+<li class="fragment"><p>Set up a linear regression model which uses your chosen categorical variable as the sole predictor of rental price</p>
 <ul>
 <li class="fragment">Create a model <em>specification</em></li>
 <li class="fragment">Create a <em>recipe</em> and use the <code>step_dummy()</code> feature-engineering step in order to convert your categorical column into a collection of indicator columns</li>

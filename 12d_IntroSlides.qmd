@@ -144,7 +144,7 @@ ggplot() +
 As always, you are encouraged to implement the ideas and techniques discussed here with your own data. You should...
 
 1. Open RStudio and ensure that you are working within your `MAT300` project space
-2. Open the notebook which includes your models for used car prices
+2. Open the notebook which includes your models for Air BnB rentals
 3. Run all of the code in that notebook
 
 . . . 
@@ -365,7 +365,7 @@ $\bigstar$ Let's try it! $\bigstar$
 </font>
 </center>
 
-1. Identify a categorical predictor of price in your used cars data set
+1. Identify a categorical predictor of price in your Air BnB data set
 2. Build a model using only that categorical predictor
 3. Determine the result of your ANOVA test
 4. Write down the estimated form of the model
@@ -530,7 +530,7 @@ $\bigstar$ Let's try it! $\bigstar$
 </font>
 </center>
 
-1. Choose one categorical predictor of price for a used car in your dataset
+1. Choose one categorical predictor of price for a rental in your dataset
 2. How many levels of your categorical variable are there?
 3. Is a scoring method meaningful for the levels of your variable? Why or why not?
 4. What would a dummy-encoding of your categorical variable look like? How many indicator columns would be introduced?
@@ -604,7 +604,7 @@ $\bigstar$ Let's try it! $\bigstar$
 </center>
 
 1. Add a new section to your notebook on the use of categorical predictors in models
-2. Set up a linear regression model which uses your chosen categorical variable as the sole predictor of car price
+2. Set up a linear regression model which uses your chosen categorical variable as the sole predictor of rental price
 
     + Create a model *specification*
     + Create a *recipe* and use the `step_dummy()` feature-engineering step in order to convert your categorical column into a collection of indicator columns

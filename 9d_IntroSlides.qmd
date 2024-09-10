@@ -191,7 +191,7 @@ $\bigstar$ As usual, I recommend that you play along during our discussion! $\bi
 
 1. Open RStudio
 2. Verify that you are working within your `MAT300` project space
-3. Open your most recent notebook -- the one where you built a simple linear regressor to predict the price of a used car
+3. Open your most recent notebook -- the one where you built a simple linear regressor to predict the rental price of an Air BnB
 4. Run all of the code chunks in that notebook
 5. Describe the *inferential* and *predictive* questions you implicitly asked in pursuing the construction of that model
 
@@ -854,7 +854,7 @@ ggplot() +
 
 </center>
 
-1. Write down two predictive questions associated with used car prices that could be answered with your model
+1. Write down two predictive questions associated with Air BnB rental prices that could be answered with your model
 2. Can you differentiate versions of those questions that could be answered by *confidence* versus *prediction* intervals? What is the difference?
 3. Compute your model's prediction for a particular value of the predictor you chose
 4. Similarly, compute the lower and upper bounds for bound confidence and prediction intervals for your chosen value

@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-27">
+  <meta name="dcterms.date" content="2024-09-09">
   <title>{tidymodels} Overview</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 27, 2024</p>
+  <p class="date">September 9, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -469,8 +469,8 @@ code.sourceCode {
 <li class="fragment">Edit the fields, YAML, and text if you would like.</li>
 </ul></li>
 <li class="fragment"><p>Load the <code>{tidyverse}</code> and <code>{tidymodels}</code> packages</p></li>
-<li class="fragment"><p>Read in the <code>usedCars</code> data that we’ve been working with recently</p></li>
-<li class="fragment"><p>Adapt the code on this slide to split your <code>usedCars</code> data into <code>training</code> and <code>test</code> sets.</p></li>
+<li class="fragment"><p>Read in the <code>airbnb</code> data that we’ve been working with recently</p></li>
+<li class="fragment"><p>Adapt the code on this slide to split your <code>airbnb</code> data into <code>training</code> and <code>test</code> sets.</p></li>
 </ol>
 </div>
 </section>
@@ -499,7 +499,7 @@ code.sourceCode {
 </center>
 <ol type="1">
 <li class="fragment">Construct a linear regression model <em>specification</em></li>
-<li class="fragment">Choose one of the available (numeric) predictors of selling price for the <code>usedCars</code> in your data set and construct a <em>recipe</em> to predict price using that single predictor</li>
+<li class="fragment">Choose one of the available (numeric) predictors of listing price for the <code>airbnb</code> rentals in your data set and construct a <em>recipe</em> to predict price using that single predictor</li>
 <li class="fragment">Package your <em>model</em> and <em>recipe</em> together into a <em>workflow</em></li>
 <li class="fragment">Fit the <em>workflow</em> to your training data</li>
 </ol>
@@ -698,7 +698,7 @@ code.sourceCode {
 <li class="fragment">Make sure to name the column with the exact name of your chosen predictor</li>
 <li class="fragment">Verify that you stored this resulting data frame as a new object</li>
 </ul></li>
-<li class="fragment"><p>Use <code>predict()</code> and <code>augment()</code> to make price predictions for these fictitious (<em>counterfactual</em>) cars</p>
+<li class="fragment"><p>Use <code>predict()</code> and <code>augment()</code> to make price predictions for these fictitious (<em>counterfactual</em>) rentals</p>
 <ul>
 <li class="fragment">Do you see the difference between <code>predict()</code> and <code>augment()</code>?</li>
 <li class="fragment">Can you get interval bounds rather than predictions using <code>predict()</code>?</li>

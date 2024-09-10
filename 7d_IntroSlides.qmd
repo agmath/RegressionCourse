@@ -158,8 +158,8 @@ $\bigstar$ Let's try it! $\bigstar$
     + Edit the fields, YAML, and text if you would like.
     
 3. Load the `{tidyverse}` and `{tidymodels}` packages
-4. Read in the `usedCars` data that we've been working with recently
-5. Adapt the code on this slide to split your `usedCars` data into `training` and `test` sets.
+4. Read in the `airbnb` data that we've been working with recently
+5. Adapt the code on this slide to split your `airbnb` data into `training` and `test` sets.
 
 ## Build and Fit a Model
 
@@ -194,7 +194,7 @@ $\bigstar$ Let's try it! $\bigstar$
 </center>
 
 1. Construct a linear regression model *specification*
-2. Choose one of the available (numeric) predictors of selling price for the `usedCars` in your data set and construct a *recipe* to predict price using that single predictor
+2. Choose one of the available (numeric) predictors of listing price for the `airbnb` rentals in your data set and construct a *recipe* to predict price using that single predictor
 3. Package your *model* and *recipe* together into a *workflow*
 4. Fit the *workflow* to your training data
 
@@ -327,7 +327,7 @@ $\bigstar$ Let's try this! $\bigstar$
     + Make sure to name the column with the exact name of your chosen predictor
     + Verify that you stored this resulting data frame as a new object
 
-3. Use `predict()` and `augment()` to make price predictions for these fictitious (*counterfactual*) cars
+3. Use `predict()` and `augment()` to make price predictions for these fictitious (*counterfactual*) rentals
 
     + Do you see the difference between `predict()` and `augment()`?
     + Can you get interval bounds rather than predictions using `predict()`?

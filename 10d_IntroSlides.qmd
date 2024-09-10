@@ -69,7 +69,7 @@ If all this seems nearly identical to our discussion on *simple linear regressio
 
 <font size="120pt"><br/>
 
-1. Open the notebook that contains your simple linear regression model for predicting used car prices
+1. Open the notebook that contains your simple linear regression model for predicting rental prices for Air BnB properties
 2. Run all of the code in that notebook
 3. Add a section to that notebook on *multiple linear regression models*
 
@@ -153,7 +153,7 @@ Why choose just one predictor when we could have them all?
 
 </center>
 
-1. Write out the form of a possible multiple linear regressor with at least two numerical predictors of car price
+1. Write out the form of a possible multiple linear regressor with at least two numerical predictors of rental price
 2. Describe the predictive and inferential tasks that your model addresses
 3. Write the *predictive* and *inferential* questions being asked/answered by your model
 
@@ -908,13 +908,13 @@ $\bigstar$ Let's try it! $\bigstar$
 </font>
 </center>
 
-1. Identify the characteristics of a car whose price you are interested in predicting
+1. Identify the characteristics of a property whose price you are interested in predicting
 
     + Formulate these characteristics into a question and add it to your notebook
 
-2. Use `tibble()` to create a new data frame containing the characteristics of that vehicle whose price you wanted to predict
+2. Use `tibble()` to create a new data frame containing the characteristics of that property whose rental price you wanted to predict
 
-3. Use your model to predict the price of that car
+3. Use your model to predict the rental price of that property
 
 ## Using the Model to Make Predictions
 
@@ -1005,7 +1005,7 @@ $\bigstar$ Let's try it! $\bigstar$
 </font>
 </center>
 
-1. Update the prediction you just made to obtain a *prediction interval* rather than a *point estimate* for the estimated car price
+1. Update the prediction you just made to obtain a *prediction interval* rather than a *point estimate* for the estimated rental price
 
     + You may want to keep your original code as well, for comparison and future reference
 
@@ -1103,7 +1103,7 @@ $\bigstar$ Let's try it! $\bigstar$
 </font>
 </center>
 
-1. Make another update to obtain a *confidence interval* for the estimated car price
+1. Make another update to obtain a *confidence interval* for the estimated rental price
 
     + Again, you likely want to keep your existing code rather than just edit it
 

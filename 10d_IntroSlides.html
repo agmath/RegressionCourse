@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-08-27">
+  <meta name="dcterms.date" content="2024-09-09">
   <title>Multiple Linear Regression: Construction, Assessment, and Interpretation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">August 27, 2024</p>
+  <p class="date">September 9, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -444,7 +444,7 @@ code.sourceCode {
 <center>
 <p><font size="120pt"><br></font></p><font size="120pt">
 <ol type="1">
-<li class="fragment">Open the notebook that contains your simple linear regression model for predicting used car prices</li>
+<li class="fragment">Open the notebook that contains your simple linear regression model for predicting rental prices for Air BnB properties</li>
 <li class="fragment">Run all of the code in that notebook</li>
 <li class="fragment">Add a section to that notebook on <em>multiple linear regression models</em></li>
 </ol>
@@ -484,7 +484,7 @@ code.sourceCode {
 <p><font size="120pt"> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p>
 </center>
 <ol type="1">
-<li class="fragment">Write out the form of a possible multiple linear regressor with at least two numerical predictors of car price</li>
+<li class="fragment">Write out the form of a possible multiple linear regressor with at least two numerical predictors of rental price</li>
 <li class="fragment">Describe the predictive and inferential tasks that your model addresses</li>
 <li class="fragment">Write the <em>predictive</em> and <em>inferential</em> questions being asked/answered by your model</li>
 </ol>
@@ -1290,12 +1290,12 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <br> </font>
 </center>
 <ol type="1">
-<li class="fragment"><p>Identify the characteristics of a car whose price you are interested in predicting</p>
+<li class="fragment"><p>Identify the characteristics of a property whose price you are interested in predicting</p>
 <ul>
 <li class="fragment">Formulate these characteristics into a question and add it to your notebook</li>
 </ul></li>
-<li class="fragment"><p>Use <code>tibble()</code> to create a new data frame containing the characteristics of that vehicle whose price you wanted to predict</p></li>
-<li class="fragment"><p>Use your model to predict the price of that car</p></li>
+<li class="fragment"><p>Use <code>tibble()</code> to create a new data frame containing the characteristics of that property whose rental price you wanted to predict</p></li>
+<li class="fragment"><p>Use your model to predict the rental price of that property</p></li>
 </ol>
 </div>
 </section>
@@ -1353,7 +1353,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <br> </font>
 </center>
 <ol type="1">
-<li class="fragment"><p>Update the prediction you just made to obtain a <em>prediction interval</em> rather than a <em>point estimate</em> for the estimated car price</p>
+<li class="fragment"><p>Update the prediction you just made to obtain a <em>prediction interval</em> rather than a <em>point estimate</em> for the estimated rental price</p>
 <ul>
 <li class="fragment">You may want to keep your original code as well, for comparison and future reference</li>
 </ul></li>
@@ -1419,7 +1419,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <br> </font>
 </center>
 <ol type="1">
-<li class="fragment"><p>Make another update to obtain a <em>confidence interval</em> for the estimated car price</p>
+<li class="fragment"><p>Make another update to obtain a <em>confidence interval</em> for the estimated rental price</p>
 <ul>
 <li class="fragment">Again, you likely want to keep your existing code rather than just edit it</li>
 </ul></li>

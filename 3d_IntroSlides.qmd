@@ -130,7 +130,7 @@ data <- read_csv("PATH_TO_CSV_FILE")
 
 . . .
 
-$\bigstar$ Read this `usedCars` dataset into your Quarto Notebook [from this link](https://raw.githubusercontent.com/agmath/agmath.github.io/master/data/classification/cars.csv)
+$\bigstar$ Read this `airbnb` dataset into your Quarto Notebook [from this link](https://raw.githubusercontent.com/agmath/agmath.github.io/master/data/AirBnB.csv)
 
 . . .
 
@@ -138,7 +138,7 @@ I'll post the link in Slack
 
 . . . 
 
-> **Note:** This used cars data was uploaded to Kaggle by Sujith K Mandala. The [original dataset can be found here](https://www.kaggle.com/datasets/sujithmandala/second-hand-car-price-prediction).
+> **Note:** This AirBnB Europe data was uploaded to Kaggle by Dipesh Khemani. The [original dataset can be found here](https://www.kaggle.com/datasets/dipeshkhemani/airbnb-cleaned-europe-dataset?select=Aemf1.csv).
   
 ## First Interactions with Data
 
@@ -148,7 +148,7 @@ I'll post the link in Slack
 
 . . . 
 
-$\bigstar$ Try these functions on your `usedCars` data
+$\bigstar$ Try these functions on your `airbnb` data
 
 ```{r}
 countdown(minutes = 2)
@@ -243,11 +243,11 @@ Now the change is permanent because we've stored the result
 
 . . .
 
-**Reminder:** You have a fully complete (and documented) notebook using the `mpg` data on the course webpage -- note this data is different than the `usedCars` data you worked with today
+**Reminder:** You have a fully complete (and documented) notebook using the `mpg` data on the course webpage -- note this data is different than the `airbnb` data you worked with today
 
 . . .
 
-Use this time to continue playing with the `usedCars` pricing data
+Use this time to continue playing with the `airbnb` pricing data
 
 1. Write down and answer additional interesting questions that might use functionality discussed in this slide deck -- start simple and then build up to questions that might be more complex
 2. Document your work by including text descriptions alongside the code chunks

@@ -14,6 +14,7 @@ incremental: true
 library(tidyverse)
 library(tidymodels)
 library(patchwork)
+library(countdown)
 
 options(kable_styling_bootstrap_options = c("hover", "striped"))
 
@@ -24,6 +25,14 @@ theme_set(theme_bw(base_size = 20))
 code.sourceCode {
   font-size: 1.3em;
   /* or try font-size: xx-large; */
+}
+
+a:link{
+  color: purple;
+}
+
+a:visited{
+  color: purple;
 }
 ```
 
@@ -244,6 +253,38 @@ data %>% #the data to be plotted
 
 </center>
 
+```{r}
+countdown(minutes = 3)
+```
+
+## Try It!
+
+. . . 
+
+<center>
+
+<font size="120pt"> <br/> $\bigstar$ Now that you know about data visualization types, build basic plots to answer at least two of the questions you wrote out earlier</font>
+
+</center>
+
+```{r}
+countdown(minutes = 5)
+```
+
+## Try It!
+
+. . . 
+
+<center>
+
+<font size="120pt"> <br/> $\bigstar$ Now that you know about data visualization types, build basic plots to answer at least two of the questions you wrote out earlier</font>
+
+</center>
+
+```{r}
+countdown(minutes = 5)
+```
+
 ## On Labels
 
 + The `labs()` layer permits global plot labels and labels for any mapped aesthetic
@@ -267,6 +308,10 @@ data %>% #the data to be plotted
 <font size="120pt"> <br/> $\bigstar$ Now that you know about labeling options in the `labs()` layer, update your plots with meaningful labels</font>
 
 </center>
+
+```{r}
+countdown(minutes = 5)
+```
   
 ## Organizing Plots with `{patchwork}`
 
@@ -287,6 +332,10 @@ data %>% #the data to be plotted
 <font size="120pt"> <br/> $\bigstar$ Use `{patchwork}` to experiment with different arrangements of your plots</font>
 
 </center>
+
+```{r}
+countdown(minutes = 5)
+```
 
 ## Additional Practice
 

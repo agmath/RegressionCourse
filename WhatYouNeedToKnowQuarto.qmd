@@ -38,7 +38,7 @@ For **bulleted lists**,
 
 \+ Item 1  
 \+ Item 2  
-$\hspace{0.5cm}$\+ Sub-Item 2.1  
+$\hspace{0.5cm} \text{ + Sub-Item 2.1}$  
 \+ Item 3
 
 

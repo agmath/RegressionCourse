@@ -88,6 +88,12 @@ We can add code chunk options to the top of a code chunk with the "hash pipe" op
   + `#| fig-height: [number here, no brackets]` determines the height of the figure (again, supposedly in inches)
   + `#| fig-align: [left/center/right, choose one...no brackets]` determines how the figure is aligned horizontally on the page
   
+## Inline R Code
+
+It is often extremely useful to *parameterize* your writing. Doing so results in a report that automatically updates without a requirement to manually comb through your analysis and overwrite computed values one-by-one. Within your text, you can write phrases like -- "my training data consists of `` r train %>% nrow()` `` observations and `` `r train %>% ncol()` `` variables, which will be evaluated each time you run your notebook and replace the code with the calculated value. 
+
+When values are complex to calculate, pre-compute them in a code cell before your paragraph and then drop them into inline R code as `` `r my_complicated_thing` ``. This way, any inline R code is kept very simple and easy to read.
+  
 ## Rendering to Different Formats
 
 We've only been rendering to HTML files, but changing the `format:` line in the YAML header will change the type of document being output when your file is rendered. You can set `format: pdf` to obtain a PDF output for easy sharing, or set `format: docx` to obtain a Word Document in case you have collaborators who require working in MS Word.

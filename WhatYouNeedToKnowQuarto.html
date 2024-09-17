@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Dr.&nbsp;Gilbert">
-<meta name="dcterms.date" content="2024-09-16">
+<meta name="dcterms.date" content="2024-09-17">
 
 <title>Quarto Basics</title>
 <style>
@@ -81,6 +81,7 @@ window.Quarto = {
   <li><a href="#hyperlinks" id="toc-hyperlinks" class="nav-link" data-scroll-target="#hyperlinks">Hyperlinks</a></li>
   <li><a href="#lists" id="toc-lists" class="nav-link" data-scroll-target="#lists">Lists</a></li>
   <li><a href="#code-chunk-options" id="toc-code-chunk-options" class="nav-link" data-scroll-target="#code-chunk-options">Code Chunk Options</a></li>
+  <li><a href="#inline-r-code" id="toc-inline-r-code" class="nav-link" data-scroll-target="#inline-r-code">Inline R Code</a></li>
   <li><a href="#rendering-to-different-formats" id="toc-rendering-to-different-formats" class="nav-link" data-scroll-target="#rendering-to-different-formats">Rendering to Different Formats</a></li>
   <li><a href="#advanced-ideas-multi-column-alignments" id="toc-advanced-ideas-multi-column-alignments" class="nav-link" data-scroll-target="#advanced-ideas-multi-column-alignments">Advanced Ideas: Multi-Column Alignments</a></li>
   <li><a href="#advanced-ideas-callout-boxes" id="toc-advanced-ideas-callout-boxes" class="nav-link" data-scroll-target="#advanced-ideas-callout-boxes">Advanced Ideas: Callout Boxes</a></li>
@@ -110,7 +111,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 16, 2024</p>
+      <p class="date">September 17, 2024</p>
     </div>
   </div>
   
@@ -215,6 +216,11 @@ window.Quarto = {
 <li><code>#| fig-align: [left/center/right, choose one...no brackets]</code> determines how the figure is aligned horizontally on the page</li>
 </ul></li>
 </ul>
+</section>
+<section id="inline-r-code" class="level2">
+<h2 class="anchored" data-anchor-id="inline-r-code">Inline R Code</h2>
+<p>It is often extremely useful to <em>parameterize</em> your writing. Doing so results in a report that automatically updates without a requirement to manually comb through your analysis and overwrite computed values one-by-one. Within your text, you can write phrases like – “my training data consists of <code>r train %&gt;% nrow()`</code> observations and <code>`r train %&gt;% ncol()`</code> variables, which will be evaluated each time you run your notebook and replace the code with the calculated value.</p>
+<p>When values are complex to calculate, pre-compute them in a code cell before your paragraph and then drop them into inline R code as <code>`r my_complicated_thing`</code>. This way, any inline R code is kept very simple and easy to read.</p>
 </section>
 <section id="rendering-to-different-formats" class="level2">
 <h2 class="anchored" data-anchor-id="rendering-to-different-formats">Rendering to Different Formats</h2>

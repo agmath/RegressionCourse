@@ -14,7 +14,7 @@ In your first competition assignment, you joined our In-Class Kaggle Competition
 
 2. Re-run the code necessary to read in your data files.
 
-3. Write code to split the data coming from `dataFA24.csv` into three sets: `train`, `validation` and `test`. You'll need two separate calls to `initial_split()` for this. Be sure to set a seed, with `set.seed()` before each call.
+3. Write code to split the data coming from `data_train.csv` into three sets: `train`, `validation` and `test`. You'll need two separate calls to `initial_split()` for this. Be sure to set a seed, with `set.seed()` before each call.
 
   + Reach out on Slack if you have any questions about how to do this!
 

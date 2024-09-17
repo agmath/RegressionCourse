@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.555">
+<meta name="generator" content="quarto-1.5.43">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Me, Scientist">
-<meta name="dcterms.date" content="2024-08-01">
+<meta name="dcterms.date" content="2024-09-17">
 
 <title>Competition Assignment 3</title>
 <style>
@@ -35,7 +35,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -76,7 +76,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
   
 </div>
 <main class="content" id="quarto-document-content">
@@ -100,7 +100,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 1, 2024</p>
+      <p class="date">September 17, 2024</p>
     </div>
   </div>
   
@@ -119,7 +119,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>Add a new section to your analytics report called <em>Model Construction</em>. In it, discuss the simple linear regression model you are choosing to build (and why).</p></li>
 <li><p>Build a simple linear regression model using what you’ve learned about the <code>{tidymodels}</code> framework. Be sure to use the single predictor that you think is most important in predicting the time to deliver a Door Dash order.</p></li>
 <li><p>Assess your model’s performance using what you’ve learned about model assessment so far. You should use the <code>validation</code> data for this purpose, but please do not open the <code>test</code> data yet – we will be building more models and don’t want any knowledge of the <code>test</code> data to infect our modeling decisions.</p></li>
-<li><p>Return to the <code>setup</code> chunk and load the <code>compFA24.csv</code> data set into your Notebook. Be sure to store this data into a named variable so that you can access it later.</p></li>
+<li><p>Return to the <code>setup</code> chunk and load the <code>data_comp.csv</code> data set into your Notebook. Be sure to store this data into a named variable so that you can access it later.</p></li>
 </ol>
 <ul>
 <li>This dataset contains new observations but is missing the <em>response</em> column. Your goal in the competition is to predict those missing <em>responses</em> – Kaggle will keep us informed about how we are doing.</li>
@@ -134,15 +134,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">price =</span> .pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="9" type="1">
-<li>Now we’ll need to extract our predictions from R so that we can submit them to Kaggle for scoring. We can do this with the <code>write.csv()</code> function. That function takes the data frame that we would like to write out as a csv file, the path and filename we’d like to save the csv file to on our computer, and we set <code>row.names = FALSE</code> to prevent R from adding an extra column of row numbers to the csv file. Below is what that command would look like on my computer, if I wanted to save my model’s predictions to a <code>MAT300_Competition</code> folder on my <code>Desktop</code>.</li>
+<li>Now we’ll need to extract our predictions from R so that we can submit them to Kaggle for scoring. We can do this with the <code>write.csv()</code> function. That function takes the data frame that we would like to write out as a csv file, the path and filename we’d like to save the csv file to on our computer, and we set <code>row.names = FALSE</code> to prevent R from adding an extra column of row numbers to the csv file. Below is what that command would look like on my computer, if I wanted to save my model’s predictions into the main project directory for MAT300. If you want to save it somewhere else, you’ll need to provide the file path relative to the location of your QMD file.</li>
 </ol>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(slr_preds, </span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>          <span class="st">"C:/users/agilb/Desktop/MAT300_Competition/slr_preds.csv"</span>, </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>          <span class="st">"slr_preds.csv"</span>, </span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="10" type="1">
-<li><p>Navigate to our competition site on Kaggle and use the <em>Submission</em> button to make your first submission for scoring on Kaggle. You’ll upload your csv file and then see where you fall on the leaderboard. This <em>public</em> leaderboard is scored using only 50% of the listings in our competition data set. The final, <em>private</em> leaderboard will be scored on the remaining 50% of those hidden listings – that is, your position on the leaderboard may change slightly when the competition closes on April 17. <strong>Note:</strong> Your position on the leaderboard is in no way related to your score on these assignments, but I hope that you are motivated to work your way towards the top of the leaderboard as our semester progresses.</p></li>
+<li><p>Navigate to our competition site on Kaggle and use the <em>Submission</em> button to make your first submission for scoring on Kaggle. You’ll upload your csv file and then see where you fall on the leaderboard. This <em>public</em> leaderboard is scored using only 30% of the listings in our competition data set. The final, <em>private</em> leaderboard will be scored on the remaining 70% of those hidden listings – that is, your position on the leaderboard may change slightly when the competition closes on December 17. <strong>Note:</strong> Your position on the leaderboard is in no way related to your score on these assignments, but I hope that you are motivated to work your way towards the top of the leaderboard as our semester progresses.</p></li>
 <li><p>Render your notebook and submit the HTML and qmd files as usual on BrightSpace using the Competition Assignment 3 folder.</p></li>
 </ol>
 <center>
@@ -186,18 +186,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -229,7 +218,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -237,7 +248,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {

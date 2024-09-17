@@ -1,0 +1,142 @@
+---
+title: "Quarto Basics"
+author: "Dr. Gilbert"
+format: 
+  html: 
+    toc: true
+  pdf: default
+theme: flatly
+date: today
+date-format: long
+---
+
+## About
+
+This notebook contains the basic things you are most likely to "need to know" about Quarto. The notebook begins with the most common formatting items and then works up to things that are more complex. You can see a fairly [comprehensive list of Quarto Markdown basics here](https://quarto.org/docs/authoring/markdown-basics.html), if you are interested in more than what is in this notebook.
+
+## Basic Text Formatting
+
++ We can surround text with a single asterisk on each side to make it appear in italic font
+  + For example, \*this is italics\* formats as *this is italics*
++ We can surround text with two asterisks on each side to make it appear in bold font
+  + For example, \*\*this is bold\*\* formats as **this is bold**
++ We can surround text with back-ticks to make it appear in a code-like font
+  + For example, \`this is code\` formats as `this is code`
+
+## Hyperlinks
+
++ The format for creating a hyperlink is \[text to be seen\](URL)
+  + For example, \[a link to the Quarto authoring tutorial\](https://quarto.org/docs/get-started/authoring/rstudio.html) formats as [a link to the Quarto authoring tutorial](https://quarto.org/docs/get-started/authoring/rstudio.html)
+
+## Lists
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+For **bulleted lists**,
+
+\+ Item 1  
+\+ Item 2  
+$\hspace{0.5cm}$\+ Sub-Item 2.1  
+\+ Item 3
+
+
+Formats as
+
++ Item 1
++ Item 2
+  + Sub-Item 2.1
++ Item 3
+
+:::
+
+:::{.column width="50%"}
+
+For **numbered lists**, 
+
+1. Item 1  
+2. Item 2  
+$\hspace{0.5cm}$\+ Sub-Item 2.1  
+3. Item 3
+
+Formats as
+
+1. Item 1
+2. Item 2
+    + Sub-Item 2.1
+3. Item 3
+
+:::
+
+::::
+
+## Code Chunk Options
+
+We can add code chunk options to the top of a code chunk with the "hash pipe" operator (`#|`)
+
++ Showing or hiding code 
+  + `#| echo: true` will display the code you wrote in the rendered document (this is the default)
+  + `#| echo: false` will prevent the code you wrote from showing in the rendered document
+  + `#| code-fold: true` will allow the code to be accessible by clicking on a button to expand it -- this is a middle ground between `#| echo: true` and `#| echo: false`
++ Showing messages, warnings, and results
+  + `#| message: true` will allow messages to be printed out in the rendered document, while `#| message: false` will suppress the messages
+  + `#| warning: true` will allow warnings to be printed out in the rendered document, while `#| warning: false` will suppress the messages
+  + `#| results: true` will show the results of the code in the cell in the rendered document, while `#| results: false` will suppress the results
++ Figure manipulation
+  + `#| fig-width: [number here, no brackets]` determines the width of the figure (supposedly in inches)
+  + `#| fig-height: [number here, no brackets]` determines the height of the figure (again, supposedly in inches)
+  + `#| fig-align: [left/center/right, choose one...no brackets]` determines how the figure is aligned horizontally on the page
+  
+## Rendering to Different Formats
+
+We've only been rendering to HTML files, but changing the `format:` line in the YAML header will change the type of document being output when your file is rendered. You can set `format: pdf` to obtain a PDF output for easy sharing, or set `format: docx` to obtain a Word Document in case you have collaborators who require working in MS Word.
+  
+## Advanced Ideas: Multi-Column Alignments
+
+\::::{.columns}
+
+\:::{.column width="50%"}
+
+Stuff in column 1...
+
+\:::
+
+\:::{.column width="25%"}
+
+Stuff in column 2...
+
+\:::
+
+\:::{.column width="25%"}
+
+Stuff in column 3...
+
+\:::
+
+\::::
+
+Will format three columns. The leftmost column will take 50% of the screen-width, while the middle and right-most column will each take up 25%. Not that \::::{.columns} has four colons in front of it, matching the four-colon line at the end, which closes the multi-column environment. The individual columns are initialized by \:::{.column} which has only three colons. This is generally the case when we are nesting environments -- only three colons for the inner-most environment and one additional colon for each environment nesting outwards.
+
+## Advanced Ideas: Callout Boxes
+
+Callout boxes are a great way to draw extra attention to part of your narrative. Here's a link to [information about the available callout boxes](https://quarto.org/docs/authoring/callouts.html). For example, 
+
+\:::{.callout-tip}  
+Use callout boxes to draw the reader's attention  
+\:::
+
+formats as 
+
+:::{.callout-tip}
+Use callout boxes to draw the reader's attention
+:::
+
+## Advanced Ideas: Typesetting Mathematics
+
+If you are referencing formulas or equations, then it can be helpful to typeset them. If you are familiar with LaTeX, then you know what to do. If you haven't seen LaTeX before, basically if you want to format mathematics, then put your expression/equation/etc. between dollar signs. For example \$y = x^2\$ will format as $y = x^2$.
+
+## Advanced Ideas: Citations, References, and Bibliography
+
+You can leverage Quarto to manage all of your citations for you. Here's [a link to how you can do this](https://quarto.org/docs/authoring/citations.html)! It's especially helpful if you can't remember the difference between Chicago, MLA, APA, or IEEE, etc. styles.
+

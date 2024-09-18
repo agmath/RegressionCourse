@@ -73,7 +73,7 @@ Formats as
 
 ## Code Chunk Options
 
-We can add code chunk options to the top of a code chunk with the "hash pipe" operator (`#|`)
+We can add code chunk options to the top of a code chunk with the "hash pipe" operator (`#|`).
 
 + Showing or hiding code 
   + `#| echo: true` will display the code you wrote in the rendered document (this is the default)
@@ -87,7 +87,44 @@ We can add code chunk options to the top of a code chunk with the "hash pipe" op
   + `#| fig-width: [number here, no brackets]` determines the width of the figure (supposedly in inches)
   + `#| fig-height: [number here, no brackets]` determines the height of the figure (again, supposedly in inches)
   + `#| fig-align: [left/center/right, choose one...no brackets]` determines how the figure is aligned horizontally on the page
-  
+
+Note that you must start your chunk options in the line immediately following the ```` ```{r} ```` line that starts the code chunk. You can include multiple chunk options, one per line with no empty lines between chunk options. For example,
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+**Correct Syntax/Will Work:**
+
+```{{r}}
+#| echo: false
+#| eval: true
+
+R code here...
+```
+
+:::
+
+:::{.column width="10%"}
+
+:::
+
+:::{.column width="40%"}
+
+**Incorrect Syntax/Won't Work:**
+
+```{{r}}
+
+#| echo: false
+#| eval: true
+
+R code here...
+```
+
+:::
+
+::::
+
 ## Inline R Code
 
 It is often extremely useful to *parameterize* your writing. Doing so results in a report that automatically updates without a requirement to manually comb through your analysis and overwrite computed values one-by-one. Within your text, you can write phrases like -- "my training data consists of `` r train %>% nrow()` `` observations and `` `r train %>% ncol()` `` variables, which will be evaluated each time you run your notebook and replace the code with the calculated value. 

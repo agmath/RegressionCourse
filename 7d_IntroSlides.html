@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-09-09">
+  <meta name="dcterms.date" content="2024-09-24">
   <title>{tidymodels} Overview</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">September 9, 2024</p>
+  <p class="date">September 24, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -463,14 +463,12 @@ code.sourceCode {
 <p><span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
 </center>
 <ol type="1">
-<li class="fragment"><p>Open RStudio and your MAT300 project</p></li>
-<li class="fragment"><p>Create a new Quarto Document which will contain your first attempt at modeling</p>
-<ul>
-<li class="fragment">Edit the fields, YAML, and text if you would like.</li>
-</ul></li>
-<li class="fragment"><p>Load the <code>{tidyverse}</code> and <code>{tidymodels}</code> packages</p></li>
-<li class="fragment"><p>Read in the <code>airbnb</code> data that we’ve been working with recently</p></li>
-<li class="fragment"><p>Adapt the code on this slide to split your <code>airbnb</code> data into <code>training</code> and <code>test</code> sets.</p></li>
+<li class="fragment">Open RStudio and your MAT300 project</li>
+<li class="fragment">Open the Notebook you had been using to explore our <em>AirBnB Europe</em> data from two weeks ago.</li>
+<li class="fragment">Save a new copy of it, perhaps named <code>MyModelingNotebook.qmd</code>.</li>
+<li class="fragment">Keep the YAML Header (but update the title) and keep the first code chunk – the one that (i) loads your packages, (ii) reads in the AirBnB data, and (iii) cleans up the column names, but delete everything below it.</li>
+<li class="fragment">Add code to load the <code>{tidymodels}</code> package into your notebook, if it is not already loaded.</li>
+<li class="fragment">Adapt the code on this slide to split your <code>airbnb</code> data into <code>train</code>ing and <code>test</code> sets.</li>
 </ol>
 </div>
 </section>
@@ -499,7 +497,7 @@ code.sourceCode {
 </center>
 <ol type="1">
 <li class="fragment">Construct a linear regression model <em>specification</em></li>
-<li class="fragment">Choose one of the available (numeric) predictors of listing price for the <code>airbnb</code> rentals in your data set and construct a <em>recipe</em> to predict price using that single predictor</li>
+<li class="fragment">Choose a few of the available (numeric) predictors of listing price for the <code>airbnb</code> rentals in your data set and construct a <em>recipe</em> to predict price using those predictors</li>
 <li class="fragment">Package your <em>model</em> and <em>recipe</em> together into a <em>workflow</em></li>
 <li class="fragment">Fit the <em>workflow</em> to your training data</li>
 </ol>
@@ -685,6 +683,9 @@ code.sourceCode {
 </div>
 <p>To add a new <code>.pred</code> column to the <code>new_data</code> data frame.</p>
 </div>
+<div class="fragment">
+<p><strong>Note:</strong> Your “<em>new data</em>” could be your <em>training</em> data, your <em>testing</em> data, some new <em>real</em> observations that you want to make predictions for, or even some <em>counterfactual</em> (hypothetical) data</p>
+</div>
 </section>
 <section id="making-predictions-1" class="slide level2">
 <h2>Making Predictions</h2>
@@ -692,23 +693,30 @@ code.sourceCode {
 <p><span class="math inline">\(\bigstar\)</span> Let’s try this! <span class="math inline">\(\bigstar\)</span></p>
 </center>
 <ol type="1">
-<li class="fragment"><p>Find the minimum and maximum observed training values for your numeric predictor</p></li>
-<li class="fragment"><p>Create a single-column data frame using <code>tibble()</code> and <code>seq()</code></p>
+<li class="fragment">Use <code>predict()</code> to make predictions for the rental prices of your training observations, then use <code>augment()</code> to do the same – what is the difference?</li>
+<li class="fragment">Plot your model’s predictions with respect to one of your predictor variables.</li>
+</ol>
+<div class="fragment">
+<p>If you are successful doing the above…</p>
+<ol type="1">
+<li class="fragment">Find the minimum (<code>MIN_VAL</code>) and maximum (<code>MAX_VAL</code>) observed training values for one of your numeric predictors</li>
+<li class="fragment">Create a <code>new_data</code> data frame using <code>tibble()</code> and <code>seq()</code>.
 <ul>
-<li class="fragment">Make sure to name the column with the exact name of your chosen predictor</li>
-<li class="fragment">Verify that you stored this resulting data frame as a new object</li>
+<li class="fragment">Include a column for each of the predictors your model uses – be sure to use the exact same names as in your <code>train</code>ing set</li>
+<li class="fragment">Choose a fixed value for all but your selected numerical variable (they could be different from one another)</li>
+<li class="fragment">For your chosen variable, use <code>seq(MIN_VAL, MAX_VAL, length.out = 250)</code></li>
 </ul></li>
-<li class="fragment"><p>Use <code>predict()</code> and <code>augment()</code> to make price predictions for these fictitious (<em>counterfactual</em>) rentals</p>
+<li class="fragment">Use <code>predict()</code> and <code>augment()</code> to make price predictions for these fictitious (<em>counterfactual</em>) rentals
 <ul>
-<li class="fragment">Do you see the difference between <code>predict()</code> and <code>augment()</code>?</li>
 <li class="fragment">Can you get interval bounds rather than predictions using <code>predict()</code>?</li>
 </ul></li>
 </ol>
+</div>
 </section>
 <section id="additional-tasks" class="slide level2">
 <h2>Additional Tasks</h2>
 <div class="fragment">
-<p>If you’ve successfully completed all of the tasks listed in this slide deck, try the following:</p>
+<p>Build a simpler model, one using just a single numerical predictor. Then, for this model, try each of the following…</p>
 <ol type="1">
 <li class="fragment"><p>Plotting and interpreting model predictions</p>
 <ol type="i">

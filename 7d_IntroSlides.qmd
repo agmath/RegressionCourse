@@ -153,13 +153,11 @@ $\bigstar$ Let's try it! $\bigstar$
 </center>
 
 1. Open RStudio and your MAT300 project 
-2. Create a new Quarto Document which will contain your first attempt at modeling
-
-    + Edit the fields, YAML, and text if you would like.
-    
-3. Load the `{tidyverse}` and `{tidymodels}` packages
-4. Read in the `airbnb` data that we've been working with recently
-5. Adapt the code on this slide to split your `airbnb` data into `training` and `test` sets.
+2. Open the Notebook you had been using to explore our *AirBnB Europe* data from two weeks ago.
+3. Save a new copy of it, perhaps named `MyModelingNotebook.qmd`.
+4. Keep the YAML Header (but update the title) and keep the first code chunk -- the one that (i) loads your packages, (ii) reads in the AirBnB data, and (iii) cleans up the column names, but delete everything below it.
+5. Add code to load the `{tidymodels}` package into your notebook, if it is not already loaded.
+6. Adapt the code on this slide to split your `airbnb` data into `train`ing and `test` sets.
 
 ## Build and Fit a Model
 
@@ -194,7 +192,7 @@ $\bigstar$ Let's try it! $\bigstar$
 </center>
 
 1. Construct a linear regression model *specification*
-2. Choose one of the available (numeric) predictors of listing price for the `airbnb` rentals in your data set and construct a *recipe* to predict price using that single predictor
+2. Choose a few of the available (numeric) predictors of listing price for the `airbnb` rentals in your data set and construct a *recipe* to predict price using those predictors
 3. Package your *model* and *recipe* together into a *workflow*
 4. Fit the *workflow* to your training data
 
@@ -313,6 +311,10 @@ lin_reg_fit %>%
 
 To add a new `.pred` column to the `new_data` data frame. 
 
+. . .
+
+**Note:** Your "*new data*" could be your *training* data, your *testing* data, some new *real* observations that you want to make predictions for, or even some *counterfactual* (hypothetical) data
+
 ## Making Predictions
 
 <center>
@@ -321,22 +323,26 @@ $\bigstar$ Let's try this! $\bigstar$
 
 </center>
 
-1. Find the minimum and maximum observed training values for your numeric predictor
-2. Create a single-column data frame using `tibble()` and `seq()`
+1. Use `predict()` to make predictions for the rental prices of your training observations, then use `augment()` to do the same -- what is the difference?
+2. Plot your model's predictions with respect to one of your predictor variables.
 
-    + Make sure to name the column with the exact name of your chosen predictor
-    + Verify that you stored this resulting data frame as a new object
+. . . 
 
-3. Use `predict()` and `augment()` to make price predictions for these fictitious (*counterfactual*) rentals
+If you are successful doing the above...
 
-    + Do you see the difference between `predict()` and `augment()`?
+1. Find the minimum (`MIN_VAL`) and maximum (`MAX_VAL`) observed training values for one of your numeric predictors
+2. Create a `new_data` data frame using `tibble()` and `seq()`. 
+    + Include a column for each of the predictors your model uses -- be sure to use the exact same names as in your `train`ing set
+    + Choose a fixed value for all but your selected numerical variable (they could be different from one another)
+    + For your chosen variable, use `seq(MIN_VAL, MAX_VAL, length.out = 250)`
+3. Use `predict()` and `augment()` to make price predictions for these fictitious (*counterfactual*) rentals  
     + Can you get interval bounds rather than predictions using `predict()`?
 
 ## Additional Tasks
 
-. . . 
+. . .
 
-If you've successfully completed all of the tasks listed in this slide deck, try the following:
+Build a simpler model, one using just a single numerical predictor. Then, for this model, try each of the following...
 
 1. Plotting and interpreting model predictions
 

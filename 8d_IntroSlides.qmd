@@ -73,13 +73,11 @@ code.sourceCode {
 
 <center>
 
-<font size="120pt"><br/>
+<br/>
 
 1. Open your notebook from last time
 
 2. As we discuss the different hypothesis test and interval analyses we'll be encountering in the regression context, analyze the corresponding items for your models in that notebook
-
-</font>
 
 </center>
 

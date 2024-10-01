@@ -8,6 +8,7 @@ date: today
 date-format: long
 theme: serif
 incremental: true
+fontsize: 22pt
 ---
 
 ```{r global-options, include=FALSE}
@@ -193,7 +194,7 @@ $\bigstar$ As usual, I recommend that you play along during our discussion! $\bi
 2. Verify that you are working within your `MAT300` project space
 3. Open your most recent notebook -- the one where you built a simple linear regressor to predict the rental price of an Air BnB
 4. Run all of the code chunks in that notebook
-5. Describe the *inferential* and *predictive* questions you implicitly asked in pursuing the construction of that model
+5. Describe the *inferential* and *predictive* questions you implicitly asked in pursuing the construction of our simple linear regression models from the end of our last class meeting
 
 ## What Are We Assuming?
 
@@ -375,7 +376,7 @@ lin_reg_flip_fit %>%
 
 <center>
 
-<font size="120pt"> $\bigstar$ Let's try it! $\bigstar$</font>
+$\bigstar$ Let's try it! $\bigstar$
 
 </center>
 
@@ -452,7 +453,7 @@ Patterns in residual plots indicate that we could make a better model.
 
 <center>
 
-<font size="120pt"> $\bigstar$ Let's try it! $\bigstar$</font>
+$\bigstar$ Let's try it! $\bigstar$
 
 </center>
 
@@ -498,7 +499,7 @@ $$\mathbb{E}\left[\text{body mass}\right] = -5768.76 + 49.67\cdot\left(\text{fli
 
 <center>
 
-<font size="120pt"> $\bigstar$ Let's try it! $\bigstar$</font>
+$\bigstar$ Let's try it! $\bigstar$
 
 </center>
 
@@ -850,7 +851,7 @@ ggplot() +
 
 <center> 
 
-<font size="120pt"> Let's try this!</font>
+Let's try this!
 
 </center>
 

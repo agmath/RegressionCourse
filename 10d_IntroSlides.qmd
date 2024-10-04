@@ -8,6 +8,7 @@ date: today
 date-format: long
 theme: serif
 incremental: true
+fontsize: 26pt
 ---
 
 ```{r global-options, include=FALSE}
@@ -61,19 +62,17 @@ code.sourceCode {
 
 . . .
 
-If all this seems nearly identical to our discussion on *simple linear regression* models, it is.
+If all this seems nearly identical to our discussion on *simple linear regression* models, well...that's because it is.
 
 ## Playing Along
 
 <center>
 
-<font size="120pt"><br/>
+<br/>
 
 1. Open the notebook that contains your simple linear regression model for predicting rental prices for Air BnB properties
 2. Run all of the code in that notebook
 3. Add a section to that notebook on *multiple linear regression models*
-
-</font>
 
 </center>
 
@@ -149,7 +148,7 @@ Why choose just one predictor when we could have them all?
 
 <center>
 
-<font size="120pt"> $\bigstar$ Let's try it! $\bigstar$</font>
+$\bigstar$ Let's try it! $\bigstar$
 
 </center>
 
@@ -230,9 +229,8 @@ mlr_fit <- mlr_wf %>%
 
 <center>
 
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
-</font>
 
 </center>
 
@@ -273,9 +271,9 @@ mlr_fit %>%
 . . . 
 
 <center>
-<font size="120pt">
+
 $\bigstar$ Let's try it! $\bigstar$
-</font>
+
 </center>
 
 1. Extract the estimated model fit for your multiple linear regressor
@@ -323,9 +321,9 @@ We'll reject the null hypothesis and accept that our model contains at least one
 . . . 
 
 <center>
-<font size="120pt">
+
 $\bigstar$ Let's try it! $\bigstar$
-</font>
+
 </center>
 
 1. Write the hypotheses for the *global test for model utility* for your model
@@ -471,9 +469,9 @@ $$\mathbb{E}\left[\text{body mass}\right] = 227916.27 + 50.87\cdot\left(\text{fl
 . . . 
 
 <center>
-<font size="120pt">
+
 $\bigstar$ Let's try it! $\bigstar$
-</font>
+
 </center>
 
 1. Extract the estimated model fit for your multiple linear regressor
@@ -507,7 +505,7 @@ mlr_fit %>%
                names_to = "metric",
                values_to = "value") %>%
   kable() %>%
-  kable_styling()
+  kable_styling(font_size = 20)
 ```
 
 :::
@@ -530,13 +528,91 @@ mlr_fit %>%
 . . . 
 
 <center>
-<font size="120pt"><br/>
+
 $\bigstar$ Let's try it! $\bigstar$
-<br/></font>
+<br/>
 </center>
 
 1. Use `glance()` to obtain the *global performance metrics* for your model
 2. Identify and interpret the $p$-value, $R^2_{\text{adj}}$, and *training RMSE* values
+
+## What Do Predictions Look Like?
+
+. . .
+
+$$\mathbb{E}\left[\text{body mass}\right] = 227916.27 + 50.87\cdot\left(\text{flipper length}\right) - 116.5\cdot\left(\text{year}\right)$$
+
+. . .
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: false
+
+mlr_fit %>%
+  augment(penguins_train) %>%
+  ggplot() + 
+  geom_point(aes(x = flipper_length_mm, 
+                 y = body_mass_g),
+             color = "black",
+             alpha = 0.5,
+             size = 2) + 
+  geom_point(aes(x = flipper_length_mm,
+                 y = .pred),
+             color = "purple",
+             alpha = 0.9,
+             size = 2) +
+  labs(
+    title = "Penguin Body Mass by Flipper Length",
+    subtitle = "Observed Values (black), Model Predictions (purple)",
+    x = "Flipper Length (mm)",
+    y = "Body Mass (g)"
+  )
+```
+
+:::
+
+:::{.column width="50%"}
+
+```{r}
+#| echo: false
+#| eval: true
+
+mlr_fit %>%
+  augment(penguins_train) %>%
+  ggplot() + 
+  geom_point(aes(x = flipper_length_mm, 
+                 y = body_mass_g),
+             color = "black",
+             alpha = 0.5,
+             size = 2) + 
+  geom_point(aes(x = flipper_length_mm,
+                 y = .pred),
+             color = "purple",
+             alpha = 0.9,
+             size = 2) +
+  labs(
+    title = "Penguin Body Mass by Flipper Length",
+    subtitle = "Observed Values (black), Model Predictions (purple)",
+    x = "Flipper Length (mm)",
+    y = "Body Mass (g)"
+  )
+```
+
+<center>
+<br/>
+$\bigstar$ Let's try it! $\bigstar$<br/>
+
+</center>
+
+1. Plot your model's predictions over the training data by choosing one dimension (one predictor) to plot with respect to.
+
+:::
+
+::::
 
 ## Additional [Validation] Performance Metrics
 
@@ -595,9 +671,9 @@ mlr_fit %>%
 . . . 
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$<br/>
-</font>
+
 </center>
 
 1. Obtain and interpret the RMSE and $R^2$ values for your model on the *test* data
@@ -605,6 +681,14 @@ $\bigstar$ Let's try it! $\bigstar$<br/>
 ## Residual Analysis
 
 . . . 
+
+::::{.columns}
+
+:::{.column width="10%"}
+
+:::
+
+:::{.column width="80%"}
 
 ```{r}
 #| echo: false
@@ -671,6 +755,14 @@ p5 <- train_with_resids %>%
 p1 / ((p2 + p3) / (p4 + p5)) + plot_annotation(title = "Residual Plots")
 ```
 
+:::
+
+:::{.column width="10%"}
+
+:::
+
+::::
+
 . . .
 
 Again, some slight right skew in the distribution of residuals and some associations between the residuals and the predictors, predictions, and response.
@@ -680,17 +772,16 @@ Again, some slight right skew in the distribution of residuals and some associat
 . . . 
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 1. Calculate *residuals* for your model
 
     i) You'll need to add a column of model predictions to your training set
-    ii) Then you'll need to compute the residuals (prediction errors) and hold them in another new column
+    ii) Then you'll need to compute the residuals (prediction errors) and hold them in another new column...actually...`augment()` does this for you by default now!
     
 2. Use graphical techniques to analyze the residuals for your model
 
@@ -730,15 +821,19 @@ $$\mathbb{E}\left[\text{body mass}\right] \approx 227916.27 + 50.87\cdot\left(\t
 . . . 
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 1. Extract the estimated model fit for your multiple linear regressor
+
+    + You've likely already done this...
 2. Write down the equation for the estimated model
+
+    + And this too...
+    + Think about how you want to organize your discussion for your future self and whoever will read your analysis -- perhaps you want the table of coefficients in multiple locations or you might want to just reference it (ie. "See Table 1 for..." and "Recall that our estimated model form is...")
 3. Provide interpretations of each of your estimated coefficients
 
     + Is an interpretation of your model's intercept meaningful?
@@ -835,6 +930,14 @@ mlr_fit %>%
 
 . . .
 
+::::{.columns}
+
+:::{.column width="10%"}
+
+:::
+
+:::{.column width="80%"}
+
 ```{r}
 #| message: false
 #| warning: false
@@ -896,16 +999,24 @@ ggplot() +
        color = "Penguin Type")
 ```
 
+:::
+
+:::{.column width="10%"}
+
+:::
+
+::::
+
 ## Using the Model to Make Predictions
 
 . . . 
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
+
 </center>
 
 1. Identify the characteristics of a property whose price you are interested in predicting
@@ -954,6 +1065,14 @@ mlr_fit %>%
 
 . . .
 
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
 ```{r}
 #| message: false
 #| warning: false
@@ -993,16 +1112,27 @@ ggplot() +
 
 ```
 
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+. . . 
+
+We are 95% confident that a *single* randomly selected penguin from 2009 with a flipper length of 212mm will have a body mass between about 3890g and 5428g.
+
 ## Using the Model to Make Predictions
 
 . . . 
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 1. Update the prediction you just made to obtain a *prediction interval* rather than a *point estimate* for the estimated rental price
@@ -1053,6 +1183,14 @@ mlr_fit %>%
 
 . . .
 
+::::{.columns}
+
+:::{.column width="18%"}
+
+:::
+
+:::{.column width="64%"}
+
 ```{r}
 #| message: false
 #| warning: false
@@ -1091,16 +1229,27 @@ ggplot() +
        color = "Interval")
 ```
 
+:::
+
+:::{.column width="18%"}
+
+:::
+
+::::
+
+. . .
+
+We are 95% confident that the *average* body mass of *all* penguins from 2009 with a flipper length of 212mm is between about 4579g and 4739g.
+
 ## Using the Model to Make Predictions
 
 . . . 
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 1. Make another update to obtain a *confidence interval* for the estimated rental price
@@ -1123,6 +1272,14 @@ What is <font color="purple">the *average* body mass of *all* penguins observed 
 + Somewhere between `r round(new_penguin %>% pull(.conf_lower), 1)`g and `r round(new_penguin %>% pull(.conf_upper), 1)`g, with 95% confidence.
 
 . . .
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="75%"}
 
 ```{r}
 #| message: false
@@ -1169,6 +1326,14 @@ ggplot() +
        y = "Body Mass (g)",
        color = "Interval")
 ```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
 
 ## Using the Model to Make Predictions
 
@@ -1240,10 +1405,10 @@ ggplot() +
 + Multiple linear regression models are models of the form $\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k}$.
 + We assume that none of the predictors are correlated with one another. 
 + The *global test for model utility* and the *test for significance of each predictor* are different in this case.
-+ In the case of model terms which aren't significant, we drop one term at a time until all remaining model terms are significant. We drop the term corresponding to the highest $p$-value($^*$).
++ In the case of model terms which aren't significant, we drop one term at a time until all remaining model terms are significant. We drop the term with the highest $p$-value$^*$.
 + We further assess multiple linear regression models with summary metrics like $R^2_{\text{adj}}$, RMSE (both training and testing), as well as residual plots.
 + The intercept is the expected response when all predictors take a value of 0, which may not be meaningful or supported.
-+ The coefficient on each predictor can be interpreted as a slope($^*$).
++ The coefficient on each predictor can be interpreted as a slope$^*$.
 + We can predict responses for a single observation, or an average over all observations having the same values of the predictors.
 
 ## Next Time...
@@ -1252,9 +1417,8 @@ ggplot() +
 
 
 <center>
-<font size="120pt"><br/>
+<br/>
 
 Residual Analysis and Model Quality
 
-</font>
 </center>

@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-09-09">
+  <meta name="dcterms.date" content="2024-10-04">
   <title>Multiple Linear Regression: Construction, Assessment, and Interpretation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">September 9, 2024</p>
+  <p class="date">October 4, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -436,19 +436,18 @@ code.sourceCode {
 <li class="fragment"><p>Predictions</p></li>
 </ul>
 <div class="fragment">
-<p>If all this seems nearly identical to our discussion on <em>simple linear regression</em> models, it is.</p>
+<p>If all this seems nearly identical to our discussion on <em>simple linear regression</em> models, well…that’s because it is.</p>
 </div>
 </section>
 <section id="playing-along" class="slide level2">
 <h2>Playing Along</h2>
 <center>
-<p><font size="120pt"><br></font></p><font size="120pt">
+<p><br></p>
 <ol type="1">
 <li class="fragment">Open the notebook that contains your simple linear regression model for predicting rental prices for Air BnB properties</li>
 <li class="fragment">Run all of the code in that notebook</li>
 <li class="fragment">Add a section to that notebook on <em>multiple linear regression models</em></li>
 </ol>
-</font><p><font size="120pt"></font></p>
 </center>
 </section>
 <section id="what-is-multiple-linear-regression" class="slide level2">
@@ -481,7 +480,7 @@ code.sourceCode {
 <h2>Multiple Linear Regression</h2>
 <div class="fragment">
 <center>
-<p><font size="120pt"> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p>
+<p><span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
 </center>
 <ol type="1">
 <li class="fragment">Write out the form of a possible multiple linear regressor with at least two numerical predictors of rental price</li>
@@ -550,7 +549,7 @@ code.sourceCode {
 <section id="building-a-multiple-linear-regression-model-with-tidymodels-1" class="slide level2">
 <h2>Building a Multiple Linear Regression Model with <code>{tidymodels}</code></h2>
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span> </font></p>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
 </center>
 <ol type="1">
 <li class="fragment">Create the model <em>specification</em> for your multiple linear regressor</li>
@@ -628,7 +627,7 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <center>
-<font size="120pt"> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span> </font>
+<p><span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
 </center>
 <ol type="1">
 <li class="fragment">Extract the estimated model fit for your multiple linear regressor</li>
@@ -699,7 +698,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </div>
 <div class="fragment">
 <center>
-<font size="120pt"> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span> </font>
+<p><span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
 </center>
 <ol type="1">
 <li class="fragment">Write the hypotheses for the <em>global test for model utility</em> for your model</li>
@@ -930,7 +929,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <h2>Term-Based Tests and Model Updates</h2>
 <div class="fragment">
 <center>
-<font size="120pt"> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span> </font>
+<p><span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
 </center>
 <ol type="1">
 <li class="fragment">Extract the estimated model fit for your multiple linear regressor</li>
@@ -951,7 +950,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="font-size: 20px; margin-left: auto; margin-right: auto;">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">metric</th>
@@ -1030,12 +1029,61 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <h2>Additional [Training] Performance Metrics</h2>
 <div class="fragment">
 <center>
-<font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span> <br></font>
+<span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span> <br>
 </center>
 <ol type="1">
 <li class="fragment">Use <code>glance()</code> to obtain the <em>global performance metrics</em> for your model</li>
 <li class="fragment">Identify and interpret the <span class="math inline">\(p\)</span>-value, <span class="math inline">\(R^2_{\text{adj}}\)</span>, and <em>training RMSE</em> values</li>
 </ol>
+</div>
+</section>
+<section id="what-do-predictions-look-like" class="slide level2">
+<h2>What Do Predictions Look Like?</h2>
+<div class="fragment">
+<p><span class="math display">\[\mathbb{E}\left[\text{body mass}\right] = 227916.27 + 50.87\cdot\left(\text{flipper length}\right) - 116.5\cdot\left(\text{year}\right)\]</span></p>
+</div>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href=""></a>  <span class="fu">augment</span>(penguins_train) <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href=""></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb13-4"><a href=""></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> flipper_length_mm, </span>
+<span id="cb13-5"><a href=""></a>                 <span class="at">y =</span> body_mass_g),</span>
+<span id="cb13-6"><a href=""></a>             <span class="at">color =</span> <span class="st">"black"</span>,</span>
+<span id="cb13-7"><a href=""></a>             <span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
+<span id="cb13-8"><a href=""></a>             <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb13-9"><a href=""></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> flipper_length_mm,</span>
+<span id="cb13-10"><a href=""></a>                 <span class="at">y =</span> .pred),</span>
+<span id="cb13-11"><a href=""></a>             <span class="at">color =</span> <span class="st">"purple"</span>,</span>
+<span id="cb13-12"><a href=""></a>             <span class="at">alpha =</span> <span class="fl">0.9</span>,</span>
+<span id="cb13-13"><a href=""></a>             <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb13-14"><a href=""></a>  <span class="fu">labs</span>(</span>
+<span id="cb13-15"><a href=""></a>    <span class="at">title =</span> <span class="st">"Penguin Body Mass by Flipper Length"</span>,</span>
+<span id="cb13-16"><a href=""></a>    <span class="at">subtitle =</span> <span class="st">"Observed Values (black), Model Predictions (purple)"</span>,</span>
+<span id="cb13-17"><a href=""></a>    <span class="at">x =</span> <span class="st">"Flipper Length (mm)"</span>,</span>
+<span id="cb13-18"><a href=""></a>    <span class="at">y =</span> <span class="st">"Body Mass (g)"</span></span>
+<span id="cb13-19"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-22-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<center>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span><br></p>
+</center>
+<ol type="1">
+<li class="fragment">Plot your model’s predictions over the training data by choosing one dimension (one predictor) to plot with respect to.</li>
+</ol>
+</div>
+</div>
 </div>
 </section>
 <section id="additional-validation-performance-metrics" class="slide level2">
@@ -1044,14 +1092,14 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <div class="columns">
 <div class="column" style="width:40%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href=""></a>my_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(</span>
-<span id="cb13-2"><a href=""></a>  rmse, rsq</span>
-<span id="cb13-3"><a href=""></a>  )</span>
-<span id="cb13-4"><a href=""></a></span>
-<span id="cb13-5"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
-<span id="cb13-6"><a href=""></a>  <span class="fu">augment</span>(penguins_test) <span class="sc">%&gt;%</span></span>
-<span id="cb13-7"><a href=""></a>  <span class="fu">my_metrics</span>(.pred, </span>
-<span id="cb13-8"><a href=""></a>             body_mass_g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href=""></a>my_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(</span>
+<span id="cb14-2"><a href=""></a>  rmse, rsq</span>
+<span id="cb14-3"><a href=""></a>  )</span>
+<span id="cb14-4"><a href=""></a></span>
+<span id="cb14-5"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb14-6"><a href=""></a>  <span class="fu">augment</span>(penguins_test) <span class="sc">%&gt;%</span></span>
+<span id="cb14-7"><a href=""></a>  <span class="fu">my_metrics</span>(.pred, </span>
+<span id="cb14-8"><a href=""></a>             body_mass_g)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
@@ -1094,7 +1142,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <h2>Additional [Validation] Performance Metrics</h2>
 <div class="fragment">
 <center>
-<font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span><br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span><br></p>
 </center>
 <ol type="1">
 <li class="fragment">Obtain and interpret the RMSE and <span class="math inline">\(R^2\)</span> values for your model on the <em>test</em> data</li>
@@ -1104,13 +1152,21 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <section id="residual-analysis" class="slide level2">
 <h2>Residual Analysis</h2>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:10%;">
+
+</div><div class="column" style="width:80%;">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-23-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-25-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
+</div>
+</div>
+</div><div class="column" style="width:10%;">
+
 </div>
 </div>
 </div>
@@ -1122,14 +1178,14 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <h2>Residual Analysis</h2>
 <div class="fragment">
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<br>
 </center>
 <ol type="1">
 <li class="fragment"><p>Calculate <em>residuals</em> for your model</p>
 <ol type="i">
 <li class="fragment">You’ll need to add a column of model predictions to your training set</li>
-<li class="fragment">Then you’ll need to compute the residuals (prediction errors) and hold them in another new column</li>
+<li class="fragment">Then you’ll need to compute the residuals (prediction errors) and hold them in another new column…actually…<code>augment()</code> does this for you by default now!</li>
 </ol></li>
 <li class="fragment"><p>Use graphical techniques to analyze the residuals for your model</p></li>
 </ol>
@@ -1198,12 +1254,19 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <h2>Model Interpretations</h2>
 <div class="fragment">
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<br>
 </center>
 <ol type="1">
-<li class="fragment"><p>Extract the estimated model fit for your multiple linear regressor</p></li>
-<li class="fragment"><p>Write down the equation for the estimated model</p></li>
+<li class="fragment"><p>Extract the estimated model fit for your multiple linear regressor</p>
+<ul>
+<li class="fragment">You’ve likely already done this…</li>
+</ul></li>
+<li class="fragment"><p>Write down the equation for the estimated model</p>
+<ul>
+<li class="fragment">And this too…</li>
+<li class="fragment">Think about how you want to organize your discussion for your future self and whoever will read your analysis – perhaps you want the table of coefficients in multiple locations or you might want to just reference it (ie. “See Table 1 for…” and “Recall that our estimated model form is…”)</li>
+</ul></li>
 <li class="fragment"><p>Provide interpretations of each of your estimated coefficients</p>
 <ul>
 <li class="fragment">Is an interpretation of your model’s intercept meaningful?</li>
@@ -1239,15 +1302,15 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href=""></a>new_penguin <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb14-2"><a href=""></a>  <span class="at">flipper_length_mm =</span> <span class="dv">212</span>,</span>
-<span id="cb14-3"><a href=""></a>  <span class="at">year =</span> <span class="dv">2009</span>,</span>
-<span id="cb14-4"><a href=""></a>  <span class="at">bill_length_mm =</span> <span class="cn">NA</span>,</span>
-<span id="cb14-5"><a href=""></a>  <span class="at">bill_depth_mm =</span> <span class="cn">NA</span></span>
-<span id="cb14-6"><a href=""></a>)</span>
-<span id="cb14-7"><a href=""></a></span>
-<span id="cb14-8"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
-<span id="cb14-9"><a href=""></a>  <span class="fu">predict</span>(new_penguin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href=""></a>new_penguin <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb15-2"><a href=""></a>  <span class="at">flipper_length_mm =</span> <span class="dv">212</span>,</span>
+<span id="cb15-3"><a href=""></a>  <span class="at">year =</span> <span class="dv">2009</span>,</span>
+<span id="cb15-4"><a href=""></a>  <span class="at">bill_length_mm =</span> <span class="cn">NA</span>,</span>
+<span id="cb15-5"><a href=""></a>  <span class="at">bill_depth_mm =</span> <span class="cn">NA</span></span>
+<span id="cb15-6"><a href=""></a>)</span>
+<span id="cb15-7"><a href=""></a></span>
+<span id="cb15-8"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb15-9"><a href=""></a>  <span class="fu">predict</span>(new_penguin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
@@ -1271,13 +1334,21 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </div>
 </div>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:10%;">
+
+</div><div class="column" style="width:80%;">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-27-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-29-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
+</div>
+</div>
+</div><div class="column" style="width:10%;">
+
 </div>
 </div>
 </div>
@@ -1286,8 +1357,8 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <h2>Using the Model to Make Predictions</h2>
 <div class="fragment">
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<p><br></p>
 </center>
 <ol type="1">
 <li class="fragment"><p>Identify the characteristics of a property whose price you are interested in predicting</p>
@@ -1305,10 +1376,10 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
-<span id="cb15-2"><a href=""></a>  <span class="fu">predict</span>(new_penguin, </span>
-<span id="cb15-3"><a href=""></a>          <span class="at">type =</span> <span class="st">"pred_int"</span>, </span>
-<span id="cb15-4"><a href=""></a>          <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href=""></a>  <span class="fu">predict</span>(new_penguin, </span>
+<span id="cb16-3"><a href=""></a>          <span class="at">type =</span> <span class="st">"pred_int"</span>, </span>
+<span id="cb16-4"><a href=""></a>          <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
@@ -1334,23 +1405,34 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </div>
 </div>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:70%;">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-30-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-32-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
+</div><div class="column" style="width:15%;">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>We are 95% confident that a <em>single</em> randomly selected penguin from 2009 with a flipper length of 212mm will have a body mass between about 3890g and 5428g.</p>
 </div>
 </section>
 <section id="using-the-model-to-make-predictions-4" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
 <div class="fragment">
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<br>
 </center>
 <ol type="1">
 <li class="fragment"><p>Update the prediction you just made to obtain a <em>prediction interval</em> rather than a <em>point estimate</em> for the estimated rental price</p>
@@ -1370,10 +1452,10 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
-<span id="cb16-2"><a href=""></a>  <span class="fu">predict</span>(new_penguin, </span>
-<span id="cb16-3"><a href=""></a>          <span class="at">type =</span> <span class="st">"conf_int"</span>, </span>
-<span id="cb16-4"><a href=""></a>          <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href=""></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href=""></a>  <span class="fu">predict</span>(new_penguin, </span>
+<span id="cb17-3"><a href=""></a>          <span class="at">type =</span> <span class="st">"conf_int"</span>, </span>
+<span id="cb17-4"><a href=""></a>          <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell">
@@ -1400,23 +1482,34 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </div>
 </div>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:18%;">
+
+</div><div class="column" style="width:64%;">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-33-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-35-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
+</div><div class="column" style="width:18%;">
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>We are 95% confident that the <em>average</em> body mass of <em>all</em> penguins from 2009 with a flipper length of 212mm is between about 4579g and 4739g.</p>
 </div>
 </section>
 <section id="using-the-model-to-make-predictions-6" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
 <div class="fragment">
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<br>
 </center>
 <ol type="1">
 <li class="fragment"><p>Make another update to obtain a <em>confidence interval</em> for the estimated rental price</p>
@@ -1442,13 +1535,21 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <li class="fragment">Somewhere between 4579g and 4739.2g, with 95% confidence.</li>
 </ul>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:75%;">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-34-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-36-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
+</div>
+</div>
+</div><div class="column" style="width:15%;">
+
 </div>
 </div>
 </div>
@@ -1456,17 +1557,17 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <section id="using-the-model-to-make-predictions-8" class="slide level2">
 <h2>Using the Model to Make Predictions</h2>
 
-<img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-35-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="10d_IntroSlides_files/figure-revealjs/unnamed-chunk-37-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="summary" class="slide level2">
 <h2>Summary</h2>
 <ul>
 <li class="fragment">Multiple linear regression models are models of the form <span class="math inline">\(\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k}\)</span>.</li>
 <li class="fragment">We assume that none of the predictors are correlated with one another.</li>
 <li class="fragment">The <em>global test for model utility</em> and the <em>test for significance of each predictor</em> are different in this case.</li>
-<li class="fragment">In the case of model terms which aren’t significant, we drop one term at a time until all remaining model terms are significant. We drop the term corresponding to the highest <span class="math inline">\(p\)</span>-value(<span class="math inline">\(^*\)</span>).</li>
+<li class="fragment">In the case of model terms which aren’t significant, we drop one term at a time until all remaining model terms are significant. We drop the term with the highest <span class="math inline">\(p\)</span>-value<span class="math inline">\(^*\)</span>.</li>
 <li class="fragment">We further assess multiple linear regression models with summary metrics like <span class="math inline">\(R^2_{\text{adj}}\)</span>, RMSE (both training and testing), as well as residual plots.</li>
 <li class="fragment">The intercept is the expected response when all predictors take a value of 0, which may not be meaningful or supported.</li>
-<li class="fragment">The coefficient on each predictor can be interpreted as a slope(<span class="math inline">\(^*\)</span>).</li>
+<li class="fragment">The coefficient on each predictor can be interpreted as a slope<span class="math inline">\(^*\)</span>.</li>
 <li class="fragment">We can predict responses for a single observation, or an average over all observations having the same values of the predictors.</li>
 </ul>
 </section>
@@ -1474,9 +1575,8 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <h2>Next Time…</h2>
 <div class="fragment">
 <center>
-<p><font size="120pt"><br></font></p><font size="120pt">
+<p><br></p>
 <p>Residual Analysis and Model Quality</p>
-</font>
 </center>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">

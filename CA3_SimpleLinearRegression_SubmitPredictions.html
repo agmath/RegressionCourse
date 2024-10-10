@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Me, Scientist">
-<meta name="dcterms.date" content="2024-09-17">
+<meta name="dcterms.date" content="2024-10-10">
 
 <title>Competition Assignment 3</title>
 <style>
@@ -100,7 +100,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 17, 2024</p>
+      <p class="date">October 10, 2024</p>
     </div>
   </div>
   
@@ -128,10 +128,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Use your model to <code>augment()</code> the competition data with predictions. Be sure to store the resulting data frame in a named variable – you may want to use a new variable name so that you don’t overwrite your competition data altogether. Additionally, the only columns you’ll need now are the <code>ID</code> and <code>elapsed_time</code> columns. Remember that you can use <code>rename()</code> to rename the <code>.pred</code> column to match the name of the <em>response</em> column that Kaggle is expecting. The chain of commands below may be helpful.</li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>slr_preds <span class="ot">&lt;-</span> slr_fit <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>slr_preds <span class="ot">&lt;-</span> slr_fit <span class="sc">%&gt;%</span> <span class="co">#use your model name</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(comp) <span class="sc">%&gt;%</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ID, .pred) <span class="sc">%&gt;%</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">price =</span> .pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">response_name =</span> .pred) <span class="co">#Replace response_name</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="9" type="1">
 <li>Now we’ll need to extract our predictions from R so that we can submit them to Kaggle for scoring. We can do this with the <code>write.csv()</code> function. That function takes the data frame that we would like to write out as a csv file, the path and filename we’d like to save the csv file to on our computer, and we set <code>row.names = FALSE</code> to prevent R from adding an extra column of row numbers to the csv file. Below is what that command would look like on my computer, if I wanted to save my model’s predictions into the main project directory for MAT300. If you want to save it somewhere else, you’ll need to provide the file path relative to the location of your QMD file.</li>

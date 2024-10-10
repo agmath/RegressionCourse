@@ -27,10 +27,10 @@ In your first two competition assignments, you got familiar with our competition
 8. Use your model to `augment()` the competition data with predictions. Be sure to store the resulting data frame in a named variable -- you may want to use a new variable name so that you don't overwrite your competition data altogether. Additionally, the only columns you'll need now are the `ID` and `elapsed_time` columns. Remember that you can use `rename()` to rename the `.pred` column to match the name of the *response* column that Kaggle is expecting. The chain of commands below may be helpful.
 
 ```{r echo = TRUE, eval = FALSE}
-slr_preds <- slr_fit %>%
+slr_preds <- slr_fit %>% #use your model name
   augment(comp) %>%
   select(ID, .pred) %>%
-  rename(price = .pred)
+  rename(response_name = .pred) #Replace response_name
 ```
 
 9. Now we'll need to extract our predictions from R so that we can submit them to Kaggle for scoring. We can do this with the `write.csv()` function. That function takes the data frame that we would like to write out as a csv file, the path and filename we'd like to save the csv file to on our computer, and we set `row.names = FALSE` to prevent R from adding an extra column of row numbers to the csv file. Below is what that command would look like on my computer, if I wanted to save my model's predictions into the main project directory for MAT300. If you want to save it somewhere else, you'll need to provide the file path relative to the location of your QMD file.

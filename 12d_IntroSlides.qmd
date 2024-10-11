@@ -47,9 +47,9 @@ code.sourceCode {
 ```{r}
 penguins_train %>%
   ggplot() + 
-  geom_point(aes(x = bill_length_mm, y = body_mass_g)) + 
+  geom_point(aes(x = bill_depth_mm, y = body_mass_g)) + 
   labs(
-    x = "Bill Length",
+    x = "Bill Depth",
     y = "Body Mass"
   )
 ```
@@ -62,7 +62,7 @@ penguins_train %>%
 lin_reg_spec <- linear_reg() %>%
   set_engine("lm")
 
-lin_reg_rec <- recipe(body_mass_g ~ bill_length_mm, data = penguins_train)
+lin_reg_rec <- recipe(body_mass_g ~ bill_depth_mm, data = penguins_train)
 
 lin_reg_wf <- workflow() %>%
   add_model(lin_reg_spec) %>%
@@ -72,9 +72,9 @@ lin_reg_fit <- lin_reg_wf %>%
   fit(penguins_train)
 
 new_data <- tibble(
-  bill_length_mm = seq(
-    min(penguins_train$bill_length_mm, na.rm = TRUE),
-    max(penguins_train$bill_length_mm, na.rm = TRUE),
+  bill_depth_mm = seq(
+    min(penguins_train$bill_depth_mm, na.rm = TRUE),
+    max(penguins_train$bill_depth_mm, na.rm = TRUE),
     length.out = 250)
   )
 
@@ -83,14 +83,14 @@ new_data <- lin_reg_fit %>%
 
 ggplot() + 
   geom_point(data = penguins_train, 
-             aes(x = bill_length_mm,
+             aes(x = bill_depth_mm,
                  y = body_mass_g)) + 
   geom_line(data = new_data, 
-            aes(x = bill_length_mm, 
+            aes(x = bill_depth_mm, 
                 y = .pred),
             color = "blue",
             lwd = 1.5) + 
-  labs(x = "Bill Length",
+  labs(x = "Bill Depth",
        y = "Body Mass")
 ```
 
@@ -113,15 +113,15 @@ lin_reg_fit %>%
 ```{r}
 ggplot() + 
   geom_point(data = penguins_train, 
-             aes(x = bill_length_mm,
+             aes(x = bill_depth_mm,
                  y = body_mass_g,
                  color = species)) + 
   geom_line(data = new_data, 
-            aes(x = bill_length_mm, 
+            aes(x = bill_depth_mm, 
                 y = .pred),
             color = "blue",
             lwd = 1.5) + 
-  labs(x = "Bill Length",
+  labs(x = "Bill Depth",
        y = "Body Mass")
 ```
 
@@ -618,18 +618,18 @@ Let's build a model that better corresponds to the plot we began this discussion
 ```{r}
 ggplot() + 
   geom_point(data = penguins_train, 
-             aes(x = bill_length_mm,
+             aes(x = bill_depth_mm,
                  y = body_mass_g,
                  color = species)) + 
-  labs(x = "Bill Length",
+  labs(x = "Bill Depth",
        y = "Body Mass")
 ```
 
 . . . 
 
-Can we accomodate both `bill_length_mm` (a numerical variable) and `species` (a categorical variable) into a single model?
+Can we accomodate both `bill_depth_mm` (a numerical variable) and `species` (a categorical variable) into a single model?
 
-## Bill Length and Species as Predictors of Body Mass
+## Bill Depth and Species as Predictors of Body Mass
 
 . . .
 
@@ -651,7 +651,7 @@ Now our *recipe*, with the feature engineering step included
 #| echo: true
 #| eval: true
 
-lr_sbl_rec <- recipe(body_mass_g ~ bill_length_mm + species, data = penguins_train) %>%
+lr_sbl_rec <- recipe(body_mass_g ~ bill_depth_mm + species, data = penguins_train) %>%
   step_dummy(species)
 ```
 
@@ -679,6 +679,15 @@ And, finally, fit the workflow to the training data
 lr_sbl_fit <- lr_sbl_wf %>%
   fit(penguins_train)
 ```
+
+. . . 
+
+**Important Note!** Common concerns and remedies when including categorical predictors...
+
++ `step_unknown(cat_var_name)` to fill in missing values with `unknown`
++ `step_novel(cat_var_name)` to reassign new classes to a `novel` class
++ `step_other(cat_var_name)` to combine rare classes into an `other` class
+
 
 ## Models with Numerical and Categorical Predictors
 
@@ -766,11 +775,11 @@ lr_sbl_fit %>%
 
 . . .
 
-**Note:** Controlling for differences in bill length, all three species have statistically discernible average body masses
+**Note:** Controlling for differences in bill depth, all three species have statistically discernible average body masses
 
 . . .
 
-\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx 83.47 ~+ &~93.83\cdot\left(\text{bill length}\right) - 966.14\cdot\left(\text{speciesChinstrap}\right) +\\ &~543.47\cdot\left(\text{speciesGentoo}\right)\end{align}
+\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx -912.91 ~+ &~252.34\cdot\left(\text{bill depth}\right) - 23.37\cdot\left(\text{speciesChinstrap}\right) +\\ &~2221.0\cdot\left(\text{speciesGentoo}\right)\end{align}
 
 ## An Improvement Over the Species-Only Model?
 
@@ -794,7 +803,7 @@ anova_fit %>%
 
 :::{.column width="50%"}
 
-**Species and Bill Length Model:**
+**Species and Bill Depth Model:**
 
 ```{r}
 lr_sbl_fit %>%
@@ -893,20 +902,20 @@ lr_sbl_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(font_size = 18)
+  kable_styling(font_size = 20)
 ```
 
-\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx 83.47 ~+ &~93.83\cdot\left(\text{bill length}\right) - 966.14\cdot\left(\text{speciesChinstrap}\right) +\\ &~543.47\cdot\left(\text{speciesGentoo}\right)\end{align}
+\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx -912.91 ~+ &~252.34\cdot\left(\text{bill depth}\right) - 23.37\cdot\left(\text{speciesChinstrap}\right) +\\ &~2221.0\cdot\left(\text{speciesGentoo}\right)\end{align}
 
-+ (*Intercept*) Interpretation of this intercept is not meaningful because it would correspond to a penguin with a bill length of 0mm.
++ (*Intercept*) Interpretation of this intercept is not meaningful because it would correspond to a penguin with a bill depth of 0mm.
 
-+ (*Bill Length*) Controlling for differences in species, we expect a 1mm increase in bill length to be associated with a 93.83g increase in body mass, on average.
++ (*Bill Depth*) Controlling for differences in species, we expect a 1mm increase in bill depth to be associated with a 252.34g increase in body mass, on average.
 
-+ (*Chinstrap*) Given a Chinstrap and Adelie penguin with the same bill length, we expect the Chinstrap to have a lower body mass by about 966.14g, on average.
++ (*Chinstrap*) Given a Chinstrap and Adelie penguin with the same bill depth, we expect the Chinstrap to have a lower body mass by about 23.37g, on average.
 
-+ (*Gentoo*) Given a Gentoo and Adelie penguin with the same bill length, we expect the Gentoo to have greater mass by about 543.47g, on average.
++ (*Gentoo*) Given a Gentoo and Adelie penguin with the same bill depth, we expect the Gentoo to have greater mass by about 2221.0g, on average.
 
-  + **Note:** Some intercept comparisons are misleading since Adelie bill lengths rarely overlap the other two species'
+  + **Note:** Some comparisons are misleading since Adelie bill depths rarely overlap with Gentoos'
 
 ## Interpreting the Model
 
@@ -928,7 +937,7 @@ $\bigstar$ Let's try it! $\bigstar$
 #| code-line-numbers: "|1-4|6-7|8-15|16-19|6-19|"
 
 new_data <- crossing(
-  bill_length_mm = seq(32.1, 59.6, length.out = 250),
+  bill_depth_mm = seq(13.1, 21.5, length.out = 250),
   species = c("Adelie", "Chinstrap", "Gentoo")
 )
 
@@ -958,19 +967,19 @@ new_data <- lr_sbl_fit %>%
 
 ggplot() + 
   geom_ribbon(data = new_data, 
-              aes(x = bill_length_mm, ymin = .pred_lower, ymax = .pred_upper),
+              aes(x = bill_depth_mm, ymin = .pred_lower, ymax = .pred_upper),
               alpha = 0.25) +
   geom_ribbon(data = new_data,
-              aes(x = bill_length_mm, ymin = .conf_lower, ymax = .conf_upper),
+              aes(x = bill_depth_mm, ymin = .conf_lower, ymax = .conf_upper),
               alpha = 0.5) +
   geom_line(data = new_data,
-            aes(x = bill_length_mm, y = .pred, color = species),
+            aes(x = bill_depth_mm, y = .pred, color = species),
             lwd = 1.25) +
   geom_point(data = penguins_train,
-             aes(x = bill_length_mm, y = body_mass_g, color = species),
+             aes(x = bill_depth_mm, y = body_mass_g, color = species),
              alpha = 0.5) + 
   labs(
-    x = "Bill Length",
+    x = "Bill Depth",
     y = "Body Mass"
   ) + 
   facet_wrap(~species, ncol = 3) + 
@@ -987,21 +996,21 @@ ggplot() +
 
 ggplot() + 
   geom_ribbon(data = new_data, 
-              aes(x = bill_length_mm, ymin = .pred_lower, ymax = .pred_upper),
+              aes(x = bill_depth_mm, ymin = .pred_lower, ymax = .pred_upper),
               alpha = 0.25) +
   geom_ribbon(data = new_data,
-              aes(x = bill_length_mm, ymin = .conf_lower, ymax = .conf_upper),
+              aes(x = bill_depth_mm, ymin = .conf_lower, ymax = .conf_upper),
               alpha = 0.5) +
   geom_line(data = new_data,
-            aes(x = bill_length_mm, y = .pred, color = species),
+            aes(x = bill_depth_mm, y = .pred, color = species),
             lwd = 1.25) +
   geom_point(data = penguins_train,
-             aes(x = bill_length_mm,
+             aes(x = bill_depth_mm,
                  y = body_mass_g,
                  color = species),
              alpha = 0.5) + 
   labs(
-    x = "Bill Length",
+    x = "Bill Depth",
     y = "Body Mass"
   ) + 
   facet_wrap(~species, ncol = 3) + 
@@ -1048,7 +1057,7 @@ $\bigstar$ Let's try it! $\bigstar$
   
     + We can use the dummy variable technique by adding `step_dummy()` as a feature engineering step in a *recipe*
   
-  + In the case of rare levels, we may want to also include `step_other()`, `step_unknown()`, or `step_novel()` as recipe steps as well
+  + In the case of rare levels, we may want to also include `step_other()`, `step_unknown()`, or `step_novel()` as recipe steps as well -- **order of application matters!**
 + A linear regression model including a single categorical variable as the sole predictor is equivalent to ANOVA
 + For a linear regression model with at least one numerical predictor, the result of the inclusion of a categorical variable in the model is a shift in *intercept* (a vertical shift) for each of the levels of the categorical predictor
 

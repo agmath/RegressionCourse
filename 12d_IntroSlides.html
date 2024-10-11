@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-10-10">
+  <meta name="dcterms.date" content="2024-10-11">
   <title>Inclusion and Interpretation of Catgorical Predictors in Linear Regression Models</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">October 10, 2024</p>
+  <p class="date">October 11, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -445,16 +445,16 @@ code.sourceCode {
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">0.3593701</td>
-<td style="text-align: right;">0.3568479</td>
-<td style="text-align: right;">658.043</td>
-<td style="text-align: right;">142.4848</td>
+<td style="text-align: right;">0.2260831</td>
+<td style="text-align: right;">0.2230361</td>
+<td style="text-align: right;">723.2657</td>
+<td style="text-align: right;">74.2006</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">-2023.498</td>
-<td style="text-align: right;">4052.995</td>
-<td style="text-align: right;">4063.631</td>
-<td style="text-align: right;">109987231</td>
+<td style="text-align: right;">-2047.691</td>
+<td style="text-align: right;">4101.382</td>
+<td style="text-align: right;">4112.018</td>
+<td style="text-align: right;">132870759</td>
 <td style="text-align: right;">254</td>
 <td style="text-align: right;">256</td>
 </tr>
@@ -477,17 +477,17 @@ code.sourceCode {
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">320.34582</td>
-<td style="text-align: right;">327.84621</td>
-<td style="text-align: right;">0.9771222</td>
-<td style="text-align: right;">0.3294383</td>
+<td style="text-align: right;">7679.4255</td>
+<td style="text-align: right;">406.12272</td>
+<td style="text-align: right;">18.909126</td>
+<td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">bill_length_mm</td>
-<td style="text-align: right;">88.57962</td>
-<td style="text-align: right;">7.42078</td>
-<td style="text-align: right;">11.9366986</td>
-<td style="text-align: right;">0.0000000</td>
+<td style="text-align: left;">bill_depth_mm</td>
+<td style="text-align: right;">-202.9711</td>
+<td style="text-align: right;">23.56299</td>
+<td style="text-align: right;">-8.613977</td>
+<td style="text-align: right;">0</td>
 </tr>
 </tbody>
 </table>
@@ -1207,11 +1207,11 @@ $\bigstar$ Let's try it! $\bigstar$
 <p>Let’s build a model that better corresponds to the plot we began this discussion with…</p>
 
 <img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-21-1.png" width="960" class="r-stretch"><div class="fragment">
-<p>Can we accomodate both <code>bill_length_mm</code> (a numerical variable) and <code>species</code> (a categorical variable) into a single model?</p>
+<p>Can we accomodate both <code>bill_depth_mm</code> (a numerical variable) and <code>species</code> (a categorical variable) into a single model?</p>
 </div>
 </section>
-<section id="bill-length-and-species-as-predictors-of-body-mass" class="slide level2">
-<h2>Bill Length and Species as Predictors of Body Mass</h2>
+<section id="bill-depth-and-species-as-predictors-of-body-mass" class="slide level2">
+<h2>Bill Depth and Species as Predictors of Body Mass</h2>
 <div class="fragment">
 <p>Start with our model <em>specification</em></p>
 <div class="cell">
@@ -1222,7 +1222,7 @@ $\bigstar$ Let's try it! $\bigstar$
 <div class="fragment">
 <p>Now our <em>recipe</em>, with the feature engineering step included</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>lr_sbl_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(body_mass_g <span class="sc">~</span> bill_length_mm <span class="sc">+</span> species, <span class="at">data =</span> penguins_train) <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>lr_sbl_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(body_mass_g <span class="sc">~</span> bill_depth_mm <span class="sc">+</span> species, <span class="at">data =</span> penguins_train) <span class="sc">%&gt;%</span></span>
 <span id="cb4-2"><a href=""></a>  <span class="fu">step_dummy</span>(species)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
@@ -1240,6 +1240,14 @@ $\bigstar$ Let's try it! $\bigstar$
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a>lr_sbl_fit <span class="ot">&lt;-</span> lr_sbl_wf <span class="sc">%&gt;%</span></span>
 <span id="cb6-2"><a href=""></a>  <span class="fu">fit</span>(penguins_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div>
+<div class="fragment">
+<p><strong>Important Note!</strong> Common concerns and remedies when including categorical predictors…</p>
+<ul>
+<li class="fragment"><code>step_unknown(cat_var_name)</code> to fill in missing values with <code>unknown</code></li>
+<li class="fragment"><code>step_novel(cat_var_name)</code> to reassign new classes to a <code>novel</code> class</li>
+<li class="fragment"><code>step_other(cat_var_name)</code> to combine rare classes into an <code>other</code> class</li>
+</ul>
 </div>
 </section>
 <section id="models-with-numerical-and-categorical-predictors" class="slide level2">
@@ -1282,16 +1290,16 @@ $\bigstar$ Let's try it! $\bigstar$
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: right;">0.7881583</td>
-<td style="text-align: right;">0.7856363</td>
-<td style="text-align: right;">379.9033</td>
-<td style="text-align: right;">312.5224</td>
+<td style="text-align: right;">0.7928019</td>
+<td style="text-align: right;">0.7903352</td>
+<td style="text-align: right;">375.7164</td>
+<td style="text-align: right;">321.4091</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">-1881.851</td>
-<td style="text-align: right;">3773.702</td>
-<td style="text-align: right;">3791.428</td>
-<td style="text-align: right;">36370275</td>
+<td style="text-align: right;">-1879.014</td>
+<td style="text-align: right;">3768.028</td>
+<td style="text-align: right;">3785.754</td>
+<td style="text-align: right;">35573029</td>
 <td style="text-align: right;">252</td>
 <td style="text-align: right;">256</td>
 </tr>
@@ -1326,39 +1334,39 @@ $\bigstar$ Let's try it! $\bigstar$
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">83.46598</td>
-<td style="text-align: right;">316.314197</td>
-<td style="text-align: right;">0.2638705</td>
-<td style="text-align: right;">0.7920954</td>
-<td style="text-align: right;">-539.49027</td>
-<td style="text-align: right;">706.4222</td>
+<td style="text-align: right;">-912.90624</td>
+<td style="text-align: right;">389.97673</td>
+<td style="text-align: right;">-2.3409249</td>
+<td style="text-align: right;">0.0200163</td>
+<td style="text-align: right;">-1680.9351</td>
+<td style="text-align: right;">-144.8773</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">bill_length_mm</td>
-<td style="text-align: right;">93.83324</td>
-<td style="text-align: right;">8.145991</td>
-<td style="text-align: right;">11.5189474</td>
+<td style="text-align: left;">bill_depth_mm</td>
+<td style="text-align: right;">252.33546</td>
+<td style="text-align: right;">21.22734</td>
+<td style="text-align: right;">11.8872854</td>
 <td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">77.79034</td>
-<td style="text-align: right;">109.8761</td>
+<td style="text-align: right;">210.5299</td>
+<td style="text-align: right;">294.1411</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">species_Chinstrap</td>
-<td style="text-align: right;">-966.14331</td>
-<td style="text-align: right;">104.505328</td>
-<td style="text-align: right;">-9.2449192</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">-1171.95844</td>
-<td style="text-align: right;">-760.3282</td>
+<td style="text-align: right;">-23.37012</td>
+<td style="text-align: right;">63.73145</td>
+<td style="text-align: right;">-0.3666969</td>
+<td style="text-align: right;">0.7141529</td>
+<td style="text-align: right;">-148.8843</td>
+<td style="text-align: right;">102.1440</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">species_Gentoo</td>
-<td style="text-align: right;">543.47446</td>
-<td style="text-align: right;">91.329202</td>
-<td style="text-align: right;">5.9507195</td>
+<td style="text-align: right;">2220.99703</td>
+<td style="text-align: right;">86.96707</td>
+<td style="text-align: right;">25.5383665</td>
 <td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">363.60869</td>
-<td style="text-align: right;">723.3402</td>
+<td style="text-align: right;">2049.7221</td>
+<td style="text-align: right;">2392.2719</td>
 </tr>
 </tbody>
 </table>
@@ -1393,39 +1401,39 @@ $\bigstar$ Let's try it! $\bigstar$
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">83.46598</td>
-<td style="text-align: right;">316.314197</td>
-<td style="text-align: right;">0.2638705</td>
-<td style="text-align: right;">0.7920954</td>
-<td style="text-align: right;">-539.49027</td>
-<td style="text-align: right;">706.4222</td>
+<td style="text-align: right;">-912.90624</td>
+<td style="text-align: right;">389.97673</td>
+<td style="text-align: right;">-2.3409249</td>
+<td style="text-align: right;">0.0200163</td>
+<td style="text-align: right;">-1680.9351</td>
+<td style="text-align: right;">-144.8773</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">bill_length_mm</td>
-<td style="text-align: right;">93.83324</td>
-<td style="text-align: right;">8.145991</td>
-<td style="text-align: right;">11.5189474</td>
+<td style="text-align: left;">bill_depth_mm</td>
+<td style="text-align: right;">252.33546</td>
+<td style="text-align: right;">21.22734</td>
+<td style="text-align: right;">11.8872854</td>
 <td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">77.79034</td>
-<td style="text-align: right;">109.8761</td>
+<td style="text-align: right;">210.5299</td>
+<td style="text-align: right;">294.1411</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">species_Chinstrap</td>
-<td style="text-align: right;">-966.14331</td>
-<td style="text-align: right;">104.505328</td>
-<td style="text-align: right;">-9.2449192</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">-1171.95844</td>
-<td style="text-align: right;">-760.3282</td>
+<td style="text-align: right;">-23.37012</td>
+<td style="text-align: right;">63.73145</td>
+<td style="text-align: right;">-0.3666969</td>
+<td style="text-align: right;">0.7141529</td>
+<td style="text-align: right;">-148.8843</td>
+<td style="text-align: right;">102.1440</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">species_Gentoo</td>
-<td style="text-align: right;">543.47446</td>
-<td style="text-align: right;">91.329202</td>
-<td style="text-align: right;">5.9507195</td>
+<td style="text-align: right;">2220.99703</td>
+<td style="text-align: right;">86.96707</td>
+<td style="text-align: right;">25.5383665</td>
 <td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">363.60869</td>
-<td style="text-align: right;">723.3402</td>
+<td style="text-align: right;">2049.7221</td>
+<td style="text-align: right;">2392.2719</td>
 </tr>
 </tbody>
 </table>
@@ -1434,10 +1442,10 @@ $\bigstar$ Let's try it! $\bigstar$
 </div>
 </div>
 <div class="fragment">
-<p><strong>Note:</strong> Controlling for differences in bill length, all three species have statistically discernible average body masses</p>
+<p><strong>Note:</strong> Controlling for differences in bill depth, all three species have statistically discernible average body masses</p>
 </div>
 <div class="fragment">
-<p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx 83.47 ~+ &amp;~93.83\cdot\left(\text{bill length}\right) - 966.14\cdot\left(\text{speciesChinstrap}\right) +\\ &amp;~543.47\cdot\left(\text{speciesGentoo}\right)\end{align}\]</span></p>
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx -912.91 ~+ &amp;~252.34\cdot\left(\text{bill depth}\right) - 23.37\cdot\left(\text{speciesChinstrap}\right) +\\ &amp;~2221.0\cdot\left(\text{speciesGentoo}\right)\end{align}\]</span></p>
 </div>
 </section>
 <section id="an-improvement-over-the-species-only-model" class="slide level2">
@@ -1510,7 +1518,7 @@ $\bigstar$ Let's try it! $\bigstar$
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<p><strong>Species and Bill Length Model:</strong></p>
+<p><strong>Species and Bill Depth Model:</strong></p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
@@ -1523,19 +1531,19 @@ $\bigstar$ Let's try it! $\bigstar$
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">r.squared</td>
-<td style="text-align: right;">0.7881583</td>
+<td style="text-align: right;">0.7928019</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">adj.r.squared</td>
-<td style="text-align: right;">0.7856363</td>
+<td style="text-align: right;">0.7903352</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">sigma</td>
-<td style="text-align: right;">379.9032633</td>
+<td style="text-align: right;">375.7164021</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">statistic</td>
-<td style="text-align: right;">312.5224319</td>
+<td style="text-align: right;">321.4091063</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">p.value</td>
@@ -1547,19 +1555,19 @@ $\bigstar$ Let's try it! $\bigstar$
 </tr>
 <tr class="odd">
 <td style="text-align: left;">logLik</td>
-<td style="text-align: right;">-1881.8511372</td>
+<td style="text-align: right;">-1879.0141347</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">AIC</td>
-<td style="text-align: right;">3773.7022744</td>
+<td style="text-align: right;">3768.0282694</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BIC</td>
-<td style="text-align: right;">3791.4281617</td>
+<td style="text-align: right;">3785.7541567</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">deviance</td>
-<td style="text-align: right;">36370275.3437731</td>
+<td style="text-align: right;">35573029.3286923</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">df.residual</td>
@@ -1608,35 +1616,35 @@ $\bigstar$ Let's try it! $\bigstar$
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">83.46598</td>
-<td style="text-align: right;">316.314197</td>
-<td style="text-align: right;">0.7920954</td>
-<td style="text-align: right;">-539.49027</td>
-<td style="text-align: right;">706.4222</td>
+<td style="text-align: right;">-912.90624</td>
+<td style="text-align: right;">389.97673</td>
+<td style="text-align: right;">0.0200163</td>
+<td style="text-align: right;">-1680.9351</td>
+<td style="text-align: right;">-144.8773</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">bill_length_mm</td>
-<td style="text-align: right;">93.83324</td>
-<td style="text-align: right;">8.145991</td>
+<td style="text-align: left;">bill_depth_mm</td>
+<td style="text-align: right;">252.33546</td>
+<td style="text-align: right;">21.22734</td>
 <td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">77.79034</td>
-<td style="text-align: right;">109.8761</td>
+<td style="text-align: right;">210.5299</td>
+<td style="text-align: right;">294.1411</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">species_Chinstrap</td>
-<td style="text-align: right;">-966.14331</td>
-<td style="text-align: right;">104.505328</td>
-<td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">-1171.95844</td>
-<td style="text-align: right;">-760.3282</td>
+<td style="text-align: right;">-23.37012</td>
+<td style="text-align: right;">63.73145</td>
+<td style="text-align: right;">0.7141529</td>
+<td style="text-align: right;">-148.8843</td>
+<td style="text-align: right;">102.1440</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">species_Gentoo</td>
-<td style="text-align: right;">543.47446</td>
-<td style="text-align: right;">91.329202</td>
+<td style="text-align: right;">2220.99703</td>
+<td style="text-align: right;">86.96707</td>
 <td style="text-align: right;">0.0000000</td>
-<td style="text-align: right;">363.60869</td>
-<td style="text-align: right;">723.3402</td>
+<td style="text-align: right;">2049.7221</td>
+<td style="text-align: right;">2392.2719</td>
 </tr>
 </tbody>
 </table>
@@ -1679,7 +1687,7 @@ $\bigstar$ Let's try it! $\bigstar$
 <h2>Interpreting this Model</h2>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="font-size: 18px; margin-left: auto; margin-right: auto;">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="font-size: 20px; margin-left: auto; margin-right: auto;">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -1692,30 +1700,30 @@ $\bigstar$ Let's try it! $\bigstar$
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">83.46598</td>
-<td style="text-align: right;">316.314197</td>
-<td style="text-align: right;">0.2638705</td>
-<td style="text-align: right;">0.7920954</td>
+<td style="text-align: right;">-912.90624</td>
+<td style="text-align: right;">389.97673</td>
+<td style="text-align: right;">-2.3409249</td>
+<td style="text-align: right;">0.0200163</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">bill_length_mm</td>
-<td style="text-align: right;">93.83324</td>
-<td style="text-align: right;">8.145991</td>
-<td style="text-align: right;">11.5189474</td>
+<td style="text-align: left;">bill_depth_mm</td>
+<td style="text-align: right;">252.33546</td>
+<td style="text-align: right;">21.22734</td>
+<td style="text-align: right;">11.8872854</td>
 <td style="text-align: right;">0.0000000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">species_Chinstrap</td>
-<td style="text-align: right;">-966.14331</td>
-<td style="text-align: right;">104.505328</td>
-<td style="text-align: right;">-9.2449192</td>
-<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">-23.37012</td>
+<td style="text-align: right;">63.73145</td>
+<td style="text-align: right;">-0.3666969</td>
+<td style="text-align: right;">0.7141529</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">species_Gentoo</td>
-<td style="text-align: right;">543.47446</td>
-<td style="text-align: right;">91.329202</td>
-<td style="text-align: right;">5.9507195</td>
+<td style="text-align: right;">2220.99703</td>
+<td style="text-align: right;">86.96707</td>
+<td style="text-align: right;">25.5383665</td>
 <td style="text-align: right;">0.0000000</td>
 </tr>
 </tbody>
@@ -1724,14 +1732,14 @@ $\bigstar$ Let's try it! $\bigstar$
 
 </div>
 </div>
-<p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx 83.47 ~+ &amp;~93.83\cdot\left(\text{bill length}\right) - 966.14\cdot\left(\text{speciesChinstrap}\right) +\\ &amp;~543.47\cdot\left(\text{speciesGentoo}\right)\end{align}\]</span></p>
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx -912.91 ~+ &amp;~252.34\cdot\left(\text{bill depth}\right) - 23.37\cdot\left(\text{speciesChinstrap}\right) +\\ &amp;~2221.0\cdot\left(\text{speciesGentoo}\right)\end{align}\]</span></p>
 <ul>
-<li class="fragment"><p>(<em>Intercept</em>) Interpretation of this intercept is not meaningful because it would correspond to a penguin with a bill length of 0mm.</p></li>
-<li class="fragment"><p>(<em>Bill Length</em>) Controlling for differences in species, we expect a 1mm increase in bill length to be associated with a 93.83g increase in body mass, on average.</p></li>
-<li class="fragment"><p>(<em>Chinstrap</em>) Given a Chinstrap and Adelie penguin with the same bill length, we expect the Chinstrap to have a lower body mass by about 966.14g, on average.</p></li>
-<li class="fragment"><p>(<em>Gentoo</em>) Given a Gentoo and Adelie penguin with the same bill length, we expect the Gentoo to have greater mass by about 543.47g, on average.</p>
+<li class="fragment"><p>(<em>Intercept</em>) Interpretation of this intercept is not meaningful because it would correspond to a penguin with a bill depth of 0mm.</p></li>
+<li class="fragment"><p>(<em>Bill Depth</em>) Controlling for differences in species, we expect a 1mm increase in bill depth to be associated with a 252.34g increase in body mass, on average.</p></li>
+<li class="fragment"><p>(<em>Chinstrap</em>) Given a Chinstrap and Adelie penguin with the same bill depth, we expect the Chinstrap to have a lower body mass by about 23.37g, on average.</p></li>
+<li class="fragment"><p>(<em>Gentoo</em>) Given a Gentoo and Adelie penguin with the same bill depth, we expect the Gentoo to have greater mass by about 2221.0g, on average.</p>
 <ul>
-<li class="fragment"><strong>Note:</strong> Some intercept comparisons are misleading since Adelie bill lengths rarely overlap the other two species’</li>
+<li class="fragment"><strong>Note:</strong> Some comparisons are misleading since Adelie bill depths rarely overlap with Gentoos’</li>
 </ul></li>
 </ul>
 </section>
@@ -1750,7 +1758,7 @@ $\bigstar$ Let's try it! $\bigstar$
 <h2>Making Predictions with this Model</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10" data-code-line-numbers="|1-4|6-7|8-15|16-19|6-19|"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a>new_data <span class="ot">&lt;-</span> <span class="fu">crossing</span>(</span>
-<span id="cb10-2"><a href=""></a>  <span class="at">bill_length_mm =</span> <span class="fu">seq</span>(<span class="fl">32.1</span>, <span class="fl">59.6</span>, <span class="at">length.out =</span> <span class="dv">250</span>),</span>
+<span id="cb10-2"><a href=""></a>  <span class="at">bill_depth_mm =</span> <span class="fu">seq</span>(<span class="fl">13.1</span>, <span class="fl">21.5</span>, <span class="at">length.out =</span> <span class="dv">250</span>),</span>
 <span id="cb10-3"><a href=""></a>  <span class="at">species =</span> <span class="fu">c</span>(<span class="st">"Adelie"</span>, <span class="st">"Chinstrap"</span>, <span class="st">"Gentoo"</span>)</span>
 <span id="cb10-4"><a href=""></a>)</span>
 <span id="cb10-5"><a href=""></a></span>
@@ -1775,19 +1783,19 @@ $\bigstar$ Let's try it! $\bigstar$
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb11" data-code-line-numbers="|1|2-4|5-7|8-10|11-13|2-13|14-17|18|19|"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
 <span id="cb11-2"><a href=""></a>  <span class="fu">geom_ribbon</span>(<span class="at">data =</span> new_data, </span>
-<span id="cb11-3"><a href=""></a>              <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">ymin =</span> .pred_lower, <span class="at">ymax =</span> .pred_upper),</span>
+<span id="cb11-3"><a href=""></a>              <span class="fu">aes</span>(<span class="at">x =</span> bill_depth_mm, <span class="at">ymin =</span> .pred_lower, <span class="at">ymax =</span> .pred_upper),</span>
 <span id="cb11-4"><a href=""></a>              <span class="at">alpha =</span> <span class="fl">0.25</span>) <span class="sc">+</span></span>
 <span id="cb11-5"><a href=""></a>  <span class="fu">geom_ribbon</span>(<span class="at">data =</span> new_data,</span>
-<span id="cb11-6"><a href=""></a>              <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">ymin =</span> .conf_lower, <span class="at">ymax =</span> .conf_upper),</span>
+<span id="cb11-6"><a href=""></a>              <span class="fu">aes</span>(<span class="at">x =</span> bill_depth_mm, <span class="at">ymin =</span> .conf_lower, <span class="at">ymax =</span> .conf_upper),</span>
 <span id="cb11-7"><a href=""></a>              <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
 <span id="cb11-8"><a href=""></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> new_data,</span>
-<span id="cb11-9"><a href=""></a>            <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">y =</span> .pred, <span class="at">color =</span> species),</span>
+<span id="cb11-9"><a href=""></a>            <span class="fu">aes</span>(<span class="at">x =</span> bill_depth_mm, <span class="at">y =</span> .pred, <span class="at">color =</span> species),</span>
 <span id="cb11-10"><a href=""></a>            <span class="at">lwd =</span> <span class="fl">1.25</span>) <span class="sc">+</span></span>
 <span id="cb11-11"><a href=""></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> penguins_train,</span>
-<span id="cb11-12"><a href=""></a>             <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">y =</span> body_mass_g, <span class="at">color =</span> species),</span>
+<span id="cb11-12"><a href=""></a>             <span class="fu">aes</span>(<span class="at">x =</span> bill_depth_mm, <span class="at">y =</span> body_mass_g, <span class="at">color =</span> species),</span>
 <span id="cb11-13"><a href=""></a>             <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
 <span id="cb11-14"><a href=""></a>  <span class="fu">labs</span>(</span>
-<span id="cb11-15"><a href=""></a>    <span class="at">x =</span> <span class="st">"Bill Length"</span>,</span>
+<span id="cb11-15"><a href=""></a>    <span class="at">x =</span> <span class="st">"Bill Depth"</span>,</span>
 <span id="cb11-16"><a href=""></a>    <span class="at">y =</span> <span class="st">"Body Mass"</span></span>
 <span id="cb11-17"><a href=""></a>  ) <span class="sc">+</span> </span>
 <span id="cb11-18"><a href=""></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>species, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span> </span>
@@ -1840,7 +1848,7 @@ $\bigstar$ Let's try it! $\bigstar$
 <ul>
 <li class="fragment">We can use the dummy variable technique by adding <code>step_dummy()</code> as a feature engineering step in a <em>recipe</em></li>
 </ul></li>
-<li class="fragment"><p>In the case of rare levels, we may want to also include <code>step_other()</code>, <code>step_unknown()</code>, or <code>step_novel()</code> as recipe steps as well</p></li>
+<li class="fragment"><p>In the case of rare levels, we may want to also include <code>step_other()</code>, <code>step_unknown()</code>, or <code>step_novel()</code> as recipe steps as well – <strong>order of application matters!</strong></p></li>
 </ul></li>
 <li class="fragment"><p>A linear regression model including a single categorical variable as the sole predictor is equivalent to ANOVA</p></li>
 <li class="fragment"><p>For a linear regression model with at least one numerical predictor, the result of the inclusion of a categorical variable in the model is a shift in <em>intercept</em> (a vertical shift) for each of the levels of the categorical predictor</p></li>

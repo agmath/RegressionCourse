@@ -1,13 +1,12 @@
 ---
 title: "Inclusion and Interpretation of Catgorical Predictors in Linear Regression Models"
 author: Dr. Gilbert
-format: 
-  revealjs:
-    smaller: true
+format: revealjs
 date: today
 date-format: long
 theme: serif
 incremental: true
+fontsize: 18pt
 ---
 
 ```{r global-options, include=FALSE}
@@ -358,11 +357,10 @@ ggplot() +
 ## ANalysis Of VAriance as Linear Regression
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 1. Identify a categorical predictor of price in your Air BnB data set
@@ -523,11 +521,10 @@ penguins_train %>%
 ## Strategies for Using Categorical Predictors
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 1. Choose one categorical predictor of price for a rental in your dataset
@@ -597,10 +594,9 @@ I then used our usual code to construct the *workflow* and *fit* the model to ou
 ## Including Categorical Predictors with `{tidymodels}`
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
-</font>
 </center>
 
 1. Add a new section to your notebook on the use of categorical predictors in models
@@ -687,11 +683,10 @@ lr_sbl_fit <- lr_sbl_wf %>%
 ## Models with Numerical and Categorical Predictors
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 1. Create an instance of a modeling *workflow* which uses at least one numerical predictor and at least one categorical predictor
@@ -722,6 +717,30 @@ lr_sbl_fit %>%
 ```
 
 . . .
+
+**Individual Term-Based Tests:**
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_sbl_fit %>%
+  extract_fit_engine() %>%
+  tidy(conf.int = TRUE)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_sbl_fit %>%
+  extract_fit_engine() %>%
+  tidy(conf.int = TRUE) %>%
+  kable() %>%
+  kable_styling()
+```
+
+## Assessing Our New Model
 
 **Individual Term-Based Tests:**
 
@@ -794,11 +813,10 @@ lr_sbl_fit %>%
 ## Assessing and Comparing Models
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 1. Obtain and interpret your *global* and *term-based* model metrics
@@ -821,6 +839,14 @@ lr_sbl_fit %>%
 
 . . .
 
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
 ```{r}
 lr_sbl_fit %>%
   extract_fit_engine() %>%
@@ -837,14 +863,21 @@ lr_sbl_fit %>%
   theme(legend.position = "None")
 ```
 
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
 ## Visualizing Coefficients
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 1. Try to construct a plot which allows you to visualize your model coefficients and their plausible ranges.
@@ -860,7 +893,7 @@ lr_sbl_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling()
+  kable_styling(font_size = 18)
 ```
 
 \begin{align} \mathbb{E}\left[\text{body mass}\right] \approx 83.47 ~+ &~93.83\cdot\left(\text{bill length}\right) - 966.14\cdot\left(\text{speciesChinstrap}\right) +\\ &~543.47\cdot\left(\text{speciesGentoo}\right)\end{align}
@@ -878,11 +911,10 @@ lr_sbl_fit %>%
 ## Interpreting the Model
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 1. If you haven't done so already, write down your estimated model form.
@@ -984,11 +1016,10 @@ ggplot() +
 ## Making and Visualizing Model Predictions
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 1. Create a *counterfactual* set of new observations using `crossing()`
@@ -1024,9 +1055,8 @@ $\bigstar$ Let's try it! $\bigstar$
 ## Next Time...
 
 <center>
-<font size="120pt"><br/>
+<br/>
 Model-Building, Assessment, and Interpretation Workshop
 
 <br/>
-</font>
 </center>

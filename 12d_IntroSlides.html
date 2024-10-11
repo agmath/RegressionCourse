@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-09-09">
+  <meta name="dcterms.date" content="2024-10-10">
   <title>Inclusion and Interpretation of Catgorical Predictors in Linear Regression Models</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">September 9, 2024</p>
+  <p class="date">October 10, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -789,11 +789,10 @@ H_a &amp; : &amp; \text{At least one species has different average body mass}\en
 ## ANalysis Of VAriance as Linear Regression
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 1. Identify a categorical predictor of price in your Air BnB data set
@@ -1092,8 +1091,8 @@ $\bigstar$ Let's try it! $\bigstar$
 <section id="strategies-for-using-categorical-predictors" class="slide level2">
 <h2>Strategies for Using Categorical Predictors</h2>
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<br>
 </center>
 <ol type="1">
 <li class="fragment">Choose one categorical predictor of price for a rental in your dataset</li>
@@ -1187,8 +1186,7 @@ $\bigstar$ Let's try it! $\bigstar$
 <section id="including-categorical-predictors-with-tidymodels-1" class="slide level2">
 <h2>Including Categorical Predictors with <code>{tidymodels}</code></h2>
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-</font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
 </center>
 <ol type="1">
 <li class="fragment"><p>Add a new section to your notebook on the use of categorical predictors in models</p></li>
@@ -1247,8 +1245,8 @@ $\bigstar$ Let's try it! $\bigstar$
 <section id="models-with-numerical-and-categorical-predictors" class="slide level2">
 <h2>Models with Numerical and Categorical Predictors</h2>
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<br>
 </center>
 <ol type="1">
 <li class="fragment">Create an instance of a modeling <em>workflow</em> which uses at least one numerical predictor and at least one categorical predictor</li>
@@ -1367,6 +1365,72 @@ $\bigstar$ Let's try it! $\bigstar$
 
 
 </div>
+</div>
+</div>
+</section>
+<section id="assessing-our-new-model-1" class="slide level2">
+<h2>Assessing Our New Model</h2>
+<p><strong>Individual Term-Based Tests:</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>lr_sbl_fit <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href=""></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href=""></a>  <span class="fu">tidy</span>(<span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std.error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">conf.low</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">conf.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">83.46598</td>
+<td style="text-align: right;">316.314197</td>
+<td style="text-align: right;">0.2638705</td>
+<td style="text-align: right;">0.7920954</td>
+<td style="text-align: right;">-539.49027</td>
+<td style="text-align: right;">706.4222</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bill_length_mm</td>
+<td style="text-align: right;">93.83324</td>
+<td style="text-align: right;">8.145991</td>
+<td style="text-align: right;">11.5189474</td>
+<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">77.79034</td>
+<td style="text-align: right;">109.8761</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">species_Chinstrap</td>
+<td style="text-align: right;">-966.14331</td>
+<td style="text-align: right;">104.505328</td>
+<td style="text-align: right;">-9.2449192</td>
+<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">-1171.95844</td>
+<td style="text-align: right;">-760.3282</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">species_Gentoo</td>
+<td style="text-align: right;">543.47446</td>
+<td style="text-align: right;">91.329202</td>
+<td style="text-align: right;">5.9507195</td>
+<td style="text-align: right;">0.0000000</td>
+<td style="text-align: right;">363.60869</td>
+<td style="text-align: right;">723.3402</td>
+</tr>
+</tbody>
+</table>
+
+
 </div>
 </div>
 <div class="fragment">
@@ -1517,8 +1581,8 @@ $\bigstar$ Let's try it! $\bigstar$
 <section id="assessing-and-comparing-models" class="slide level2">
 <h2>Assessing and Comparing Models</h2>
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<br>
 </center>
 <ol type="1">
 <li class="fragment">Obtain and interpret your <em>global</em> and <em>term-based</em> model metrics</li>
@@ -1581,13 +1645,21 @@ $\bigstar$ Let's try it! $\bigstar$
 </div>
 </div>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:70%;">
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-33-1.png" width="960"></p>
+<p><img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-35-1.png" width="960"></p>
 </figure>
 </div>
+</div>
+</div>
+</div><div class="column" style="width:15%;">
+
 </div>
 </div>
 </div>
@@ -1595,8 +1667,8 @@ $\bigstar$ Let's try it! $\bigstar$
 <section id="visualizing-coefficients" class="slide level2">
 <h2>Visualizing Coefficients</h2>
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<br>
 </center>
 <ol type="1">
 <li class="fragment">Try to construct a plot which allows you to visualize your model coefficients and their plausible ranges.</li>
@@ -1607,7 +1679,7 @@ $\bigstar$ Let's try it! $\bigstar$
 <h2>Interpreting this Model</h2>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="font-size: 18px; margin-left: auto; margin-right: auto;">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -1666,8 +1738,8 @@ $\bigstar$ Let's try it! $\bigstar$
 <section id="interpreting-the-model" class="slide level2">
 <h2>Interpreting the Model</h2>
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<br>
 </center>
 <ol type="1">
 <li class="fragment">If you haven’t done so already, write down your estimated model form.</li>
@@ -1677,55 +1749,55 @@ $\bigstar$ Let's try it! $\bigstar$
 <section id="making-predictions-with-this-model" class="slide level2">
 <h2>Making Predictions with this Model</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9" data-code-line-numbers="|1-4|6-7|8-15|16-19|6-19|"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>new_data <span class="ot">&lt;-</span> <span class="fu">crossing</span>(</span>
-<span id="cb9-2"><a href=""></a>  <span class="at">bill_length_mm =</span> <span class="fu">seq</span>(<span class="fl">32.1</span>, <span class="fl">59.6</span>, <span class="at">length.out =</span> <span class="dv">250</span>),</span>
-<span id="cb9-3"><a href=""></a>  <span class="at">species =</span> <span class="fu">c</span>(<span class="st">"Adelie"</span>, <span class="st">"Chinstrap"</span>, <span class="st">"Gentoo"</span>)</span>
-<span id="cb9-4"><a href=""></a>)</span>
-<span id="cb9-5"><a href=""></a></span>
-<span id="cb9-6"><a href=""></a>new_data <span class="ot">&lt;-</span> lr_sbl_fit <span class="sc">%&gt;%</span></span>
-<span id="cb9-7"><a href=""></a>  <span class="fu">augment</span>(new_data) <span class="sc">%&gt;%</span></span>
-<span id="cb9-8"><a href=""></a>  <span class="fu">bind_cols</span>(</span>
-<span id="cb9-9"><a href=""></a>    lr_sbl_fit <span class="sc">%&gt;%</span></span>
-<span id="cb9-10"><a href=""></a>      <span class="fu">predict</span>(new_data, <span class="at">type =</span> <span class="st">"conf_int"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-11"><a href=""></a>      <span class="fu">rename</span>(</span>
-<span id="cb9-12"><a href=""></a>        <span class="at">.conf_lower =</span> .pred_lower,</span>
-<span id="cb9-13"><a href=""></a>        <span class="at">.conf_upper =</span> .pred_upper</span>
-<span id="cb9-14"><a href=""></a>      )</span>
-<span id="cb9-15"><a href=""></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb9-16"><a href=""></a>  <span class="fu">bind_cols</span>(</span>
-<span id="cb9-17"><a href=""></a>    lr_sbl_fit <span class="sc">%&gt;%</span></span>
-<span id="cb9-18"><a href=""></a>      <span class="fu">predict</span>(new_data, <span class="at">type =</span> <span class="st">"pred_int"</span>)</span>
-<span id="cb9-19"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10" data-code-line-numbers="|1-4|6-7|8-15|16-19|6-19|"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a>new_data <span class="ot">&lt;-</span> <span class="fu">crossing</span>(</span>
+<span id="cb10-2"><a href=""></a>  <span class="at">bill_length_mm =</span> <span class="fu">seq</span>(<span class="fl">32.1</span>, <span class="fl">59.6</span>, <span class="at">length.out =</span> <span class="dv">250</span>),</span>
+<span id="cb10-3"><a href=""></a>  <span class="at">species =</span> <span class="fu">c</span>(<span class="st">"Adelie"</span>, <span class="st">"Chinstrap"</span>, <span class="st">"Gentoo"</span>)</span>
+<span id="cb10-4"><a href=""></a>)</span>
+<span id="cb10-5"><a href=""></a></span>
+<span id="cb10-6"><a href=""></a>new_data <span class="ot">&lt;-</span> lr_sbl_fit <span class="sc">%&gt;%</span></span>
+<span id="cb10-7"><a href=""></a>  <span class="fu">augment</span>(new_data) <span class="sc">%&gt;%</span></span>
+<span id="cb10-8"><a href=""></a>  <span class="fu">bind_cols</span>(</span>
+<span id="cb10-9"><a href=""></a>    lr_sbl_fit <span class="sc">%&gt;%</span></span>
+<span id="cb10-10"><a href=""></a>      <span class="fu">predict</span>(new_data, <span class="at">type =</span> <span class="st">"conf_int"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-11"><a href=""></a>      <span class="fu">rename</span>(</span>
+<span id="cb10-12"><a href=""></a>        <span class="at">.conf_lower =</span> .pred_lower,</span>
+<span id="cb10-13"><a href=""></a>        <span class="at">.conf_upper =</span> .pred_upper</span>
+<span id="cb10-14"><a href=""></a>      )</span>
+<span id="cb10-15"><a href=""></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb10-16"><a href=""></a>  <span class="fu">bind_cols</span>(</span>
+<span id="cb10-17"><a href=""></a>    lr_sbl_fit <span class="sc">%&gt;%</span></span>
+<span id="cb10-18"><a href=""></a>      <span class="fu">predict</span>(new_data, <span class="at">type =</span> <span class="st">"pred_int"</span>)</span>
+<span id="cb10-19"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="making-predictions-with-this-model-1" class="slide level2">
 <h2>Making Predictions with this Model</h2>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb10" data-code-line-numbers="|1|2-4|5-7|8-10|11-13|2-13|14-17|18|19|"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href=""></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb10-2"><a href=""></a>  <span class="fu">geom_ribbon</span>(<span class="at">data =</span> new_data, </span>
-<span id="cb10-3"><a href=""></a>              <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">ymin =</span> .pred_lower, <span class="at">ymax =</span> .pred_upper),</span>
-<span id="cb10-4"><a href=""></a>              <span class="at">alpha =</span> <span class="fl">0.25</span>) <span class="sc">+</span></span>
-<span id="cb10-5"><a href=""></a>  <span class="fu">geom_ribbon</span>(<span class="at">data =</span> new_data,</span>
-<span id="cb10-6"><a href=""></a>              <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">ymin =</span> .conf_lower, <span class="at">ymax =</span> .conf_upper),</span>
-<span id="cb10-7"><a href=""></a>              <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb10-8"><a href=""></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> new_data,</span>
-<span id="cb10-9"><a href=""></a>            <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">y =</span> .pred, <span class="at">color =</span> species),</span>
-<span id="cb10-10"><a href=""></a>            <span class="at">lwd =</span> <span class="fl">1.25</span>) <span class="sc">+</span></span>
-<span id="cb10-11"><a href=""></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> penguins_train,</span>
-<span id="cb10-12"><a href=""></a>             <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">y =</span> body_mass_g, <span class="at">color =</span> species),</span>
-<span id="cb10-13"><a href=""></a>             <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
-<span id="cb10-14"><a href=""></a>  <span class="fu">labs</span>(</span>
-<span id="cb10-15"><a href=""></a>    <span class="at">x =</span> <span class="st">"Bill Length"</span>,</span>
-<span id="cb10-16"><a href=""></a>    <span class="at">y =</span> <span class="st">"Body Mass"</span></span>
-<span id="cb10-17"><a href=""></a>  ) <span class="sc">+</span> </span>
-<span id="cb10-18"><a href=""></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>species, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span> </span>
-<span id="cb10-19"><a href=""></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"None"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11" data-code-line-numbers="|1|2-4|5-7|8-10|11-13|2-13|14-17|18|19|"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb11-2"><a href=""></a>  <span class="fu">geom_ribbon</span>(<span class="at">data =</span> new_data, </span>
+<span id="cb11-3"><a href=""></a>              <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">ymin =</span> .pred_lower, <span class="at">ymax =</span> .pred_upper),</span>
+<span id="cb11-4"><a href=""></a>              <span class="at">alpha =</span> <span class="fl">0.25</span>) <span class="sc">+</span></span>
+<span id="cb11-5"><a href=""></a>  <span class="fu">geom_ribbon</span>(<span class="at">data =</span> new_data,</span>
+<span id="cb11-6"><a href=""></a>              <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">ymin =</span> .conf_lower, <span class="at">ymax =</span> .conf_upper),</span>
+<span id="cb11-7"><a href=""></a>              <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb11-8"><a href=""></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> new_data,</span>
+<span id="cb11-9"><a href=""></a>            <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">y =</span> .pred, <span class="at">color =</span> species),</span>
+<span id="cb11-10"><a href=""></a>            <span class="at">lwd =</span> <span class="fl">1.25</span>) <span class="sc">+</span></span>
+<span id="cb11-11"><a href=""></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> penguins_train,</span>
+<span id="cb11-12"><a href=""></a>             <span class="fu">aes</span>(<span class="at">x =</span> bill_length_mm, <span class="at">y =</span> body_mass_g, <span class="at">color =</span> species),</span>
+<span id="cb11-13"><a href=""></a>             <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb11-14"><a href=""></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-15"><a href=""></a>    <span class="at">x =</span> <span class="st">"Bill Length"</span>,</span>
+<span id="cb11-16"><a href=""></a>    <span class="at">y =</span> <span class="st">"Body Mass"</span></span>
+<span id="cb11-17"><a href=""></a>  ) <span class="sc">+</span> </span>
+<span id="cb11-18"><a href=""></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>species, <span class="at">ncol =</span> <span class="dv">3</span>) <span class="sc">+</span> </span>
+<span id="cb11-19"><a href=""></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"None"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="making-predictions-with-this-model-2" class="slide level2">
 <h2>Making Predictions with this Model</h2>
 
-<img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-37-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
+<img data-src="12d_IntroSlides_files/figure-revealjs/unnamed-chunk-39-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="fragment">
 <blockquote>
 <p><strong>Note:</strong> Including the categorical predictor has resulted in our model taking the form of these separate, parallel lines.</p>
 </blockquote>
@@ -1734,8 +1806,8 @@ $\bigstar$ Let's try it! $\bigstar$
 <section id="making-and-visualizing-model-predictions" class="slide level2">
 <h2>Making and Visualizing Model Predictions</h2>
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<br>
 </center>
 <ol type="1">
 <li class="fragment"><p>Create a <em>counterfactual</em> set of new observations using <code>crossing()</code></p></li>
@@ -1777,8 +1849,8 @@ $\bigstar$ Let's try it! $\bigstar$
 <section id="next-time" class="slide level2">
 <h2>Next Time…</h2>
 <center>
-<p><font size="120pt"><br> Model-Building, Assessment, and Interpretation Workshop</font></p><font size="120pt">
-<br> </font>
+<p><br> Model-Building, Assessment, and Interpretation Workshop</p>
+<br>
 </center>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
@@ -1817,7 +1889,7 @@ $\bigstar$ Let's try it! $\bigstar$
 'autoAnimateDuration': 1,
 'autoAnimateUnmatched': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
-'smaller': true,
+'smaller': false,
  
         // Display controls in the bottom right corner
         controls: false,

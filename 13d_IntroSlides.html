@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-09-09">
+  <meta name="dcterms.date" content="2024-10-17">
   <title>Higher-Order Terms: Curvi-Linear Regression</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">September 9, 2024</p>
+  <p class="date">October 17, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -575,6 +575,10 @@ code.sourceCode {
 <span id="cb2-12"><a href=""></a>       <span class="at">y =</span> <span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:70%;">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -582,6 +586,10 @@ code.sourceCode {
 <p><img data-src="13d_IntroSlides_files/figure-revealjs/unnamed-chunk-5-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
+</div>
+</div>
+</div><div class="column" style="width:15%;">
+
 </div>
 </div>
 </div>
@@ -641,7 +649,7 @@ code.sourceCode {
 <p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{medv}\right] = \beta_0 +~ &amp;\beta_1\cdot\left(\text{age}\right) + \beta_2\cdot\left(\text{lstat}\right) + \beta_3\cdot\left(\text{chas}\right) + \beta_4\cdot\left(\text{age}^2\right) + \beta_5\cdot\left(\text{lstat}^2\right) +\\
 &amp;~\beta_6\cdot\left(\text{chas}\cdot\text{age}\right) + \beta_7\cdot\left(\text{chas}\cdot\text{lstat}\right) + \beta_8\cdot\left(\text{chas}\cdot\text{age}^2\right) +\\
 &amp;~\beta_9\cdot\left(\text{chas}\cdot\text{lstat}^2\right) + \beta_{10}\cdot\left(\text{age}\cdot\text{lstat}\right) + \beta_{11}\cdot\left(\text{age}\cdot\text{lstat}^2\right) +\\
-&amp;\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_13\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)
+&amp;\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_{13}\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)
 \end{align}\]</span></p>
 </div>
 </section>
@@ -651,7 +659,7 @@ code.sourceCode {
 <p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{medv}\right] = \beta_0 +~ &amp;\color{blue}{\beta_1\cdot\left(\text{age}\right) + \beta_2\cdot\left(\text{lstat}\right) + \beta_3\cdot\left(\text{chas}\right) + \beta_4\cdot\left(\text{age}^2\right) + \beta_5\cdot\left(\text{lstat}^2\right)} +\\
 &amp;~\beta_6\cdot\left(\text{chas}\cdot\text{age}\right) + \beta_7\cdot\left(\text{chas}\cdot\text{lstat}\right) + \beta_8\cdot\left(\text{chas}\cdot\text{age}^2\right) +\\
 &amp;~\beta_9\cdot\left(\text{chas}\cdot\text{lstat}^2\right) + \beta_{10}\cdot\left(\text{age}\cdot\text{lstat}\right) + \beta_{11}\cdot\left(\text{age}\cdot\text{lstat}^2\right) +\\
-&amp;\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_13\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)
+&amp;\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_{13}\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)
 \end{align}\]</span></p>
 </section>
 <section id="curvi-linear-regression-2" class="slide level2">
@@ -661,7 +669,7 @@ code.sourceCode {
 <p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{medv}\right] = \beta_0 +~ &amp;\color{blue}{\beta_1\cdot\left(\text{age}\right) + \beta_2\cdot\left(\text{lstat}\right) + \beta_3\cdot\left(\text{chas}\right) + \beta_4\cdot\left(\text{age}^2\right) + \beta_5\cdot\left(\text{lstat}^2\right)} +\\
 &amp;~\color{purple}{\beta_6\cdot\left(\text{chas}\cdot\text{age}\right) + \beta_7\cdot\left(\text{chas}\cdot\text{lstat}\right) + \beta_8\cdot\left(\text{chas}\cdot\text{age}^2\right) +}\\
 &amp;~\color{purple}{\beta_9\cdot\left(\text{chas}\cdot\text{lstat}^2\right) + \beta_{10}\cdot\left(\text{age}\cdot\text{lstat}\right) + \beta_{11}\cdot\left(\text{age}\cdot\text{lstat}^2\right) +}\\
-&amp;\color{purple}{\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_13\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)}
+&amp;\color{purple}{\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_{13}\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)}
 \end{align}\]</span></p>
 </section>
 <section id="curvi-linear-regression-3" class="slide level2">
@@ -672,7 +680,7 @@ code.sourceCode {
 <div class="fragment">
 <p><strong>Model Setup:</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>mlr_me_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<div class="sourceCode cell-code" id="cb3" data-code-line-numbers="|5-6|"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>mlr_me_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb3-2"><a href=""></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
 <span id="cb3-3"><a href=""></a></span>
 <span id="cb3-4"><a href=""></a>mlr_me_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(medv <span class="sc">~</span> age <span class="sc">+</span> lstat <span class="sc">+</span> chas, <span class="at">data =</span> boston_train) <span class="sc">%&gt;%</span></span>
@@ -688,8 +696,8 @@ code.sourceCode {
 <section id="curvi-linear-regression-4" class="slide level2">
 <h2>Curvi-Linear Regression</h2>
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<p><br></p>
 </center>
 <div class="fragment">
 <p>If you’re playing along with the Air BnB data…</p>
@@ -973,8 +981,8 @@ code.sourceCode {
 <section id="fitting-assessing-and-updating-the-model" class="slide level2">
 <h2>Fitting, Assessing, and Updating the Model (🔁)</h2>
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<br>
 </center>
 <div class="fragment">
 <p>Again, if you are playing along with your Air BnB data…</p>
@@ -1061,8 +1069,8 @@ code.sourceCode {
 <section id="visualizing-model-predictions" class="slide level2">
 <h2>Visualizing Model Predictions</h2>
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<br>
 </center>
 <div class="fragment">
 <p>For those still following along with the Air BnB data…</p>
@@ -1224,8 +1232,8 @@ code.sourceCode {
 <section id="interpreting-your-model" class="slide level2">
 <h2>Interpreting your Model</h2>
 <center>
-<p><font size="120pt"><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></font></p><font size="120pt">
-<br> </font>
+<p><br> <span class="math inline">\(\bigstar\)</span> Let’s try it! <span class="math inline">\(\bigstar\)</span></p>
+<br>
 </center>
 <div class="fragment">
 <p>If you have a model that predicts prices of Air BnB rentals…</p>
@@ -1254,7 +1262,7 @@ code.sourceCode {
 <section id="next-time" class="slide level2">
 <h2>Next Time…</h2>
 <center>
-<font size="120pt"><br> Interaction Terms in Models (Mixed Effects) </font>
+<br> Interaction Terms in Models (Mixed Effects)
 </center>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">

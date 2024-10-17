@@ -8,6 +8,7 @@ date: today
 date-format: long
 theme: serif
 incremental: true
+fontsize: 20pt
 ---
 
 ```{r global-options, include=FALSE}
@@ -97,6 +98,14 @@ boston_train %>%
 
 . . .
 
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
 ```{r}
 #| echo: false
 #| eval: true
@@ -115,6 +124,14 @@ boston_train %>%
   labs(x = "Median Home Values",
        y = "")
 ```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
 
 ## Motivation: Predictors Associated with Median Home Values
 
@@ -238,7 +255,7 @@ Consider the following fourth-order model
 \begin{align} \mathbb{E}\left[\text{medv}\right] = \beta_0 +~ &\beta_1\cdot\left(\text{age}\right) + \beta_2\cdot\left(\text{lstat}\right) + \beta_3\cdot\left(\text{chas}\right) + \beta_4\cdot\left(\text{age}^2\right) + \beta_5\cdot\left(\text{lstat}^2\right) +\\
 &~\beta_6\cdot\left(\text{chas}\cdot\text{age}\right) + \beta_7\cdot\left(\text{chas}\cdot\text{lstat}\right) + \beta_8\cdot\left(\text{chas}\cdot\text{age}^2\right) +\\
 &~\beta_9\cdot\left(\text{chas}\cdot\text{lstat}^2\right) + \beta_{10}\cdot\left(\text{age}\cdot\text{lstat}\right) + \beta_{11}\cdot\left(\text{age}\cdot\text{lstat}^2\right) +\\
-&\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_13\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)
+&\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_{13}\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)
 \end{align}
 
 ## Curvi-Linear Regression
@@ -248,7 +265,7 @@ The *main effects* terms are in <font color="blue">blue</font>
 \begin{align} \mathbb{E}\left[\text{medv}\right] = \beta_0 +~ &\color{blue}{\beta_1\cdot\left(\text{age}\right) + \beta_2\cdot\left(\text{lstat}\right) + \beta_3\cdot\left(\text{chas}\right) + \beta_4\cdot\left(\text{age}^2\right) + \beta_5\cdot\left(\text{lstat}^2\right)} +\\
 &~\beta_6\cdot\left(\text{chas}\cdot\text{age}\right) + \beta_7\cdot\left(\text{chas}\cdot\text{lstat}\right) + \beta_8\cdot\left(\text{chas}\cdot\text{age}^2\right) +\\
 &~\beta_9\cdot\left(\text{chas}\cdot\text{lstat}^2\right) + \beta_{10}\cdot\left(\text{age}\cdot\text{lstat}\right) + \beta_{11}\cdot\left(\text{age}\cdot\text{lstat}^2\right) +\\
-&\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_13\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)
+&\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_{13}\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)
 \end{align}
 
 ## Curvi-Linear Regression
@@ -260,7 +277,7 @@ and the *mixed effects* terms are in <font color="purple">purple</font>
 \begin{align} \mathbb{E}\left[\text{medv}\right] = \beta_0 +~ &\color{blue}{\beta_1\cdot\left(\text{age}\right) + \beta_2\cdot\left(\text{lstat}\right) + \beta_3\cdot\left(\text{chas}\right) + \beta_4\cdot\left(\text{age}^2\right) + \beta_5\cdot\left(\text{lstat}^2\right)} +\\
 &~\color{purple}{\beta_6\cdot\left(\text{chas}\cdot\text{age}\right) + \beta_7\cdot\left(\text{chas}\cdot\text{lstat}\right) + \beta_8\cdot\left(\text{chas}\cdot\text{age}^2\right) +}\\
 &~\color{purple}{\beta_9\cdot\left(\text{chas}\cdot\text{lstat}^2\right) + \beta_{10}\cdot\left(\text{age}\cdot\text{lstat}\right) + \beta_{11}\cdot\left(\text{age}\cdot\text{lstat}^2\right) +}\\
-&\color{purple}{\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_13\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)}
+&\color{purple}{\beta_{12}\cdot\left(\text{age}^2\cdot\text{lstat}\right) + \beta_{13}\cdot\left(\text{age}^2\cdot\text{lstat}^2\right)}
 \end{align}
 
 ## Curvi-Linear Regression
@@ -277,6 +294,7 @@ We'll focus just on the *main effects* model today and wait to handle mixed effe
 ```{r}
 #| echo: true
 #| eval: true
+#| code-line-numbers: "|5-6|"
 
 mlr_me_spec <- linear_reg() %>%
   set_engine("lm")
@@ -293,11 +311,11 @@ mlr_me_wf <- workflow() %>%
 ## Curvi-Linear Regression
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
+
 </center>
 
 . . . 
@@ -459,11 +477,10 @@ For example, if a term for `age` $\cdot$ `lstat` $^2$ is included in a model, th
 ## Fitting, Assessing, and Updating the Model (🔁)
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 . . . 
@@ -583,11 +600,10 @@ mlr_me_fit %>%
 ## Visualizing Model Predictions
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 . . .
@@ -738,11 +754,10 @@ Two class meetings from now, we'll see how we can use the `{marginaleffects}` pa
 ## Interpreting your Model
 
 <center>
-<font size="120pt"><br/>
+<br/>
 $\bigstar$ Let's try it! $\bigstar$
 
 <br/>
-</font>
 </center>
 
 . . . 
@@ -768,7 +783,6 @@ If you have a model that predicts prices of Air BnB rentals...
 ## Next Time...
 
 <center>
-<font size="120pt"><br/>
+<br/>
 Interaction Terms in Models (Mixed Effects)
-</font>
 </center>

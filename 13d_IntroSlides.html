@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-10-17">
+  <meta name="dcterms.date" content="2024-10-18">
   <title>Higher-Order Terms: Curvi-Linear Regression</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">October 17, 2024</p>
+  <p class="date">October 18, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -564,7 +564,7 @@ code.sourceCode {
 <div class="sourceCode cell-code" id="cb2" data-code-line-numbers="|1|1-2|3-7|4|3-7|8-10|11-12|"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>boston_train <span class="sc">%&gt;%</span></span>
 <span id="cb2-2"><a href=""></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
 <span id="cb2-3"><a href=""></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">x =</span> medv,</span>
-<span id="cb2-4"><a href=""></a>                     <span class="at">y =</span> ..density..),</span>
+<span id="cb2-4"><a href=""></a>                     <span class="at">y =</span> <span class="fu">after_stat</span>(density)),</span>
 <span id="cb2-5"><a href=""></a>                 <span class="at">color =</span> <span class="st">"black"</span>,</span>
 <span id="cb2-6"><a href=""></a>                 <span class="at">fill =</span> <span class="st">"purple"</span>,</span>
 <span id="cb2-7"><a href=""></a>                 <span class="at">alpha =</span> <span class="fl">0.9</span>) <span class="sc">+</span> </span>

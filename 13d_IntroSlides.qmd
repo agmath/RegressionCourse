@@ -85,7 +85,7 @@ boston %>%
 boston_train %>%
   ggplot() + 
   geom_histogram(aes(x = medv,
-                     y = ..density..),
+                     y = after_stat(density)),
                  color = "black",
                  fill = "purple",
                  alpha = 0.9) + 
@@ -170,7 +170,7 @@ boston_train %>%
               method = "lm",
               lwd = 1.5,
               se = FALSE) +
-  labs(x = "% Built Before 1940",
+  labs(x = "% Low Socioeconomic Status",
        y = "Median Values (000s)")
 ```
 

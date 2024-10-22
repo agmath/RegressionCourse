@@ -496,6 +496,7 @@ Again, if you are playing along with your Air BnB data...
 ```{r}
 #| echo: true
 #| eval: false
+#| code-fold: true
 
 point_colors <- c("actual" = "black", "predicted" = "red")
 

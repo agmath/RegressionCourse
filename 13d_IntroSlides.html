@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-10-18">
+  <meta name="dcterms.date" content="2024-10-22">
   <title>Higher-Order Terms: Curvi-Linear Regression</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">October 18, 2024</p>
+  <p class="date">October 22, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -996,6 +996,8 @@ code.sourceCode {
 <section id="visualizing-model-predictions-training-data" class="slide level2">
 <h2>Visualizing Model Predictions [Training Data]</h2>
 <div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>point_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"actual"</span> <span class="ot">=</span> <span class="st">"black"</span>, <span class="st">"predicted"</span> <span class="ot">=</span> <span class="st">"red"</span>)</span>
 <span id="cb11-2"><a href=""></a></span>
 <span id="cb11-3"><a href=""></a>mlr_me_fit <span class="sc">%&gt;%</span></span>
@@ -1009,6 +1011,7 @@ code.sourceCode {
 <span id="cb11-11"><a href=""></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"% Low Socioeconomic Status"</span>,</span>
 <span id="cb11-12"><a href=""></a>       <span class="at">y =</span> <span class="st">"Median Home Value (000s)"</span>,</span>
 <span id="cb11-13"><a href=""></a>       <span class="at">color =</span> <span class="st">"Type"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="fragment">
 <div class="cell" data-layout-align="center">

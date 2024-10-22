@@ -8,6 +8,7 @@ date: today
 date-format: long
 theme: serif
 incremental: true
+fontsize: 24pt
 ---
 
 ```{r global-options, include=FALSE}
@@ -48,6 +49,14 @@ code.sourceCode {
 ## Motivation
 
 . . .
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
 
 ```{r}
 #| fig.height: 4
@@ -93,7 +102,23 @@ ggplot() +
        caption = "Are parallel lines appropriate here?")
 ```
 
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
 . . .
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
 
 ```{r}
 #| fig.height: 4
@@ -115,6 +140,14 @@ ggplot() +
   facet_wrap(~species, ncol = 3) + 
   theme(legend.position = "None")
 ```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
 
 ## Motivation
 
@@ -186,6 +219,14 @@ Below are visual representations of two models, both using flipper length as pre
 
 . . .
 
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
 ```{r}
 mlr_fly_spec <- linear_reg() %>%
   set_engine("lm")
@@ -253,6 +294,14 @@ p2 <- ggplot() +
 p1 + p2
 ```
 
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
 ## Models with Categorical Predictors (Cont'd.)
 
 . . .
@@ -264,6 +313,14 @@ We could even build a model that compensates for both `species` and `year` simul
 A visual of such a model appears below
 
 . . .
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
 
 ```{r}
 mlr_flsy_spec <- linear_reg() %>%
@@ -303,6 +360,14 @@ ggplot() +
        linetype = "Year")
 ```
 
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
 ## Models with Categorical Predictors (Cont'd.)
 
 . . . 
@@ -316,12 +381,12 @@ mlr_flsy_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling()
+  kable_styling(font_size = 18)
 ```
 
 . . .
 
-\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx -4905.72 +~ &46.1\cdot\left(\text{flipper length}\right) - 195.3\cdot\left(\text{year2008}\right) +\\ &- 209.68\cdot\left(\text{year2009}\right) - 270.54\cdot\left(\text{speciesChinstrap}\right) +\\ & 117.91\cdot\left(\text{speciesGentoo}\right)\end{align}
+$$\scriptsize{\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx -4905.72 +~ &46.1\cdot\left(\text{flipper length}\right) - 195.3\cdot\left(\text{year2008}\right) +\\ &- 209.68\cdot\left(\text{year2009}\right) - 270.54\cdot\left(\text{speciesChinstrap}\right) +\\ & 117.91\cdot\left(\text{speciesGentoo}\right)\end{align}}$$
 
 . . .
 
@@ -349,18 +414,18 @@ We can compare the previous model form to this proposed model form below.
 
 **Model with Year and Species Independently:**
 
-\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx \beta_0 +~ &\beta_1\cdot\left(\text{flipper length}\right) + \beta_2\cdot\left(\text{year2008}\right) + \beta_3\cdot\left(\text{year2009}\right) +\\  &\beta_4\cdot\left(\text{speciesChinstrap}\right) + \beta_5\cdot\left(\text{speciesGentoo}\right)\end{align}
+$$\scriptsize{\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx \beta_0 +~ &\beta_1\cdot\left(\text{flipper length}\right) + \beta_2\cdot\left(\text{year2008}\right) + \beta_3\cdot\left(\text{year2009}\right) +\\  &\beta_4\cdot\left(\text{speciesChinstrap}\right) + \beta_5\cdot\left(\text{speciesGentoo}\right)\end{align}}$$
 
 . . .
 
 **Model with Interaction Between Year and Species:**
 
-\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx \beta_0 +~ &\beta_1\cdot\left(\text{flipper length}\right) + \beta_2\cdot\left(\text{year2008}\right) + \beta_3\cdot\left(\text{year2009}\right) +\\  &\beta_4\cdot\left(\text{speciesChinstrap}\right) + \beta_5\cdot\left(\text{speciesGentoo}\right) +\\ 
+$$\scriptsize{\begin{align} \mathbb{E}\left[\text{body mass}\right] \approx \beta_0 +~ &\beta_1\cdot\left(\text{flipper length}\right) + \beta_2\cdot\left(\text{year2008}\right) + \beta_3\cdot\left(\text{year2009}\right) +\\  &\beta_4\cdot\left(\text{speciesChinstrap}\right) + \beta_5\cdot\left(\text{speciesGentoo}\right) +\\ 
 &\beta_6\cdot\left(\text{speciesGentoo}\cdot\text{year2008}\right) +\\ 
 &\beta_7\cdot\left(\text{speciesGentoo}\cdot\text{year2009}\right) +\\
 &\beta_8\cdot\left(\text{speciesChinstrap}\cdot\text{year2008}\right) +\\ 
 &\beta_9\cdot\left(\text{speciesChinstrap}\cdot\text{year2009}\right)
-\end{align}
+\end{align}}$$
 
 ## Building a Model with Interactions
 
@@ -427,6 +492,14 @@ $\displaystyle{\mathbb{E}\left[\text{body mass}\right] \approx~...}$
 
 . . .
 
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
 ```{r}
 #| fig.align: center
 #| fig.height: 4
@@ -455,7 +528,23 @@ ggplot() +
        shape = "Year")
 ```
 
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
 . . . 
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
 
 ```{r}
 #| fig.align: center
@@ -480,6 +569,14 @@ ggplot() +
   facet_grid(year ~ species)
 ```
 
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
 ## The Estimated Model
 
 <center>
@@ -497,9 +594,11 @@ $\bigstar$ Let's try it! $\bigstar$
 
 . . .
 
-Note that our new model, including the interaction between `species` and `year` includes nine (9) parallel lines
+::::{.columns}
 
-. . .
+:::{.column width="45%"}
+
+Note that our new model, including the interaction between `species` and `year` includes nine (9) parallel lines
 
 ```{r}
 #| fig.align: center
@@ -525,13 +624,59 @@ ggplot() +
        shape = "Year")
 ```
 
+:::
+
+:::{.column width="10%"}
+
+:::
+
+:::{.column width="45%"}
+
+:::
+
+::::
+
 ## Additional Flexibility with Interactions
 
-. . . 
+::::{.columns}
+
+:::{.column width="45%"}
+
+Note that our new model, including the interaction between `species` and `year` includes nine (9) parallel lines
+
+```{r}
+#| fig.align: center
+#| fig.height: 7
+
+ggplot() + 
+  geom_line(data = new_data,
+            aes(x = flipper_length_mm,
+                y = isy.pred,
+                color = species,
+                linetype = as.factor(year)),
+            lwd = 1) + 
+  geom_point(data = penguins_train, 
+             aes(x = flipper_length_mm,
+                 y = body_mass_g,
+                 color = species,
+                 shape = as.factor(year)),
+             alpha = 0.75) +
+  labs(x = "Flipper Length",
+       y = "Body Mass",
+       color = "Species",
+       linetype = "Year",
+       shape = "Year")
+```
+
+:::
+
+:::{.column width="10%"}
+
+:::
+
+:::{.column width="45%"}
 
 Where our model including `species` and `year` independently only included six
-
-. . .
 
 ```{r}
 #| fig.align: center
@@ -555,6 +700,14 @@ ggplot() +
        linetype = "Year",
        shape = "Year")
 ```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
 
 ## Additional Flexibility with Interactions
 
@@ -663,6 +816,14 @@ $\displaystyle{\mathbb{E}\left[\text{body mass}\right] \approx ...}$
 
 ## The Estimated Model (Cont'd.)
 
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
 ```{r}
 #| fig.align: center
 #| fig.height: 4
@@ -687,7 +848,23 @@ ggplot() +
        color = "Species")
 ```
 
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
 . . .
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
 
 ```{r}
 #| fig.align: center
@@ -709,6 +886,14 @@ ggplot() +
   theme(legend.position = "None") +
   facet_wrap(~species)
 ```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
 
 ## The Estimated Model
 
@@ -732,10 +917,15 @@ Note that our new model, including an interaction between `species` and flipper 
 
 . . .
 
-```{r}
-#| fig.align: center
-#| fig.height: 4
+:::{.columns}
 
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
 ggplot() + 
   geom_point(data = penguins_train,
              aes(x = flipper_length_mm, 
@@ -751,6 +941,14 @@ ggplot() +
        y = "Body Mass",
        color = "Species")
 ```
+
+:::
+
+:::{.column width="15%}
+
+:::
+
+::::
 
 . . .
 
@@ -1026,10 +1224,6 @@ The effect of a unit increase in either bill length or depth, however, depends o
 
 . . .
 
-We needed one additional $\beta$-coefficient to accommodate the interaction
-
-. . . 
-
 $\bigstar$ How many additional $\beta$-coefficients were required for your newest interaction model?
 
 ## Interpreting this Interaction Model
@@ -1147,11 +1341,27 @@ $\bigstar$ Let's try it! $\bigstar$
 
 . . .
 
+::::{.columns}
+
+:::{.column width="25%"}
+
+:::
+
+:::{.column width="50%"}
+
 <center>
 
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Sup. It&#39;s a dirty job, but someone&#39;s gotta provide plausible and defensible rationales for nonmonotonic interactions. <a href="http://t.co/arCeYeK9Ot">pic.twitter.com/arCeYeK9Ot</a></p>&mdash; Research Wahlberg (@ResearchMark) <a href="https://twitter.com/ResearchMark/status/527489859636985857?ref_src=twsrc%5Etfw">October 29, 2014</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 </center>
+
+:::
+
+:::{.column width="25%"}
+
+:::
+
+::::
 
 ## Next Time...
 

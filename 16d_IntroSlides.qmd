@@ -9,6 +9,7 @@ date: today
 date-format: long
 theme: serif
 incremental: true
+fontsize: 24pt
 ---
 
 ```{r global-options, include=FALSE}
@@ -37,6 +38,14 @@ code.sourceCode {
 a:link {
 color: purple;
 }
+
+a:visited{
+color: purple;
+}
+
+a:hover{
+color: purple;
+}
 ```
 
 ## Motivation
@@ -47,7 +56,17 @@ Recently, we've introduced utilization of higher-order terms to add *flexibility
 
 . . .
 
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
 ```{r}
+set.seed(10222024)
+
 my_data <- tibble(
   x = seq(0, 10, length.out = 100),
   y_quad = -(x - 11)^2 + 100,
@@ -82,6 +101,14 @@ p2 <- my_data %>%
 
 p1 + p2 + plot_annotation(title = "Two Higher-Order Models")
 ```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
 
 . . . 
 
@@ -182,6 +209,14 @@ Luckily, the `{marginaleffects}` package can help us in the immediate term
 
 . . . 
 
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
 ```{r}
 #| fig-height: 4
 
@@ -195,6 +230,14 @@ my_data %>%
   ggplot() + 
   geom_point(aes(x = x, y = y))
 ```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
 
 . . . 
 
@@ -216,6 +259,10 @@ Let's fit our simple linear regression model to this data and then examine the *
 
 . . . 
 
+::::{.columns}
+
+:::{.column width="65%"}
+
 ```{r}
 #| echo: true
 #| code-fold: true
@@ -234,21 +281,374 @@ lr_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(font_size = 24)
+  kable_styling(font_size = 20)
 ```
 
+:::
+
+:::{.column width="35%"}
+
+:::
+
+::::
+
+::::::{.columns}
+
+:::::{.column width="40%"}
+
+:::::
+
+:::::{.column width="60%"}
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for Simple Linear Regression
+
+::::{.columns}
+
+:::{.column width="65%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+lr_rec <- recipe(y ~ x, data = my_data)
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf %>%
+  fit(my_data)
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 20)
+```
+
+:::
+
+:::{.column width="35%"}
+
+<br/>
+<br/>
+
+$$\mathbb{E}\left[y\right] = 0.079 + 3.06\cdot x$$
+
+:::
+
+::::
+
 . . . 
+
+::::::{.columns}
+
+:::::{.column width="40%"}
+
+The estimated model appears below, on top of the training data.
+
+:::::
+
+:::::{.column width="60%"}
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for Simple Linear Regression
+
+::::{.columns}
+
+:::{.column width="65%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+lr_rec <- recipe(y ~ x, data = my_data)
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf %>%
+  fit(my_data)
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 20)
+```
+
+:::
+
+:::{.column width="35%"}
+
+<br/>
+<br/>
+
+$$\mathbb{E}\left[y\right] = 0.079 + 3.06\cdot x$$
+
+:::
+
+::::
+
+::::::{.columns}
+
+:::::{.column width="40%"}
+
+The estimated model appears below, on top of the training data.
+
+```{r}
+x_new <- tibble(
+  x = seq(0, 10, length.out = 250)
+)
+
+x_new <- lr_fit %>%
+  augment(x_new)
+
+ggplot() +
+  geom_point(data = my_data,
+             aes(x = x, y = y)) + 
+  geom_line(data = x_new,
+            aes(x = x, y = .pred),
+            color = "blue",
+            lwd = 1.5) + 
+  theme_bw(base_size = 24)
+```
+
+:::::
+
+:::::{.column width="60%"}
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for Simple Linear Regression
+
+::::{.columns}
+
+:::{.column width="65%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+lr_rec <- recipe(y ~ x, data = my_data)
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf %>%
+  fit(my_data)
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 20)
+```
+
+:::
+
+:::{.column width="35%"}
+
+<br/>
+<br/>
+
+$$\mathbb{E}\left[y\right] = 0.079 + 3.06\cdot x$$
+
+:::
+
+::::
+
+::::::{.columns}
+
+:::::{.column width="40%"}
+
+The estimated model appears below, on top of the training data.
+
+```{r}
+x_new <- tibble(
+  x = seq(0, 10, length.out = 250)
+)
+
+x_new <- lr_fit %>%
+  augment(x_new)
+
+ggplot() +
+  geom_point(data = my_data,
+             aes(x = x, y = y)) + 
+  geom_line(data = x_new,
+            aes(x = x, y = .pred),
+            color = "blue",
+            lwd = 1.5) + 
+  theme_bw(base_size = 24)
+```
+
+:::::
+
+:::::{.column width="60%"}
 
 Now that we have our model, let's use `{marginaleffects}` to determine the marginal effect of $x$ on $y$
 
-. . . 
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for Simple Linear Regression {.scrollable}
 
 ::::{.columns}
+
+:::{.column width="65%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+lr_rec <- recipe(y ~ x, data = my_data)
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf %>%
+  fit(my_data)
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 20)
+```
+
+:::
+
+:::{.column width="35%"}
+
+<br/>
+<br/>
+
+$$\mathbb{E}\left[y\right] = 0.079 + 3.06\cdot x$$
+
+:::
+
+::::
+
+::::::{.columns}
+
+:::::{.column width="40%"}
+
+The estimated model appears below, on top of the training data.
+
+```{r}
+x_new <- tibble(
+  x = seq(0, 10, length.out = 250)
+)
+
+x_new <- lr_fit %>%
+  augment(x_new)
+
+ggplot() +
+  geom_point(data = my_data,
+             aes(x = x, y = y)) + 
+  geom_line(data = x_new,
+            aes(x = x, y = .pred),
+            color = "blue",
+            lwd = 1.5) + 
+  theme_bw(base_size = 24)
+```
+
+:::::
+
+:::::{.column width="60%"}
+
+Now that we have our model, let's use `{marginaleffects}` to determine the marginal effect of $x$ on $y$
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
 
 :::{.column width="70%"}
 
 ```{r}
-#| fig.height: 5
 #| echo: true
 #| code-fold: true
 
@@ -272,39 +672,174 @@ mfx %>%
     ylim = c(-0.5, 5)
     ) + 
   labs(x = "x",
-       y = "Marginal Effect of x on y")
+       y = "Marginal Effect of x on y") + 
+  theme_bw(base_size = 24)
 ```
 
 :::
 
-:::{.column width="30%"}
-
-<br/>
-<br/>
-<br/>
-<br/>
-As expected, a constant *marginal effect* at a height of $\beta_1$
+:::{.column width="15%"}
 
 :::
 
 ::::
 
+:::::
+
+::::::
+
+## Marginal Effects for Simple Linear Regression {.scrollable}
+
+::::{.columns}
+
+:::{.column width="65%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+lr_rec <- recipe(y ~ x, data = my_data)
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf %>%
+  fit(my_data)
+
+lr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 20)
+```
+
+:::
+
+:::{.column width="35%"}
+
+<br/>
+<br/>
+
+$$\mathbb{E}\left[y\right] = 0.079 + 3.06\cdot x$$
+
+:::
+
+::::
+
+::::::{.columns}
+
+:::::{.column width="40%"}
+
+The estimated model appears below, on top of the training data.
+
+```{r}
+x_new <- tibble(
+  x = seq(0, 10, length.out = 250)
+)
+
+x_new <- lr_fit %>%
+  augment(x_new)
+
+ggplot() +
+  geom_point(data = my_data,
+             aes(x = x, y = y)) + 
+  geom_line(data = x_new,
+            aes(x = x, y = .pred),
+            color = "blue",
+            lwd = 1.5) + 
+  theme_bw(base_size = 24)
+```
+
+As expected, a constant *marginal effect* at a height of $\beta_1$
+
+:::::
+
+:::::{.column width="60%"}
+
+Now that we have our model, let's use `{marginaleffects}` to determine the marginal effect of $x$ on $y$
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+mfx <- lr_fit %>%
+  extract_fit_engine() %>%
+  slopes(my_data) %>%
+  tibble()
+
+mfx %>%
+  ggplot() + 
+  geom_ribbon(aes(x = x, 
+                  ymin = conf.low, 
+                  ymax = conf.high),
+              fill = "grey",
+              alpha = 0.5) +
+  geom_line(aes(x = x, 
+                y = estimate),
+            color = "black",
+            linetype = "dashed") +
+  coord_cartesian(
+    ylim = c(-0.5, 5)
+    ) + 
+  labs(x = "x",
+       y = "Marginal Effect of x on y") + 
+  theme_bw(base_size = 24)
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
 ## Marginal Effects for a Model with a Quadratic Term
 
 . . . 
+
+::::{.columns}
+
+:::{.column width="20%"}
+
+:::
+
+:::{.column width="60%"}
 
 ```{r}
 nobs <- 50
 
 my_data <- tibble(
   x = runif(nobs, 0, 10),
-  y = -(x - 11)^2 + 100 + rnorm(nobs, 0, 25)
+  y = -(x - 11)^2 + 100 + rnorm(nobs, 0, 12)
 )
 
 my_data %>%
   ggplot() + 
   geom_point(aes(x = x, y = y))
 ```
+
+:::
+
+:::{.column width="20%"}
+
+:::
+
+::::
 
 . . . 
 
@@ -326,35 +861,477 @@ As we did with the last scenario, we'll fit our model and examine the *marginal 
 
 . . . 
 
+::::{.columns}
+
+:::{.column width="60%"}
+
 ```{r}
 #| echo: true
 #| code-fold: true
 
-lr_spec <- linear_reg() %>%
+clr_spec <- linear_reg() %>%
   set_engine("lm")
-lr_rec <- recipe(y ~ x, data = my_data) %>%
+clr_rec <- recipe(y ~ x, data = my_data) %>%
   step_poly(x, degree = 2, options = list(raw = TRUE))
-lr_wf <- workflow() %>%
-  add_model(lr_spec) %>%
-  add_recipe(lr_rec)
+clr_wf <- workflow() %>%
+  add_model(clr_spec) %>%
+  add_recipe(clr_rec)
 
-lr_fit <- lr_wf %>%
+clr_fit <- clr_wf %>%
   fit(my_data)
 
-lr_fit %>%
+clr_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
-  kable_styling(font_size = 24)
+  kable_styling(font_size = 16)
 ```
+
+:::
+
+:::{.column width="40%"}
+
+:::
+
+::::
+
+::::::{.columns}
+
+:::::{.column width="40%"}
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+:::::{.column width="60%"}
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for a Model with a Quadratic Term
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+clr_spec <- linear_reg() %>%
+  set_engine("lm")
+clr_rec <- recipe(y ~ x, data = my_data) %>%
+  step_poly(x, degree = 2, options = list(raw = TRUE))
+clr_wf <- workflow() %>%
+  add_model(clr_spec) %>%
+  add_recipe(clr_rec)
+
+clr_fit <- clr_wf %>%
+  fit(my_data)
+
+clr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.column width="40%"}
+
+<br/>
+<br/>
+
+$$\mathbb{E}\left[y\right] = -23.79 + 21.86\cdot x - 0.94\cdot x^2$$
+
+:::
+
+::::
 
 . . .
 
-We'll use `{marginaleffects}` to determine the marginal effect of $x$ on $y$ for this model
+::::::{.columns}
 
-. . . 
+:::::{.column width="40%"}
+
+The estimated model appears below, on top of the training data.
 
 ::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+:::::{.column width="60%"}
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for a Model with a Quadratic Term
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+clr_spec <- linear_reg() %>%
+  set_engine("lm")
+clr_rec <- recipe(y ~ x, data = my_data) %>%
+  step_poly(x, degree = 2, options = list(raw = TRUE))
+clr_wf <- workflow() %>%
+  add_model(clr_spec) %>%
+  add_recipe(clr_rec)
+
+clr_fit <- clr_wf %>%
+  fit(my_data)
+
+clr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.column width="40%"}
+
+<br/>
+<br/>
+
+$$\mathbb{E}\left[y\right] = -23.79 + 21.86\cdot x - 0.94\cdot x^2$$
+
+:::
+
+::::
+
+::::::{.columns}
+
+:::::{.column width="40%"}
+
+The estimated model appears below, on top of the training data.
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
+x_new <- tibble(
+  x = seq(0, 10, length.out = 250)
+)
+
+x_new <- clr_fit %>%
+  augment(x_new)
+
+ggplot() +
+  geom_point(data = my_data,
+             aes(x = x, y = y)) + 
+  geom_line(data = x_new,
+            aes(x = x, y = .pred),
+            color = "blue",
+            lwd = 1.5) + 
+  theme_bw(base_size = 28)
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+:::::{.column width="60%"}
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for a Model with a Quadratic Term
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+clr_spec <- linear_reg() %>%
+  set_engine("lm")
+clr_rec <- recipe(y ~ x, data = my_data) %>%
+  step_poly(x, degree = 2, options = list(raw = TRUE))
+clr_wf <- workflow() %>%
+  add_model(clr_spec) %>%
+  add_recipe(clr_rec)
+
+clr_fit <- clr_wf %>%
+  fit(my_data)
+
+clr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.column width="40%"}
+
+<br/>
+<br/>
+
+$$\mathbb{E}\left[y\right] = -23.79 + 21.86\cdot x - 0.94\cdot x^2$$
+
+:::
+
+::::
+
+::::::{.columns}
+
+:::::{.column width="40%"}
+
+The estimated model appears below, on top of the training data.
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
+x_new <- tibble(
+  x = seq(0, 10, length.out = 250)
+)
+
+x_new <- clr_fit %>%
+  augment(x_new)
+
+ggplot() +
+  geom_point(data = my_data,
+             aes(x = x, y = y)) + 
+  geom_line(data = x_new,
+            aes(x = x, y = .pred),
+            color = "blue",
+            lwd = 1.5) + 
+  theme_bw(base_size = 28)
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+:::::{.column width="60%"}
+
+Now that we have our model, let's use `{marginaleffects}` to determine the marginal effect of $x$ on $y$
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for a Model with a Quadratic Term {.scrollable}
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+clr_spec <- linear_reg() %>%
+  set_engine("lm")
+clr_rec <- recipe(y ~ x, data = my_data) %>%
+  step_poly(x, degree = 2, options = list(raw = TRUE))
+clr_wf <- workflow() %>%
+  add_model(clr_spec) %>%
+  add_recipe(clr_rec)
+
+clr_fit <- clr_wf %>%
+  fit(my_data)
+
+clr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.column width="40%"}
+
+<br/>
+<br/>
+
+$$\mathbb{E}\left[y\right] = -23.79 + 21.86\cdot x - 0.94\cdot x^2$$
+
+:::
+
+::::
+
+::::::{.columns}
+
+:::::{.column width="40%"}
+
+The estimated model appears below, on top of the training data.
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
+x_new <- tibble(
+  x = seq(0, 10, length.out = 250)
+)
+
+x_new <- clr_fit %>%
+  augment(x_new)
+
+ggplot() +
+  geom_point(data = my_data,
+             aes(x = x, y = y)) + 
+  geom_line(data = x_new,
+            aes(x = x, y = .pred),
+            color = "blue",
+            lwd = 1.5) + 
+  theme_bw(base_size = 28)
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+:::::{.column width="60%"}
+
+Now that we have our model, let's use `{marginaleffects}` to determine the marginal effect of $x$ on $y$
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
 
 :::{.column width="70%"}
 
@@ -362,7 +1339,7 @@ We'll use `{marginaleffects}` to determine the marginal effect of $x$ on $y$ for
 #| echo: true
 #| code-fold: true
 
-mfx <- slopes(lr_fit, 
+mfx <- slopes(clr_fit, 
               newdata = my_data,
               variable = "x") %>%
   tibble() %>%
@@ -380,25 +1357,169 @@ mfx %>%
             color = "black",
             linetype = "dashed") +
   labs(x = "x",
-       y = "Marginal Effect of x on y")
+       y = "Marginal Effect of x on y") + 
+  theme_bw(base_size = 24)
 ```
 
 :::
 
-:::{.column width="30%"}
-
-<br/>
-<br/>
-<br/>
-Again, as expected, the *marginal effect* of $x$ on $y$ varies with the value of $x$ -- we can compute the *marginal effect* using the expression $\beta_1 + 2x\beta_2$
+:::{.column width="15%"}
 
 :::
 
 ::::
 
-## Marginal Effect for a Model with a Fifth-Degree Term
+:::::
+
+::::::
+
+## Marginal Effects for a Model with a Quadratic Term {.scrollable}
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+clr_spec <- linear_reg() %>%
+  set_engine("lm")
+clr_rec <- recipe(y ~ x, data = my_data) %>%
+  step_poly(x, degree = 2, options = list(raw = TRUE))
+clr_wf <- workflow() %>%
+  add_model(clr_spec) %>%
+  add_recipe(clr_rec)
+
+clr_fit <- clr_wf %>%
+  fit(my_data)
+
+clr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.column width="40%"}
+
+<br/>
+<br/>
+
+$$\mathbb{E}\left[y\right] = -23.79 + 21.86\cdot x - 0.94\cdot x^2$$
+
+:::
+
+::::
+
+::::::{.columns}
+
+:::::{.column width="40%"}
+
+The estimated model appears below, on top of the training data.
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
+x_new <- tibble(
+  x = seq(0, 10, length.out = 250)
+)
+
+x_new <- clr_fit %>%
+  augment(x_new)
+
+ggplot() +
+  geom_point(data = my_data,
+             aes(x = x, y = y)) + 
+  geom_line(data = x_new,
+            aes(x = x, y = .pred),
+            color = "blue",
+            lwd = 1.5) + 
+  theme_bw(base_size = 28)
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+The *marginal effect* of $x$ on $y$ varies with the value of $x$ -- we can compute it using the expression $\beta_1 + 2x\beta_2$
+
+:::::
+
+:::::{.column width="60%"}
+
+Now that we have our model, let's use `{marginaleffects}` to determine the marginal effect of $x$ on $y$
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+mfx <- slopes(clr_fit, 
+              newdata = my_data,
+              variable = "x") %>%
+  tibble() %>%
+  mutate(x = my_data$x)
+
+mfx %>%
+  ggplot() + 
+  geom_ribbon(aes(x = x, 
+                  ymin = conf.low, 
+                  ymax = conf.high),
+              fill = "grey",
+              alpha = 0.5) +
+  geom_line(aes(x = x, 
+                y = estimate),
+            color = "black",
+            linetype = "dashed") +
+  labs(x = "x",
+       y = "Marginal Effect of x on y") + 
+  theme_bw(base_size = 24)
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+
+## Marginal Effects for a Model with a Fifth-Degree Term
 
 . . . 
+
+::::{.columns}
+
+:::{.column width="20%"}
+
+:::
+
+:::{.column width="60%"}
 
 ```{r}
 my_data <- tibble(
@@ -408,8 +1529,17 @@ my_data <- tibble(
 
 my_data %>%
   ggplot() + 
-  geom_point(aes(x = x, y = y))
+  geom_point(aes(x = x, y = y)) + 
+  theme_bw(base_size = 28)
 ```
+
+:::
+
+:::{.column width="20%"}
+
+:::
+
+::::
 
 . . . 
 
@@ -421,7 +1551,7 @@ The effect of a unit increase in $x$ here will be an expected increase in $y$ of
 
 . . . 
 
-Let's see what `{marginaleffects}` does for us...
+Let's see what `{marginaleffects}` does for us now...
 
 ## Marginal Effects for a Model with a Fifth-Degree Term
 
@@ -431,35 +1561,281 @@ Let's see what `{marginaleffects}` does for us...
 #| echo: true
 #| code-fold: true
 
-lr_spec <- linear_reg() %>%
+c5lr_spec <- linear_reg() %>%
   set_engine("lm")
-lr_rec <- recipe(y ~ x, data = my_data) %>%
+c5lr_rec <- recipe(y ~ x, data = my_data) %>%
   step_poly(x, degree = 5, options = list(raw = TRUE))
-lr_wf <- workflow() %>%
-  add_model(lr_spec) %>%
-  add_recipe(lr_rec)
+c5lr_wf <- workflow() %>%
+  add_model(c5lr_spec) %>%
+  add_recipe(c5lr_rec)
 
-lr_fit <- lr_wf %>%
+c5lr_fit <- c5lr_wf %>%
   fit(my_data)
 
-lr_fit %>%
+c5lr_fit %>%
   extract_fit_engine() %>%
   tidy() %>%
   kable() %>%
   kable_styling(font_size = 18)
 ```
 
+. . .
+
+$$\mathbb{E}\left[y\right] = 1456.43 - 2656.07\cdot x + 1471.67\cdot x^2 - 342.64\cdot x^3 + 35.03\cdot x^4 - 1.29\cdot x^5$$
+
+## Marginal Effects for a Model with a Fifth-Degree Term
+
+$$\mathbb{E}\left[y\right] = 1456.43 - 2656.07\cdot x + 1471.67\cdot x^2 - 342.64\cot x^3 + 35.03\cdot x^4 - 1.29\cdot x^5$$
+
+. . .
+
+::::::{.columns}
+
+:::::{.column width="50%"}
+
+The estimated model appears below, on top of the training data.
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+:::::{.column width="50%"}
+
+::::{.columns}
+
+:::{.column width="10%"}
+
+:::
+
+:::{.column width="80%"}
+
+:::
+
+:::{.column width="10%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for a Model with a Fifth-Degree Term
+
+$$\mathbb{E}\left[y\right] = 1456.43 - 2656.07\cdot x + 1471.67\cdot x^2 - 342.64\cot x^3 + 35.03\cdot x^4 - 1.29\cdot x^5$$
+
+::::::{.columns}
+
+:::::{.column width="50%"}
+
+The estimated model appears below, on top of the training data.
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
+x_new <- tibble(
+  x = seq(0, 10, length.out = 250)
+)
+
+x_new <- c5lr_fit %>%
+  augment(x_new)
+
+ggplot() +
+  geom_point(data = my_data,
+             aes(x = x, y = y)) + 
+  geom_line(data = x_new,
+            aes(x = x, y = .pred),
+            color = "blue",
+            lwd = 1.5) + 
+  theme_bw(base_size = 24)
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+:::::{.column width="50%"}
+
+::::{.columns}
+
+:::{.column width="10%"}
+
+:::
+
+:::{.column width="80%"}
+
+:::
+
+:::{.column width="10%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for a Model with a Fifth-Degree Term
+
+$$\mathbb{E}\left[y\right] = 1456.43 - 2656.07\cdot x + 1471.67\cdot x^2 - 342.64\cot x^3 + 35.03\cdot x^4 - 1.29\cdot x^5$$
+
+::::::{.columns}
+
+:::::{.column width="50%"}
+
+The estimated model appears below, on top of the training data.
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
+x_new <- tibble(
+  x = seq(0, 10, length.out = 250)
+)
+
+x_new <- c5lr_fit %>%
+  augment(x_new)
+
+ggplot() +
+  geom_point(data = my_data,
+             aes(x = x, y = y)) + 
+  geom_line(data = x_new,
+            aes(x = x, y = .pred),
+            color = "blue",
+            lwd = 1.5) + 
+  theme_bw(base_size = 24)
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+:::::{.column width="50%"}
+
 Now we'll call on `{marginaleffects}` 
 
 ::::{.columns}
 
+:::{.column width="10%"}
+
+:::
+
+:::{.column width="80%"}
+
+:::
+
+:::{.column width="10%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for a Model with a Fifth-Degree Term
+
+$$\mathbb{E}\left[y\right] = 1456.43 - 2656.07\cdot x + 1471.67\cdot x^2 - 342.64\cot x^3 + 35.03\cdot x^4 - 1.29\cdot x^5$$
+
+::::::{.columns}
+
+:::::{.column width="50%"}
+
+The estimated model appears below, on top of the training data.
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
 :::{.column width="70%"}
+
+```{r}
+x_new <- tibble(
+  x = seq(0, 10, length.out = 250)
+)
+
+x_new <- c5lr_fit %>%
+  augment(x_new)
+
+ggplot() +
+  geom_point(data = my_data,
+             aes(x = x, y = y)) + 
+  geom_line(data = x_new,
+            aes(x = x, y = .pred),
+            color = "blue",
+            lwd = 1.5) + 
+  theme_bw(base_size = 24)
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+:::::{.column width="50%"}
+
+Now we'll call on `{marginaleffects}` 
+
+::::{.columns}
+
+:::{.column width="10%"}
+
+:::
+
+:::{.column width="80%"}
 
 ```{r}
 #| echo: true
 #| code-fold: true
 
-mfx <- slopes(lr_fit, 
+mfx <- slopes(c5lr_fit, 
               newdata = my_data,
               variable = "x") %>%
   tibble() %>%
@@ -477,22 +1853,29 @@ mfx %>%
             color = "black",
             linetype = "dashed") +
   labs(x = "x",
-       y = "Marginal Effect of x on y")
+       y = "Marginal Effect of x on y") + 
+  theme_bw(base_size = 26)
 ```
 
 :::
 
-:::{.column width="30%"}
-
-<br/>
-<br/>
-<br/>
-<br/>
-We see again that the *marginal effect* of $x$ on $y$ depends on the value of $x$
+:::{.column width="10%"}
 
 :::
 
 ::::
+
+:::::
+
+::::::
+
+. . . 
+
+We can see that the *marginal effect* of $x$ on the response changes.
+
+. . . 
+
+That is, the *marginal effect* of $x$ on $y$ depends on the "current" value of $x$.
 
 ## Marginal Effects for a Model with Linear Interactions
 

@@ -1871,7 +1871,7 @@ mfx %>%
 
 . . . 
 
-We can see that the *marginal effect* of $x$ on the response changes.
+As in the case of the *quadratic* model we can see that the *marginal effect* of $x$ on the response changes.
 
 . . . 
 
@@ -1880,6 +1880,14 @@ That is, the *marginal effect* of $x$ on $y$ depends on the "current" value of $
 ## Marginal Effects for a Model with Linear Interactions
 
 . . . 
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
 
 ```{r}
 set.seed(123)
@@ -1900,6 +1908,14 @@ my_data %>%
              show.legend = FALSE) + 
   facet_wrap(~x2, ncol = 3)
 ```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
 
 . . . 
 
@@ -1942,18 +1958,244 @@ lr_fit %>%
 
 . . . 
 
+$$\mathbb{E}\left[y\right] = 0.72 + 3.08\cdot x_1 + 0.47\cdot \texttt{level2} - 1.04\cdot\texttt{level3} -0.76\cdot x_1\cdot\texttt{level2} + 0.73\cdot x_1\cdot\texttt{level3}$$ 
+
+## Marginal Effects for a Model with Linear Interactions
+
+$$\mathbb{E}\left[y\right] = 0.72 + 3.08\cdot x_1 + 0.47\cdot \texttt{level2} - 1.04\cdot\texttt{level3} -0.76\cdot x_1\cdot\texttt{level2} + 0.73\cdot x_1\cdot\texttt{level3}$$ 
+
+. . .
+
+::::::{.columns}
+
+:::::{.column width="50%"}
+
+The estimated models are shown below.
+
+::::{.columns}
+
+:::{.column width="15%}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+:::::{.column width="50%"}
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for a Model with Linear Interactions
+
+$$\mathbb{E}\left[y\right] = 0.72 + 3.08\cdot x_1 + 0.47\cdot \texttt{level2} - 1.04\cdot\texttt{level3} -0.76\cdot x_1\cdot\texttt{level2} + 0.73\cdot x_1\cdot\texttt{level3}$$ 
+
+::::::{.columns}
+
+:::::{.column width="50%"}
+
+The estimated models are shown below.
+
+::::{.columns}
+
+:::{.column width="15%}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
+lr_fit %>%
+  augment(my_data) %>%
+  ggplot() + 
+  geom_point(aes(x = x1, y = y, color = x2),
+             alpha = 0.75) + 
+  geom_line(aes(x = x1, y = .pred, color = x2),
+            lwd = 1.5) + 
+  facet_wrap(~x2) +
+  theme_bw(base_size = 28) + 
+  theme(legend.position = "None")
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+:::::{.column width="50%"}
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for a Model with Linear Interactions
+
+$$\mathbb{E}\left[y\right] = 0.72 + 3.08\cdot x_1 + 0.47\cdot \texttt{level2} - 1.04\cdot\texttt{level3} -0.76\cdot x_1\cdot\texttt{level2} + 0.73\cdot x_1\cdot\texttt{level3}$$ 
+
+::::::{.columns}
+
+:::::{.column width="50%"}
+
+The estimated models are shown below.
+
+::::{.columns}
+
+:::{.column width="15%}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
+lr_fit %>%
+  augment(my_data) %>%
+  ggplot() + 
+  geom_point(aes(x = x1, y = y, color = x2),
+             alpha = 0.75) + 
+  geom_line(aes(x = x1, y = .pred, color = x2),
+            lwd = 1.5) + 
+  facet_wrap(~x2) +
+  theme_bw(base_size = 28) + 
+  theme(legend.position = "None")
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+:::::{.column width="50%"}
+
 Let's check on the *marginal effects* with `{marginaleffects}`
 
-## Marginal Effects for a Model with a Linear Interaction
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for a Model with Linear Interactions {.scrollable}
+
+$$\mathbb{E}\left[y\right] = 0.72 + 3.08\cdot x_1 + 0.47\cdot \texttt{level2} - 1.04\cdot\texttt{level3} -0.76\cdot x_1\cdot\texttt{level2} + 0.73\cdot x_1\cdot\texttt{level3}$$ 
+
+::::::{.columns}
+
+:::::{.column width="50%"}
+
+The estimated models are shown below.
+
+::::{.columns}
+
+:::{.column width="15%}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
+lr_fit %>%
+  augment(my_data) %>%
+  ggplot() + 
+  geom_point(aes(x = x1, y = y, color = x2),
+             alpha = 0.75) + 
+  geom_line(aes(x = x1, y = .pred, color = x2),
+            lwd = 1.5) + 
+  facet_wrap(~x2) +
+  theme_bw(base_size = 28) + 
+  theme(legend.position = "None")
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+:::::{.column width="50%"}
 
 Let's check on the *marginal effects* with `{marginaleffects}`
 
-. . . 
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
 
 ```{r}
 #| echo: true
 #| code-fold: true
-#| fig.height: 3.5
 
 mfx <- slopes(lr_fit, 
               newdata = my_data,
@@ -1975,16 +2217,120 @@ mfx %>%
             linetype = "dashed") +
   labs(x = "x1",
        y = "Marginal Effect of x1 on y") + 
-  facet_wrap(~x2)
+  facet_wrap(~x2) + 
+  theme_bw(base_size = 28)
 ```
 
-. . . 
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
+
+## Marginal Effects for a Model with Linear Interactions {.scrollable}
+
+$$\mathbb{E}\left[y\right] = 0.72 + 3.08\cdot x_1 + 0.47\cdot \texttt{level2} - 1.04\cdot\texttt{level3} -0.76\cdot x_1\cdot\texttt{level2} + 0.73\cdot x_1\cdot\texttt{level3}$$ 
+
+::::::{.columns}
+
+:::::{.column width="50%"}
+
+The estimated models are shown below.
+
+::::{.columns}
+
+:::{.column width="15%}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
+lr_fit %>%
+  augment(my_data) %>%
+  ggplot() + 
+  geom_point(aes(x = x1, y = y, color = x2),
+             alpha = 0.75) + 
+  geom_line(aes(x = x1, y = .pred, color = x2),
+            lwd = 1.5) + 
+  facet_wrap(~x2) +
+  theme_bw(base_size = 28) + 
+  theme(legend.position = "None")
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
 
 We can see the differences in slopes (*marginal effects*) across the three levels of $x_2$
 
-+ **level_1:** $\beta_1 \approx 3.076$
-+ **level_2:** $\beta_1 + \beta_4 \approx 3.076 - 0.764 = 2.312$
-+ **level_3:** $\beta_1 + \beta_5 \approx 3.076 + 0.733 = 3.809$
++ **level_1:** $\beta_1 \approx 3.08$
++ **level_2:** $\beta_1 + \beta_4 \approx 3.08 - 0.76 = 2.32$
++ **level_3:** $\beta_1 + \beta_5 \approx 3.08 + 0.73 = 3.81$
+
+:::::
+
+:::::{.column width="50%"}
+
+Let's check on the *marginal effects* with `{marginaleffects}`
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
+
+```{r}
+#| echo: true
+#| code-fold: true
+
+mfx <- slopes(lr_fit, 
+              newdata = my_data,
+              variable = "x1") %>%
+  tibble() %>%
+  mutate(x1 = my_data$x1,
+         x2 = my_data$x2)
+
+mfx %>%
+  ggplot() + 
+  geom_ribbon(aes(x = x1, 
+                  ymin = conf.low, 
+                  ymax = conf.high),
+              fill = "grey",
+              alpha = 0.5) +
+  geom_line(aes(x = x1, 
+                y = estimate),
+            color = "black",
+            linetype = "dashed") +
+  labs(x = "x1",
+       y = "Marginal Effect of x1 on y") + 
+  facet_wrap(~x2) + 
+  theme_bw(base_size = 28)
+```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
+:::::
+
+::::::
 
 ## Marginal Effects for a Model with Curvi-Linear Interactions
 

@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 *generation*script*
+Competitions/
+.DS_Store

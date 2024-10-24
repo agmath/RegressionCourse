@@ -2500,6 +2500,10 @@ color: purple;
 <section id="marginal-effects-for-a-model-with-curvi-linear-interactions" class="slide level2">
 <h2>Marginal Effects for a Model with Curvi-Linear Interactions</h2>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:70%;">
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -2507,6 +2511,10 @@ color: purple;
 <p><img data-src="16d_IntroSlides_files/figure-revealjs/unnamed-chunk-43-1.png" width="960"></p>
 </figure>
 </div>
+</div>
+</div>
+</div><div class="column" style="width:15%;">
+
 </div>
 </div>
 </div>
@@ -2542,10 +2550,10 @@ color: purple;
 <span id="cb22-15"><a href=""></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb22-16"><a href=""></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb22-17"><a href=""></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb22-18"><a href=""></a>  <span class="fu">kable_styling</span>(<span class="at">font_size =</span> <span class="dv">24</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb22-18"><a href=""></a>  <span class="fu">kable_styling</span>(<span class="at">font_size =</span> <span class="dv">18</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="font-size: 24px; margin-left: auto; margin-right: auto;">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="font-size: 18px; margin-left: auto; margin-right: auto;">
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
@@ -2627,13 +2635,154 @@ color: purple;
 </div>
 </div>
 <div class="fragment">
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[y\right] = -53.77 +~ &amp;28.28 x_1 -  1.27x_1^2 + 65.42\cdot\left(\text{level 2}\right) + 100.22\cdot\left(\text{level 3}\right) +\\
+&amp;-11.19\cdot x_1\left(\text{level 2}\right) - 17.22\cdot x_1\left(\text{level 3}\right) +\\
+&amp;0.50\cdot x_1^2\left(\text{level 2}\right) + 0.71\cdot x_1^2\left(\text{level 3}\right)\end{align}\]</span></p>
+</div>
+<div class="fragment">
 <p>Let’s check on the <em>marginal effects</em> with <code>{marginaleffects}</code></p>
 </div>
 </section>
-<section id="marginal-effects-for-a-model-with-a-linear-interaction" class="slide level2">
-<h2>Marginal Effects for a Model with a Linear Interaction</h2>
-<p>Let’s check on the <em>marginal effects</em> with <code>{marginaleffects}</code></p>
+<section id="marginal-effects-for-a-model-with-curvi-linear-interactions-2" class="slide level2">
+<h2>Marginal Effects for a Model with Curvi-Linear Interactions</h2>
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[y\right] = -53.77 +~ &amp;28.28 x_1 -  1.27x_1^2 + 65.42\cdot\left(\text{level 2}\right) + 100.22\cdot\left(\text{level 3}\right) +\\
+&amp;-11.19\cdot x_1\left(\text{level 2}\right) - 17.22\cdot x_1\left(\text{level 3}\right) +\\
+&amp;0.50\cdot x_1^2\left(\text{level 2}\right) + 0.71\cdot x_1^2\left(\text{level 3}\right)\end{align}\]</span></p>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Again, the estimated models are shown below.</p>
+<div class="columns">
+<div class="column" style="width:10%;">
+
+</div><div class="column" style="width:80%;">
+
+</div><div class="column" style="width:10%;">
+
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:70%;">
+
+</div><div class="column" style="width:15%;">
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="marginal-effects-for-a-model-with-curvi-linear-interactions-3" class="slide level2">
+<h2>Marginal Effects for a Model with Curvi-Linear Interactions</h2>
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[y\right] = -53.77 +~ &amp;28.28 x_1 -  1.27x_1^2 + 65.42\cdot\left(\text{level 2}\right) + 100.22\cdot\left(\text{level 3}\right) +\\
+&amp;-11.19\cdot x_1\left(\text{level 2}\right) - 17.22\cdot x_1\left(\text{level 3}\right) +\\
+&amp;0.50\cdot x_1^2\left(\text{level 2}\right) + 0.71\cdot x_1^2\left(\text{level 3}\right)\end{align}\]</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Again, the estimated models are shown below.</p>
+<div class="columns">
+<div class="column" style="width:10%;">
+
+</div><div class="column" style="width:80%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="16d_IntroSlides_files/figure-revealjs/unnamed-chunk-45-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:10%;">
+
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:70%;">
+
+</div><div class="column" style="width:15%;">
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="marginal-effects-for-a-model-with-curvi-linear-interactions-4" class="slide level2">
+<h2>Marginal Effects for a Model with Curvi-Linear Interactions</h2>
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[y\right] = -53.77 +~ &amp;28.28 x_1 -  1.27x_1^2 + 65.42\cdot\left(\text{level 2}\right) + 100.22\cdot\left(\text{level 3}\right) +\\
+&amp;-11.19\cdot x_1\left(\text{level 2}\right) - 17.22\cdot x_1\left(\text{level 3}\right) +\\
+&amp;0.50\cdot x_1^2\left(\text{level 2}\right) + 0.71\cdot x_1^2\left(\text{level 3}\right)\end{align}\]</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Again, the estimated models are shown below.</p>
+<div class="columns">
+<div class="column" style="width:10%;">
+
+</div><div class="column" style="width:80%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="16d_IntroSlides_files/figure-revealjs/unnamed-chunk-46-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:10%;">
+
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Unsurprisingly, we’ll use <code>{marginaleffects}</code> to check in on the <em>marginal effect</em> of <span class="math inline">\(x_1\)</span> on <span class="math inline">\(y\)</span>.</p>
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:70%;">
+
+</div><div class="column" style="width:15%;">
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="marginal-effects-for-a-model-with-curvi-linear-interactions-5" class="slide level2 scrollable">
+<h2>Marginal Effects for a Model with Curvi-Linear Interactions</h2>
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[y\right] = -53.77 +~ &amp;28.28 x_1 -  1.27x_1^2 + 65.42\cdot\left(\text{level 2}\right) + 100.22\cdot\left(\text{level 3}\right) +\\
+&amp;-11.19\cdot x_1\left(\text{level 2}\right) - 17.22\cdot x_1\left(\text{level 3}\right) +\\
+&amp;0.50\cdot x_1^2\left(\text{level 2}\right) + 0.71\cdot x_1^2\left(\text{level 3}\right)\end{align}\]</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Again, the estimated models are shown below.</p>
+<div class="columns">
+<div class="column" style="width:10%;">
+
+</div><div class="column" style="width:80%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="16d_IntroSlides_files/figure-revealjs/unnamed-chunk-47-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:10%;">
+
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Unsurprisingly, we’ll use <code>{marginaleffects}</code> to check in on the <em>marginal effect</em> of <span class="math inline">\(x_1\)</span> on <span class="math inline">\(y\)</span>.</p>
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:70%;">
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -2657,22 +2806,169 @@ color: purple;
 <span id="cb23-18"><a href=""></a>            <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
 <span id="cb23-19"><a href=""></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"x1"</span>,</span>
 <span id="cb23-20"><a href=""></a>       <span class="at">y =</span> <span class="st">"Marginal Effect of x1 on y"</span>) <span class="sc">+</span> </span>
-<span id="cb23-21"><a href=""></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>x2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb23-21"><a href=""></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>x2) <span class="sc">+</span> </span>
+<span id="cb23-22"><a href=""></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">28</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="16d_IntroSlides_files/figure-revealjs/unnamed-chunk-45-1.png" width="960"></p>
+<p><img data-src="16d_IntroSlides_files/figure-revealjs/unnamed-chunk-48-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
+</div><div class="column" style="width:15%;">
+
 </div>
-<div class="fragment">
-<p>We can see the differences in slopes (<em>marginal effects</em>) and the differences in <em>change</em> in slopes across the three levels of <span class="math inline">\(x_2\)</span> here</p>
 </div>
-<div class="fragment">
-<p>What would have been challenging to investigate without the use of calculus is made easier with <code>{marginaleffects}</code></p>
+</div>
+</div>
+</section>
+<section id="marginal-effects-for-a-model-with-curvi-linear-interactions-6" class="slide level2 scrollable">
+<h2>Marginal Effects for a Model with Curvi-Linear Interactions</h2>
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[y\right] = -53.77 +~ &amp;28.28 x_1 -  1.27x_1^2 + 65.42\cdot\left(\text{level 2}\right) + 100.22\cdot\left(\text{level 3}\right) +\\
+&amp;-11.19\cdot x_1\left(\text{level 2}\right) - 17.22\cdot x_1\left(\text{level 3}\right) +\\
+&amp;0.50\cdot x_1^2\left(\text{level 2}\right) + 0.71\cdot x_1^2\left(\text{level 3}\right)\end{align}\]</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Again, the estimated models are shown below.</p>
+<div class="columns">
+<div class="column" style="width:10%;">
+
+</div><div class="column" style="width:80%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="16d_IntroSlides_files/figure-revealjs/unnamed-chunk-49-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:10%;">
+
+</div>
+</div>
+<p>We can see the differences in slopes (<em>marginal effects</em>) and the differences in <em>change</em> in slopes across the three levels of <span class="math inline">\(x_2\)</span> here. We could still evaluate the marginal effects using calculus if we wanted to.</p>
+</div><div class="column" style="width:50%;">
+<p>Unsurprisingly, we’ll use <code>{marginaleffects}</code> to check in on the <em>marginal effect</em> of <span class="math inline">\(x_1\)</span> on <span class="math inline">\(y\)</span>.</p>
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:70%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href=""></a>mfx <span class="ot">&lt;-</span> <span class="fu">slopes</span>(lr_fit, </span>
+<span id="cb24-2"><a href=""></a>              <span class="at">newdata =</span> my_data,</span>
+<span id="cb24-3"><a href=""></a>              <span class="at">variable =</span> <span class="st">"x1"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb24-4"><a href=""></a>  <span class="fu">tibble</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb24-5"><a href=""></a>  <span class="fu">mutate</span>(<span class="at">x1 =</span> my_data<span class="sc">$</span>x1,</span>
+<span id="cb24-6"><a href=""></a>         <span class="at">x2 =</span> my_data<span class="sc">$</span>x2)</span>
+<span id="cb24-7"><a href=""></a></span>
+<span id="cb24-8"><a href=""></a>mfx <span class="sc">%&gt;%</span></span>
+<span id="cb24-9"><a href=""></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb24-10"><a href=""></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1, </span>
+<span id="cb24-11"><a href=""></a>                  <span class="at">ymin =</span> conf.low, </span>
+<span id="cb24-12"><a href=""></a>                  <span class="at">ymax =</span> conf.high),</span>
+<span id="cb24-13"><a href=""></a>              <span class="at">fill =</span> <span class="st">"grey"</span>,</span>
+<span id="cb24-14"><a href=""></a>              <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb24-15"><a href=""></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1, </span>
+<span id="cb24-16"><a href=""></a>                <span class="at">y =</span> estimate),</span>
+<span id="cb24-17"><a href=""></a>            <span class="at">color =</span> <span class="st">"black"</span>,</span>
+<span id="cb24-18"><a href=""></a>            <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb24-19"><a href=""></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"x1"</span>,</span>
+<span id="cb24-20"><a href=""></a>       <span class="at">y =</span> <span class="st">"Marginal Effect of x1 on y"</span>) <span class="sc">+</span> </span>
+<span id="cb24-21"><a href=""></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>x2) <span class="sc">+</span> </span>
+<span id="cb24-22"><a href=""></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">28</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="16d_IntroSlides_files/figure-revealjs/unnamed-chunk-50-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:15%;">
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="marginal-effects-for-a-model-with-curvi-linear-interactions-7" class="slide level2 scrollable">
+<h2>Marginal Effects for a Model with Curvi-Linear Interactions</h2>
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[y\right] = -53.77 +~ &amp;28.28 x_1 -  1.27x_1^2 + 65.42\cdot\left(\text{level 2}\right) + 100.22\cdot\left(\text{level 3}\right) +\\
+&amp;-11.19\cdot x_1\left(\text{level 2}\right) - 17.22\cdot x_1\left(\text{level 3}\right) +\\
+&amp;0.50\cdot x_1^2\left(\text{level 2}\right) + 0.71\cdot x_1^2\left(\text{level 3}\right)\end{align}\]</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Again, the estimated models are shown below.</p>
+<div class="columns">
+<div class="column" style="width:10%;">
+
+</div><div class="column" style="width:80%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="16d_IntroSlides_files/figure-revealjs/unnamed-chunk-51-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:10%;">
+
+</div>
+</div>
+<p>We can see the differences in slopes (<em>marginal effects</em>) and the differences in <em>change</em> in slopes across the three levels of <span class="math inline">\(x_2\)</span> here. We could still evaluate the marginal effects using calculus if we wanted to.</p>
+</div><div class="column" style="width:50%;">
+<p>Unsurprisingly, we’ll use <code>{marginaleffects}</code> to check in on the <em>marginal effect</em> of <span class="math inline">\(x_1\)</span> on <span class="math inline">\(y\)</span>.</p>
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:70%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href=""></a>mfx <span class="ot">&lt;-</span> <span class="fu">slopes</span>(lr_fit, </span>
+<span id="cb25-2"><a href=""></a>              <span class="at">newdata =</span> my_data,</span>
+<span id="cb25-3"><a href=""></a>              <span class="at">variable =</span> <span class="st">"x1"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-4"><a href=""></a>  <span class="fu">tibble</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb25-5"><a href=""></a>  <span class="fu">mutate</span>(<span class="at">x1 =</span> my_data<span class="sc">$</span>x1,</span>
+<span id="cb25-6"><a href=""></a>         <span class="at">x2 =</span> my_data<span class="sc">$</span>x2)</span>
+<span id="cb25-7"><a href=""></a></span>
+<span id="cb25-8"><a href=""></a>mfx <span class="sc">%&gt;%</span></span>
+<span id="cb25-9"><a href=""></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb25-10"><a href=""></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1, </span>
+<span id="cb25-11"><a href=""></a>                  <span class="at">ymin =</span> conf.low, </span>
+<span id="cb25-12"><a href=""></a>                  <span class="at">ymax =</span> conf.high),</span>
+<span id="cb25-13"><a href=""></a>              <span class="at">fill =</span> <span class="st">"grey"</span>,</span>
+<span id="cb25-14"><a href=""></a>              <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb25-15"><a href=""></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1, </span>
+<span id="cb25-16"><a href=""></a>                <span class="at">y =</span> estimate),</span>
+<span id="cb25-17"><a href=""></a>            <span class="at">color =</span> <span class="st">"black"</span>,</span>
+<span id="cb25-18"><a href=""></a>            <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb25-19"><a href=""></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"x1"</span>,</span>
+<span id="cb25-20"><a href=""></a>       <span class="at">y =</span> <span class="st">"Marginal Effect of x1 on y"</span>) <span class="sc">+</span> </span>
+<span id="cb25-21"><a href=""></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>x2) <span class="sc">+</span> </span>
+<span id="cb25-22"><a href=""></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">28</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="16d_IntroSlides_files/figure-revealjs/unnamed-chunk-52-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:15%;">
+
+</div>
+</div>
+<p>What was challenging to investigate without calculus is made easier with <code>{marginaleffects}</code></p>
+</div>
 </div>
 </section>
 <section id="summary" class="slide level2">
@@ -2700,15 +2996,13 @@ color: purple;
 <h2>Next Time…</h2>
 <div class="fragment">
 <center>
-<p><font size="120pt"><br></font></p><font size="120pt">
-</font><p><font size="120pt">In-Class Halloween Modeling Competition </font></p>
+<p><br></p>
+<p>In-Class Halloween Modeling Competition</p>
 </center>
 </div>
 <div class="fragment">
 <center>
-<p><font size="60pt"></font></p><font size="60pt">
 <p>There will be prizes…</p>
-</font><p><font size="60pt"></font></p>
 </center>
 <center>
 <iframe src="https://giphy.com/embed/SqIFuwPiZgvBgx6Uvl" width="480" height="480" style="" frameborder="0" class="giphy-embed" allowfullscreen="">

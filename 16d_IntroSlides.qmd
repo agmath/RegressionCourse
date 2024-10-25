@@ -1637,7 +1637,7 @@ The estimated model appears below, on top of the training data.
 
 ## Marginal Effects for a Model with a Fifth-Degree Term
 
-$$\mathbb{E}\left[y\right] = 1456.43 - 2656.07\cdot x + 1471.67\cdot x^2 - 342.64\cot x^3 + 35.03\cdot x^4 - 1.29\cdot x^5$$
+$$\mathbb{E}\left[y\right] = 1456.43 - 2656.07\cdot x + 1471.67\cdot x^2 - 342.64\cdot x^3 + 35.03\cdot x^4 - 1.29\cdot x^5$$
 
 ::::::{.columns}
 
@@ -1705,7 +1705,7 @@ ggplot() +
 
 ## Marginal Effects for a Model with a Fifth-Degree Term
 
-$$\mathbb{E}\left[y\right] = 1456.43 - 2656.07\cdot x + 1471.67\cdot x^2 - 342.64\cot x^3 + 35.03\cdot x^4 - 1.29\cdot x^5$$
+$$\mathbb{E}\left[y\right] = 1456.43 - 2656.07\cdot x + 1471.67\cdot x^2 - 342.64\cdot x^3 + 35.03\cdot x^4 - 1.29\cdot x^5$$
 
 ::::::{.columns}
 
@@ -1775,7 +1775,7 @@ Now we'll call on `{marginaleffects}`
 
 ## Marginal Effects for a Model with a Fifth-Degree Term
 
-$$\mathbb{E}\left[y\right] = 1456.43 - 2656.07\cdot x + 1471.67\cdot x^2 - 342.64\cot x^3 + 35.03\cdot x^4 - 1.29\cdot x^5$$
+$$\mathbb{E}\left[y\right] = 1456.43 - 2656.07\cdot x + 1471.67\cdot x^2 - 342.64\cdot x^3 + 35.03\cdot x^4 - 1.29\cdot x^5$$
 
 ::::::{.columns}
 

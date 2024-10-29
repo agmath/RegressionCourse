@@ -1120,9 +1120,11 @@ train_results %>%
              shape = "X",
              color = "red",
              size = 10) +
+  scale_x_continuous(breaks = seq(1, 11, by = 1)) +
   labs(x = "Degree",
        y = "RMSE",
-       title = "Flexibility and Training RMSE (Elbow Plot)")
+       title = "Flexibility and Training RMSE (Elbow Plot)") +
+  theme_bw(base_size = 20)
 ```
 
 :::
@@ -1230,10 +1232,12 @@ ggplot() +
              color = "black",
              size = 10) +
   scale_color_manual(values = c("Training" = "red", "Test" = "black")) +
+  scale_x_continuous(breaks = seq(1, 11, by = 1)) +
   labs(x = "Degree",
        y = "RMSE",
        color = "Error Type",
-       title = "Flexibility and RMSE (Elbow Plot)")
+       title = "Flexibility and RMSE (Elbow Plot)") + 
+  theme_bw(base_size = 20)
 ```
 
 :::

@@ -8,6 +8,7 @@ date: today
 date-format: long
 theme: serif
 incremental: true
+fontsize: 24pt
 ---
 
 ```{r global-options, include=FALSE}
@@ -162,7 +163,7 @@ This gave us several **advantages**:
 And some **disadvantages**:
 
 + More data required to fit these models
-+ More difficulty in interpreting models
++ Greater difficulty in interpreting models
 
 . . .
 
@@ -240,7 +241,7 @@ Let's bring back our Linear and Eighth Degree models from the opening slide
 
 ::::{.columns}
 
-:::{.column width="50%"}
+:::{.column width="45%"}
 
 **High Bias / Low Variance:**
 
@@ -258,12 +259,17 @@ ggplot() +
             lwd = 1.5) +
   labs(x = "x",
        y = "y") +
-  coord_cartesian(ylim = c(-20, 50))
+  coord_cartesian(ylim = c(-20, 50)) + 
+  theme_bw(base_size = 28)
 ```
 
 :::
 
-:::{.column width="50%"}
+:::{.column width="10%"}
+
+:::
+
+:::{.column width="45%"}
 
 **Low Bias / High Variance:**
 
@@ -281,7 +287,8 @@ ggplot() +
             lwd = 1.5) + 
   labs(x = "x",
        y = "y") +
-  coord_cartesian(ylim = c(-20, 50))
+  coord_cartesian(ylim = c(-20, 50)) + 
+  theme_bw(base_size = 28)
 ```
 
 :::
@@ -296,7 +303,7 @@ Let's consider what would happen if we had a new training observation at $x = 7$
 
 ::::{.columns}
 
-:::{.column width="50%"}
+:::{.column width="45%"}
 
 ```{r}
 #| fig.height: 4
@@ -335,12 +342,17 @@ ggplot() +
   labs(x = "x",
        y = "y",
        color = "Obs. Type") +
-  coord_cartesian(ylim = c(-20, 50))
+  coord_cartesian(ylim = c(-20, 50)) + 
+  theme_bw(base_size = 28)
 ```
 
 :::
 
-:::{.column width="50%"}
+:::{.column width="10%"}
+
+:::
+
+:::{.column width="45%"}
 
 ```{r}
 #| fig.height: 4
@@ -370,7 +382,8 @@ ggplot() +
   labs(x = "x",
        y = "y",
        color = "Obs. Type") +
-  coord_cartesian(ylim = c(-20, 50))
+  coord_cartesian(ylim = c(-20, 50)) + 
+  theme_bw(base_size = 28)
 ```
 
 :::
@@ -381,11 +394,15 @@ ggplot() +
 
 ::::{.columns}
 
-:::{.column width="50%"}
+:::{.column width="45%"}
 
 :::
 
-:::{.column width="50%"}
+:::{.column width="10%"}
+
+:::
+
+:::{.column width="45%"}
 
 <center>
 
@@ -412,6 +429,14 @@ It is also possible for a model to have bias which is too high and variance whic
 Consider the scenario below
 
 . . .
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
 
 ```{r}
 set.seed(123)
@@ -447,6 +472,14 @@ ggplot() +
        y = "y")
 ```
 
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
+
 ## The Connection Between Bias, Variance, and Model Flexibility
 
 . . .
@@ -458,7 +491,7 @@ Models with *high bias* have *low variance*, and vice-versa.
 
 . . . 
 
-This is the bias/variance trade-off
+This is **the bias/variance trade-off**
 
 . . .
 
@@ -474,7 +507,7 @@ Let's head back to the linear and eighth degree model from the opening slide aga
 
 ::::{.columns}
 
-:::{.column width="50%"}
+:::{.column width="40%"}
 
 ```{r}
 #| fig.height: 4
@@ -490,12 +523,17 @@ ggplot() +
             lwd = 1.25) +
   labs(x = "x",
        y = "y") +
-  coord_cartesian(ylim = c(-20, 50))
+  coord_cartesian(ylim = c(-20, 50)) + 
+  theme_bw(base_size = 28)
 ```
 
 :::
 
-:::{.column width="50%"}
+:::{.column width="20%"}
+
+:::
+
+:::{.column width="40%"}
 
 ```{r}
 #| fig.height: 4
@@ -511,7 +549,8 @@ ggplot() +
             lwd = 1.25) + 
   labs(x = "x",
        y = "y") +
-  coord_cartesian(ylim = c(-20, 50))
+  coord_cartesian(ylim = c(-20, 50)) + 
+  theme_bw(base_size = 28)
 ```
 
 :::
@@ -524,7 +563,7 @@ Now that we've fit these models, let's see how they perform on new data drawn fr
 
 ::::{.columns}
 
-:::{.column width="50%"}
+:::{.column width="40%"}
 
 ```{r}
 #| fig.height: 4
@@ -555,12 +594,18 @@ ggplot() +
   labs(x = "x",
        y = "y",
        color = "Obs. Type") +
-  coord_cartesian(ylim = c(-20, 50))
+  coord_cartesian(ylim = c(-20, 50)) + 
+  theme_bw(base_size = 28)
 ```
 
 :::
 
-:::{.column width="50%"}
+:::{.column width="20%"}
+
+:::
+
+
+:::{.column width="40%"}
 
 ```{r}
 #| fig.height: 4
@@ -582,7 +627,86 @@ ggplot() +
   scale_color_manual(values = point_colors) +
   labs(x = "x",
        y = "y") +
-  coord_cartesian(ylim = c(-20, 50))
+  coord_cartesian(ylim = c(-20, 50)) + 
+  theme_bw(base_size = 28)
+```
+
+:::
+
+::::
+
+## Overfitting and Underfitting
+
+Now that we've fit these models, let's see how they perform on new data drawn from the same population
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+```{r}
+#| fig.height: 4
+#| fig.align: center
+
+num_new <- 30
+new_observations <- tibble(
+  x = runif(num_new, 0, 10),
+  y = (x - 4)^2 + rnorm(num_new, 0, 5)
+)
+
+point_colors <- c("Training" = "black", "New" = "red")
+
+ggplot() + 
+  geom_point(data = my_data,
+             aes(x = x, y = y,
+                 color = "Training"),
+             size = 4) +
+  geom_point(data = new_observations,
+             aes(x = x, y = y,
+                 color = "New"),
+             size = 4) +
+  geom_line(data = new_data,
+            aes(x = x, y = lin.pred),
+            color = "purple",
+            lwd = 1.25) +
+  scale_color_manual(values = point_colors) +
+  labs(x = "x",
+       y = "y",
+       color = "Obs. Type") +
+  coord_cartesian(ylim = c(-20, 50)) + 
+  theme_bw(base_size = 28)
+```
+
+:::
+
+:::{.column width="20%"}
+
+:::
+
+
+:::{.column width="40%"}
+
+```{r}
+#| fig.height: 4
+#| fig.align: center
+
+ggplot() + 
+  geom_point(data = my_data,
+             aes(x = x, y = y,
+                 color = "Training"),
+             size = 4) + 
+  geom_point(data = new_observations,
+             aes(x = x, y = y,
+                 color = "New"),
+             size = 4) +
+  geom_line(data = new_data,
+            aes(x = x, y = eight.pred),
+            color = "purple",
+            lwd = 1.25) + 
+  scale_color_manual(values = point_colors) +
+  labs(x = "x",
+       y = "y") +
+  coord_cartesian(ylim = c(-20, 50)) + 
+  theme_bw(base_size = 28)
 ```
 
 :::
@@ -593,7 +717,7 @@ ggplot() +
 
 ::::{.columns}
 
-:::{.column width="50%"}
+:::{.column width="40%"}
 
 <center>
 
@@ -603,7 +727,11 @@ ggplot() +
 
 :::
 
-:::{.column width="50%"}
+:::{.column width="20%"}
+
+:::
+
+:::{.column width="40%"}
 
 <center>
 
@@ -619,7 +747,7 @@ ggplot() +
 
 ::::{.columns}
 
-:::{.column width="50%"}
+:::{.column width="40%"}
 
 <center>
 
@@ -629,7 +757,11 @@ ggplot() +
 
 :::
 
-:::{.column width="50%"}
+:::{.column width="20%"}
+
+:::
+
+:::{.column width="40%"}
 
 <center>
 
@@ -645,7 +777,7 @@ ggplot() +
 
 ::::{.columns}
 
-:::{.column width="50%"}
+:::{.column width="40%"}
 
 <center>
 
@@ -655,7 +787,11 @@ Not flexible enough
 
 :::
 
-:::{.column width="50%"}
+:::{.column width="20%"}
+
+:::
+
+:::{.column width="40%"}
 
 <center>
 
@@ -674,6 +810,14 @@ Too flexible
 Let's start with a new data set, but I won't tell you what degree association there is between $x$ and $y$
 
 . . . 
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
 
 ```{r}
 num_train <- 75
@@ -697,8 +841,17 @@ training_data %>%
   geom_point(aes(x = x, y = y),
              size = 3) + 
   labs(x = "x",
-       y = "y")
+       y = "y") + 
+  theme_bw(base_size = 28)
 ```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
 
 ## Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem
 
@@ -723,6 +876,14 @@ And then we'll measure their performance
 Here they are...
 
 . . .
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+:::
+
+:::{.column width="70%"}
 
 ```{r}
 #First-Order (Straight Line)
@@ -824,8 +985,17 @@ ggplot() +
              size = 3) + 
   geom_line(data = plotting_data,
             aes(x = x, y = prediction, 
-                color = model))
+                color = model),
+            lwd = 1.1)
 ```
+
+:::
+
+:::{.column width="15%"}
+
+:::
+
+::::
 
 ## Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem
 
@@ -916,6 +1086,29 @@ train_results %>%
 
 :::{.column width="50%"}
 
+:::
+
+::::
+
+
+## Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem
+
+Let's examine the *training metrics*
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+train_results %>%
+  kable() %>%
+  kable_styling()
+```
+
+:::
+
+:::{.column width="50%"}
+
 ```{r}
 #| fig.align: center
 
@@ -993,6 +1186,29 @@ test_results %>%
 
 :::{.column width="50%"}
 
+:::
+
+::::
+
+
+## Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem
+
+Let's do the same with the *test metrics*
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+test_results %>%
+  kable() %>%
+  kable_styling()
+```
+
+:::
+
+:::{.column width="50%"}
+
 ```{r}
 #| fig.align: center
 
@@ -1032,6 +1248,10 @@ The training and test RMSE values largely agree over the lowest three levels of 
 
 Test performance gets worse with additional flexibility beyond third degree!
 
+. . . 
+
+$\bigstar \bigstar$ **Main Takeaway** $\bigstar \bigstar$ The computer's job is to **find the <u>best $\beta$-coefficients</u> by minimizing *training error***, but our job (as modelers) is the **find the <u>best model</u> by minimizing *test error***.
+
 ## Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem
 
 . . .
@@ -1065,7 +1285,7 @@ That's a third-degree association!
 
 . . .
 
-> We can identify the appropriate level of model flexibility by finding the location of the bend in the *elbow plot* of test performance
+> We can identify the appropriate level of model flexibility by finding the location of the bend in the *elbow plot* of **test** performance
 
 ## Summary
 

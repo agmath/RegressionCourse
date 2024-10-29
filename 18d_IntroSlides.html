@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-09-01">
+  <meta name="dcterms.date" content="2024-10-29">
   <title>The Bias/Variance TradeOff</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">September 1, 2024</p>
+  <p class="date">October 29, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -460,7 +460,7 @@ code.sourceCode {
 <p>And some <strong>disadvantages</strong>:</p>
 <ul>
 <li class="fragment">More data required to fit these models</li>
-<li class="fragment">More difficulty in interpreting models</li>
+<li class="fragment">Greater difficulty in interpreting models</li>
 </ul>
 </div>
 <div class="fragment">
@@ -534,7 +534,7 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <div class="columns">
-<div class="column" style="width:50%;">
+<div class="column" style="width:45%;">
 <p><strong>High Bias / Low Variance:</strong></p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
@@ -545,7 +545,9 @@ code.sourceCode {
 </div>
 </div>
 </div>
-</div><div class="column" style="width:50%;">
+</div><div class="column" style="width:10%;">
+
+</div><div class="column" style="width:45%;">
 <p><strong>Low Bias / High Variance:</strong></p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
@@ -564,7 +566,7 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <div class="columns">
-<div class="column" style="width:50%;">
+<div class="column" style="width:45%;">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -574,7 +576,9 @@ code.sourceCode {
 </div>
 </div>
 </div>
-</div><div class="column" style="width:50%;">
+</div><div class="column" style="width:10%;">
+
+</div><div class="column" style="width:45%;">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -589,9 +593,11 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <div class="columns">
-<div class="column" style="width:50%;">
+<div class="column" style="width:45%;">
 
-</div><div class="column" style="width:50%;">
+</div><div class="column" style="width:10%;">
+
+</div><div class="column" style="width:45%;">
 <center>
 <p>Oh No!</p>
 </center>
@@ -611,6 +617,10 @@ code.sourceCode {
 <p>Consider the scenario below</p>
 </div>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:70%;">
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -618,6 +628,10 @@ code.sourceCode {
 <p><img data-src="18d_IntroSlides_files/figure-revealjs/unnamed-chunk-7-1.png" width="960"></p>
 </figure>
 </div>
+</div>
+</div>
+</div><div class="column" style="width:15%;">
+
 </div>
 </div>
 </div>
@@ -632,7 +646,7 @@ code.sourceCode {
 </ul>
 </div>
 <div class="fragment">
-<p>This is the bias/variance trade-off</p>
+<p>This is <strong>the bias/variance trade-off</strong></p>
 </div>
 <div class="fragment">
 <p>Identifying an appropriate level of model <em>flexibility</em> means solving the bias/variance trade-off problem!</p>
@@ -645,7 +659,7 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <div class="columns">
-<div class="column" style="width:50%;">
+<div class="column" style="width:40%;">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -655,7 +669,9 @@ code.sourceCode {
 </div>
 </div>
 </div>
-</div><div class="column" style="width:50%;">
+</div><div class="column" style="width:20%;">
+
+</div><div class="column" style="width:40%;">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -671,7 +687,7 @@ code.sourceCode {
 <div class="fragment">
 <p>Now that we’ve fit these models, let’s see how they perform on new data drawn from the same population</p>
 <div class="columns">
-<div class="column" style="width:50%;">
+<div class="column" style="width:40%;">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -681,7 +697,9 @@ code.sourceCode {
 </div>
 </div>
 </div>
-</div><div class="column" style="width:50%;">
+</div><div class="column" style="width:20%;">
+
+</div><div class="column" style="width:40%;">
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -694,13 +712,44 @@ code.sourceCode {
 </div>
 </div>
 </div>
+</section>
+<section id="overfitting-and-underfitting-1" class="slide level2">
+<h2>Overfitting and Underfitting</h2>
+<p>Now that we’ve fit these models, let’s see how they perform on new data drawn from the same population</p>
+<div class="columns">
+<div class="column" style="width:40%;">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="18d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:20%;">
+
+</div><div class="column" style="width:40%;">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="18d_IntroSlides_files/figure-revealjs/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div class="fragment">
 <div class="columns">
-<div class="column" style="width:50%;">
+<div class="column" style="width:40%;">
 <center>
 <p><strong>Underfit!</strong></p>
 </center>
-</div><div class="column" style="width:50%;">
+</div><div class="column" style="width:20%;">
+
+</div><div class="column" style="width:40%;">
 <center>
 <p><strong>Overfit!</strong></p>
 </center>
@@ -709,11 +758,13 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <div class="columns">
-<div class="column" style="width:50%;">
+<div class="column" style="width:40%;">
 <center>
 <p><em>bias too high, variance too low</em></p>
 </center>
-</div><div class="column" style="width:50%;">
+</div><div class="column" style="width:20%;">
+
+</div><div class="column" style="width:40%;">
 <center>
 <p><em>bias too low, variance to high</em></p>
 </center>
@@ -722,11 +773,13 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <div class="columns">
-<div class="column" style="width:50%;">
+<div class="column" style="width:40%;">
 <center>
 <p>Not flexible enough</p>
 </center>
-</div><div class="column" style="width:50%;">
+</div><div class="column" style="width:20%;">
+
+</div><div class="column" style="width:40%;">
 <center>
 <p>Too flexible</p>
 </center>
@@ -740,13 +793,21 @@ code.sourceCode {
 <p>Let’s start with a new data set, but I won’t tell you what degree association there is between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span></p>
 </div>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:70%;">
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="18d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
+<p><img data-src="18d_IntroSlides_files/figure-revealjs/unnamed-chunk-14-1.png" width="960"></p>
 </figure>
 </div>
+</div>
+</div>
+</div><div class="column" style="width:15%;">
+
 </div>
 </div>
 </div>
@@ -773,13 +834,21 @@ code.sourceCode {
 <p>Here they are…</p>
 </div>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:70%;">
 <div class="cell">
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="18d_IntroSlides_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></p>
+<p><img data-src="18d_IntroSlides_files/figure-revealjs/unnamed-chunk-15-1.png" width="960"></p>
 </figure>
 </div>
+</div>
+</div>
+</div><div class="column" style="width:15%;">
+
 </div>
 </div>
 </div>
@@ -807,32 +876,91 @@ code.sourceCode {
 <tr class="odd">
 <td style="text-align: left;">straight-line</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">0.1531330</td>
-<td style="text-align: right;">272.4770</td>
+<td style="text-align: right;">0.3729797</td>
+<td style="text-align: right;">274.3429</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">quadratic</td>
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">0.1582909</td>
-<td style="text-align: right;">271.6459</td>
+<td style="text-align: right;">0.4081391</td>
+<td style="text-align: right;">266.5402</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">cubic</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">0.5636332</td>
-<td style="text-align: right;">195.5906</td>
+<td style="text-align: right;">0.7299959</td>
+<td style="text-align: right;">180.0272</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">5th-Order</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">0.5725649</td>
-<td style="text-align: right;">193.5786</td>
+<td style="text-align: right;">0.7304174</td>
+<td style="text-align: right;">179.8866</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">11th-order</td>
 <td style="text-align: right;">11</td>
-<td style="text-align: right;">0.5929268</td>
-<td style="text-align: right;">188.9115</td>
+<td style="text-align: right;">0.7404520</td>
+<td style="text-align: right;">176.5070</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+
+</div>
+</div>
+</div>
+</section>
+<section id="training-error-test-error-and-solving-the-biasvariance-tradeoff-problem-4" class="slide level2">
+<h2>Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem</h2>
+<p>Let’s examine the <em>training metrics</em></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">model</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">degree</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">rsq</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">rmse</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">straight-line</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.3729797</td>
+<td style="text-align: right;">274.3429</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">quadratic</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.4081391</td>
+<td style="text-align: right;">266.5402</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cubic</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.7299959</td>
+<td style="text-align: right;">180.0272</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">5th-Order</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.7304174</td>
+<td style="text-align: right;">179.8866</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">11th-order</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.7404520</td>
+<td style="text-align: right;">176.5070</td>
 </tr>
 </tbody>
 </table>
@@ -845,9 +973,8 @@ code.sourceCode {
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="18d_IntroSlides_files/figure-revealjs/unnamed-chunk-15-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="18d_IntroSlides_files/figure-revealjs/unnamed-chunk-18-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
-</div>
 </div>
 </div>
 </div>
@@ -857,7 +984,7 @@ code.sourceCode {
 <p>Performance gets better as flexibility increases!</p>
 </div>
 </section>
-<section id="training-error-test-error-and-solving-the-biasvariance-tradeoff-problem-4" class="slide level2">
+<section id="training-error-test-error-and-solving-the-biasvariance-tradeoff-problem-5" class="slide level2">
 <h2>Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem</h2>
 <div class="fragment">
 <p>Let’s do the same with the <em>test metrics</em></p>
@@ -880,32 +1007,91 @@ code.sourceCode {
 <tr class="odd">
 <td style="text-align: left;">straight-line</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">0.6029807</td>
-<td style="text-align: right;">279.0266</td>
+<td style="text-align: right;">0.3045938</td>
+<td style="text-align: right;">296.2297</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">quadratic</td>
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">0.6210800</td>
-<td style="text-align: right;">268.0826</td>
+<td style="text-align: right;">0.2931054</td>
+<td style="text-align: right;">291.3515</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">cubic</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">0.7357107</td>
-<td style="text-align: right;">194.5407</td>
+<td style="text-align: right;">0.6266876</td>
+<td style="text-align: right;">189.1693</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">5th-Order</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">0.7176842</td>
-<td style="text-align: right;">199.6257</td>
+<td style="text-align: right;">0.6205745</td>
+<td style="text-align: right;">190.5977</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">11th-order</td>
 <td style="text-align: right;">11</td>
-<td style="text-align: right;">0.1710196</td>
-<td style="text-align: right;">355.4256</td>
+<td style="text-align: right;">0.5915634</td>
+<td style="text-align: right;">196.9832</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+
+</div>
+</div>
+</div>
+</section>
+<section id="training-error-test-error-and-solving-the-biasvariance-tradeoff-problem-6" class="slide level2">
+<h2>Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem</h2>
+<p>Let’s do the same with the <em>test metrics</em></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">model</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">degree</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">rsq</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">rmse</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">straight-line</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.3045938</td>
+<td style="text-align: right;">296.2297</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">quadratic</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.2931054</td>
+<td style="text-align: right;">291.3515</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cubic</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.6266876</td>
+<td style="text-align: right;">189.1693</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">5th-Order</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0.6205745</td>
+<td style="text-align: right;">190.5977</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">11th-order</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.5915634</td>
+<td style="text-align: right;">196.9832</td>
 </tr>
 </tbody>
 </table>
@@ -918,9 +1104,8 @@ code.sourceCode {
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="18d_IntroSlides_files/figure-revealjs/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="18d_IntroSlides_files/figure-revealjs/unnamed-chunk-21-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
-</div>
 </div>
 </div>
 </div>
@@ -932,8 +1117,11 @@ code.sourceCode {
 <div class="fragment">
 <p>Test performance gets worse with additional flexibility beyond third degree!</p>
 </div>
+<div class="fragment">
+<p><span class="math inline">\(\bigstar \bigstar\)</span> <strong>Main Takeaway</strong> <span class="math inline">\(\bigstar \bigstar\)</span> The computer’s job is to <strong>find the <u>best <span class="math inline">\(\beta\)</span>-coefficients</u> by minimizing <em>training error</em></strong>, but our job (as modelers) is the <strong>find the <u>best model</u> by minimizing <em>test error</em></strong>.</p>
+</div>
 </section>
-<section id="training-error-test-error-and-solving-the-biasvariance-tradeoff-problem-5" class="slide level2">
+<section id="training-error-test-error-and-solving-the-biasvariance-tradeoff-problem-7" class="slide level2">
 <h2>Training Error, Test Error, and Solving the Bias/Variance TradeOff Problem</h2>
 <div class="fragment">
 <p>Here’s the code I used to generate our toy dataset…</p>
@@ -959,7 +1147,7 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <blockquote>
-<p>We can identify the appropriate level of model flexibility by finding the location of the bend in the <em>elbow plot</em> of test performance</p>
+<p>We can identify the appropriate level of model flexibility by finding the location of the bend in the <em>elbow plot</em> of <strong>test</strong> performance</p>
 </blockquote>
 </div>
 </section>

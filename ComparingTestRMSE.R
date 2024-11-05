@@ -15,7 +15,7 @@ my_data <- tibble(
 
 #Split into training and test sets
 #Replace seed with your birthdate
-set.seed(06021985)
+set.seed(06022024)
 data_splits <- initial_split(my_data, prop = 0.75)
 train <- training(data_splits)
 test <- testing(data_splits)
@@ -24,7 +24,10 @@ test <- testing(data_splits)
 lr_spec <- linear_reg() %>%
   set_engine("lm")
 
-lr_rec <- recipe(y ~ x, data = train)
+#Uncomment the pipe and the polynomial feature engineering
+#step to build a higher-order model
+lr_rec <- recipe(y ~ x, data = train) #%>%
+  #step_poly(x, degree = 3, options = list(raw = TRUE))
 
 lr_wf <- workflow() %>%
   add_model(lr_spec) %>%

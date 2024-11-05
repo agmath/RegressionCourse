@@ -1,0 +1,41 @@
+#Load packages
+library(tidyverse)
+library(tidymodels)
+
+#Simulate common data
+set.seed(123)
+nobs <- 100
+x_vals <- runif(nobs, 0, 100)
+y_vals <- 3*x_vals + 10 + rnorm(nobs, mean = 0, sd = 10)
+
+my_data <- tibble(
+  x = x_vals,
+  y = y_vals
+)
+
+#Split into training and test sets
+#Replace seed with your birthdate
+set.seed(06021985)
+data_splits <- initial_split(my_data, prop = 0.75)
+train <- training(data_splits)
+test <- testing(data_splits)
+
+#Construct and fit model
+lr_spec <- linear_reg() %>%
+  set_engine("lm")
+
+lr_rec <- recipe(y ~ x, data = train)
+
+lr_wf <- workflow() %>%
+  add_model(lr_spec) %>%
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf %>%
+  fit(train)
+
+#Assess model on test data
+lr_fit %>%
+  augment(test) %>%
+  rmse(y, .pred)
+
+##Share your test RMSE and what it suggests about your model's predictions...

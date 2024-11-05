@@ -8,6 +8,7 @@ date: today
 date-format: long
 theme: serif
 incremental: true
+fontsize: 24pt
 ---
 
 ```{r global-options, include=FALSE}
@@ -905,7 +906,7 @@ We need a framework that leaves us less susceptible to random chance
 
 :::{.column width="50%"}
 
-1. Randomly split available data into *training* and *validation* sets
+1. Randomly split available data into *training* and *test* sets
 2. Randomly split the training set into $k$ *folds*
 3. For each individual fold...
 
@@ -913,6 +914,7 @@ We need a framework that leaves us less susceptible to random chance
     + Train your model on all remaining folds
     + Assess the resulting model on the *hold-out*
     + Store the resulting performance metric
+    + Forget the learned coefficients
 
 4. Average your $k$ performance estimates together
 
@@ -1091,7 +1093,7 @@ lr_results %>%
 
 ## Let's Do This!
 
-Let's try out cross-validation on the used cars data that we were using earlier this semester
+Let's try out cross-validation on the AirBnB Europe data that we were using earlier this semester or with the DoorDash data you are using for our competition assignments.
 
 ## Next Time...
 

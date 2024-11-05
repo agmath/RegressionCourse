@@ -37,8 +37,11 @@ lr_fit <- lr_wf %>%
   fit(train)
 
 #Assess model on test data
-lr_fit %>%
+test_rmse <- lr_fit %>%
   augment(test) %>%
-  rmse(y, .pred)
+  rmse(y, .pred) %>%
+  pull(.estimate)
 
 ##Share your test RMSE and what it suggests about your model's predictions...
+print(paste0("Test RMSE: ", test_rmse))
+print(paste0("We expect predictions accurate to within about: +/- ", 2*test_rmse))

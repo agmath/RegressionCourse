@@ -8,6 +8,7 @@ date: today
 date-format: long
 theme: serif
 incremental: true
+fontsize: 24pt
 ---
 
 ```{r global-options, include=FALSE}
@@ -111,27 +112,119 @@ Consider the model (or us, as modelers) as a shopper in a market that sells pred
 
 ## Okay, So What?
 
-. . .
+::::{.columns}
+
+:::{.column width="60%"}
 
 At first, these approaches may seem reasonable, if inefficient
 
-. . . 
+:::
+
+:::{.column width="40%"}
+
+:::
+
+::::
+
+## Okay, So What?
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+At first, these approaches may seem reasonable, if inefficient
+
+**Statistical Standpoint:** We're evaluating lots of $t$-tests in determining statistical significance of predictors
+
+:::
+
+:::{.column width="40%"}
+
+:::
+
+::::
+
+## Okay, So What? 
+
+:::::{.nonincremental}
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+At first, these approaches may seem reasonable, if inefficient
 
 **Statistical Standpoint:** We're evaluating lots of $t$-tests in determining statistical significance of predictors
 
   + The probability of making at least one *Type I* error (claiming a term is significant when it truly isn't) becomes inflated -- even with just three tests, the probability is over 14% when using the common $\alpha = 0.05$
   
-. . .
+:::
 
+:::{.column width="40%"}
+
+:::
+
+::::
+
+:::::
+
+## Okay, So What? 
+
+:::::{.nonincremental}
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+At first, these approaches may seem reasonable, if inefficient
+
+**Statistical Standpoint:** We're evaluating lots of $t$-tests in determining statistical significance of predictors
+
+  + The probability of making at least one *Type I* error (claiming a term is significant when it truly isn't) becomes inflated -- even with just three tests, the probability is over 14% when using the common $\alpha = 0.05$
+  
 **Model-Fit Perspective:** The more predictors a model has access to, the more *flexible* it is, the better it will fit the training data, and the more likely it is to become *overfit*
 
-. . .
+:::
+
+:::{.column width="40%"}
+
+:::
+
+::::
+
+:::::
+
+## Okay, So What? 
+
+:::::{.nonincremental}
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+At first, these approaches may seem reasonable, if inefficient
+
+**Statistical Standpoint:** We're evaluating lots of $t$-tests in determining statistical significance of predictors
+
+  + The probability of making at least one *Type I* error (claiming a term is significant when it truly isn't) becomes inflated -- even with just three tests, the probability is over 14% when using the common $\alpha = 0.05$
+  
+**Model-Fit Perspective:** The more predictors a model has access to, the more *flexible* it is, the better it will fit the training data, and the more likely it is to become *overfit*
+
+:::
+
+:::{.column width="40%"}
 
 <center>
 
 <iframe src="https://giphy.com/embed/SY9I1UD4ub5sbtCfYe" width="480" height="480" style="" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/cbc-schitts-creek-SY9I1UD4ub5sbtCfYe">via GIPHY</a></p>
 
 </center>
+
+:::
+
+::::
+
+:::::
 
 ## Back to the Shopping Analogy
 

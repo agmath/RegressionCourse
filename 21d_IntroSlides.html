@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-09-01">
+  <meta name="dcterms.date" content="2024-11-11">
   <title>Introduction to Regularization: Ridge Regression and the LASSO</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">September 1, 2024</p>
+  <p class="date">November 11, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -472,19 +472,70 @@ code.sourceCode {
 </section>
 <section id="okay-so-what" class="slide level2">
 <h2>Okay, So What?</h2>
-<div class="fragment">
+<div class="columns">
+<div class="column" style="width:60%;">
 <p>At first, these approaches may seem reasonable, if inefficient</p>
+</div><div class="column" style="width:40%;">
+
 </div>
-<div class="fragment">
+</div>
+</section>
+<section id="okay-so-what-1" class="slide level2">
+<h2>Okay, So What?</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p>At first, these approaches may seem reasonable, if inefficient</p>
+<p><strong>Statistical Standpoint:</strong> We’re evaluating lots of <span class="math inline">\(t\)</span>-tests in determining statistical significance of predictors</p>
+</div><div class="column" style="width:40%;">
+
+</div>
+</div>
+</section>
+<section id="okay-so-what-2" class="slide level2">
+<h2>Okay, So What?</h2>
+<div>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p>At first, these approaches may seem reasonable, if inefficient</p>
 <p><strong>Statistical Standpoint:</strong> We’re evaluating lots of <span class="math inline">\(t\)</span>-tests in determining statistical significance of predictors</p>
 <ul>
-<li class="fragment">The probability of making at least one <em>Type I</em> error (claiming a term is significant when it truly isn’t) becomes inflated – even with just three tests, the probability is over 14% when using the common <span class="math inline">\(\alpha = 0.05\)</span></li>
+<li>The probability of making at least one <em>Type I</em> error (claiming a term is significant when it truly isn’t) becomes inflated – even with just three tests, the probability is over 14% when using the common <span class="math inline">\(\alpha = 0.05\)</span></li>
 </ul>
+</div><div class="column" style="width:40%;">
+
 </div>
-<div class="fragment">
+</div>
+</div>
+</section>
+<section id="okay-so-what-3" class="slide level2">
+<h2>Okay, So What?</h2>
+<div>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p>At first, these approaches may seem reasonable, if inefficient</p>
+<p><strong>Statistical Standpoint:</strong> We’re evaluating lots of <span class="math inline">\(t\)</span>-tests in determining statistical significance of predictors</p>
+<ul>
+<li>The probability of making at least one <em>Type I</em> error (claiming a term is significant when it truly isn’t) becomes inflated – even with just three tests, the probability is over 14% when using the common <span class="math inline">\(\alpha = 0.05\)</span></li>
+</ul>
 <p><strong>Model-Fit Perspective:</strong> The more predictors a model has access to, the more <em>flexible</em> it is, the better it will fit the training data, and the more likely it is to become <em>overfit</em></p>
+</div><div class="column" style="width:40%;">
+
 </div>
-<div class="fragment">
+</div>
+</div>
+</section>
+<section id="okay-so-what-4" class="slide level2">
+<h2>Okay, So What?</h2>
+<div>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p>At first, these approaches may seem reasonable, if inefficient</p>
+<p><strong>Statistical Standpoint:</strong> We’re evaluating lots of <span class="math inline">\(t\)</span>-tests in determining statistical significance of predictors</p>
+<ul>
+<li>The probability of making at least one <em>Type I</em> error (claiming a term is significant when it truly isn’t) becomes inflated – even with just three tests, the probability is over 14% when using the common <span class="math inline">\(\alpha = 0.05\)</span></li>
+</ul>
+<p><strong>Model-Fit Perspective:</strong> The more predictors a model has access to, the more <em>flexible</em> it is, the better it will fit the training data, and the more likely it is to become <em>overfit</em></p>
+</div><div class="column" style="width:40%;">
 <center>
 <iframe src="https://giphy.com/embed/SY9I1UD4ub5sbtCfYe" width="480" height="480" style="" frameborder="0" class="giphy-embed" allowfullscreen="">
 </iframe>
@@ -492,6 +543,8 @@ code.sourceCode {
 <a href="https://giphy.com/gifs/cbc-schitts-creek-SY9I1UD4ub5sbtCfYe">via GIPHY</a>
 </p>
 </center>
+</div>
+</div>
 </div>
 </section>
 <section id="back-to-the-shopping-analogy" class="slide level2">

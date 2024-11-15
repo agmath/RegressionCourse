@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-09-01">
+  <meta name="dcterms.date" content="2024-11-14">
   <title>Beyond Linear Regression: Other Classes of Regressor</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">September 1, 2024</p>
+  <p class="date">November 14, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -498,7 +498,7 @@ code.sourceCode {
 <ul>
 <li class="fragment">Identify the “<span class="math inline">\(k\)</span>” closest training observations to the new observation whose response we want to predict</li>
 <li class="fragment">Average the responses over those <span class="math inline">\(k\)</span> neighbors, and that’s the predicted response</li>
-<li class="fragment"><strong>Note:</strong> These models are very sensitive to their parameter <span class="math inline">\(k\)</span></li>
+<li class="fragment"><strong>Note:</strong> These “models” are very sensitive to their parameter <span class="math inline">\(k\)</span></li>
 </ul>
 </div>
 <div class="fragment">
@@ -517,7 +517,7 @@ code.sourceCode {
 <div class="fragment">
 <p><strong>Random Forests:</strong> A collection of trees, in parallel, individually making very poor predictions but, when averaged, make an unreasonably accurate prediction</p>
 <center>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/iOucwX7Z1HU?si=eAD9up5kUpboVm4P" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/iOucwX7Z1HU?si=azyMzfE9wecAfGe_&amp;start=62" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
 </iframe>
 </center>
 </div>
@@ -672,17 +672,20 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>grid_ctrl <span class="ot">&lt;-</span> <span class="fu">control_grid</span>(</span>
-<span id="cb4-2"><a href=""></a>  <span class="at">save_pred =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb4-3"><a href=""></a>  <span class="at">parallel_over =</span> <span class="st">"everything"</span>,</span>
-<span id="cb4-4"><a href=""></a>  <span class="at">save_workflow =</span> <span class="cn">TRUE</span></span>
-<span id="cb4-5"><a href=""></a>)</span>
-<span id="cb4-6"><a href=""></a></span>
-<span id="cb4-7"><a href=""></a>grid_results <span class="ot">&lt;-</span> my_models_wfs <span class="sc">%&gt;%</span></span>
-<span id="cb4-8"><a href=""></a>  <span class="fu">workflow_map</span>(</span>
-<span id="cb4-9"><a href=""></a>    <span class="at">seed =</span> <span class="dv">123</span>,</span>
-<span id="cb4-10"><a href=""></a>    <span class="at">resamples =</span> ames_folds,</span>
-<span id="cb4-11"><a href=""></a>    <span class="at">control =</span> grid_ctrl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>doParallel<span class="sc">::</span><span class="fu">registerDoParallel</span>() <span class="co">#Enable parallel processing</span></span>
+<span id="cb4-2"><a href=""></a><span class="co">#foreach::getDoParWorkers() #Check how many workers you have</span></span>
+<span id="cb4-3"><a href=""></a></span>
+<span id="cb4-4"><a href=""></a>grid_ctrl <span class="ot">&lt;-</span> <span class="fu">control_grid</span>(</span>
+<span id="cb4-5"><a href=""></a>  <span class="at">save_pred =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-6"><a href=""></a>  <span class="at">parallel_over =</span> <span class="st">"everything"</span>,</span>
+<span id="cb4-7"><a href=""></a>  <span class="at">save_workflow =</span> <span class="cn">TRUE</span></span>
+<span id="cb4-8"><a href=""></a>)</span>
+<span id="cb4-9"><a href=""></a></span>
+<span id="cb4-10"><a href=""></a>grid_results <span class="ot">&lt;-</span> my_models_wfs <span class="sc">%&gt;%</span></span>
+<span id="cb4-11"><a href=""></a>  <span class="fu">workflow_map</span>(</span>
+<span id="cb4-12"><a href=""></a>    <span class="at">seed =</span> <span class="dv">123</span>,</span>
+<span id="cb4-13"><a href=""></a>    <span class="at">resamples =</span> ames_folds,</span>
+<span id="cb4-14"><a href=""></a>    <span class="at">control =</span> grid_ctrl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </section>
@@ -694,7 +697,8 @@ code.sourceCode {
 <div class="fragment">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>grid_results <span class="sc">%&gt;%</span></span>
-<span id="cb5-2"><a href=""></a>  <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-2"><a href=""></a>  <span class="fu">autoplot</span>() <span class="sc">+</span> </span>
+<span id="cb5-3"><a href=""></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure>

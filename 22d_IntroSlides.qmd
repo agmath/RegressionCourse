@@ -8,6 +8,7 @@ date: today
 date-format: long
 theme: serif
 incremental: true
+fontsize: 24pt
 ---
 
 ```{r global-options, include=FALSE}
@@ -132,7 +133,7 @@ Luckily, since the `{tidymodels}` syntax is standardized, we already know how to
 
   + Identify the "$k$" closest training observations to the new observation whose response we want to predict
   + Average the responses over those $k$ neighbors, and that's the predicted response
-  + **Note:** These models are very sensitive to their parameter $k$
+  + **Note:** These "models" are very sensitive to their parameter $k$
 
 . . .
 
@@ -153,7 +154,7 @@ An *ensemble* of models is a collection of models that, together, make a single 
 
 <center>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/iOucwX7Z1HU?si=eAD9up5kUpboVm4P" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/iOucwX7Z1HU?si=azyMzfE9wecAfGe_&amp;start=62" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 </center>
 
@@ -161,7 +162,7 @@ An *ensemble* of models is a collection of models that, together, make a single 
 
 An *ensemble* of models is a collection of models that, together, make a single predicted response
 
-**Random Forests:** A collection of trees, in parallel, individually making very poor predictions but, when averaged, make an unreasonably accurate prediction
+**Random Forests:** A collection of trees, in parallel, individually making very poor predictions but, when averaged, make an unreasonably accurate prediction  
 
 + Random forests require each tree to be trained on a slightly different dataset -- these are obtained using a procedure called *bootstrapping*
 + For each tree, and at each decision juncture, only a random subset of the predictors are available for the tree to utilize
@@ -331,6 +332,9 @@ Cross-validating over the *workflow set* is a bit more complicated than cross-va
 #| echo: true
 #| eval: true
 
+doParallel::registerDoParallel() #Enable parallel processing
+#foreach::getDoParWorkers() #Check how many workers you have
+
 grid_ctrl <- control_grid(
   save_pred = TRUE,
   parallel_over = "everything",
@@ -357,7 +361,8 @@ Let's check the results of our cross-validation assessments
 #| eval: true
 
 grid_results %>%
-  autoplot()
+  autoplot() + 
+  geom_point(size = 3)
 ```
 
 ## Okay, So Now What?

@@ -21,6 +21,8 @@ library(patchwork)
 library(kableExtra)
 library(memer)
 library(marginaleffects)
+library(rpart.plot)
+
 tidymodels_prefer()
 
 ames_known_prices <- ames %>%
@@ -40,6 +42,32 @@ options(scipen = 999)
 
 #Set ggplot base theme
 theme_set(theme_bw(base_size = 18))
+
+dt1_spec <- decision_tree(tree_depth = 1) %>%
+  set_engine("rpart") %>%
+  set_mode("regression")
+
+dt_rec <- recipe(Sale_Price ~ ., data = ames_train) %>%
+  step_other(all_nominal_predictors()) %>%
+  step_impute_median(all_numeric_predictors())
+
+dt1_wf <- workflow() %>%
+  add_model(dt1_spec) %>%
+  add_recipe(dt_rec)
+
+dt1_fit <- dt1_wf %>%
+  fit(ames_train)
+
+dt8_spec <- decision_tree(tree_depth = 8, min_n = 2, cost_complexity = 0) %>%
+  set_engine("rpart") %>%
+  set_mode("regression")
+
+dt8_wf <- workflow() %>%
+  add_model(dt8_spec) %>%
+  add_recipe(dt_rec)
+
+dt8_fit <- dt8_wf %>%
+  fit(ames_train)
 ```
 
 ```{css}
@@ -139,7 +167,7 @@ That is, *hyperparameters* are set outside of the model fitting process
 
 . . . 
 
-If these parameters need to be determined prior to seeing data, how can we optimize (or even justify) our choices?
+If these parameters need to be determined prior to seeing data, how can we justify (or even 🤞 optimize) our choices?
 
 ## Keep Calm and ...
 
@@ -185,11 +213,28 @@ Decision tree regressors are a great first model class to tune because optimizin
 
 The *deeper* a decision tree, the more *flexible* it is, and the more likely it is to overfit
 
-. . . 
+```{r}
+dt8_fit_for_plot <- dt8_fit %>%
+  extract_fit_engine()
+
+rpart.plot(dt8_fit_for_plot, roundint = FALSE)
+```
+
+## Tuning a Decision Tree Regressor
+
+Decision tree regressors are a great first model class to tune because optimizing the `max_depth` parameter is intuitive
+
+The *deeper* a decision tree, the more *flexible* it is, and the more likely it is to overfit
 
 If a tree is *too shallow* though, it will be underfit
 
-. . . 
+```{r}
+dt1_fit_for_plot <- dt1_fit %>%
+  extract_fit_engine()
+
+rpart.plot(dt1_fit_for_plot, roundint = FALSE)
+```
+. . .
 
 Let's tune a tree to identify the optimal depth for predicting selling prices of homes in the Ames, Iowa data
 
@@ -410,10 +455,10 @@ library(rpart.plot)
 dt_fit_for_plot <- dt_fit %>%
   extract_fit_engine()
 
-rpart.plot(dt_fit_for_plot)
+rpart.plot(dt_fit_for_plot, roundint = FALSE)
 ```
 
-## Crank Up the Tunes!!!
+## Let Us Now Crank Up the Tunes!!!
 
 <center>
 
@@ -547,7 +592,7 @@ We're cross-validating our models over five folds and we have three model classe
 
 . . . 
 
-This total ignores that our ensembles consist of 50 - 250 models themselves
+This total ignores that our ensembles consist of 50 - 2000 models themselves
 
 . . . 
 
@@ -590,7 +635,7 @@ n_cores <- parallel::detectCores()
 cluster <- parallel::makeCluster(n_cores - 1, type = "PSOCK")
 doParallel::registerDoParallel(cluster)
 
-tictoc::tic()
+tictoc::tic() #Time the tuning procedure: start
 
 wfs_tune_results <- model_wfs %>%
   workflow_map(
@@ -600,7 +645,7 @@ wfs_tune_results <- model_wfs %>%
     control = grid_ctrl
   )
 
-tictoc::toc()
+tictoc::toc() #Time the tuning procedure: end
 ```
 
 ## Visualizing Results
@@ -887,11 +932,11 @@ xgb_results %>%
 
 . . . 
 
-**Next Time:** Hyperparameters, tuning, and other regressors workshop
+**Next Time:** Thanksgiving In-Class Modeling Competition (there will be prizes, again!)
 
 . . . 
 
-**Then:** Thanksgiving In-Class Modeling Competition (there will be prizes, again!)
+**Then:** Hyperparameters, tuning, and other regressors workshop (and help with HW)
 
 . . . 
 

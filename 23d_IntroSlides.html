@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-11-18">
+  <meta name="dcterms.date" content="2024-11-19">
   <title>Hyperparameters and Tuning</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">November 18, 2024</p>
+  <p class="date">November 19, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -488,7 +488,7 @@ code.sourceCode {
 <p>That is, <em>hyperparameters</em> are set outside of the model fitting process</p>
 </div>
 <div class="fragment">
-<p>If these parameters need to be determined prior to seeing data, how can we optimize (or even justify) our choices?</p>
+<p>If these parameters need to be determined prior to seeing data, how can we justify (or even 🤞 optimize) our choices?</p>
 </div>
 </section>
 <section id="keep-calm-and" class="slide level2">
@@ -530,11 +530,24 @@ code.sourceCode {
 </div>
 <div class="fragment">
 <p>The <em>deeper</em> a decision tree, the more <em>flexible</em> it is, and the more likely it is to overfit</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-2-1.png" width="960"></p>
+</figure>
 </div>
-<div class="fragment">
+</div>
+</div>
+</div>
+</section>
+<section id="tuning-a-decision-tree-regressor-1" class="slide level2">
+<h2>Tuning a Decision Tree Regressor</h2>
+<p>Decision tree regressors are a great first model class to tune because optimizing the <code>max_depth</code> parameter is intuitive</p>
+<p>The <em>deeper</em> a decision tree, the more <em>flexible</em> it is, and the more likely it is to overfit</p>
 <p>If a tree is <em>too shallow</em> though, it will be underfit</p>
-</div>
-<div class="fragment">
+
+<img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"><div class="fragment">
 <p>Let’s tune a tree to identify the optimal depth for predicting selling prices of homes in the Ames, Iowa data</p>
 </div>
 </section>
@@ -754,7 +767,7 @@ code.sourceCode {
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-6-1.png" width="960"></p>
+<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -843,19 +856,19 @@ node), split, n, deviance, yval
 <span id="cb7-3"><a href=""></a>dt_fit_for_plot <span class="ot">&lt;-</span> dt_fit <span class="sc">%&gt;%</span></span>
 <span id="cb7-4"><a href=""></a>  <span class="fu">extract_fit_engine</span>()</span>
 <span id="cb7-5"><a href=""></a></span>
-<span id="cb7-6"><a href=""></a><span class="fu">rpart.plot</span>(dt_fit_for_plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-6"><a href=""></a><span class="fu">rpart.plot</span>(dt_fit_for_plot, <span class="at">roundint =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></p>
+<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div>
 </section>
-<section id="crank-up-the-tunes" class="slide level2">
-<h2>Crank Up the Tunes!!!</h2>
+<section id="let-us-now-crank-up-the-tunes" class="slide level2">
+<h2>Let Us Now Crank Up the Tunes!!!</h2>
 <center>
 <iframe src="https://giphy.com/embed/elQ5RkAm90DZpirhRg" width="480" height="480" style="" frameborder="0" class="giphy-embed" allowfullscreen="">
 </iframe>
@@ -956,7 +969,7 @@ node), split, n, deviance, yval
 <p>We’re cross-validating our models over five folds and we have three model classes being fit, so now counting model classes, grid combinations, and folds, we have <span class="math inline">\(3\times 5\times 256 = 3840\)</span> model fits to run</p>
 </div>
 <div class="fragment">
-<p>This total ignores that our ensembles consist of 50 - 250 models themselves</p>
+<p>This total ignores that our ensembles consist of 50 - 2000 models themselves</p>
 </div>
 <div class="fragment">
 <center>
@@ -991,7 +1004,7 @@ node), split, n, deviance, yval
 <span id="cb14-2"><a href=""></a>cluster <span class="ot">&lt;-</span> parallel<span class="sc">::</span><span class="fu">makeCluster</span>(n_cores <span class="sc">-</span> <span class="dv">1</span>, <span class="at">type =</span> <span class="st">"PSOCK"</span>)</span>
 <span id="cb14-3"><a href=""></a>doParallel<span class="sc">::</span><span class="fu">registerDoParallel</span>(cluster)</span>
 <span id="cb14-4"><a href=""></a></span>
-<span id="cb14-5"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">tic</span>()</span>
+<span id="cb14-5"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">tic</span>() <span class="co">#Time the tuning procedure: start</span></span>
 <span id="cb14-6"><a href=""></a></span>
 <span id="cb14-7"><a href=""></a>wfs_tune_results <span class="ot">&lt;-</span> model_wfs <span class="sc">%&gt;%</span></span>
 <span id="cb14-8"><a href=""></a>  <span class="fu">workflow_map</span>(</span>
@@ -1001,9 +1014,9 @@ node), split, n, deviance, yval
 <span id="cb14-12"><a href=""></a>    <span class="at">control =</span> grid_ctrl</span>
 <span id="cb14-13"><a href=""></a>  )</span>
 <span id="cb14-14"><a href=""></a></span>
-<span id="cb14-15"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-15"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>() <span class="co">#Time the tuning procedure: end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>131.843 sec elapsed</code></pre>
+<pre><code>137.369 sec elapsed</code></pre>
 </div>
 </div>
 </div>
@@ -1015,7 +1028,7 @@ node), split, n, deviance, yval
 <span id="cb16-2"><a href=""></a>  <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-19-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="our-best-model" class="slide level2">
 <h2>Our Best Model</h2>
 <div class="fragment">
@@ -1172,7 +1185,7 @@ node), split, n, deviance, yval
 <span id="cb18-2"><a href=""></a>  <span class="fu">autoplot</span>(<span class="at">metric =</span> <span class="st">"rmse"</span>, <span class="at">id =</span> <span class="st">"rec_xgb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-20-1.png" class="quarto-figure quarto-figure-center r-stretch" width="1152"></section>
+<img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-22-1.png" class="quarto-figure quarto-figure-center r-stretch" width="1152"></section>
 <section id="extracting-best-hyperparameter-combinations" class="slide level2">
 <h2>Extracting Best Hyperparameter Combinations</h2>
 <div class="fragment">
@@ -1273,7 +1286,7 @@ node), split, n, deviance, yval
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-24-1.png" width="960"></p>
+<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-26-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1312,7 +1325,7 @@ node), split, n, deviance, yval
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-25-1.png" width="960"></p>
+<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-27-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1383,10 +1396,10 @@ node), split, n, deviance, yval
 <section id="whats-next" class="slide level2">
 <h2>What’s Next???</h2>
 <div class="fragment">
-<p><strong>Next Time:</strong> Hyperparameters, tuning, and other regressors workshop</p>
+<p><strong>Next Time:</strong> Thanksgiving In-Class Modeling Competition (there will be prizes, again!)</p>
 </div>
 <div class="fragment">
-<p><strong>Then:</strong> Thanksgiving In-Class Modeling Competition (there will be prizes, again!)</p>
+<p><strong>Then:</strong> Hyperparameters, tuning, and other regressors workshop (and help with HW)</p>
 </div>
 <div class="fragment">
 <p><strong>After That:</strong> Final projects for the remainder of the semester</p>

@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-09-01">
+  <meta name="dcterms.date" content="2024-11-18">
   <title>Hyperparameters and Tuning</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">September 1, 2024</p>
+  <p class="date">November 18, 2024</p>
 </section>
 <section class="slide level2">
 
@@ -492,10 +492,10 @@ code.sourceCode {
 </div>
 </section>
 <section id="keep-calm-and" class="slide level2">
-<h2>Keep Calm, and …</h2>
+<h2>Keep Calm and …</h2>
 </section>
 <section id="keep-calm-and-cross-validate" class="slide level2">
-<h2>Keep Calm, and Cross-Validate</h2>
+<h2>Keep Calm and Cross-Validate</h2>
 <div class="fragment">
 <p>I told you that cross-validation was useful for more than just estimating more stable performance estimates</p>
 </div>
@@ -605,7 +605,7 @@ code.sourceCode {
 <p>All this together means that we are about to train and assess <span class="math inline">\(10\times 5 = 50\)</span> decision trees</p>
 </div>
 <div class="fragment">
-<p>The more hyperparameters we tune, the finer our grid, the more cross-validation folds we utilize, the longer our tuning procedure will take</p>
+<p>The more hyperparameters we tune / the finer our grid / the more cross-validation folds we utilize, the longer our tuning procedure will take</p>
 </div>
 </section>
 <section id="lets-tune" class="slide level2">
@@ -771,6 +771,8 @@ code.sourceCode {
 </ol>
 </div>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>best_tree <span class="ot">&lt;-</span> dt_tune_results <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href=""></a>  <span class="fu">select_best</span>(<span class="at">metric =</span> <span class="st">"rmse"</span>)</span>
@@ -782,6 +784,9 @@ code.sourceCode {
 <span id="cb5-8"><a href=""></a>  <span class="fu">fit</span>(ames_train)</span>
 <span id="cb5-9"><a href=""></a></span>
 <span id="cb5-10"><a href=""></a>dt_fit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>══ Workflow [trained] ══════════════════════════════════════════════════════════
 Preprocessor: Recipe
@@ -823,6 +828,8 @@ node), split, n, deviance, yval
 </div>
 </div>
 </div>
+</div>
+</div>
 </section>
 <section id="visualizing-the-decision-tree" class="slide level2">
 <h2>Visualizing the Decision Tree</h2>
@@ -840,7 +847,7 @@ node), split, n, deviance, yval
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
+<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-9-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -996,7 +1003,7 @@ node), split, n, deviance, yval
 <span id="cb14-14"><a href=""></a></span>
 <span id="cb14-15"><a href=""></a>tictoc<span class="sc">::</span><span class="fu">toc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>134.307 sec elapsed</code></pre>
+<pre><code>131.843 sec elapsed</code></pre>
 </div>
 </div>
 </div>
@@ -1008,7 +1015,7 @@ node), split, n, deviance, yval
 <span id="cb16-2"><a href=""></a>  <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-16-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="our-best-model" class="slide level2">
 <h2>Our Best Model</h2>
 <div class="fragment">
@@ -1165,7 +1172,7 @@ node), split, n, deviance, yval
 <span id="cb18-2"><a href=""></a>  <span class="fu">autoplot</span>(<span class="at">metric =</span> <span class="st">"rmse"</span>, <span class="at">id =</span> <span class="st">"rec_xgb"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-19-1.png" class="quarto-figure quarto-figure-center r-stretch" width="1152"></section>
+<img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-20-1.png" class="quarto-figure quarto-figure-center r-stretch" width="1152"></section>
 <section id="extracting-best-hyperparameter-combinations" class="slide level2">
 <h2>Extracting Best Hyperparameter Combinations</h2>
 <div class="fragment">
@@ -1253,6 +1260,10 @@ node), split, n, deviance, yval
 <p>We can, however, identify the predictors which are most important to the ensemble using the <code>vip()</code> function from the <code>{vip}</code> package</p>
 </div>
 <div class="fragment">
+<div class="columns">
+<div class="column" style="width:15%;">
+
+</div><div class="column" style="width:&quot;70%;">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href=""></a><span class="fu">library</span>(vip)</span>
 <span id="cb21-2"><a href=""></a></span>
@@ -1262,9 +1273,13 @@ node), split, n, deviance, yval
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-23-1.png" width="960"></p>
+<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-24-1.png" width="960"></p>
 </figure>
 </div>
+</div>
+</div>
+</div><div class="column" style="width:15%;">
+
 </div>
 </div>
 </div>
@@ -1297,7 +1312,7 @@ node), split, n, deviance, yval
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-24-1.png" width="960"></p>
+<p><img data-src="23d_IntroSlides_files/figure-revealjs/unnamed-chunk-25-1.png" width="960"></p>
 </figure>
 </div>
 </div>

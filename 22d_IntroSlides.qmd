@@ -362,7 +362,8 @@ Let's check the results of our cross-validation assessments
 
 grid_results %>%
   autoplot() + 
-  geom_point(size = 3)
+  geom_point(size = 3) + 
+  ggthemes::scale_color_colorblind()
 ```
 
 ## Okay, So Now What?

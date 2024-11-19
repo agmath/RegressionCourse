@@ -332,8 +332,9 @@ Cross-validating over the *workflow set* is a bit more complicated than cross-va
 #| echo: true
 #| eval: true
 
-doParallel::registerDoParallel() #Enable parallel processing
-#foreach::getDoParWorkers() #Check how many workers you have
+n_cores <- parallel::detectCores()
+cluster <- parallel::makeCluster(n_cores - 1, type = "PSOCK")
+doParallel::registerDoParallel(cluster)
 
 grid_ctrl <- control_grid(
   save_pred = TRUE,
@@ -514,4 +515,13 @@ How do we even know that we've chosen appropriate values?
 Hyperparameter Tuning
 </font>
 </center>
+
+## Stop Parallelization
+
+```{r}
+#| echo: true
+#| eval: true
+
+parallel::stopCluster(cluster)
+```
 

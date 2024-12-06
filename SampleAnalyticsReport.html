@@ -1,0 +1,2665 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.43">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Adam Gilbert">
+<meta name="dcterms.date" content="2024-12-06">
+
+<title>Modeling Listing Prices for AirBnB Europe</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="SampleAnalyticsReport_files/libs/clipboard/clipboard.min.js"></script>
+<script src="SampleAnalyticsReport_files/libs/quarto-html/quarto.js"></script>
+<script src="SampleAnalyticsReport_files/libs/quarto-html/popper.min.js"></script>
+<script src="SampleAnalyticsReport_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="SampleAnalyticsReport_files/libs/quarto-html/anchor.min.js"></script>
+<link href="SampleAnalyticsReport_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="SampleAnalyticsReport_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="SampleAnalyticsReport_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="SampleAnalyticsReport_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="SampleAnalyticsReport_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="SampleAnalyticsReport_files/libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="SampleAnalyticsReport_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#statement-of-purpose" id="toc-statement-of-purpose" class="nav-link active" data-scroll-target="#statement-of-purpose">Statement of Purpose</a></li>
+  <li><a href="#executive-summary" id="toc-executive-summary" class="nav-link" data-scroll-target="#executive-summary">Executive Summary</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis">Exploratory Data Analysis</a>
+  <ul class="collapse">
+  <li><a href="#distribution-of-price" id="toc-distribution-of-price" class="nav-link" data-scroll-target="#distribution-of-price">Distribution of Price</a></li>
+  <li><a href="#price-and-city" id="toc-price-and-city" class="nav-link" data-scroll-target="#price-and-city">Price and City</a></li>
+  <li><a href="#guest-satisfaction-and-price" id="toc-guest-satisfaction-and-price" class="nav-link" data-scroll-target="#guest-satisfaction-and-price">Guest Satisfaction and Price</a></li>
+  </ul></li>
+  <li><a href="#model-construction" id="toc-model-construction" class="nav-link" data-scroll-target="#model-construction">Model Construction</a>
+  <ul class="collapse">
+  <li><a href="#model-construction-without-cross-validation-statistical-learning-interpretation-focused" id="toc-model-construction-without-cross-validation-statistical-learning-interpretation-focused" class="nav-link" data-scroll-target="#model-construction-without-cross-validation-statistical-learning-interpretation-focused">Model Construction without Cross Validation (Statistical Learning / Interpretation Focused)</a></li>
+  <li><a href="#model-construction-with-cross-validation-machine-learning-predictive-performance-focused" id="toc-model-construction-with-cross-validation-machine-learning-predictive-performance-focused" class="nav-link" data-scroll-target="#model-construction-with-cross-validation-machine-learning-predictive-performance-focused">Model Construction with Cross Validation (Machine Learning / Predictive Performance Focused)</a></li>
+  </ul></li>
+  <li><a href="#model-interpretation-and-inference" id="toc-model-interpretation-and-inference" class="nav-link" data-scroll-target="#model-interpretation-and-inference">Model Interpretation and Inference</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="SampleAnalyticsReport.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Modeling Listing Prices for AirBnB Europe</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Adam Gilbert <a href="mailto:a.gilbert1@snhu.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Southern New Hampshire University
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 6, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="statement-of-purpose" class="level2">
+<h2 class="anchored" data-anchor-id="statement-of-purpose">Statement of Purpose</h2>
+<p>AirBnB is a company that facilitates the pairing of vacation and long-term renters and property owners across the world. This project seeks to construct a predictive model for the pricing of AirBnB rentals across Europe. This benefits AirBnB as well as its property owners because the model can help with price setting, ensuring that owners are not setting rental prices too low. Additionally, the model could benefit renters as well by helping them to identify properties that are reasonably priced.</p>
+</section>
+<section id="executive-summary" class="level2">
+<h2 class="anchored" data-anchor-id="executive-summary">Executive Summary</h2>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is the <strong>last section</strong> to be written. You can think of it as a very short “bottom-line up-front” for decision makers. The section should be between 1/2 page and 3/4 of a page and it should (i) remind the reader what the question(s) was/were, (ii) identify the recommended answers/solutions, and (iii) clearly outline your level of certainty/confidence in those recommendations, highlighting any risks or additional assumptions you needed to make while conducting the analysis.</p>
+<p>This section should give a decision-maker everything they need to know in order to make a decision or advocate a position relative to the question(s) outlined in your <em>Statement of Purpose</em>.</p>
+</div>
+</div>
+</section>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This section is an expanded version of your <em>Statement of Purpose</em> (SOP). It provides additional context and background for the problem(s) outlined in the SOP. The introduction should give members of your target audience all the background and foundational information they need in order to understand the importance of the work to be done in your analytics report.</p>
+</div>
+</div>
+</section>
+<section id="exploratory-data-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This section should “tell the story” of how your response variable is distributed as well as which of your predictor variables might be associated with that response. This is your opportunity (and your readers’ opportunity) to learn about your data – the work you do in this EDA section will inform, influence, and justify your modeling choices later on. Try to organize this section as a cohesive narrative that progressively investigates potential associations –</p>
+</div>
+</div>
+<p>In this section, we set out to understand the distribution of the <code>price</code> variable as well as to identify available features that may be associated with the listing <code>price</code> for an AirBnB Europe property. Throughout this section, we’ll be working with a collection of 35456 training listings (observations). Before we begin our analysis, a snippet showing our first six rows of available training properties appears below.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">city</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">price</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">day</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">room_type</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">shared_room</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">private_room</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">person_capacity</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">superhost</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">multiple_rooms</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">business</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">cleanliness_rating</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">guest_satisfaction</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">bedrooms</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">city_center_km</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">metro_distance_km</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">attraction_index</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">normalised_attraction_index</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">restraunt_index</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">normalised_restraunt_index</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Berlin</td>
+<td style="text-align: right;">353.60381</td>
+<td style="text-align: left;">Weekend</td>
+<td style="text-align: left;">Entire home/apt</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4.7613998</td>
+<td style="text-align: right;">0.2275156</td>
+<td style="text-align: right;">114.2493</td>
+<td style="text-align: right;">17.413948</td>
+<td style="text-align: right;">139.4354</td>
+<td style="text-align: right;">29.50029</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rome</td>
+<td style="text-align: right;">423.16415</td>
+<td style="text-align: left;">Weekday</td>
+<td style="text-align: left;">Entire home/apt</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">98</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2.4975278</td>
+<td style="text-align: right;">0.9290282</td>
+<td style="text-align: right;">738.6356</td>
+<td style="text-align: right;">16.368311</td>
+<td style="text-align: right;">1643.4348</td>
+<td style="text-align: right;">35.78220</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lisbon</td>
+<td style="text-align: right;">246.24765</td>
+<td style="text-align: left;">Weekday</td>
+<td style="text-align: left;">Entire home/apt</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">89</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.9743672</td>
+<td style="text-align: right;">0.4455236</td>
+<td style="text-align: right;">325.0232</td>
+<td style="text-align: right;">10.730409</td>
+<td style="text-align: right;">678.8510</td>
+<td style="text-align: right;">30.36075</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lisbon</td>
+<td style="text-align: right;">176.36023</td>
+<td style="text-align: left;">Weekday</td>
+<td style="text-align: left;">Private room</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">96</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2.4933377</td>
+<td style="text-align: right;">0.3619793</td>
+<td style="text-align: right;">108.1352</td>
+<td style="text-align: right;">3.570008</td>
+<td style="text-align: right;">321.8487</td>
+<td style="text-align: right;">14.39427</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rome</td>
+<td style="text-align: right;">97.02382</td>
+<td style="text-align: left;">Weekend</td>
+<td style="text-align: left;">Private room</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">TRUE</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5.4952277</td>
+<td style="text-align: right;">1.3955865</td>
+<td style="text-align: right;">232.5740</td>
+<td style="text-align: right;">5.152779</td>
+<td style="text-align: right;">563.9774</td>
+<td style="text-align: right;">12.28770</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Budapest</td>
+<td style="text-align: right;">231.94059</td>
+<td style="text-align: left;">Weekday</td>
+<td style="text-align: left;">Entire home/apt</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">94</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1.6776501</td>
+<td style="text-align: right;">0.2308218</td>
+<td style="text-align: right;">141.8491</td>
+<td style="text-align: right;">8.459128</td>
+<td style="text-align: right;">320.0273</td>
+<td style="text-align: right;">24.23345</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<section id="distribution-of-price" class="level3">
+<h3 class="anchored" data-anchor-id="distribution-of-price">Distribution of Price</h3>
+<p>We first need to understand the distribution of the listing <code>price</code> variable. In the output below, the table on the left shows some summary statistics of the <code>price</code> variable and the plots on the right shows its distribution.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_price =</span> <span class="fu">min</span>(price),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">median_price =</span> <span class="fu">median</span>(price),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_price =</span> <span class="fu">mean</span>(price),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_price =</span> <span class="fu">max</span>(price),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd_price =</span> <span class="fu">sd</span>(price)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"Metric"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"Value"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Metric</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">min_price</td>
+<td style="text-align: right;">34.77934</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">median_price</td>
+<td style="text-align: right;">204.05301</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">avg_price</td>
+<td style="text-align: right;">260.08407</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">max_price</td>
+<td style="text-align: right;">18545.45028</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sd_price</td>
+<td style="text-align: right;">285.48398</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div><div class="column" style="width:5-%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">x =</span> price, <span class="at">y =</span> <span class="fu">after_stat</span>(density)),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill =</span> <span class="st">"purple"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x =</span> price),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">fill =</span> <span class="st">"purple"</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span> </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Price"</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Density"</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">x =</span> price, <span class="at">y =</span> <span class="fu">after_stat</span>(density)),</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill =</span> <span class="st">"purple"</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x =</span> price),</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>               <span class="at">fill =</span> <span class="st">"purple"</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>               <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span> </span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Price"</span>,</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Density"</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">/</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SampleAnalyticsReport_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>We can see from the table and from the plots that the distribution of <code>price</code> is quite strongly right-skewed. There is a property here listed at 18,545.45 – perhaps units here are an issue and listings are priced in local currency. We’ll explore whether this is the case and we need a transformation later. For now, the lower-right plot shows that the distribution of <code>price</code> is approximately <em>log-normal</em> (that is, the distribution of the logarithm of <code>price</code> is approximately normal). The vast majority of properties are priced between 100 and 1,000 – which seems quite reasonable. The average listing (considering both mean and median) looks to be priced within the 200 - 300 range.</p>
+<p>Now that we understand a bit about the distribution of the <code>price</code> variable, let’s try to identify other variables that may be associated with the listing <code>price</code> for a property.</p>
+</section>
+<section id="price-and-city" class="level3">
+<h3 class="anchored" data-anchor-id="price-and-city">Price and City</h3>
+<p>It seems reasonable to assume that the average listing price may vary by <code>city</code>. In fact, given the distribution of prices, we’ve mentioned that the currency unit may vary from one city to the next. We’ll start by looking at how many properties there are in each city and we’ll look at whether there is a potential association between <code>city</code> and listing <code>price</code>.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(city) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">proportion =</span> n<span class="sc">/</span><span class="fu">sum</span>(n)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">city</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">proportion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Amsterdam</td>
+<td style="text-align: right;">1793</td>
+<td style="text-align: right;">0.0505697</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Athens</td>
+<td style="text-align: right;">4453</td>
+<td style="text-align: right;">0.1255923</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Barcelona</td>
+<td style="text-align: right;">2399</td>
+<td style="text-align: right;">0.0676613</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Berlin</td>
+<td style="text-align: right;">2123</td>
+<td style="text-align: right;">0.0598770</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Budapest</td>
+<td style="text-align: right;">3433</td>
+<td style="text-align: right;">0.0968242</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lisbon</td>
+<td style="text-align: right;">4890</td>
+<td style="text-align: right;">0.1379174</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Paris</td>
+<td style="text-align: right;">5690</td>
+<td style="text-align: right;">0.1604806</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rome</td>
+<td style="text-align: right;">7678</td>
+<td style="text-align: right;">0.2165501</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Vienna</td>
+<td style="text-align: right;">2997</td>
+<td style="text-align: right;">0.0845273</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> city)) <span class="sc">+</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SampleAnalyticsReport_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>We can see that Rome has the greatest number of property listings, which Amsterdam has the fewest. No city has an extremely small number of listings though. Now let’s consider the average listing <code>price</code> by city.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">city =</span> <span class="fu">fct_reorder</span>(city, price)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> price, <span class="at">y =</span> city, <span class="at">fill =</span> city),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Price"</span>, <span class="at">y =</span> <span class="st">""</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">city =</span> <span class="fu">fct_reorder</span>(city, price)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> price, <span class="at">y =</span> city, <span class="at">fill =</span> city),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>               <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Price"</span>, <span class="at">y =</span> <span class="st">""</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SampleAnalyticsReport_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The plot on the left isn’t very legible because of the presence of properties whose prices are extreme outliers. The plot on the right shows the same information, but with <code>price</code> on a logarithmic scale. We can see here that Amsterdam is the most expensive location on average, while Athens is the cheapest. From here, we can see that <code>city</code> is associated with the <code>price</code> variable.</p>
+</section>
+<section id="guest-satisfaction-and-price" class="level3">
+<h3 class="anchored" data-anchor-id="guest-satisfaction-and-price">Guest Satisfaction and Price</h3>
+<p>Similar to what we did with <code>city</code>, it is reasonable to wonder whether <code>guest_satisfaction</code> and <code>price</code> are associated with one another. We’ll begin with an analysis of the distribution of the <code>guest_satisfaction</code> variable and then we’ll consider whether there is visual evidence to suggest an association between the two variables.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_sat =</span> <span class="fu">min</span>(guest_satisfaction),</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">median_sat =</span> <span class="fu">median</span>(guest_satisfaction),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_sat =</span> <span class="fu">mean</span>(guest_satisfaction),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_sat =</span> <span class="fu">max</span>(guest_satisfaction),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd_sat =</span> <span class="fu">sd</span>(guest_satisfaction)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), </span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"Metric"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"Value"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Metric</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">min_sat</td>
+<td style="text-align: right;">20.000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">median_sat</td>
+<td style="text-align: right;">95.000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">avg_sat</td>
+<td style="text-align: right;">93.110418</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">max_sat</td>
+<td style="text-align: right;">100.000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sd_sat</td>
+<td style="text-align: right;">8.106659</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div><div class="column" style="width:5-%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">x =</span> guest_satisfaction, <span class="at">y =</span> <span class="fu">after_stat</span>(density)),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill =</span> <span class="st">"purple"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x =</span> guest_satisfaction),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">fill =</span> <span class="st">"purple"</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span> </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Guest Satisfaction"</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Density"</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SampleAnalyticsReport_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>We can see from the table and the plot above that <code>guest_satisfaction</code> is generally quite high. Most of the observed satisfaction scores fall between 75 and 100. Although the variability of this feature is not high, let’s construct a scatterplot to determine whether there may be an association between <code>guest_satisfaction</code> and <code>price</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> guest_satisfaction,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y =</span> price),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span> </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">x =</span> guest_satisfaction,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y =</span> price)) <span class="sc">+</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Guest Satisfaction Score"</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Listing Price"</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> guest_satisfaction,</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y =</span> price),</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span> </span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">x =</span> guest_satisfaction,</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y =</span> price)) <span class="sc">+</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span> </span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Guest Satisfaction Score"</span>,</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Listing Price"</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'
+`geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="SampleAnalyticsReport_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>These plots are somewhat difficult to read. There is no obvious association between the guest satisfaction score and the price variable from either of these. The only difference between the plot on the left and the plot on the right is that the plot on the right shows the listing <code>price</code> on a logarithmic scale.</p>
+<p>Because of the collections of vertically aligned points at <code>guest_satisfaction</code> scores like 20, 40, 60, etc. we might be able to build a collection of side-by-side boxplots here – we’ll see if doing so provides any additional insights below.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>train <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> price,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">x =</span> guest_satisfaction, </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">group =</span> guest_satisfaction)) <span class="sc">+</span> </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">x =</span> guest_satisfaction,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y =</span> price)) <span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span> </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Guest Satisfaction"</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Price"</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'</code></pre>
+</div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="SampleAnalyticsReport_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Even from this plot, there doesn’t see to be an obvious association between <code>guest_satisfaction</code> and listing <code>price</code>. In fact, the trend lines we added to each of the plots above are nearly flat. We won’t exclude this predictor from our modeling process altogether, but we don’t have great hope that <code>guest_satisfaction</code> is a strong predictor of <code>price</code>.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This sample EDA has been quite limited. It was designed to show you how you might approach EDA on the response variable, EDA to explore for an association between the response and a categorical predictor, and EDA to explore for an association between the response and a numeric variable. If this were a full analysis rather than a sample, we would continue to explore more of the available predictors. For EDA with numeric predictors, notice that the use of the <code>geom_smooth()</code> layer can help you identify evidence for curvilinear associations.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="model-construction" class="level2">
+<h2 class="anchored" data-anchor-id="model-construction">Model Construction</h2>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I’ve provided two versions of the Model Construction section below. The first uses the traditional approach of looking at p-values and metrics like adjusted-R-squared to assess model quality and significance of model terms. Use an approach like this one if your primary goal is to build a model so that you can interpret associations between the predictors and your response variable (<em>statistical learning</em>). The second version leverages <em>cross-validation</em> and simply uses a model accuracy metric (here RMSE) to guide model selection. Use this approach if the primary goal associated with the problem(s) you outlined in your SOP involve the construction of a model which will make accurate predictions but where interpretations of associations between predictors and response are of lesser importance (<em>machine learning</em>).</p>
+<p>You do not necessarily need to choose just one or the other approach. Perhaps the problems/challenges you’ve set out to solve would benefit from both descriptive and predictive models. In this case, just make clear to the reader when you are switching between objectives.</p>
+</div>
+</div>
+<section id="model-construction-without-cross-validation-statistical-learning-interpretation-focused" class="level3">
+<h3 class="anchored" data-anchor-id="model-construction-without-cross-validation-statistical-learning-interpretation-focused">Model Construction without Cross Validation (Statistical Learning / Interpretation Focused)</h3>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You’ll notice two separate “Model Construction” sections in this sample report. In general, you will only choose to include one. This version of the <em>Model Construction</em> section involves modeling choices which are focused on <span class="math inline">\(p\)</span>-values and statistical significance of terms. This means that we are admitting that our primary concern is to construct models that can be interpreted, helping us <em>understand relationships</em> between explanatory variables (predictors) and our response. I refer to this as <em>statistical learning</em>, as opposed to <em>machine learning</em> where our goal is constructing models with high predictive accuracy.</p>
+<p>You’ll use this type of Model Construction section when you are in a <em>statistical learning</em> context.</p>
+</div>
+</div>
+<p>In this section, we’ll propose, justify, fit, and assess several models to predict rental <code>price</code> for our AirBnB Europe properties. We’ll begin with a simple baseline model, ensuring that we can fit a model, make predictions, and get a performance benchmark. Once we have this benchmark, we can compare our future model performance to it.</p>
+<section id="simple-linear-regression" class="level4">
+<h4 class="anchored" data-anchor-id="simple-linear-regression">Simple Linear Regression</h4>
+<p>We’ll start first with a simple linear regression model. We’ll use <code>guest_satisfaction</code> to predict rental price for this model. From the exploratory data analysis, we saw that <code>guest_satisfaction</code> was not strongly associated with rental <code>price</code>. We don’t have any expectation that this model will be “good”.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+On Predictor Selection
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Generally, you would choose to use the variable you identified in your exploratory data analysis which had the strongest association with the response for this model. I didn’t conduct a full EDA here, so I just chose the numerical variable that I used in my limited EDA.</p>
+</div>
+</div>
+<p>The model form we are proposing here is <span class="math inline">\(\mathbb{E}\left[\texttt{price}\right] = \beta_0 + \beta_1\cdot\left(\texttt{guest satisfaction}\right)\)</span>. We construct the model below.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>slr_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>slr_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(price <span class="sc">~</span> guest_satisfaction, <span class="at">data =</span> train)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>slr_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(slr_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(slr_rec)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>slr_fit <span class="ot">&lt;-</span> slr_wf <span class="sc">%&gt;%</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We’ll take a look at the global (overall) model metrics below.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>slr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glance</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">r.squared</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">adj.r.squared</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">sigma</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">df</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">logLik</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">AIC</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">BIC</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">deviance</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">df.residual</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">nobs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.0002264</td>
+<td style="text-align: right;">0.0001982</td>
+<td style="text-align: right;">285.4557</td>
+<td style="text-align: right;">8.026981</td>
+<td style="text-align: right;">0.0046112</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-250780.2</td>
+<td style="text-align: right;">501566.4</td>
+<td style="text-align: right;">501591.8</td>
+<td style="text-align: right;">2888967566</td>
+<td style="text-align: right;">35454</td>
+<td style="text-align: right;">35456</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>We see that the <span class="math inline">\(p\)</span>-value for the global test for model utility is below the 0.05 level of significance. This indicates that our model contains at least one useful predictor of rental <code>price</code>. As a reminder, for simple linear regression, there is only a single predictor and so the global test for model utility and the term-based test are the same. Having such a low <em>adjusted R-squared</em> value and a high <em>training root mean squared error</em> (<code>sigma</code>) indicate that this model has poor explanatory and predictive value.</p>
+<p>We can see the term-based metrics in the table output below. From that output, we can see that our estimated model is <span class="math inline">\(\mathbb{E}\left[\texttt{price}\right] = 210.75 + 0.05\cdot\left(\texttt{guest satisfaction}\right)\)</span>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>slr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std.error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">210.7516445</td>
+<td style="text-align: right;">17.4781775</td>
+<td style="text-align: right;">12.057987</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">guest_satisfaction</td>
+<td style="text-align: right;">0.5298271</td>
+<td style="text-align: right;">0.1870071</td>
+<td style="text-align: right;">2.833193</td>
+<td style="text-align: right;">0.0046112</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>We’ll now compute our test RMSE. This gives us an unbiased estimate of future model performance. It also provides our first benchmark to compare future models against.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>my_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(rsq, rmse)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>slr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(test) <span class="sc">%&gt;%</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">my_metrics</span>(price, .pred) <span class="sc">%&gt;%</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">.metric</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.estimator</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">.estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">rsq</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">0.0011706</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">254.5713392</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>We see that the test RMSE for this first model is about $254.57. This is somewhat better than our training RMSE, indicated that this particular model is likely underfitting.</p>
+</section>
+<section id="multiple-linear-regression" class="level4">
+<h4 class="anchored" data-anchor-id="multiple-linear-regression">Multiple Linear Regression</h4>
+<p>Through this subsection, we’ll build slightly more complex linear regressors. We’ll build a model here that includes <code>city</code>, <code>day</code>, <code>room_type</code>, <code>business</code>, <code>bedrooms</code>, <code>city_center_km</code>, <code>metro_distance_km</code>, <code>normalised_attraction_index</code>, and <code>normalised_restraunt_index</code>. The model form we are proposing is:</p>
+<p><span class="math display">\[\begin{align*} \mathbb{E}\left[\texttt{price}\right] = \beta_0 + &amp;\beta_1\cdot\left(\text{city\_athens}\right) + \beta_2\cdot\left(\text{city\_barcelona}\right) + \cdots + \beta_8\cdot\left(\texttt{city\_vienna}\right) +\\
+&amp;\beta_9\cdot\left(\texttt{day\_weekend}\right) + \beta_{10}\cdot\left(\texttt{room\_private}\right) + \beta_{11}\cdot\left(\texttt{room\_shared}\right)\\
+&amp;\beta_{12}\cdot\left(\texttt{business}\right) + \beta_{13}\cdot\left(\texttt{bedrooms}\right) + \beta_{14}\cdot\left(\texttt{city-center distance}\right)\\
+&amp;\beta_{15}\cdot\left(\text{metro distance}\right) + \beta_{16}\cdot\left(\texttt{normalized attraction index}\right)\\
+&amp;\beta_{17}\cdot\left(\texttt{normalized restaurant index}\right)
+\end{align*}\]</span></p>
+<p>Let’s estimate the model.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mlr_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>mlr_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(price <span class="sc">~</span> city <span class="sc">+</span> day <span class="sc">+</span> room_type <span class="sc">+</span> business <span class="sc">+</span> bedrooms <span class="sc">+</span> city_center_km <span class="sc">+</span> metro_distance_km <span class="sc">+</span> normalised_attraction_index <span class="sc">+</span> normalised_restraunt_index, <span class="at">data =</span> train)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>mlr_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(mlr_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(mlr_rec)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>mlr_fit <span class="ot">&lt;-</span> mlr_wf <span class="sc">%&gt;%</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We’ll analyze the global model performance metrics and compare them to our previous best model (here, our simple linear regression model).</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>mlr_fit <span class="sc">%&gt;%</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glance</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">r.squared</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">adj.r.squared</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">sigma</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">df</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">logLik</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">AIC</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">BIC</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">deviance</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">df.residual</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">nobs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.2413982</td>
+<td style="text-align: right;">0.2410343</td>
+<td style="text-align: right;">248.7098</td>
+<td style="text-align: right;">663.3466</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">-245886.3</td>
+<td style="text-align: right;">491810.7</td>
+<td style="text-align: right;">491971.7</td>
+<td style="text-align: right;">2192072080</td>
+<td style="text-align: right;">35438</td>
+<td style="text-align: right;">35456</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>We see a large improvement in the adjusted R-squared value. The terms in this model explain almost 25% of the variation in <code>price</code> from one property to the next. Additionally, our training RMSE has decreased by almost $40. This RMSE value is still quite high, though.</p>
+<p>Let’s look at the individual model terms.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std.error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">403.2417955</td>
+<td style="text-align: right;">8.9284254</td>
+<td style="text-align: right;">45.1638198</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityAthens</td>
+<td style="text-align: right;">-415.5791202</td>
+<td style="text-align: right;">7.7216810</td>
+<td style="text-align: right;">-53.8197734</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityBarcelona</td>
+<td style="text-align: right;">-242.2418518</td>
+<td style="text-align: right;">8.1082418</td>
+<td style="text-align: right;">-29.8760023</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityBerlin</td>
+<td style="text-align: right;">-302.6277648</td>
+<td style="text-align: right;">8.6436605</td>
+<td style="text-align: right;">-35.0115283</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityBudapest</td>
+<td style="text-align: right;">-423.1963424</td>
+<td style="text-align: right;">7.5740842</td>
+<td style="text-align: right;">-55.8742590</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityLisbon</td>
+<td style="text-align: right;">-331.7666808</td>
+<td style="text-align: right;">7.3995888</td>
+<td style="text-align: right;">-44.8358268</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityParis</td>
+<td style="text-align: right;">-209.9120001</td>
+<td style="text-align: right;">7.4343694</td>
+<td style="text-align: right;">-28.2353472</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityRome</td>
+<td style="text-align: right;">-359.1842599</td>
+<td style="text-align: right;">6.6671461</td>
+<td style="text-align: right;">-53.8737643</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityVienna</td>
+<td style="text-align: right;">-300.9282807</td>
+<td style="text-align: right;">8.0316374</td>
+<td style="text-align: right;">-37.4678619</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dayWeekend</td>
+<td style="text-align: right;">7.1714891</td>
+<td style="text-align: right;">2.6566936</td>
+<td style="text-align: right;">2.6994039</td>
+<td style="text-align: right;">0.0069497</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">room_typePrivate room</td>
+<td style="text-align: right;">-105.4072049</td>
+<td style="text-align: right;">3.2079278</td>
+<td style="text-align: right;">-32.8583475</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">room_typeShared room</td>
+<td style="text-align: right;">-185.2976437</td>
+<td style="text-align: right;">15.4066605</td>
+<td style="text-align: right;">-12.0271128</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">business</td>
+<td style="text-align: right;">35.9736066</td>
+<td style="text-align: right;">2.9331885</td>
+<td style="text-align: right;">12.2643349</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bedrooms</td>
+<td style="text-align: right;">95.1998967</td>
+<td style="text-align: right;">2.1524445</td>
+<td style="text-align: right;">44.2287355</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">city_center_km</td>
+<td style="text-align: right;">0.1916587</td>
+<td style="text-align: right;">1.0381957</td>
+<td style="text-align: right;">0.1846075</td>
+<td style="text-align: right;">0.8535379</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">metro_distance_km</td>
+<td style="text-align: right;">0.3599980</td>
+<td style="text-align: right;">2.2698856</td>
+<td style="text-align: right;">0.1585974</td>
+<td style="text-align: right;">0.8739870</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">normalised_attraction_index</td>
+<td style="text-align: right;">4.4724833</td>
+<td style="text-align: right;">0.2681066</td>
+<td style="text-align: right;">16.6817377</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">normalised_restraunt_index</td>
+<td style="text-align: right;">0.8564120</td>
+<td style="text-align: right;">0.1396902</td>
+<td style="text-align: right;">6.1307948</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>It looks like neither of <code>city_center_km</code> and <code>metro_distance_km</code> are statistically significant predictors. We’ll re-fit our model without the <code>metro_distance_km</code> variable since it corresponds to the highest <span class="math inline">\(p\)</span>-value and then reassess.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>mlr_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(price <span class="sc">~</span> city <span class="sc">+</span> day <span class="sc">+</span> room_type <span class="sc">+</span> business <span class="sc">+</span> bedrooms <span class="sc">+</span> city_center_km <span class="sc">+</span> normalised_attraction_index <span class="sc">+</span> normalised_restraunt_index, <span class="at">data =</span> train)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>mlr_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(mlr_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(mlr_rec)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>mlr_fit <span class="ot">&lt;-</span> mlr_wf <span class="sc">%&gt;%</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(train)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std.error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">403.4051856</td>
+<td style="text-align: right;">8.8686676</td>
+<td style="text-align: right;">45.4865604</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityAthens</td>
+<td style="text-align: right;">-415.7097009</td>
+<td style="text-align: right;">7.6775540</td>
+<td style="text-align: right;">-54.1461126</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityBarcelona</td>
+<td style="text-align: right;">-242.4110085</td>
+<td style="text-align: right;">8.0376749</td>
+<td style="text-align: right;">-30.1593447</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityBerlin</td>
+<td style="text-align: right;">-302.8963305</td>
+<td style="text-align: right;">8.4760460</td>
+<td style="text-align: right;">-35.7355695</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityBudapest</td>
+<td style="text-align: right;">-423.3383952</td>
+<td style="text-align: right;">7.5208344</td>
+<td style="text-align: right;">-56.2887534</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityLisbon</td>
+<td style="text-align: right;">-331.8389456</td>
+<td style="text-align: right;">7.3854450</td>
+<td style="text-align: right;">-44.9314763</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityParis</td>
+<td style="text-align: right;">-210.2624652</td>
+<td style="text-align: right;">7.0982634</td>
+<td style="text-align: right;">-29.6216771</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityRome</td>
+<td style="text-align: right;">-359.2950303</td>
+<td style="text-align: right;">6.6303705</td>
+<td style="text-align: right;">-54.1892837</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityVienna</td>
+<td style="text-align: right;">-301.1379732</td>
+<td style="text-align: right;">7.9219533</td>
+<td style="text-align: right;">-38.0130962</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dayWeekend</td>
+<td style="text-align: right;">7.1711145</td>
+<td style="text-align: right;">2.6566560</td>
+<td style="text-align: right;">2.6993011</td>
+<td style="text-align: right;">0.0069518</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">room_typePrivate room</td>
+<td style="text-align: right;">-105.4360065</td>
+<td style="text-align: right;">3.2027393</td>
+<td style="text-align: right;">-32.9205711</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">room_typeShared room</td>
+<td style="text-align: right;">-185.3395577</td>
+<td style="text-align: right;">15.4041818</td>
+<td style="text-align: right;">-12.0317690</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">business</td>
+<td style="text-align: right;">35.9667255</td>
+<td style="text-align: right;">2.9328273</td>
+<td style="text-align: right;">12.2634993</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bedrooms</td>
+<td style="text-align: right;">95.1967207</td>
+<td style="text-align: right;">2.1523217</td>
+<td style="text-align: right;">44.2297826</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">city_center_km</td>
+<td style="text-align: right;">0.2657007</td>
+<td style="text-align: right;">0.9272935</td>
+<td style="text-align: right;">0.2865335</td>
+<td style="text-align: right;">0.7744712</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">normalised_attraction_index</td>
+<td style="text-align: right;">4.4736281</td>
+<td style="text-align: right;">0.2680057</td>
+<td style="text-align: right;">16.6922878</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">normalised_restraunt_index</td>
+<td style="text-align: right;">0.8573389</td>
+<td style="text-align: right;">0.1395660</td>
+<td style="text-align: right;">6.1428932</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>The <code>city_center_km</code> predictor is still not statistically significant, so we’ll drop it from the model as well.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mlr_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(price <span class="sc">~</span> city <span class="sc">+</span> day <span class="sc">+</span> room_type <span class="sc">+</span> business <span class="sc">+</span> bedrooms <span class="sc">+</span> normalised_attraction_index <span class="sc">+</span> normalised_restraunt_index, <span class="at">data =</span> train)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>mlr_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(mlr_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(mlr_rec)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>mlr_fit <span class="ot">&lt;-</span> mlr_wf <span class="sc">%&gt;%</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(train)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std.error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">404.7524623</td>
+<td style="text-align: right;">7.5195164</td>
+<td style="text-align: right;">53.826927</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityAthens</td>
+<td style="text-align: right;">-416.3352959</td>
+<td style="text-align: right;">7.3604713</td>
+<td style="text-align: right;">-56.563674</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityBarcelona</td>
+<td style="text-align: right;">-242.6401286</td>
+<td style="text-align: right;">7.9976970</td>
+<td style="text-align: right;">-30.338750</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityBerlin</td>
+<td style="text-align: right;">-302.1214000</td>
+<td style="text-align: right;">8.0328920</td>
+<td style="text-align: right;">-37.610539</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityBudapest</td>
+<td style="text-align: right;">-423.4802657</td>
+<td style="text-align: right;">7.5044214</td>
+<td style="text-align: right;">-56.430768</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityLisbon</td>
+<td style="text-align: right;">-332.1252319</td>
+<td style="text-align: right;">7.3174541</td>
+<td style="text-align: right;">-45.388085</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityParis</td>
+<td style="text-align: right;">-209.9092520</td>
+<td style="text-align: right;">6.9903146</td>
+<td style="text-align: right;">-30.028584</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityRome</td>
+<td style="text-align: right;">-359.3057235</td>
+<td style="text-align: right;">6.6301797</td>
+<td style="text-align: right;">-54.192457</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityVienna</td>
+<td style="text-align: right;">-301.4451065</td>
+<td style="text-align: right;">7.8489995</td>
+<td style="text-align: right;">-38.405545</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dayWeekend</td>
+<td style="text-align: right;">7.1449447</td>
+<td style="text-align: right;">2.6550512</td>
+<td style="text-align: right;">2.691076</td>
+<td style="text-align: right;">0.0071255</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">room_typePrivate room</td>
+<td style="text-align: right;">-105.4446046</td>
+<td style="text-align: right;">3.2025572</td>
+<td style="text-align: right;">-32.925127</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">room_typeShared room</td>
+<td style="text-align: right;">-185.4134917</td>
+<td style="text-align: right;">15.4018211</td>
+<td style="text-align: right;">-12.038414</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">business</td>
+<td style="text-align: right;">35.9346367</td>
+<td style="text-align: right;">2.9306504</td>
+<td style="text-align: right;">12.261659</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bedrooms</td>
+<td style="text-align: right;">95.2086709</td>
+<td style="text-align: right;">2.1518897</td>
+<td style="text-align: right;">44.244215</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">normalised_attraction_index</td>
+<td style="text-align: right;">4.4575656</td>
+<td style="text-align: right;">0.2620739</td>
+<td style="text-align: right;">17.008809</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">normalised_restraunt_index</td>
+<td style="text-align: right;">0.8432218</td>
+<td style="text-align: right;">0.1305788</td>
+<td style="text-align: right;">6.457570</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>All of the remaining predictors are statistically significant. We’ll now revisit our global performance metrics to see how much they’ve changed.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glance</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">r.squared</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">adj.r.squared</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">sigma</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">df</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">logLik</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">AIC</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">BIC</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">deviance</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">df.residual</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">nobs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.2413959</td>
+<td style="text-align: right;">0.2410749</td>
+<td style="text-align: right;">248.7031</td>
+<td style="text-align: right;">751.8258</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">-245886.4</td>
+<td style="text-align: right;">491806.8</td>
+<td style="text-align: right;">491950.9</td>
+<td style="text-align: right;">2192078714</td>
+<td style="text-align: right;">35440</td>
+<td style="text-align: right;">35456</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>We observe almost no change in the metrics from the original, full model. Let’s take a look at the performance metrics for this new model on our test data.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(test) <span class="sc">%&gt;%</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">my_metrics</span>(price, .pred) <span class="sc">%&gt;%</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">.metric</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.estimator</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">.estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">rsq</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">0.3443609</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">206.4341768</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>Again, we have a scenario in which our performance metrics on our test data are better than the metrics on our training data. This indicates that our new model is likely still underfitting. With this new model, we expect predictions to be accurate to within about <span class="math inline">\(\pm\)</span> $413.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+On Benchmarking
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Since this model outperforms our original model, it becomes our new benchmark for model performance. That is, we are looking for new models which have a test RMSE below $206.43.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="model-construction-with-cross-validation-machine-learning-predictive-performance-focused" class="level3">
+<h3 class="anchored" data-anchor-id="model-construction-with-cross-validation-machine-learning-predictive-performance-focused">Model Construction with Cross Validation (Machine Learning / Predictive Performance Focused)</h3>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this version of the <em>Model Construction</em> section, we are approaching models with cross-validation performance (cross-validation RMSE) as our sole guide. This means we are admitting that our primary concern is to construct models that have high <em>predictive accuracy</em>. I refer to this as <em>machine learning</em>, as opposed to <em>statistical learning</em> where we want to build models for the sake of interpretation.</p>
+<p>You’ll use this type of Model Construction section when you are in a <em>machine learning</em> context.</p>
+</div>
+</div>
+<p>In this section, we’ll propose, justify, fit, and assess several models to predict rental <code>price</code> for our AirBnB Europe properties. We’ll begin with a simple baseline model, using cross-validation to obtain a stable performance estimate for that model. From there, we’ll construct more complex models, using cross-validation to assess each of those. This process provides robust performance estimates that we can use to compare our models against one another, identifying the model form that produces the <em>best predictive performance</em> (ie. the lowest cross-validation RMSE).</p>
+<section id="simple-linear-regression-1" class="level4">
+<h4 class="anchored" data-anchor-id="simple-linear-regression-1">Simple Linear Regression</h4>
+<p>We’ll start first with a simple linear regression model. We’ll use <code>guest_satisfaction</code> to predict rental price for this model. From the exploratory data analysis, we saw that <code>guest_satisfaction</code> was not strongly associated with rental <code>price</code>. We don’t have any expectation that this model will be “good”.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+On Predictor Selection
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Generally, you would choose to use the variable you identified in your exploratory data analysis which had the strongest association with the response for this model. I didn’t conduct a full EDA here, so I just chose the numerical variable that I used in my limited EDA.</p>
+</div>
+</div>
+<p>The model form we are proposing here is <span class="math inline">\(\mathbb{E}\left[\texttt{price}\right] = \beta_0 + \beta_1\cdot\left(\texttt{guest satisfaction}\right)\)</span>. We assess the model via cross-validation below.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>slr_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>slr_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(price <span class="sc">~</span> guest_satisfaction, <span class="at">data =</span> train)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>slr_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(slr_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(slr_rec)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>slr_cv_results <span class="ot">&lt;-</span> slr_wf <span class="sc">%&gt;%</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit_resamples</span>(train_folds)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>slr_cv_results <span class="sc">%&gt;%</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_metrics</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">.metric</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.estimator</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">mean</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std_err</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.config</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">272.2612780</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">28.6050251</td>
+<td style="text-align: left;">Preprocessor1_Model1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rsq</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">0.0003652</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.0000941</td>
+<td style="text-align: left;">Preprocessor1_Model1</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>We see that the cross-validation RMSE for this first model is about $272.26. We can construct a confidence interval for the future predictive accuracy of this model form (<span class="math inline">\(\mathbb{E}\left[\text{price}\right] = \beta_0 + \beta_1\cdot\left(\text{guest satisfaction}\right)\)</span>) is between <span class="math inline">\(\$272.26 \pm 2\cdot\$28.61\)</span> (or $ 215.04 and $ 329.48).</p>
+</section>
+<section id="multiple-linear-regression-1" class="level4">
+<h4 class="anchored" data-anchor-id="multiple-linear-regression-1">Multiple Linear Regression</h4>
+<p>Through this subsection, we’ll assess slightly more complex linear regressors. We’ll start with a model here that includes <code>city</code>, <code>day</code>, <code>room_type</code>, <code>business</code>, <code>bedrooms</code>, <code>city_center_km</code>, <code>metro_distance_km</code>, <code>normalised_attraction_index</code>, and <code>normalised_restraunt_index</code>. The model form we are proposing is:</p>
+<p><span class="math display">\[\begin{align*} \mathbb{E}\left[\texttt{price}\right] = \beta_0 + &amp;\beta_1\cdot\left(\text{city\_athens}\right) + \beta_2\cdot\left(\text{city\_barcelona}\right) + \cdots + \beta_8\cdot\left(\texttt{city\_vienna}\right) +\\
+&amp;\beta_9\cdot\left(\texttt{day\_weekend}\right) + \beta_{10}\cdot\left(\texttt{room\_private}\right) + \beta_{11}\cdot\left(\texttt{room\_shared}\right)\\
+&amp;\beta_{12}\cdot\left(\texttt{business}\right) + \beta_{13}\cdot\left(\texttt{bedrooms}\right) + \beta_{14}\cdot\left(\texttt{city-center distance}\right)\\
+&amp;\beta_{15}\cdot\left(\text{metro distance}\right) + \beta_{16}\cdot\left(\texttt{normalized attraction index}\right)\\
+&amp;\beta_{17}\cdot\left(\texttt{normalized restaurant index}\right)
+\end{align*}\]</span></p>
+<p>Let’s assess this model using cross-validation.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>mlr_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>mlr_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(price <span class="sc">~</span> city <span class="sc">+</span> day <span class="sc">+</span> room_type <span class="sc">+</span> business <span class="sc">+</span> bedrooms <span class="sc">+</span> city_center_km <span class="sc">+</span> metro_distance_km <span class="sc">+</span> normalised_attraction_index <span class="sc">+</span> normalised_restraunt_index, <span class="at">data =</span> train)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>mlr_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(mlr_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(mlr_rec)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>mlr_cv_results <span class="ot">&lt;-</span> mlr_wf <span class="sc">%&gt;%</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit_resamples</span>(train_folds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Let’s take a look at the cross-validation performance estimation for this model.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>mlr_cv_results <span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_metrics</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">.metric</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.estimator</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">mean</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std_err</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.config</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">228.8840768</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">32.5283171</td>
+<td style="text-align: left;">Preprocessor1_Model1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rsq</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">0.3287898</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.0461852</td>
+<td style="text-align: left;">Preprocessor1_Model1</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>The future predictive performance estimate from cross-validation this time is $228.88, with a corresponding confidence interval of <span class="math inline">\(\$228.88 \pm 2\cdot\$32.53\)</span> (or between about $ 163.82 and $ 293.94). The ~95% confidence intervals for the RMSE for these models overlaps, but the point estimate represents an improvement over our previous model.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+On p-values and Term Significance
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Notice that, with cross-validation we aren’t looking at individual model terms and identifying whether terms are statistically significant or not. With cross-validation, we are crossing the rubicon from “statistical learning” (where we care mostly about interpreting models) to “machine learning” (where we care mostly about predictive accuracy). We’ll have alternative methods for identifying which terms should be kept in a model though.</p>
+</div>
+</div>
+</section>
+<section id="models-with-higher-order-terms" class="level4">
+<h4 class="anchored" data-anchor-id="models-with-higher-order-terms">Models with Higher-Order Terms</h4>
+<p>In this section, we’ll run cross-validation to assess the performance of a model that includes curvilinear terms (cubic / third degree) associated with <code>guest_satisfaction</code>. Further, we’ll account for rental price differences between cities. We’ll allow interactions between city and our curvilinear terms, acknowledging that the curved relationship between <code>guest_satisfaction</code> and rental <code>price</code> may be different from one <code>city</code> to the next.</p>
+<p>Letting <span class="math inline">\(x_1\)</span> represent <code>guest_satisfaction</code>, the form of the model we are constructing is of the form</p>
+<p><span class="math display">\[\begin{align} \mathbb{E}\left[\text{price}\right] = &amp;\beta_0 + \beta_1 x_1 + \beta_2 x_1^2 + \beta_3 x_1^3 +\\
+&amp;\beta_4\cdot\left(\text{athens}\right)x_1 + \beta_5\cdot\left(\text{athens}\right)x_1^2 +\beta_6\cdot\left(\text{athens}\right)x_1^3 +\\
+&amp;\cdots\\
+&amp;\beta_{25}\cdot\left(\text{vienna}\right)x_1 + \beta_{26}\cdot\left(\text{vienna}\right)x_1^2 +\beta_{27}\cdot\left(\text{vienna}\right)x_1^3 +
+\end{align}\]</span></p>
+<p>We’ll run cross-validation to assess expected model performance below.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>clr_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>clr_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(price <span class="sc">~</span> city <span class="sc">+</span> guest_satisfaction, <span class="at">data =</span> train) <span class="sc">%&gt;%</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_poly</span>(guest_satisfaction, <span class="at">degree =</span> <span class="dv">3</span>, <span class="at">options =</span> <span class="fu">list</span>(<span class="at">raw =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(city) <span class="sc">%&gt;%</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_interact</span>(<span class="sc">~</span> <span class="fu">starts_with</span>(<span class="st">"city"</span>)<span class="sc">:</span><span class="fu">starts_with</span>(<span class="st">"guest_satisfaction"</span>))</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>clr_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(clr_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(clr_rec)</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>clr_cv_results <span class="ot">&lt;-</span> clr_wf <span class="sc">%&gt;%</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit_resamples</span>(train_folds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now we’ll collect the cross-validation results:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>clr_cv_results <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_metrics</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">.metric</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.estimator</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">mean</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std_err</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.config</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">249.6263723</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">30.2454919</td>
+<td style="text-align: left;">Preprocessor1_Model1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rsq</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">0.1805806</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.0246501</td>
+<td style="text-align: left;">Preprocessor1_Model1</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>We can see that this particular model is overfit. The cross-validation error has increased from our previous model. The multiple linear regression model including <code>city</code>, <code>day</code>, <code>room_type</code>, <code>business</code>, <code>bedrooms</code>, <code>city_center_km</code>, <code>metro_distance_km</code>, <code>normalised_attraction_index</code>, and <code>normalised_restraunt_index</code> as independent predictors with no higher-order terms and no interactions remains our best model so far.</p>
+<p>Let’s try tuning the degree on the <code>guest_satisfaction</code> predictor from our most recently cross-validated model.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>clr_tune_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>clr_tune_rec <span class="ot">&lt;-</span> <span class="fu">recipe</span>(price <span class="sc">~</span> city <span class="sc">+</span> day <span class="sc">+</span> room_type <span class="sc">+</span> business <span class="sc">+</span> bedrooms <span class="sc">+</span> city_center_km <span class="sc">+</span> metro_distance_km <span class="sc">+</span> normalised_attraction_index <span class="sc">+</span> normalised_restraunt_index, <span class="at">data =</span> train) <span class="sc">%&gt;%</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_poly</span>(city_center_km, <span class="at">degree =</span> <span class="fu">tune</span>(<span class="st">"degree_city_center"</span>), <span class="at">options =</span> <span class="fu">list</span>(<span class="at">raw =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_poly</span>(metro_distance_km, <span class="at">degree =</span> <span class="fu">tune</span>(<span class="st">"degree_metro_distance"</span>), <span class="at">options =</span> <span class="fu">list</span>(<span class="at">raw =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_poly</span>(normalised_attraction_index, <span class="at">degree =</span> <span class="fu">tune</span>(<span class="st">"degree_attraction_index"</span>), <span class="at">options =</span> <span class="fu">list</span>(<span class="at">raw =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_poly</span>(normalised_restraunt_index, <span class="at">degree =</span> <span class="fu">tune</span>(<span class="st">"degree_restraunt_index"</span>), <span class="at">options =</span> <span class="fu">list</span>(<span class="at">raw =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_mutate</span>(<span class="at">city_name =</span> city) <span class="sc">%&gt;%</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_rm</span>(city) <span class="sc">%&gt;%</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(city_name)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>clr_tune_wf <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(clr_tune_spec) <span class="sc">%&gt;%</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(clr_tune_rec)</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>degree_grid <span class="ot">&lt;-</span> <span class="fu">crossing</span>(</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">degree_city_center =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">degree_metro_distance =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">degree_attraction_index =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">degree_restraunt_index =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>clr_tune_results <span class="ot">&lt;-</span> clr_tune_wf <span class="sc">%&gt;%</span></span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tune_grid</span>(</span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">resamples =</span> train_folds,</span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">grid =</span> degree_grid,</span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">metrics =</span> <span class="fu">metric_set</span>(rmse)</span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a>clr_tune_results <span class="sc">%&gt;%</span></span>
+<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">show_best</span>(<span class="at">n =</span> <span class="dv">5</span>, <span class="at">metric =</span> <span class="st">"rmse"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">degree_city_center</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">degree_metro_distance</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">degree_attraction_index</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">degree_restraunt_index</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.metric</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.estimator</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">mean</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">n</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std_err</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">.config</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">228.5809</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">32.58139</td>
+<td style="text-align: left;">Preprocessor07_Model1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">228.5810</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">32.58165</td>
+<td style="text-align: left;">Preprocessor34_Model1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">228.5815</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">32.58751</td>
+<td style="text-align: left;">Preprocessor35_Model1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">228.5821</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">32.58703</td>
+<td style="text-align: left;">Preprocessor08_Model1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">228.5825</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">32.58063</td>
+<td style="text-align: left;">Preprocessor61_Model1</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>At this point, we would continue exploring additional models. The model forms that we examine are informed by our exploratory data analysis and our intuition about which variables are associated with the response (and how)…</p>
+</section>
+</section>
+</section>
+<section id="model-interpretation-and-inference" class="level2">
+<h2 class="anchored" data-anchor-id="model-interpretation-and-inference">Model Interpretation and Inference</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This section provides interpretations of our models. In a <em>statistical learning</em> application, where we seek to build a descriptive model which can be interpreted, this section is where our primary question(s) will be answered. In a <em>machine learning</em> context, this section may or may not be included, depending on whether the goals are purely predictive or if having some understanding of how/why the model arrives at predictions is of interest (it usually is, even if just to give us more confidence that the model is trustworthy).</p>
+</div>
+</div>
+<p>We don’t cover exhaustive interpretations here, but we’ll highlight the most interesting and pertinent findings.</p>
+<section id="simple-linear-regression-2" class="level4">
+<h4 class="anchored" data-anchor-id="simple-linear-regression-2">Simple Linear Regression</h4>
+<p>As a reminder, we built a simple linear regression model that used <code>guest_satisfaction</code> to predict rental <code>price</code>. That estimated model appears below.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>slr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std.error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">210.7516445</td>
+<td style="text-align: right;">17.4781775</td>
+<td style="text-align: right;">12.057987</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">guest_satisfaction</td>
+<td style="text-align: right;">0.5298271</td>
+<td style="text-align: right;">0.1870071</td>
+<td style="text-align: right;">2.833193</td>
+<td style="text-align: right;">0.0046112</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>The model indicates that, as guest satisfaction increases, we expect the rental <code>price</code> to increase as well. For every 10-point increase in guest satisfaction, we expect an additional approximately $5.30 in the list <code>price</code>.</p>
+</section>
+<section id="multiple-linear-regressor" class="level4">
+<h4 class="anchored" data-anchor-id="multiple-linear-regressor">Multiple Linear Regressor</h4>
+<p>We built a multiple linear regressor that included several of our available predictors. Initially, that model included <code>city</code>, <code>day</code>, <code>room_type</code>, <code>business</code>, <code>bedrooms</code>, <code>city_center_km</code>, <code>metro_distance_km</code>, <code>normalised_attraction_index</code>, and <code>normalised_restraunt_index</code>. However, <code>city_center_km</code> and <code>metro_distance_km</code> were both reduced out since they were insignificant predictors. The resulting model is described in the table below.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>mlr_fit <span class="sc">%&gt;%</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">term</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">estimate</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">std.error</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">404.7524623</td>
+<td style="text-align: right;">7.5195164</td>
+<td style="text-align: right;">53.826927</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityAthens</td>
+<td style="text-align: right;">-416.3352959</td>
+<td style="text-align: right;">7.3604713</td>
+<td style="text-align: right;">-56.563674</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityBarcelona</td>
+<td style="text-align: right;">-242.6401286</td>
+<td style="text-align: right;">7.9976970</td>
+<td style="text-align: right;">-30.338750</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityBerlin</td>
+<td style="text-align: right;">-302.1214000</td>
+<td style="text-align: right;">8.0328920</td>
+<td style="text-align: right;">-37.610539</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityBudapest</td>
+<td style="text-align: right;">-423.4802657</td>
+<td style="text-align: right;">7.5044214</td>
+<td style="text-align: right;">-56.430768</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityLisbon</td>
+<td style="text-align: right;">-332.1252319</td>
+<td style="text-align: right;">7.3174541</td>
+<td style="text-align: right;">-45.388085</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityParis</td>
+<td style="text-align: right;">-209.9092520</td>
+<td style="text-align: right;">6.9903146</td>
+<td style="text-align: right;">-30.028584</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cityRome</td>
+<td style="text-align: right;">-359.3057235</td>
+<td style="text-align: right;">6.6301797</td>
+<td style="text-align: right;">-54.192457</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cityVienna</td>
+<td style="text-align: right;">-301.4451065</td>
+<td style="text-align: right;">7.8489995</td>
+<td style="text-align: right;">-38.405545</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">dayWeekend</td>
+<td style="text-align: right;">7.1449447</td>
+<td style="text-align: right;">2.6550512</td>
+<td style="text-align: right;">2.691076</td>
+<td style="text-align: right;">0.0071255</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">room_typePrivate room</td>
+<td style="text-align: right;">-105.4446046</td>
+<td style="text-align: right;">3.2025572</td>
+<td style="text-align: right;">-32.925127</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">room_typeShared room</td>
+<td style="text-align: right;">-185.4134917</td>
+<td style="text-align: right;">15.4018211</td>
+<td style="text-align: right;">-12.038414</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">business</td>
+<td style="text-align: right;">35.9346367</td>
+<td style="text-align: right;">2.9306504</td>
+<td style="text-align: right;">12.261659</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">bedrooms</td>
+<td style="text-align: right;">95.2086709</td>
+<td style="text-align: right;">2.1518897</td>
+<td style="text-align: right;">44.244215</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">normalised_attraction_index</td>
+<td style="text-align: right;">4.4575656</td>
+<td style="text-align: right;">0.2620739</td>
+<td style="text-align: right;">17.008809</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">normalised_restraunt_index</td>
+<td style="text-align: right;">0.8432218</td>
+<td style="text-align: right;">0.1305788</td>
+<td style="text-align: right;">6.457570</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>We can make several interpretations here.</p>
+<ul>
+<li>Controlling for <code>day</code>, <code>roomType</code>, <code>business</code>, <code>bedrooms</code>, attraction index, and restaurant index, Amsterdam (the base-level for <code>city</code>) is the most expensive city, on average.</li>
+<li>Controlling for <code>day</code>, <code>roomType</code>, <code>business</code>, <code>bedrooms</code>, attraction index, and restaurant index, Budapest is the least expensive city on average, since it has the largest negative price adjustment relative to Amsterdam.</li>
+<li>Controlling for <code>city</code>, <code>roomType</code>, <code>business</code>, <code>bedrooms</code>, attraction index, and restaurant index, weekend rentals are more expensive than weekday rentals by about $7 on average.</li>
+<li>Controlling for <code>city</code>, <code>day</code>, <code>roomType</code>, <code>business</code>, attraction index, and restaurant index, each additional bedroom results in an expected increase in rental price by about $95.21</li>
+</ul>
+<p>There are more interpretations that can be made, but these seem to be the most interesting.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This section provides a short recap of the entire analysis from start to finish. It is likely that you won’t have any new code here. You’ll remind the reader of the initial problem(s) and their importance, what you discovered during EDA, your journey through the modeling process, and your final results. What is/are your best model(s)? How can they be used to answer your question(s) of interest? For a <em>statistical learning</em> application, what insights does your model(s) provide you about associations between available predictors and the response? For <em>machine learning</em> applications, how accurate a model were you able to construct? What are its strengths and weaknesses?</p>
+<p>How confident are you in the results of your analysis? What work is still left to be done? Are there any questions (new or old) that are left unresolved – what is the future work to be done?</p>
+</div>
+</div>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Your typical references section goes here, citing any sources you utilized.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

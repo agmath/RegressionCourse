@@ -16,6 +16,25 @@ library(tidyverse)
 theme_set(theme_bw(base_size = 20))
 ```
 
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
 ## What Are We Here For?
 
 ```{r}
@@ -152,9 +171,9 @@ ggplot() +
     + Office: Robert Frost Hall, Room 311
     + Office Hours: 
     
-      + Tuesdays 9am - 11am
-      + Thursdays 2pm - 3pm
-      + Fridays 10am - noon
+      + Wednesdays 1:00pm - 2:00pm
+      + Thursdays 9:00am - 11:00am
+      + Fridays 9:00am - 11:00am
 
 ## Required Resources
 
@@ -171,24 +190,26 @@ First and foremost...everything is free!
   Grade Item                     | Value
   -------------------------------|-----------
   Participation                  | 10%
-  Homework (~3)                  | 10%
-  Competition Assignments (~6)   | 40%
-  Project                        | 40%
+  Homework (~3)                  | 15%
+  Competition Assignments (~6)   | 30%
+  Major Project                  | 25%
+  Debrief Interviews             | 20%
   </center>
 
 ## Explanations of Grade Items
 
 + **Participation:** Come to class and contribute actively
 + **Homework:** These assignments explore topics or concepts more deeply. We'll have about three.
-+ **Competition Assignments:** We'll learn regression by doing regression. We have six assignments associated with a modeling competition on Door Dash delivery times.
-+ **Project:** A final course project spanning our last three weeks together.
++ **Competition Assignments:** We'll learn regression by doing regression. We have six assignments associated with a modeling competition on rental times for bicycles in a city bike share program.
++ **Project:** A final course project spanning our last several weeks together.
++ **Debrief Interview:** During the final two weeks of the semester, you'll schedule a 15- to 20-minute meeting with me where we'll discuss some course material and your project. You'll have a practice interview at approximately the midpoint of the semester worth 5% and the final interview will account for 15% of your course grade. I'll provide you with example questions to prepare from.
 
 ## Competition?
 
-+ Hosted at Kaggle
-+ Closed to only students in our course
-+ You'll need a free account -- link in Slack
-+ Your grade is **not** tied to your finishing place
++ Hosted at Kaggle.
++ Closed to only students in our course and a similar course at St. Vincent College just outside of Pittsburgh, PA.
++ You'll need a free account -- link in Slack.
++ Your grade is **not** tied to your finishing place.
 + The competition aspect is *friendly* -- please keep it that way.
 + Students say the competition is motivating and a great source of learning -- one of the most valuable parts of the course.
 
@@ -250,8 +271,12 @@ We'll be discussing a lot of material in MAT 300. Here is a very generic road ma
 
 ## What Foundational Statistics Knowledge Do I Need?
   
-  + Confidence Intervals: $\left(\text{point estimate}\right) \pm 2\cdot \left(\text{standard error}\right)$
-  + Hypothesis Testing: $p< \alpha$ means data are incompatible with a null (skeptical) hypothesis
++ Confidence Intervals: $\left(\text{point estimate}\right) \pm 2\cdot \left(\text{standard error}\right)$
+
+  + We are [XX]% confident that our [parameter] falls between [the lower bound] and [the upper bound].
++ Hypothesis Testing: $p< \alpha$ means data are incompatible with a null (skeptical) hypothesis.
+
+  + Generally this will mean that a model, predictor, or model term, has statistically significant explanatory or predictive value in estimating a response.
 
 ## Regression
     

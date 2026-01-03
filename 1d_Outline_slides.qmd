@@ -215,6 +215,7 @@ First and foremost...everything is free!
 
 ## Brightspace
 
++ Weekly Announcements
 + Assignments
 + Gradebook
 + Go to the webpage for everything else

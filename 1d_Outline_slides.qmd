@@ -254,7 +254,7 @@ My goal in this course is for all of you to learn as much about regression and s
 
 ## A Road Map to Our Semester
 
-We'll be discussing a lot of material in MAT 300. Here is a very generic road map of what we will discuss. Starting now.
+We'll be discussing a lot of material in MAT 300. The next few slides cover a very generic road map of what we will discuss.
 
 ## What Are We Doing?
 

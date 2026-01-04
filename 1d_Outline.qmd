@@ -33,9 +33,10 @@ library(tidyverse)
   Grade Item                     | Value
   -------------------------------|-----------
   Participation                  | 10%
-  Homework (~3)                  | 10%
-  Competition Assignments (~6)   | 40%
-  Project                        | 40%
+  Homework (~3)                  | 15%
+  Competition Assignments (~6)   | 30%
+  Project                        | 25%
+  Debrief Interviews             | 20%
   </center>
   
   + The tentative course outline is truly tentative. Use this as a loose agenda, but expect that it will change as we go more quickly or slowly through particular topics.
@@ -46,6 +47,7 @@ You'll need to create a free [Kaggle](https://www.kaggle.com) account before gai
 
 **Project**: Students in MAT300 will complete a large-scale project at the end of the semester. That project will include a full *analytics report*. We'll discuss this in greater detail towards the final month of our semester.
 
+**Debrief Interviews:** During the final two weeks of the semester, you’ll schedule a 15- to 20-minute meeting with me where we’ll discuss some course material and your project. You’ll have a practice interview at approximately the midpoint of the semester worth 5% and the final interview will account for 15% of your course grade. I’ll provide you with example questions to prepare from.
 
 ## Brightspace
 

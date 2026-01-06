@@ -339,6 +339,24 @@ Dr.&nbsp;Gilbert
 
   <p class="date">January 6, 2026</p>
 </section>
+<section class="slide level2">
+
+<div class="cell">
+<style type="text/css">
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+</style>
+</div>
+</section>
 <section id="comment-confirmatory-versus-exploratory-workflows" class="slide level2">
 <h2>Comment: Confirmatory versus Exploratory Workflows</h2>
 <div style="font-size:18pt">
@@ -346,8 +364,11 @@ Dr.&nbsp;Gilbert
 <p>There are two different circumstances from which we can come at statistics and data projects.</p>
 </div>
 <ul>
-<li class="fragment"><strong>Exploratory Settings:</strong> Where we don’t yet have well-defined expectations or formal hypotheses generated about associations, patterns, or relationships in our data.</li>
-<li class="fragment"><strong>Confirmatory Settings:</strong> Where we have generated formal hypotheses or perhaps even officially pre-registered them prior to collecting any data.</li>
+<li class="fragment"><p><strong>Exploratory Settings:</strong> Where we don’t yet have well-defined expectations or formal hypotheses generated about associations, patterns, or relationships in our data.</p>
+<ul>
+<li class="fragment">The data itself will, at least in part, dictate the direction of our analyses.</li>
+</ul></li>
+<li class="fragment"><p><strong>Confirmatory Settings:</strong> Where we have generated formal hypotheses or perhaps even officially pre-registered them prior to collecting any data.</p></li>
 </ul>
 <div class="fragment">
 <p>The scenario we are in dictates the workflow we must use in order to conduct valid inference.</p>
@@ -400,7 +421,7 @@ Dr.&nbsp;Gilbert
 <p>They may not, however, change their hypotheses or adjust their model after fitting and analysing the one corresponding to their initial hypotheses and still treat the resulting inference as confirmatory.</p>
 </div>
 <div class="fragment">
-<p><strong>Sometimes Splitting is Still Necessary:</strong> If model predictions are going to be used to inform decision-making, then data splitting is still necessary, even in the confirmatory setting. This is because predictive performance metrics generated from the data the model was trained on will be overly optimistic.</p>
+<p><strong>Sometimes Splitting is Still Necessary:</strong> If model <em>predictions</em> are going to be used to inform decision-making, then data splitting is still necessary, even in the confirmatory setting. This is because predictive performance metrics generated from the data the model was trained on will be overly optimistic.</p>
 </div>
 <div class="fragment">
 <p><strong>Important Takeaway Point:</strong> While we take an <em>exploratory</em> approach in MAT300, all of the model construction, model assessment (particularly significance testing), and model interpretation techniques we learn apply directly in confirmatory settings as well.</p>
@@ -414,7 +435,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-1-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-2-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -424,7 +445,7 @@ Dr.&nbsp;Gilbert
 <section id="statistical-learning-in-pictures-1" class="slide level2">
 <h2>Statistical Learning in Pictures</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-2-1.png" width="960" class="r-stretch"><ul>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"><ul>
 <li class="fragment"><p><strong>Goal:</strong> Build a model <span class="math inline">\(\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x}\)</span> to predict <span class="math inline">\(y\)</span>, given <span class="math inline">\(x\)</span>.</p></li>
 <li class="fragment"><p><strong>Generalized Goal:</strong> Build a model <span class="math inline">\(\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k}\)</span> to predict <span class="math inline">\(y\)</span> given features <span class="math inline">\(x_1, \cdots, x_k\)</span>.</p>
 <ul>
@@ -439,7 +460,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-3-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -456,7 +477,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-5-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -470,11 +491,11 @@ Dr.&nbsp;Gilbert
 <section id="statistical-learning-in-pictures-4" class="slide level2">
 <h2>Statistical Learning in Pictures</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section>
 <section id="statistical-learning-in-pictures-5" class="slide level2">
 <h2>Statistical Learning in Pictures</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"><ul>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"><ul>
 <li class="fragment"><p>Always predicting too high!</p>
 <ul>
 <li class="fragment">We should overpredict sometimes and underpredict others. The <em>average</em> error should be <span class="math inline">\(0\)</span>.</li>
@@ -484,15 +505,15 @@ Dr.&nbsp;Gilbert
 <section id="statistical-learning-in-pictures-6" class="slide level2">
 <h2>Statistical Learning in Pictures</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"></section>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
 <section id="statistical-learning-in-pictures-7" class="slide level2">
 <h2>Statistical Learning in Pictures</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
 <section id="statistical-learning-in-pictures-8" class="slide level2">
 <h2>Statistical Learning in Pictures</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"><ul>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"><ul>
 <li class="fragment"><p>Capturing the general trend?</p>
 <ul>
 <li class="fragment">…<em>mostly</em></li>
@@ -523,7 +544,7 @@ Dr.&nbsp;Gilbert
 <section id="how-it-works-2" class="slide level2">
 <h2>How it works</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
 <section id="interpreting-the-model" class="slide level2">
 <h2>Interpreting the Model</h2>
 <div class="fragment">
@@ -533,7 +554,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -557,7 +578,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -584,7 +605,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-14-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -594,7 +615,7 @@ Dr.&nbsp;Gilbert
 <section id="can-we-interpret-this-model" class="slide level2">
 <h2>Can we interpret this model?</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"><ul>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"><ul>
 <li class="fragment">The equation is <span class="math inline">\(\mathbb{E}\left[y\right] \approx 1202 - 4911x +3156x^2 + 784x^3 +\\ 409x^4 -215x^5 -7x^6 -516x^7\)</span></li>
 <li class="fragment">No thanks…</li>
 </ul>
@@ -602,11 +623,11 @@ Dr.&nbsp;Gilbert
 <section id="do-we-expect-this-model-to-generalize-well" class="slide level2">
 <h2>Do we expect this model to generalize well?</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"></section>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch"></section>
 <section id="do-we-expect-this-model-to-generalize-well-1" class="slide level2">
 <h2>Do we expect this model to generalize well?</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch"><ul>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-17-1.png" width="960" class="r-stretch"><ul>
 <li class="fragment">Especially near <span class="math inline">\(x = 0\)</span> and <span class="math inline">\(x = 100\)</span></li>
 </ul>
 </section>
@@ -617,7 +638,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-17-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-18-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -627,7 +648,7 @@ Dr.&nbsp;Gilbert
 <section id="is-there-a-happy-medium-1" class="slide level2">
 <h2>Is there a happy medium?</h2>
 
-<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"><ul>
+<img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"><ul>
 <li class="fragment"><p>Fits old and new observations similarly well</p></li>
 <li class="fragment"><p>Equation <span class="math inline">\(\displaystyle{\mathbb{E}\left[y\right] \approx 1202 -4912x + 3156x^2}\)</span></p>
 <ul>
@@ -644,7 +665,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-19-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-20-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -668,7 +689,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-20-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-21-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -693,7 +714,7 @@ Dr.&nbsp;Gilbert
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-21-1.png" width="960"></p>
+<p><img data-src="2d_IntroSlides_files/figure-revealjs/unnamed-chunk-22-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -762,7 +783,7 @@ Dr.&nbsp;Gilbert
 </section>
 <section id="how-this-works" class="slide level2">
 <h2>How this works</h2>
-<div style="font-size:18pt">
+<div style="font-size:16pt">
 <ul>
 <li class="fragment">Six assignments to guide you.</li>
 <li class="fragment">You’ll take data provided by the city bike share program and build models.</li>
@@ -815,7 +836,7 @@ Dr.&nbsp;Gilbert
 <section id="next-time" class="slide level2">
 <h2>Next Time…</h2>
 <ul>
-<li class="fragment">Way fewer slides! 🤕</li>
+<li class="fragment">Way fewer slides! <span style="font-size:48pt"> 🤕 </span></li>
 <li class="fragment">An introduction to R</li>
 <li class="fragment">Getting our hands dirty!</li>
 </ul>

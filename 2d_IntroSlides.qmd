@@ -16,6 +16,20 @@ library(tidymodels)
 theme_set(theme_bw(base_size = 20))
 ```
 
+```{css}
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
 ## Comment: Confirmatory versus Exploratory Workflows
 
 <div style="font-size:18pt">
@@ -27,6 +41,8 @@ There are two different circumstances from which we can come at statistics and d
 :::
 
 + **Exploratory Settings:** Where we don't yet have well-defined expectations or formal hypotheses generated about associations, patterns, or relationships in our data.
+
+  + The data itself will, at least in part, dictate the direction of our analyses.
 + **Confirmatory Settings:** Where we have generated formal hypotheses or perhaps even officially pre-registered them prior to collecting any data.
 
 :::{.fragment}
@@ -118,7 +134,7 @@ They may not, however, change their hypotheses or adjust their model after fitti
 
 :::{.fragment}
 
-**Sometimes Splitting is Still Necessary:** If model predictions are going to be used to inform decision-making, then data splitting is still necessary, even in the confirmatory setting. This is because predictive performance metrics generated from the data the model was trained on will be overly optimistic.
+**Sometimes Splitting is Still Necessary:** If model *predictions* are going to be used to inform decision-making, then data splitting is still necessary, even in the confirmatory setting. This is because predictive performance metrics generated from the data the model was trained on will be overly optimistic.
 
 :::
 
@@ -575,7 +591,7 @@ ggplot() +
 #| echo: false
 #| message: false
 
-num_new <- 10
+num_new <- 20
 set.seed(456)
 x_new <- c(runif(num_new, 0, 100), 100, 0)
 y_new <- (x_new - 75)^2 + rnorm(num_new + 2, 0, 350)
@@ -836,7 +852,7 @@ For interpretations of coefficients (statistical learning / inference)
 
 ## How this works
 
-<div style="font-size:18pt">
+<div style="font-size:16pt">
 
 + Six assignments to guide you.
 + You'll take data provided by the city bike share program and build models.
@@ -887,7 +903,7 @@ For interpretations of coefficients (statistical learning / inference)
 
 ## Next Time...
 
-+ Way fewer slides! 🤕
++ Way fewer slides! <span style="font-size:48pt"> 🤕 </span>
 + An introduction to R
 + Getting our hands dirty!
 

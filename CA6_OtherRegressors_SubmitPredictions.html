@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.555">
+<meta name="generator" content="quarto-1.5.43">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Me, Scientist">
-<meta name="dcterms.date" content="2024-08-01">
+<meta name="dcterms.date" content="2026-01-06">
 
 <title>Competition Assignment 6</title>
 <style>
@@ -42,7 +42,7 @@ ul.task-list li input[type="checkbox"] {
 <body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
   
 </div>
 <main class="content" id="quarto-document-content">
@@ -66,7 +66,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 1, 2024</p>
+      <p class="date">January 6, 2026</p>
     </div>
   </div>
   
@@ -81,16 +81,17 @@ ul.task-list li input[type="checkbox"] {
 <p>Linear regressors are not the only class of regression model. In class, we mentioned tree-based regressors, nearest neighbor regressors, and ensembles of models. There are many more classes; you can find lots of them <a href="https://www.tidymodels.org/find/parsnip/">here</a>. In this final Competition Assignment, you’ll explore at least one more class of model and see whether it outperforms your existing models.</p>
 <ol type="1">
 <li><p>Re-open the Quarto Notebook that contains your work from all the competition assignments so far. As usual, run all of the code from that notebook.</p></li>
-<li><p>You’ve been using your training data to both build and assess your models throughout this series of competition assignments. When you uploaded predictions to Kaggle, you’ve likely been surprised about the difference between the model performance you estimated on the training data and what your leaderboard scores have been on Kaggle. Go back and refit each of your models using cross-validation.</p></li>
+<li><p>You’ve been using a single validation set to assess your models throughout this series of competition assignments. When you uploaded predictions to Kaggle, you may have been surprised about the difference between the model performance you estimated on the validation data and what your leaderboard scores have been. Go back and reassess each of your models using <em>cross-validation</em>.</p></li>
 <li><p>Provide updated interpretations of your model performance assessments now that you have performance estimates that you can be more confident in.</p></li>
 <li><p>Add at least one new model to your analytics report – that model should be of a new class. You may choose one of the model classes that we’ve discussed in class or something brand new to you. Whatever model class you choose, be sure that you can explain what that model is doing – what you gain, but also what you lose, with this new model class.</p></li>
-<li><p>Fit this new model using cross-validation and provide an assessment of this newest model’s performance.</p></li>
+<li><p>Assess this new model using cross-validation and provide an assessment of this newest model’s performance.</p></li>
+<li><p>Now that you have an understanding of how that new model should perform, go back and fit it to your training data.</p></li>
 <li><p>Use your model to <code>augment()</code> the competition data with predictions just like you did in previous competition assignments. Write those predictions out to a csv file and submit your new model’s predictions for scoring on our In-Class Kaggle Competition site.</p></li>
 <li><p>Return to your notebook and add interpretations of your new model to the <em>Model Interpretations and Inference</em> section of your report. Be sure to compare and contrast this model with your others as well.</p></li>
 <li><p>You are now ready to choose a “best” model or models. Identify the model(s) you’d like to move forward with and add a new section to your analytics report with the heading <em>Conclusions</em>. Use this section to summarize your findings including the model(s) you’ve settled on, their advantages and disadvantages, as well as their interpretations. What insights have you gleaned into the association between predictors and <em>response</em>?</p></li>
 <li><p>Render your notebook and submit the HTML and qmd files as usual on BrightSpace using the Competition Assignment 6 folder.</p></li>
 </ol>
-<p><strong>Note:</strong> While this is our final Competition Assignment for the semester, I hope you’ll continue trying to improve your models. The Competition closes at 11:59PM on April 16 – bragging rights, and perhaps a prize, await the winner!</p>
+<p><strong>Note:</strong> While this is our final Competition Assignment for the semester, I hope you’ll continue trying to improve your models. The Competition closes the Sunday leading into the last week of our semester – bragging rights, and perhaps a prize, await the winner!</p>
 <center>
 As always, reach out on Slack with questions.<br> – Dr.&nbsp;G
 </center>
@@ -132,18 +133,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -175,7 +165,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -183,7 +195,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {

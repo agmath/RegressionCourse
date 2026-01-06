@@ -171,68 +171,6 @@ penguins %>%
 
 $\bigstar$ Rewrite the functions you used to explore your data with *pipes*
 
-## Aside: Training and Testing Data
-
-<div style="font-size:18pt">
-
-:::{.fragment}
-
-At our Day 2 discussion, we mentioned exploratory versus confirmatory analyses and that we'd consistently come at problems from the exploratory setting. 
-
-:::
-
-:::{.fragment}
-
-Because of this, we should get in the habit of splitting our data into *training* and at least one *validation*/*test* set.
-
-:::
-
-:::{.fragment}
-
-Before we move forward, I'll have you split your AirBnB Europe data into a training and test set. Use code like the following:
-
-:::
-
-::::{.columns}
-
-:::{.column width="50%"}
-
-:::{.fragment}
-
-```{r}
-#| echo: true
-#| eval: false
-
-set.seed(300)
-
-data_splits <- initial_split(data, prop = 0.75)
-
-train <- training(data_splits)
-test <- testing(data_splits)
-```
-
-:::
-
-:::
-
-:::{.column width="50%"}
-
-+ Replace `data` with the name of the data frame you want to split.
-+ The `initial_split()` function comes from `{tidymodels}` and marks rows as belonging to *training* or *testing* sets.
-+ Setting a seed ensures reproducibility.
-
-:::
-
-::::
-
-:::{.fragment}
-
-From here on, we'll use `train` for all of our exploratory and model construction work. We'll reserve the `test` data for unbiased model assessment.
-
-:::
-
-</div>
-
 ## Manipulating and Transforming Data
 
 + `filter()` to return only desired records
@@ -317,7 +255,7 @@ Now the change is permanent because we've stored the result
 
 . . .
 
-Use this time to continue playing with the `airbnb` pricing data, but be sure to only explore your `train`ing set.
+Use this time to continue playing with the `airbnb` pricing data.
 
 1. Save your QMD file
 2. Use the blue *render* button to convert your markdown document into a beautiful HTML document and enjoy the fruits of your labor!

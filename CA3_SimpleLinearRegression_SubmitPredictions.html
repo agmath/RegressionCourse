@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Me, Scientist">
-<meta name="dcterms.date" content="2024-10-10">
+<meta name="dcterms.date" content="2026-01-06">
 
 <title>Competition Assignment 3</title>
 <style>
@@ -100,7 +100,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 10, 2024</p>
+      <p class="date">January 6, 2026</p>
     </div>
   </div>
   
@@ -117,20 +117,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>Re-open the Quarto Notebook that contains your Statement of Purpose and Exploratory Data Analysis from Competition Assignments 1 and 2.</p></li>
 <li><p>Re-run all of the code in your <code>setup</code> chunk as well as your code from the previous two competition assignments.</p></li>
 <li><p>Add a new section to your analytics report called <em>Model Construction</em>. In it, discuss the simple linear regression model you are choosing to build (and why).</p></li>
-<li><p>Build a simple linear regression model using what you’ve learned about the <code>{tidymodels}</code> framework. Be sure to use the single predictor that you think is most important in predicting the time to deliver a Door Dash order.</p></li>
-<li><p>Assess your model’s performance using what you’ve learned about model assessment so far. You should use the <code>validation</code> data for this purpose, but please do not open the <code>test</code> data yet – we will be building more models and don’t want any knowledge of the <code>test</code> data to infect our modeling decisions.</p></li>
-<li><p>Return to the <code>setup</code> chunk and load the <code>data_comp.csv</code> data set into your Notebook. Be sure to store this data into a named variable so that you can access it later.</p></li>
+<li><p>Build a simple linear regression model using what you’ve learned about the <code>{tidymodels}</code> framework. Be sure to use the single predictor that you think is most important in predicting the response variable for the competition.</p></li>
+<li><p>Assess your model’s performance using what you’ve learned about model assessment so far. You should use the <code>test</code> data for this purpose, but please do not open the <code>validation</code> data yet – we will be building more models and don’t want any knowledge of the <code>validation</code> data to infect our modeling decisions.</p></li>
+<li><p>Return to the <code>setup</code> chunk and load the <code>competition_data.csv</code> data set into your Notebook. Be sure to store this data into a named variable so that you can access it later.</p></li>
 </ol>
 <ul>
 <li>This dataset contains new observations but is missing the <em>response</em> column. Your goal in the competition is to predict those missing <em>responses</em> – Kaggle will keep us informed about how we are doing.</li>
 </ul>
 <ol start="8" type="1">
-<li>Use your model to <code>augment()</code> the competition data with predictions. Be sure to store the resulting data frame in a named variable – you may want to use a new variable name so that you don’t overwrite your competition data altogether. Additionally, the only columns you’ll need now are the <code>ID</code> and <code>elapsed_time</code> columns. Remember that you can use <code>rename()</code> to rename the <code>.pred</code> column to match the name of the <em>response</em> column that Kaggle is expecting. The chain of commands below may be helpful.</li>
+<li>Use your model to <code>augment()</code> the competition data with predictions. Be sure to store the resulting data frame in a named variable – you may want to use a new variable name so that you don’t overwrite your competition data altogether. Additionally, the only two columns you’ll need now are the <code>id</code> and the predicted response columns. Remember that you can use <code>rename()</code> to rename the <code>.pred</code> column to match the name of the <em>response</em> column that Kaggle is expecting. The chain of commands below may be helpful.</li>
 </ol>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>slr_preds <span class="ot">&lt;-</span> slr_fit <span class="sc">%&gt;%</span> <span class="co">#use your model name</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>(comp) <span class="sc">%&gt;%</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ID, .pred) <span class="sc">%&gt;%</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id, .pred) <span class="sc">%&gt;%</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">response_name =</span> .pred) <span class="co">#Replace response_name</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="9" type="1">
@@ -142,7 +142,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol start="10" type="1">
-<li><p>Navigate to our competition site on Kaggle and use the <em>Submission</em> button to make your first submission for scoring on Kaggle. You’ll upload your csv file and then see where you fall on the leaderboard. This <em>public</em> leaderboard is scored using only 30% of the listings in our competition data set. The final, <em>private</em> leaderboard will be scored on the remaining 70% of those hidden listings – that is, your position on the leaderboard may change slightly when the competition closes on December 17. <strong>Note:</strong> Your position on the leaderboard is in no way related to your score on these assignments, but I hope that you are motivated to work your way towards the top of the leaderboard as our semester progresses.</p></li>
+<li><p>Navigate to our competition site on Kaggle and use the <em>Submission</em> button to make your first submission for scoring on Kaggle. You’ll upload your csv file and then see where you fall on the leaderboard. This <em>public</em> leaderboard is scored using only 88% of the listings in our competition data set. The final, <em>private</em> leaderboard will be scored on the remaining 12% of those hidden listings – that is, your position on the leaderboard may change when the competition closes before the last week of the semester. <strong>Note:</strong> Your position on the leaderboard is in no way related to your score on these assignments, but I hope that you are motivated to work your way towards the top of the leaderboard as our semester progresses.</p></li>
 <li><p>Render your notebook and submit the HTML and qmd files as usual on BrightSpace using the Competition Assignment 3 folder.</p></li>
 </ol>
 <center>

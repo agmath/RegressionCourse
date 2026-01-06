@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-09-10">
+  <meta name="dcterms.date" content="2026-01-06">
   <title>Welcome to R; A Quick Overview</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -386,8 +386,6 @@
       margin-right: 0; 
     }
   </style>
-  <link href="3d_IntroSlides_files/libs/countdown-0.4.0/countdown.css" rel="stylesheet">
-  <script src="3d_IntroSlides_files/libs/countdown-0.4.0/countdown.js"></script>
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -404,7 +402,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">September 10, 2024</p>
+  <p class="date">January 6, 2026</p>
 </section>
 <section class="slide level2">
 
@@ -498,7 +496,7 @@ a:visited{
 </ul></li>
 </ul>
 <div class="fragment">
-<p><span class="math inline">\(\bigstar\)</span> Install the <code>{tidyverse}</code> and load it in your Quarto Notebook</p>
+<p><span class="math inline">\(\bigstar\)</span> Install the <code>{tidyverse}</code> and load it in your Quarto Notebook. Do the same with <code>{tidymodels}</code>.</p>
 </div>
 </section>
 <section id="reading-in-data" class="slide level2">
@@ -545,14 +543,6 @@ a:visited{
 </ul>
 <div class="fragment">
 <p><span class="math inline">\(\bigstar\)</span> Try these functions on your <code>airbnb</code> data</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="countdown" id="timer_bf64a5e8" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">02</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
-</div>
-</div>
 </div>
 </section>
 <section id="the-pipe-operator" class="slide level2">
@@ -570,13 +560,42 @@ a:visited{
 </div>
 <div class="fragment">
 <p><span class="math inline">\(\bigstar\)</span> Rewrite the functions you used to explore your data with <em>pipes</em></p>
+</div>
+</section>
+<section id="aside-training-and-testing-data" class="slide level2">
+<h2>Aside: Training and Testing Data</h2>
+<div style="font-size:18pt">
+<div class="fragment">
+<p>At our Day 2 discussion, we mentioned exploratory versus confirmatory analyses and that we’d consistently come at problems from the exploratory setting.</p>
+</div>
+<div class="fragment">
+<p>Because of this, we should get in the habit of splitting our data into <em>training</em> and at least one <em>validation</em>/<em>test</em> set.</p>
+</div>
+<div class="fragment">
+<p>Before we move forward, I’ll have you split your AirBnB Europe data into a training and test set. Use code like the following:</p>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="fragment">
 <div class="cell">
-<div class="cell-output-display">
-<div class="countdown" id="timer_c438691e" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">300</span>)</span>
+<span id="cb4-2"><a href=""></a></span>
+<span id="cb4-3"><a href=""></a>data_splits <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(data, <span class="at">prop =</span> <span class="fl">0.75</span>)</span>
+<span id="cb4-4"><a href=""></a></span>
+<span id="cb4-5"><a href=""></a>train <span class="ot">&lt;-</span> <span class="fu">training</span>(data_splits)</span>
+<span id="cb4-6"><a href=""></a>test <span class="ot">&lt;-</span> <span class="fu">testing</span>(data_splits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
+</div><div class="column" style="width:50%;">
+<ul>
+<li class="fragment">Replace <code>data</code> with the name of the data frame you want to split.</li>
+<li class="fragment">The <code>initial_split()</code> function comes from <code>{tidymodels}</code> and marks rows as belonging to <em>training</em> or <em>testing</em> sets.</li>
+<li class="fragment">Setting a seed ensures reproducibility.</li>
+</ul>
+</div>
+</div>
+<div class="fragment">
+<p>From here on, we’ll use <code>train</code> for all of our exploratory and model construction work. We’ll reserve the <code>test</code> data for unbiased model assessment.</p>
 </div>
 </div>
 </section>
@@ -591,14 +610,6 @@ a:visited{
 </ul>
 <div class="fragment">
 <p><span class="math inline">\(\bigstar\)</span> How might we use these functions? Write down some questions that could be answered using the functions described above. Start with a couple very simple questions and then work up to questions whose answers might be more complex to find.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="countdown" id="timer_205a94a7" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
-</div>
-</div>
 </div>
 </section>
 <section id="manipulating-and-transforming-data-1" class="slide level2">
@@ -614,24 +625,16 @@ a:visited{
 </div>
 <p><span class="math inline">\(\bigstar\)</span> How might we use these functions? Write down some questions that could be answered using the functions described above. Start with a couple very simple questions and then work up to questions whose answers might be more complex to find.</p>
 <p><span class="math inline">\(\bigstar\)</span> We’ll try answering some of those questions now!</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="countdown" id="timer_7f43a3b9" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
-<div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
-<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
-</div>
-</div>
-</div>
 </section>
 <section id="all-changes-are-temporary" class="slide level2">
 <h2>All Changes are Temporary</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>penguins <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href=""></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Gentoo"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb4-3"><a href=""></a>  <span class="fu">group_by</span>(island) <span class="sc">%&gt;%</span></span>
-<span id="cb4-4"><a href=""></a>  <span class="fu">summarize</span>(</span>
-<span id="cb4-5"><a href=""></a>    <span class="at">avg_mass =</span> <span class="fu">mean</span>(body_mass_g)</span>
-<span id="cb4-6"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href=""></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Gentoo"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href=""></a>  <span class="fu">group_by</span>(island) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href=""></a>  <span class="fu">summarize</span>(</span>
+<span id="cb5-5"><a href=""></a>    <span class="at">avg_mass =</span> <span class="fu">mean</span>(body_mass_g)</span>
+<span id="cb5-6"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li class="fragment">Start with the <code>penguins</code> data frame, <em>and then</em></li>
@@ -645,12 +648,12 @@ a:visited{
 <h2>Until We Make Them Permanent</h2>
 <div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>penguins <span class="ot">&lt;-</span> penguins <span class="sc">%&gt;%</span></span>
-<span id="cb5-2"><a href=""></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Gentoo"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-3"><a href=""></a>  <span class="fu">group_by</span>(island) <span class="sc">%&gt;%</span></span>
-<span id="cb5-4"><a href=""></a>  <span class="fu">summarize</span>(</span>
-<span id="cb5-5"><a href=""></a>    <span class="at">avg_mass =</span> <span class="fu">mean</span>(body_mass_g)</span>
-<span id="cb5-6"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a>penguins <span class="ot">&lt;-</span> penguins <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href=""></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Gentoo"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href=""></a>  <span class="fu">group_by</span>(island) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href=""></a>  <span class="fu">summarize</span>(</span>
+<span id="cb6-5"><a href=""></a>    <span class="at">avg_mass =</span> <span class="fu">mean</span>(body_mass_g)</span>
+<span id="cb6-6"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div class="fragment">
@@ -669,10 +672,10 @@ a:visited{
 <section id="lets-practice" class="slide level2">
 <h2>Let’s Practice</h2>
 <div class="fragment">
-<p><strong>Reminder:</strong> You have a fully complete (and documented) notebook using the <code>mpg</code> data on the course webpage – note this data is different than the <code>airbnb</code> data you worked with today</p>
+<p><strong>Reminder:</strong> You have a fully complete (and documented) notebook using car data (<code>mpg</code>) on the course webpage – note this data is different than the <code>airbnb</code> data you are working with today</p>
 </div>
 <div class="fragment">
-<p>Use this time to continue playing with the <code>airbnb</code> pricing data</p>
+<p>Use this time to continue playing with the <code>airbnb</code> pricing data, but be sure to only explore your <code>train</code>ing set.</p>
 <ol type="1">
 <li class="fragment"><p>Save your QMD file</p></li>
 <li class="fragment"><p>Use the blue <em>render</em> button to convert your markdown document into a beautiful HTML document and enjoy the fruits of your labor!</p>
@@ -684,7 +687,7 @@ a:visited{
 </ol>
 </div>
 <div class="fragment">
-<p>Don’t worry if your document looks quite plain for now, we’ll have a full class meeting devoted to using markdown syntax in Quarto effectively</p>
+<p>Don’t worry if your document looks quite plain for now, we’ll have a full class meeting devoted to using markdown syntax in Quarto effectively.</p>
 </div>
 </section>
 <section id="next-time" class="slide level2">

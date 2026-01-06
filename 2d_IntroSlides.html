@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-09-06">
+  <meta name="dcterms.date" content="2026-01-06">
   <title>Overview of Statistical Learning (and Competition Overview)</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -337,7 +337,75 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">September 6, 2024</p>
+  <p class="date">January 6, 2026</p>
+</section>
+<section id="comment-confirmatory-versus-exploratory-workflows" class="slide level2">
+<h2>Comment: Confirmatory versus Exploratory Workflows</h2>
+<div style="font-size:18pt">
+<div class="fragment">
+<p>There are two different circumstances from which we can come at statistics and data projects.</p>
+</div>
+<ul>
+<li class="fragment"><strong>Exploratory Settings:</strong> Where we don’t yet have well-defined expectations or formal hypotheses generated about associations, patterns, or relationships in our data.</li>
+<li class="fragment"><strong>Confirmatory Settings:</strong> Where we have generated formal hypotheses or perhaps even officially pre-registered them prior to collecting any data.</li>
+</ul>
+<div class="fragment">
+<p>The scenario we are in dictates the workflow we must use in order to conduct valid inference.</p>
+</div>
+</div>
+</section>
+<section id="exploratory-settings-and-workflows" class="slide level2">
+<h2>Exploratory Settings and Workflows</h2>
+<div style="font-size:18pt">
+<div class="fragment">
+<p>In MAT300, we’ll often be working with data from contexts in which we don’t have deep subject-matter expertise.</p>
+</div>
+<div class="fragment">
+<p>Because of this, we’ll take an initial <em>exploratory stance</em> when working with our data.</p>
+</div>
+<ul>
+<li class="fragment">We’ll use exploratory data analysis (EDA) to uncover patterns, associations, and relationships that may exist in the data.</li>
+<li class="fragment">We’ll use what we learn from that EDA to inform our modeling choices.</li>
+</ul>
+<div class="fragment">
+<p>Generating hypotheses and then testing those hypotheses on the same observations compromises the validity of inference (see: <em>snooping</em>, <em>fishing</em>, <em>p-hacking</em>, etc.).</p>
+</div>
+<div class="fragment">
+<p>For this reason, in our course, we’ll split our data into a <em>training</em> (exploratory) set and at least one <em>validation</em> set.</p>
+</div>
+<div class="fragment">
+<p>We’ll conduct exploratory data analyses, generate hypotheses, and train models on the <em>training</em> data.</p>
+</div>
+<div class="fragment">
+<p>We’ll assess the performance of those models on the <em>validation</em> set(s).</p>
+</div>
+</div>
+</section>
+<section id="confirmatory-settings-and-workflows" class="slide level2">
+<h2>Confirmatory Settings and Workflows</h2>
+<div style="font-size:18pt">
+<div class="fragment">
+<p>It is also common to approach a statistics/data problem with pre-generated or pre-registered hypotheses.</p>
+</div>
+<div class="fragment">
+<p>These hypotheses are declared prior to any data collection and are justified by theory, prior experience, or justifiable expectations.</p>
+</div>
+<div class="fragment">
+<p>In these cases, the <em>training</em> and <em>validation</em> set approach is not necessary.</p>
+</div>
+<div class="fragment">
+<p>The investigator can simply proceed with modeling, model assessment, and interpretation using all of the available data.</p>
+</div>
+<div class="fragment">
+<p>They may not, however, change their hypotheses or adjust their model after fitting and analysing the one corresponding to their initial hypotheses and still treat the resulting inference as confirmatory.</p>
+</div>
+<div class="fragment">
+<p><strong>Sometimes Splitting is Still Necessary:</strong> If model predictions are going to be used to inform decision-making, then data splitting is still necessary, even in the confirmatory setting. This is because predictive performance metrics generated from the data the model was trained on will be overly optimistic.</p>
+</div>
+<div class="fragment">
+<p><strong>Important Takeaway Point:</strong> While we take an <em>exploratory</em> approach in MAT300, all of the model construction, model assessment (particularly significance testing), and model interpretation techniques we learn apply directly in confirmatory settings as well.</p>
+</div>
+</div>
 </section>
 <section id="statistical-learning-in-pictures" class="slide level2">
 <h2>Statistical Learning in Pictures</h2>

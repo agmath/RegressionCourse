@@ -16,6 +16,120 @@ library(tidymodels)
 theme_set(theme_bw(base_size = 20))
 ```
 
+## Comment: Confirmatory versus Exploratory Workflows
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+There are two different circumstances from which we can come at statistics and data projects.
+
+:::
+
++ **Exploratory Settings:** Where we don't yet have well-defined expectations or formal hypotheses generated about associations, patterns, or relationships in our data.
++ **Confirmatory Settings:** Where we have generated formal hypotheses or perhaps even officially pre-registered them prior to collecting any data.
+
+:::{.fragment}
+
+The scenario we are in dictates the workflow we must use in order to conduct valid inference.
+
+:::
+
+</div>
+
+## Exploratory Settings and Workflows
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+In MAT300, we'll often be working with data from contexts in which we don't have deep subject-matter expertise.
+
+:::
+
+:::{.fragment}
+
+Because of this, we'll take an initial *exploratory stance* when working with our data.
+
+:::
+
++ We'll use exploratory data analysis (EDA) to uncover patterns, associations, and relationships that may exist in the data.
++ We'll use what we learn from that EDA to inform our modeling choices.
+
+:::{.fragment}
+
+Generating hypotheses and then testing those hypotheses on the same observations compromises the validity of inference (see: *snooping*, *fishing*, *p-hacking*, etc.).
+
+:::
+
+:::{.fragment}
+
+For this reason, in our course, we'll split our data into a *training* (exploratory) set and at least one *validation* set.
+
+:::
+
+:::{.fragment}
+
+We'll conduct exploratory data analyses, generate hypotheses, and train models on the *training* data.
+
+:::
+
+:::{.fragment}
+
+We'll assess the performance of those models on the *validation* set(s).
+
+:::
+
+</div>
+
+## Confirmatory Settings and Workflows 
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+It is also common to approach a statistics/data problem with pre-generated or pre-registered hypotheses.
+
+:::
+
+:::{.fragment}
+
+These hypotheses are declared prior to any data collection and are justified by theory, prior experience, or justifiable expectations.
+
+:::
+
+:::{.fragment}
+
+In these cases, the *training* and *validation* set approach is not necessary.
+
+:::
+
+:::{.fragment}
+
+The investigator can simply proceed with modeling, model assessment, and interpretation using all of the available data.
+
+:::
+
+:::{.fragment}
+
+They may not, however, change their hypotheses or adjust their model after fitting and analysing the one corresponding to their initial hypotheses and still treat the resulting inference as confirmatory.
+
+:::
+
+:::{.fragment}
+
+**Sometimes Splitting is Still Necessary:** If model predictions are going to be used to inform decision-making, then data splitting is still necessary, even in the confirmatory setting. This is because predictive performance metrics generated from the data the model was trained on will be overly optimistic.
+
+:::
+
+:::{.fragment}
+
+**Important Takeaway Point:** While we take an *exploratory* approach in MAT300, all of the model construction, model assessment (particularly significance testing), and model interpretation techniques we learn apply directly in confirmatory settings as well.
+
+:::
+
+</div>
+
 ## Statistical Learning in Pictures
 
 . . . 

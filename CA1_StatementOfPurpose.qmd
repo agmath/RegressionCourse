@@ -10,13 +10,13 @@ toc: true
 
 This is your first of six (6) assignments associated with our in-class competition. These assignments will give you practice working with real data in R as well as practice writing the various components of an Analytics Report. Your efforts here will serve you well once we move to the the final projects you'll be completing during the last three weeks of our course.
 
-1. Navigate to our competition site at Kaggle -- you can find the link in the `#competition-discussion` of our Slack Workgroup. Either sign in with Facebook, Google, or create an account using an e-mail address.
+1. Navigate to our competition site at Kaggle -- you can find the link in our *Welcome Announcement* on BrightSpace and in a post I made on Slack. Either sign in with Facebook, Google, or create an account using an e-mail address.
 
 2. Click the button to **Join Competition** -- you'll be asked to confirm that you accept the rules (they are to: have fun, be respectful, learn new things, and not to cheat).
 
 3. Read the information on the various tabs of the competition page to get familiar with the task at hand.
 
-4. Download the three data sets -- you'll need `data_train.csv` for this assignment, `data_comp.csv` contains the actual competition data and will be used once we learn how to construct models, and `sample_submission.csv` just gives you an example of what your submission file should look like when you go to submit predictions for scoring later in our semester.
+4. Download the two data sets -- you'll need `initial_data.csv` for this assignment and `competition_data.csv` contains the actual competition data and will be used once we learn how to construct models.
 
     + Move these files from your `Downloads` folder to the directory managing your *R Project* for this course.
 
@@ -28,14 +28,15 @@ This is your first of six (6) assignments associated with our in-class competiti
 6. In that notebook, do the following to load the data.
 
     + In the `setup` chunk at the top of the notebook, use `library(tidyverse)` to load the `{tidyverse}` functionality. Run that line with `ctrl+Enter` or `cmd+Enter` to load the `{tidyverse}` into your R Session.
-    + Use `read_csv()` along with the path to the `data_train.csv` file on your computer to read that file into your notebook. Don't forget to store your data into a named variable so that you can continue to access it. 
+    + Use `read_csv()` along with the path to the `initial_data.csv` file on your computer to read that file into your notebook. Don't forget to store your data into a named variable so that you can continue to access it. 
     + Use the `head()` function on your data to print out the first six rows of your data set. Remember to use `ctrl+Enter` or `cmd+Enter` to run your code.
 
 You should see the first six rows of data printed out below your code chunk. 
 
 You'll need to load your libraries and data every time you open your notebook to work on the Competition. Now that you've got the data read into your notebook, feel free to explore it using the tools we've been exposed to in our course.
 
-7. Now that your data is loaded into the notebook, write a Statement of Purpose associated with the Kaggle Competition. Your Statement of Purpose should be a paragraph, 2 - 5 sentences in length, describing the problem that the notebook (ultimately a report) seeks to solve. Think about what the objective of our competition is as well as who might benefit from the insights your models provide and also how they might use that insight as you build out this paragraph. You'll receive feedback on your Statement of Purpose which will be helpful when you are writing the analytics reports associated with your final course projects at the end of our semester.
+7. Now that your data is loaded into the notebook, write a *Statement of Purpose* associated with the Kaggle Competition. Your *Statement of Purpose* should be a paragraph, 2 - 5 sentences in length, describing the problem that the notebook (ultimately a report) seeks to solve. Think about what the objective of our competition is as well as who might benefit from the insights your models provide and also how they might use that insight as you build out this paragraph. You'll receive feedback on your *Statement of Purpose* which will be helpful when you are writing the analytics reports associated with your final course projects at the end of our semester.
 
 8. Once you are done, *render* your Quarto document using the blue arrow button.
-Submit both your Quarto file and the html document you created to BrightSpace using the Competition Assignment 1 submission folder.
+
+9. Submit both your Quarto file and the html document you created to BrightSpace using the Competition Assignment 1 submission folder.

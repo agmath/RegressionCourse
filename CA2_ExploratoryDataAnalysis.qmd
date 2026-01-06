@@ -14,9 +14,47 @@ In your first competition assignment, you joined our In-Class Kaggle Competition
 
 2. Re-run the code necessary to read in your data files.
 
-3. Write code to split the data coming from `data_train.csv` into three sets: `train`, `validation` and `test`. You'll need two separate calls to `initial_split()` for this. Be sure to set a seed, with `set.seed()` before each call.
+3. Use the following code to split the data coming from `data_train.csv` into three sets: `train`, `validation` and `test`. 
 
-  + Reach out on Slack if you have any questions about how to do this!
+```{r}
+#| echo: true
+#| eval: false
+
+#Load {tidymodels}
+#Put this line under library(tidyverse)
+library(tidymodels)
+
+# Set a seed for reproducibility
+# Change the number if you'd like (recommended)
+set.seed(123)
+
+#Mark your rows as belonging to training or test (temporary) sets
+#Change "data" to the name of your data frame.
+#Change the proportion if you'd like.
+#The hold out sets need enough rows for you to 
+#test/assess models on, but any observations there
+#are observations you don't get to "learn" from.
+data_splits <- initial_split(data, prop = 0.75)
+
+#Extract the training observations
+train <- training(data_splits)
+#We'll split these observations again
+temp <- testing(data_splits)
+
+#Again, change the seed if you like 
+set.seed(456)
+
+#Split the hold-out observations into validation 
+#and test sets
+temp_splits <- initial_split(temp, prop = 0.5)
+validation <- training(temp_splits)
+test <- testing(temp_splits)
+```
+
+:::{.callout-note}
+
+There's [a better way to achieve this three-set split using `initial_validation_split()`](https://rsample.tidymodels.org/reference/initial_validation_split.html), but something better is coming later and we'll only have need for `initial_split()`.
+:::
 
 4. Remember that the `validation` and `test` sets should stay hidden until later parts of the analytics project. Conduct an exploratory analysis on the training data (`train`).
 

@@ -1,0 +1,740 @@
+---
+title: Modeling Listing Prices for AirBnB Europe
+author: 
+  - name: Adam Gilbert
+    email: a.gilbert1@snhu.edu
+    affiliations: 
+      - name: Southern New Hampshire University
+format: 
+  html: default
+  pdf: default
+date: today
+date-format: long
+theme: flatly
+toc: true
+code-fold: true
+---
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 14))
+
+airbnb <- read_csv("https://raw.githubusercontent.com/agmath/agmath.github.io/master/data/AirBnB.csv")
+
+names(airbnb) <- janitor::make_clean_names(names(airbnb))
+
+
+set.seed(9172024)
+data_splits <- initial_split(airbnb, prop = 0.85)
+
+train <- training(data_splits)
+temp <- testing(data_splits)
+
+set.seed(300)
+test_splits <- initial_split(temp, prop = 0.6)
+validation <- training(test_splits)
+test <- testing(test_splits)
+
+#Now that we know about Cross-Validation, we don't need separate test and validation sets any longer, so we'll combine the training and test data (I'm combining with test here because I've already utilized the test data in this notebook and the "validation" set will remain the truly unseen data)
+train_cv <- train %>%
+  bind_rows(test)
+#Note: In the future we'll just split into training and test sets...
+
+#Create cross-validation folds for model assessment (in the Model Construction section)
+set.seed(123)
+train_folds <- vfold_cv(train, v = 10)
+```
+
+## Statement of Purpose
+
+AirBnB is a company that facilitates the pairing of vacation and long-term renters and property owners across the world. This project seeks to construct a predictive model for the pricing of AirBnB rentals across Europe. This benefits AirBnB as well as its property owners because the model can help with price setting, ensuring that owners are not setting rental prices too low. Additionally, the model could benefit renters as well by helping them to identify properties that are reasonably priced. 
+
+## Executive Summary
+
+:::{.callout-important}
+This is the **last section** to be written. You can think of it as a very short "bottom-line up-front" for decision makers. The section should be between 1/2 page and 3/4 of a page and it should (i) remind the reader what the question(s) was/were, (ii) identify the recommended answers/solutions, and (iii) clearly outline your level of certainty/confidence in those recommendations, highlighting any risks or additional assumptions you needed to make while conducting the analysis.
+
+This section should give a decision-maker everything they need to know in order to make a decision or advocate a position relative to the question(s) outlined in your *Statement of Purpose*.
+:::
+
+## Introduction
+
+:::{.callout-note}
+This section is an expanded version of your *Statement of Purpose* (SOP). It provides additional context and background for the problem(s) outlined in the SOP. The introduction should give members of your target audience all the background and foundational information they need in order to understand the importance of the work to be done in your analytics report.
+:::
+
+## Exploratory Data Analysis
+
+:::{.callout-note}
+This section should "tell the story" of how your response variable is distributed as well as which of your predictor variables might be associated with that response. This is your opportunity (and your readers' opportunity) to learn about your data -- the work you do in this EDA section will inform, influence, and justify your modeling choices later on. Try to organize this section as a cohesive narrative that progressively investigates potential associations -- 
+:::
+
+In this section, we set out to understand the distribution of the `price` variable as well as to identify available features that may be associated with the listing `price` for an AirBnB Europe property. Throughout this section, we'll be working with a collection of `r train %>% nrow()` training listings (observations). Before we begin our analysis, a snippet showing our first six rows of available training properties appears below.
+
+```{r}
+train %>%
+  head() %>%
+  kable() %>%
+  kable_styling()
+```
+
+### Distribution of Price
+
+We first need to understand the distribution of the listing `price` variable. In the output below, the table on the left shows some summary statistics of the `price` variable and the plots on the right shows its distribution.
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+train %>%
+  summarize(
+    min_price = min(price),
+    median_price = median(price),
+    avg_price = mean(price),
+    max_price = max(price),
+    sd_price = sd(price)
+  ) %>%
+  pivot_longer(everything(), 
+               names_to = "Metric",
+               values_to = "Value") %>%
+  kable() %>%
+  kable_styling()
+```
+
+:::
+
+:::{.column width="5-%"}
+
+```{r}
+#| message: false
+#| warning: false
+
+p1 <- train %>%
+  ggplot() + 
+  geom_histogram(aes(x = price, y = after_stat(density)),
+                 fill = "purple",
+                 color = "black") +
+  geom_density(aes(x = price),
+               fill = "purple",
+               alpha = 0.4) + 
+  labs(
+    x = "Price",
+    y = "Density"
+  )
+
+p2 <- train %>%
+  ggplot() + 
+  geom_histogram(aes(x = price, y = after_stat(density)),
+                 fill = "purple",
+                 color = "black") +
+  geom_density(aes(x = price),
+               fill = "purple",
+               alpha = 0.4) + 
+  scale_x_log10() +
+  labs(
+    x = "Price",
+    y = "Density"
+  )
+
+p1 / p2
+```
+
+:::
+
+::::
+
+We can see from the table and from the plots that the distribution of `price` is quite strongly right-skewed. There is a property here listed at 18,545.45 -- perhaps units here are an issue and listings are priced in local currency. We'll explore whether this is the case and we need a transformation later. For now, the lower-right plot shows that the distribution of `price` is approximately *log-normal* (that is, the distribution of the logarithm of `price` is approximately normal). The vast majority of properties are priced between 100 and 1,000 -- which seems quite reasonable. The average listing (considering both mean and median) looks to be priced within the 200 - 300 range.
+
+Now that we understand a bit about the distribution of the `price` variable, let's try to identify other variables that may be associated with the listing `price` for a property.
+
+### Price and City
+
+It seems reasonable to assume that the average listing price may vary by `city`. In fact, given the distribution of prices, we've mentioned that the currency unit may vary from one city to the next. We'll start by looking at how many properties there are in each city and we'll look at whether there is a potential association between `city` and listing `price`.
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+train %>%
+  count(city) %>%
+  mutate(proportion = n/sum(n)) %>%
+  kable() %>%
+  kable_styling()
+```
+
+:::
+
+:::{.column width="50%"}
+
+```{r}
+train %>%
+  ggplot() + 
+  geom_bar(aes(x = city)) + 
+  coord_flip()
+```
+
+:::
+
+::::
+
+We can see that Rome has the greatest number of property listings, which Amsterdam has the fewest. No city has an extremely small number of listings though. Now let's consider the average listing `price` by city.
+
+```{r}
+p1 <- train %>%
+  mutate(city = fct_reorder(city, price)) %>%
+  ggplot() + 
+  geom_boxplot(aes(x = price, y = city, fill = city),
+               show.legend = FALSE) +
+  labs(x = "Price", y = "")
+
+p2 <- train %>%
+  mutate(city = fct_reorder(city, price)) %>%
+  ggplot() + 
+  geom_boxplot(aes(x = price, y = city, fill = city),
+               show.legend = FALSE) +
+  scale_x_log10() +
+  labs(x = "Price", y = "")
+
+p1 + p2
+```
+
+The plot on the left isn't very legible because of the presence of properties whose prices are extreme outliers. The plot on the right shows the same information, but with `price` on a logarithmic scale. We can see here that Amsterdam is the most expensive location on average, while Athens is the cheapest. From here, we can see that `city` is associated with the `price` variable.
+
+### Guest Satisfaction and Price
+
+Similar to what we did with `city`, it is reasonable to wonder whether `guest_satisfaction` and `price` are associated with one another. We'll begin with an analysis of the distribution of the `guest_satisfaction` variable and then we'll consider whether there is visual evidence to suggest an association between the two variables.
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+train %>%
+  summarize(
+    min_sat = min(guest_satisfaction),
+    median_sat = median(guest_satisfaction),
+    avg_sat = mean(guest_satisfaction),
+    max_sat = max(guest_satisfaction),
+    sd_sat = sd(guest_satisfaction)
+  ) %>%
+  pivot_longer(everything(), 
+               names_to = "Metric",
+               values_to = "Value") %>%
+  kable() %>%
+  kable_styling()
+```
+
+:::
+
+:::{.column width="5-%"}
+
+```{r}
+#| message: false
+#| warning: false
+
+train %>%
+  ggplot() + 
+  geom_histogram(aes(x = guest_satisfaction, y = after_stat(density)),
+                 fill = "purple",
+                 color = "black") +
+  geom_density(aes(x = guest_satisfaction),
+               fill = "purple",
+               alpha = 0.4) + 
+  labs(
+    x = "Guest Satisfaction",
+    y = "Density"
+  )
+```
+
+:::
+
+::::
+
+We can see from the table and the plot above that `guest_satisfaction` is generally quite high. Most of the observed satisfaction scores fall between 75 and 100. Although the variability of this feature is not high, let's construct a scatterplot to determine whether there may be an association between `guest_satisfaction` and `price`.
+
+```{r}
+p1 <- train %>%
+  ggplot() + 
+  geom_point(aes(x = guest_satisfaction,
+                 y = price),
+             alpha = 0.4) + 
+  geom_smooth(aes(x = guest_satisfaction,
+                 y = price)) +
+  labs(
+    x = "Guest Satisfaction Score",
+    y = "Listing Price"
+  )
+
+p2 <- train %>%
+  ggplot() + 
+  geom_point(aes(x = guest_satisfaction,
+                 y = price),
+             alpha = 0.4) + 
+  geom_smooth(aes(x = guest_satisfaction,
+                 y = price)) +
+  scale_y_log10() + 
+  labs(
+    x = "Guest Satisfaction Score",
+    y = "Listing Price"
+  )
+
+p1 + p2
+```
+
+These plots are somewhat difficult to read. There is no obvious association between the guest satisfaction score and the price variable from either of these. The only difference between the plot on the left and the plot on the right is that the plot on the right shows the listing `price` on a logarithmic scale.
+
+Because of the collections of vertically aligned points at `guest_satisfaction` scores like 20, 40, 60, etc. we might be able to build a collection of side-by-side boxplots here -- we'll see if doing so provides any additional insights below.
+
+```{r}
+#| fig.width: 10
+#| fig.align: center
+
+train %>%
+  ggplot() + 
+  geom_boxplot(aes(y = price,
+                   x = guest_satisfaction, 
+                   group = guest_satisfaction)) + 
+  geom_smooth(aes(x = guest_satisfaction,
+                 y = price)) +
+  scale_y_log10() + 
+  labs(
+    x = "Guest Satisfaction",
+    y = "Price"
+  )
+```
+
+Even from this plot, there doesn't see to be an obvious association between `guest_satisfaction` and listing `price`. In fact, the trend lines we added to each of the plots above are nearly flat. We won't exclude this predictor from our modeling process altogether, but we don't have great hope that `guest_satisfaction` is a strong predictor of `price`.
+
+:::{.callout-important}
+This sample EDA has been quite limited. It was designed to show you how you might approach EDA on the response variable, EDA to explore for an association between the response and a categorical predictor, and EDA to explore for an association between the response and a numeric variable. If this were a full analysis rather than a sample, we would continue to explore more of the available predictors. For EDA with numeric predictors, notice that the use of the `geom_smooth()` layer can help you identify evidence for curvilinear associations.
+:::
+
+## Model Construction
+
+:::{.callout-important}
+I've provided two versions of the Model Construction section below. The first uses the traditional approach of looking at p-values and metrics like adjusted-R-squared to assess model quality and significance of model terms. Use an approach like this one if your primary goal is to build a model so that you can interpret associations between the predictors and your response variable (*statistical learning*). The second version leverages *cross-validation* and simply uses a model accuracy metric (here RMSE) to guide model selection. Use this approach if the primary goal associated with the problem(s) you outlined in your SOP involve the construction of a model which will make accurate predictions but where interpretations of associations between predictors and response are of lesser importance (*machine learning*).
+
+You do not necessarily need to choose just one or the other approach. Perhaps the problems/challenges you've set out to solve would benefit from both descriptive and predictive models. In this case, just make clear to the reader when you are switching between objectives.
+:::
+
+### Model Construction without Cross Validation (Statistical Learning / Interpretation Focused)
+
+:::{.callout-note}
+You'll notice two separate "Model Construction" sections in this sample report. In general, you will only choose to include one. This version of the *Model Construction* section involves modeling choices which are focused on $p$-values and statistical significance of terms. This means that we are admitting that our primary concern is to construct models that can be interpreted, helping us *understand relationships* between explanatory variables (predictors) and our response. I refer to this as *statistical learning*, as opposed to *machine learning* where our goal is constructing models with high predictive accuracy. 
+
+You'll use this type of Model Construction section when you are in a *statistical learning* context.
+:::
+
+In this section, we'll propose, justify, fit, and assess several models to predict rental `price` for our AirBnB Europe properties. We'll begin with a simple baseline model, ensuring that we can fit a model, make predictions, and get a performance benchmark. Once we have this benchmark, we can compare our future model performance to it.
+
+#### Simple Linear Regression
+
+We'll start first with a simple linear regression model. We'll use `guest_satisfaction` to predict rental price for this model. From the exploratory data analysis, we saw that `guest_satisfaction` was not strongly associated with rental `price`. We don't have any expectation that this model will be "good". 
+
+:::{.callout-note}
+## On Predictor Selection
+Generally, you would choose to use the variable you identified in your exploratory data analysis which had the strongest association with the response for this model. I didn't conduct a full EDA here, so I just chose the numerical variable that I used in my limited EDA.
+:::
+
+The model form we are proposing here is $\mathbb{E}\left[\texttt{price}\right] = \beta_0 + \beta_1\cdot\left(\texttt{guest satisfaction}\right)$. We construct the model below.
+
+```{r}
+slr_spec <- linear_reg() %>%
+  set_engine("lm")
+
+slr_rec <- recipe(price ~ guest_satisfaction, data = train)
+
+slr_wf <- workflow() %>%
+  add_model(slr_spec) %>%
+  add_recipe(slr_rec)
+
+slr_fit <- slr_wf %>%
+  fit(train)
+```
+
+We'll take a look at the global (overall) model metrics below.
+
+```{r}
+slr_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling()
+```
+
+We see that the $p$-value for the global test for model utility is below the 0.05 level of significance. This indicates that our model contains at least one useful predictor of rental `price`. As a reminder, for simple linear regression, there is only a single predictor and so the global test for model utility and the term-based test are the same. Having such a low *adjusted R-squared* value and a high *training root mean squared error* (`sigma`) indicate that this model has poor explanatory and predictive value.
+
+We can see the term-based metrics in the table output below. From that output, we can see that our estimated model is $\mathbb{E}\left[\texttt{price}\right] = 210.75 + 0.05\cdot\left(\texttt{guest satisfaction}\right)$.
+
+```{r}
+slr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+We'll now compute our test RMSE. This gives us an unbiased estimate of future model performance. It also provides our first benchmark to compare future models against.
+
+```{r}
+my_metrics <- metric_set(rsq, rmse)
+
+slr_fit %>%
+  augment(test) %>%
+  my_metrics(price, .pred) %>%
+  kable() %>%
+  kable_styling()
+```
+
+We see that the test RMSE for this first model is about \$254.57. This is somewhat better than our training RMSE, indicated that this particular model is likely underfitting.
+
+#### Multiple Linear Regression
+
+Through this subsection, we'll build slightly more complex linear regressors. We'll build a model here that includes `city`, `day`, `room_type`, `business`, `bedrooms`, `city_center_km`, `metro_distance_km`, `normalised_attraction_index`, and `normalised_restraunt_index`. The model form we are proposing is:
+
+\begin{align*} \mathbb{E}\left[\texttt{price}\right] = \beta_0 + &\beta_1\cdot\left(\text{city\_athens}\right) + \beta_2\cdot\left(\text{city\_barcelona}\right) + \cdots + \beta_8\cdot\left(\texttt{city\_vienna}\right) +\\
+&\beta_9\cdot\left(\texttt{day\_weekend}\right) + \beta_{10}\cdot\left(\texttt{room\_private}\right) + \beta_{11}\cdot\left(\texttt{room\_shared}\right)\\
+&\beta_{12}\cdot\left(\texttt{business}\right) + \beta_{13}\cdot\left(\texttt{bedrooms}\right) + \beta_{14}\cdot\left(\texttt{city-center distance}\right)\\
+&\beta_{15}\cdot\left(\text{metro distance}\right) + \beta_{16}\cdot\left(\texttt{normalized attraction index}\right)\\
+&\beta_{17}\cdot\left(\texttt{normalized restaurant index}\right)
+\end{align*}
+
+Let's estimate the model.
+
+```{r}
+mlr_spec <- linear_reg() %>%
+  set_engine("lm")
+
+mlr_rec <- recipe(price ~ city + day + room_type + business + bedrooms + city_center_km + metro_distance_km + normalised_attraction_index + normalised_restraunt_index, data = train)
+
+mlr_wf <- workflow() %>%
+  add_model(mlr_spec) %>%
+  add_recipe(mlr_rec)
+
+mlr_fit <- mlr_wf %>%
+  fit(train)
+```
+
+We'll analyze the global model performance metrics and compare them to our previous best model (here, our simple linear regression model).
+
+```{r}
+mlr_fit %>% 
+  glance() %>%
+  kable() %>%
+  kable_styling()
+```
+
+We see a large improvement in the adjusted R-squared value. The terms in this model explain almost 25% of the variation in `price` from one property to the next. Additionally, our training RMSE has decreased by almost \$40. This RMSE value is still quite high, though.
+
+Let's look at the individual model terms.
+
+```{r}
+mlr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+It looks like neither of `city_center_km` and `metro_distance_km` are statistically significant predictors. We'll re-fit our model without the `metro_distance_km` variable since it corresponds to the highest $p$-value and then reassess.
+
+```{r}
+mlr_rec <- recipe(price ~ city + day + room_type + business + bedrooms + city_center_km + normalised_attraction_index + normalised_restraunt_index, data = train)
+
+mlr_wf <- workflow() %>%
+  add_model(mlr_spec) %>%
+  add_recipe(mlr_rec)
+
+mlr_fit <- mlr_wf %>%
+  fit(train)
+
+mlr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+The `city_center_km` predictor is still not statistically significant, so we'll drop it from the model as well.
+
+```{r}
+mlr_rec <- recipe(price ~ city + day + room_type + business + bedrooms + normalised_attraction_index + normalised_restraunt_index, data = train)
+
+mlr_wf <- workflow() %>%
+  add_model(mlr_spec) %>%
+  add_recipe(mlr_rec)
+
+mlr_fit <- mlr_wf %>%
+  fit(train)
+
+mlr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+All of the remaining predictors are statistically significant. We'll now revisit our global performance metrics to see how much they've changed.
+
+```{r}
+mlr_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling()
+```
+
+We observe almost no change in the metrics from the original, full model. Let's take a look at the performance metrics for this new model on our test data.
+
+```{r}
+mlr_fit %>%
+  augment(test) %>%
+  my_metrics(price, .pred) %>%
+  kable() %>%
+  kable_styling()
+```
+
+Again, we have a scenario in which our performance metrics on our test data are better than the metrics on our training data. This indicates that our new model is likely still underfitting. With this new model, we expect predictions to be accurate to within about $\pm$ \$413.
+
+:::{.callout-note}
+## On Benchmarking
+Since this model outperforms our original model, it becomes our new benchmark for model performance. That is, we are looking for new models which have a test RMSE below \$206.43.
+:::
+
+***
+
+### Model Construction with Cross Validation (Machine Learning / Predictive Performance Focused)
+
+:::{.callout-note}
+In this version of the *Model Construction* section, we are approaching models with cross-validation performance (cross-validation RMSE) as our sole guide. This means we are admitting that our primary concern is to construct models that have high *predictive accuracy*. I refer to this as *machine learning*, as opposed to *statistical learning* where we want to build models for the sake of interpretation. 
+
+You'll use this type of Model Construction section when you are in a *machine learning* context.
+:::
+
+In this section, we'll propose, justify, fit, and assess several models to predict rental `price` for our AirBnB Europe properties. We'll begin with a simple baseline model, using cross-validation to obtain a stable performance estimate for that model. From there, we'll construct more complex models, using cross-validation to assess each of those. This process provides robust performance estimates that we can use to compare our models against one another, identifying the model form that produces the *best predictive performance* (ie. the lowest cross-validation RMSE).
+
+#### Simple Linear Regression
+
+We'll start first with a simple linear regression model. We'll use `guest_satisfaction` to predict rental price for this model. From the exploratory data analysis, we saw that `guest_satisfaction` was not strongly associated with rental `price`. We don't have any expectation that this model will be "good". 
+
+:::{.callout-note}
+## On Predictor Selection
+Generally, you would choose to use the variable you identified in your exploratory data analysis which had the strongest association with the response for this model. I didn't conduct a full EDA here, so I just chose the numerical variable that I used in my limited EDA.
+:::
+
+The model form we are proposing here is $\mathbb{E}\left[\texttt{price}\right] = \beta_0 + \beta_1\cdot\left(\texttt{guest satisfaction}\right)$. We assess the model via cross-validation below.
+
+```{r}
+slr_spec <- linear_reg() %>%
+  set_engine("lm")
+
+slr_rec <- recipe(price ~ guest_satisfaction, data = train)
+
+slr_wf <- workflow() %>%
+  add_model(slr_spec) %>%
+  add_recipe(slr_rec)
+
+slr_cv_results <- slr_wf %>%
+  fit_resamples(train_folds)
+
+slr_cv_results %>%
+  collect_metrics() %>%
+  kable() %>%
+  kable_styling()
+```
+
+We see that the cross-validation RMSE for this first model is about \$272.26. We can construct a confidence interval for the future predictive accuracy of this model form ($\mathbb{E}\left[\text{price}\right] = \beta_0 + \beta_1\cdot\left(\text{guest satisfaction}\right)$) is between $\$272.26 \pm 2\cdot\$28.61$ (or \$ `r 272.26 - 2*28.61` and \$ `r 272.26 + 2*28.61`).
+
+#### Multiple Linear Regression
+
+Through this subsection, we'll assess slightly more complex linear regressors. We'll start with a model here that includes `city`, `day`, `room_type`, `business`, `bedrooms`, `city_center_km`, `metro_distance_km`, `normalised_attraction_index`, and `normalised_restraunt_index`. The model form we are proposing is:
+
+\begin{align*} \mathbb{E}\left[\texttt{price}\right] = \beta_0 + &\beta_1\cdot\left(\text{city\_athens}\right) + \beta_2\cdot\left(\text{city\_barcelona}\right) + \cdots + \beta_8\cdot\left(\texttt{city\_vienna}\right) +\\
+&\beta_9\cdot\left(\texttt{day\_weekend}\right) + \beta_{10}\cdot\left(\texttt{room\_private}\right) + \beta_{11}\cdot\left(\texttt{room\_shared}\right)\\
+&\beta_{12}\cdot\left(\texttt{business}\right) + \beta_{13}\cdot\left(\texttt{bedrooms}\right) + \beta_{14}\cdot\left(\texttt{city-center distance}\right)\\
+&\beta_{15}\cdot\left(\text{metro distance}\right) + \beta_{16}\cdot\left(\texttt{normalized attraction index}\right)\\
+&\beta_{17}\cdot\left(\texttt{normalized restaurant index}\right)
+\end{align*}
+
+Let's assess this model using cross-validation.
+
+```{r}
+mlr_spec <- linear_reg() %>%
+  set_engine("lm")
+
+mlr_rec <- recipe(price ~ city + day + room_type + business + bedrooms + city_center_km + metro_distance_km + normalised_attraction_index + normalised_restraunt_index, data = train)
+
+mlr_wf <- workflow() %>%
+  add_model(mlr_spec) %>%
+  add_recipe(mlr_rec)
+
+mlr_cv_results <- mlr_wf %>%
+  fit_resamples(train_folds)
+```
+
+Let's take a look at the cross-validation performance estimation for this model.
+
+```{r}
+mlr_cv_results %>%
+  collect_metrics() %>%
+  kable() %>%
+  kable_styling()
+```
+
+The future predictive performance estimate from cross-validation this time is \$228.88, with a corresponding confidence interval of $\$228.88 \pm 2\cdot\$32.53$ (or between about \$ `r 228.88 - (2*32.53)` and \$ `r 228.88 + (2*32.53)`). The ~95% confidence intervals for the RMSE for these models overlaps, but the point estimate represents an improvement over our previous model.
+
+:::{.callout-note}
+## On p-values and Term Significance
+
+Notice that, with cross-validation we aren't looking at individual model terms and identifying whether terms are statistically significant or not. With cross-validation, we are crossing the rubicon from "statistical learning" (where we care mostly about interpreting models) to "machine learning" (where we care mostly about predictive accuracy). We'll have alternative methods for identifying which terms should be kept in a model though.
+:::
+
+#### Models with Higher-Order Terms
+
+In this section, we'll run cross-validation to assess the performance of a model that includes curvilinear terms (cubic / third degree) associated with `guest_satisfaction`. Further, we'll account for rental price differences between cities. We'll allow interactions between city and our curvilinear terms, acknowledging that the curved relationship between `guest_satisfaction` and rental `price` may be different from one `city` to the next.
+
+Letting $x_1$ represent `guest_satisfaction`, the form of the model we are constructing is of the form
+
+\begin{align} \mathbb{E}\left[\text{price}\right] = &\beta_0 + \beta_1 x_1 + \beta_2 x_1^2 + \beta_3 x_1^3 +\\
+&\beta_4\cdot\left(\text{athens}\right)x_1 + \beta_5\cdot\left(\text{athens}\right)x_1^2 +\beta_6\cdot\left(\text{athens}\right)x_1^3 +\\
+&\cdots\\
+&\beta_{25}\cdot\left(\text{vienna}\right)x_1 + \beta_{26}\cdot\left(\text{vienna}\right)x_1^2 +\beta_{27}\cdot\left(\text{vienna}\right)x_1^3 +
+\end{align}
+
+We'll run cross-validation to assess expected model performance below.
+
+```{r}
+clr_spec <- linear_reg() %>%
+  set_engine("lm")
+
+clr_rec <- recipe(price ~ city + guest_satisfaction, data = train) %>%
+  step_poly(guest_satisfaction, degree = 3, options = list(raw = TRUE)) %>%
+  step_dummy(city) %>%
+  step_interact(~ starts_with("city"):starts_with("guest_satisfaction"))
+
+clr_wf <- workflow() %>%
+  add_model(clr_spec) %>%
+  add_recipe(clr_rec)
+
+clr_cv_results <- clr_wf %>%
+  fit_resamples(train_folds)
+```
+
+Now we'll collect the cross-validation results:
+
+```{r}
+clr_cv_results %>%
+  collect_metrics() %>%
+  kable() %>%
+  kable_styling()
+```
+
+We can see that this particular model is overfit. The cross-validation error has increased from our previous model. The multiple linear regression model including `city`, `day`, `room_type`, `business`, `bedrooms`, `city_center_km`, `metro_distance_km`, `normalised_attraction_index`, and `normalised_restraunt_index` as independent predictors with no higher-order terms and no interactions remains our best model so far.
+
+Let's try tuning the degree on the `guest_satisfaction` predictor from our most recently cross-validated model. 
+
+```{r}
+clr_tune_spec <- linear_reg() %>%
+  set_engine("lm")
+
+clr_tune_rec <- recipe(price ~ city + day + room_type + business + bedrooms + city_center_km + metro_distance_km + normalised_attraction_index + normalised_restraunt_index, data = train) %>%
+  step_poly(city_center_km, degree = tune("degree_city_center"), options = list(raw = TRUE)) %>%
+  step_poly(metro_distance_km, degree = tune("degree_metro_distance"), options = list(raw = TRUE)) %>%
+  step_poly(normalised_attraction_index, degree = tune("degree_attraction_index"), options = list(raw = TRUE)) %>%
+  step_poly(normalised_restraunt_index, degree = tune("degree_restraunt_index"), options = list(raw = TRUE)) %>%
+  step_mutate(city_name = city) %>%
+  step_rm(city) %>%
+  step_dummy(city_name)
+
+clr_tune_wf <- workflow() %>%
+  add_model(clr_tune_spec) %>%
+  add_recipe(clr_tune_rec)
+
+degree_grid <- crossing(
+  degree_city_center = c(1, 2, 3),
+  degree_metro_distance = c(1, 2, 3),
+  degree_attraction_index = c(1, 2, 3),
+  degree_restraunt_index = c(1, 2, 3)
+)
+
+clr_tune_results <- clr_tune_wf %>%
+  tune_grid(
+    resamples = train_folds,
+    grid = degree_grid,
+    metrics = metric_set(rmse)
+  )
+
+clr_tune_results %>%
+  show_best(n = 5, metric = "rmse") %>%
+  kable() %>%
+  kable_styling()
+
+```
+
+
+At this point, we would continue exploring additional models. The model forms that we examine are informed by our exploratory data analysis and our intuition about which variables are associated with the response (and how)...
+
+## Model Interpretation and Inference
+
+:::{.callout-note}
+This section provides interpretations of our models. In a *statistical learning* application, where we seek to build a descriptive model which can be interpreted, this section is where our primary question(s) will be answered. In a *machine learning* context, this section may or may not be included, depending on whether the goals are purely predictive or if having some understanding of how/why the model arrives at predictions is of interest (it usually is, even if just to give us more confidence that the model is trustworthy).
+:::
+
+We don't cover exhaustive interpretations here, but we'll highlight the most interesting and pertinent findings.
+
+#### Simple Linear Regression
+
+As a reminder, we built a simple linear regression model that used `guest_satisfaction` to predict rental `price`. That estimated model appears below.
+
+```{r}
+slr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+The model indicates that, as guest satisfaction increases, we expect the rental `price` to increase as well. For every 10-point increase in guest satisfaction, we expect an additional approximately \$5.30 in the list `price`.
+
+#### Multiple Linear Regressor
+
+We built a multiple linear regressor that included several of our available predictors. Initially, that model included `city`, `day`, `room_type`, `business`, `bedrooms`, `city_center_km`, `metro_distance_km`, `normalised_attraction_index`, and `normalised_restraunt_index`. However, `city_center_km` and `metro_distance_km` were both reduced out since they were insignificant predictors. The resulting model is described in the table below.
+
+```{r}
+mlr_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  kable() %>%
+  kable_styling()
+```
+
+We can make several interpretations here.
+
++ Controlling for `day`, `roomType`, `business`, `bedrooms`, attraction index, and restaurant index, Amsterdam (the base-level for `city`) is the most expensive city, on average.
++ Controlling for `day`, `roomType`, `business`, `bedrooms`, attraction index, and restaurant index, Budapest is the least expensive city on average, since it has the largest negative price adjustment relative to Amsterdam.
++ Controlling for `city`, `roomType`, `business`, `bedrooms`, attraction index, and restaurant index, weekend rentals are more expensive than weekday rentals by about \$7 on average.
++ Controlling for `city`, `day`, `roomType`, `business`, attraction index, and restaurant index, each additional bedroom results in an expected increase in rental price by about \$95.21
+
+There are more interpretations that can be made, but these seem to be the most interesting.
+
+## Conclusion
+
+:::{.callout-note}
+This section provides a short recap of the entire analysis from start to finish. It is likely that you won't have any new code here. You'll remind the reader of the initial problem(s) and their importance, what you discovered during EDA, your journey through the modeling process, and your final results. What is/are your best model(s)? How can they be used to answer your question(s) of interest? For a *statistical learning* application, what insights does your model(s) provide you about associations between available predictors and the response? For *machine learning* applications, how accurate a model were you able to construct? What are its strengths and weaknesses?
+
+How confident are you in the results of your analysis? What work is still left to be done? Are there any questions (new or old) that are left unresolved -- what is the future work to be done?
+:::
+
+## References
+
+Your typical references section goes here, citing any sources you utilized.

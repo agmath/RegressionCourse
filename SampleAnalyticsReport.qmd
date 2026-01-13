@@ -76,7 +76,9 @@ This section is an expanded version of your *Statement of Purpose* (SOP). It pro
 ## Exploratory Data Analysis
 
 :::{.callout-note}
-This section should "tell the story" of how your response variable is distributed as well as which of your predictor variables might be associated with that response. This is your opportunity (and your readers' opportunity) to learn about your data -- the work you do in this EDA section will inform, influence, and justify your modeling choices later on. Try to organize this section as a cohesive narrative that progressively investigates potential associations -- 
+This section should "tell the story" of how your response variable is distributed as well as which of your predictor variables might be associated with that response. This is your opportunity (and your readers' opportunity) to learn about your data -- the work you do in this EDA section will inform, influence, and justify your modeling choices later on. Try to organize this section as a cohesive narrative that begins with single-variable investigations and progressively investigates the potential associations between two or more variables.
+
+Be sure that the investigations you engage in all tie back to your objective. That is, while there are definitely reasons to consider associations between your explanatory variables, the majority of the associations you investigate here should involve your response/outcome variable in some capacity. 
 :::
 
 In this section, we set out to understand the distribution of the `price` variable as well as to identify available features that may be associated with the listing `price` for an AirBnB Europe property. Throughout this section, we'll be working with a collection of `r train %>% nrow()` training listings (observations). Before we begin our analysis, a snippet showing our first six rows of available training properties appears below.

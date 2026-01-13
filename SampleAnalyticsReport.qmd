@@ -57,7 +57,7 @@ train_folds <- vfold_cv(train, v = 10)
 
 ## Statement of Purpose
 
-AirBnB is a company that facilitates the pairing of vacation and long-term renters and property owners across the world. This project seeks to construct a predictive model for the pricing of AirBnB rentals across Europe. This benefits AirBnB as well as its property owners because the model can help with price setting, ensuring that owners are not setting rental prices too low. Additionally, the model could benefit renters as well by helping them to identify properties that are reasonably priced. 
+AirBnB is a company that facilitates the pairing of vacation and long-term renters with property owners across the world. This project seeks to construct a predictive model for the pricing of AirBnB rentals across Europe. This benefits AirBnB as well as its property owners because the model can help with price setting, ensuring that owners are not setting rental prices too low. Additionally, the model could benefit renters as well by helping them to identify properties that are reasonably priced. 
 
 ## Executive Summary
 

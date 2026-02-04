@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-09-30">
+  <meta name="dcterms.date" content="2026-02-03">
   <title>Statistical Inference in Regression</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">September 30, 2024</p>
+  <p class="date">February 3, 2026</p>
 </section>
 <section class="slide level2">
 
@@ -502,6 +502,9 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </div>
 </div>
 </div>
+<div class="fragment">
+<p><strong>Result:</strong> Since our <span class="math inline">\(p\)</span> value is less than <span class="math inline">\(0.05\)</span> (it’s about <span class="math inline">\(2.3 \times 10^{-6}\)</span>), we reject the null hypothesis and accept that at least one of the terms in our model has a non-zero coefficient.</p>
+</div>
 </section>
 <section id="global-test-for-model-utility-in-pictures" class="slide level2">
 <h2>Global Test for Model Utility in Pictures</h2>
@@ -532,6 +535,64 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </div>
 </div>
 </section>
+<section id="additional-global-metrics-from-glance" class="slide level2">
+<h2>Additional Global Metrics from <code>glance()</code></h2>
+<div class="fragment">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>lin_reg_fit <span class="sc">%&gt;%</span></span>
+<span id="cb2-2"><a href=""></a>  <span class="fu">glance</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-hover table-striped caption-top" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">r.squared</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">adj.r.squared</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">sigma</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">statistic</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p.value</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">df</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">logLik</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">AIC</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">BIC</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">deviance</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">df.residual</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">nobs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.7834185</td>
+<td style="text-align: right;">0.7579384</td>
+<td style="text-align: right;">6.253346</td>
+<td style="text-align: right;">30.7462</td>
+<td style="text-align: right;">2.3e-06</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">-63.41591</td>
+<td style="text-align: right;">134.8318</td>
+<td style="text-align: right;">138.8148</td>
+<td style="text-align: right;">664.7737</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">20</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>The output from <code>glance()</code>ing at our fitted model object gives lots of additional information about overall model fit and quality.</p>
+<ul>
+<li class="fragment">The adjusted R-squared value (<code>adj.r.squared</code>) measures <em>the proportion of variation in the response variable which is explained by the terms in our fitted model</em>.</li>
+<li class="fragment">The <em>adjusted</em> R-squared value is a better measure than R-squared because <em>adjusted</em> R-squared penalizes the inclusion of additional model terms.</li>
+<li class="fragment">The <code>sigma</code> value is our <em>residual standard error</em>, which we’ll often call our “<em>training error</em>”. It is a measure of how far off we should expect our predictions to be, on average (but it is a biased measure).</li>
+<li class="fragment">We won’t generally consider the additional items in our course.</li>
+</ul>
+</div>
+</section>
 <section id="tests-on-individual-model-terms" class="slide level2">
 <h2>Tests on Individual Model Terms</h2>
 <div class="fragment">
@@ -547,9 +608,9 @@ H_a &amp; : &amp; \beta_i \neq 0\end{array}\]</span></p>
 </div>
 <div class="fragment">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href=""></a>lin_reg_fit <span class="sc">%&gt;%</span></span>
-<span id="cb2-2"><a href=""></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb2-3"><a href=""></a>  <span class="fu">tidy</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>lin_reg_fit <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href=""></a>  <span class="fu">extract_fit_engine</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href=""></a>  <span class="fu">tidy</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
@@ -592,6 +653,9 @@ H_a &amp; : &amp; \beta_i \neq 0\end{array}\]</span></p>
 </div>
 </div>
 </div>
+<div class="fragment">
+<p><strong>Result:</strong> The <code>x1</code> predictor is statistically significant but the <code>x2</code> predictor is not. We should drop the <code>x2</code> predictor from the model and re-fit it. (<span class="math inline">\(\bigstar\)</span> We’ll only ever drop one predictor / model term at a time, using the highest p-value to indicate which.)</p>
+</div>
 </section>
 <section id="confidence-intervals-model-coefficients" class="slide level2">
 <h2>Confidence Intervals (Model Coefficients)</h2>
@@ -604,7 +668,7 @@ H_a &amp; : &amp; \beta_i \neq 0\end{array}\]</span></p>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-7-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-9-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
 </div>
@@ -618,7 +682,7 @@ H_a &amp; : &amp; \beta_i \neq 0\end{array}\]</span></p>
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
+<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-10-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -644,7 +708,7 @@ H_a &amp; : &amp; \beta_i \neq 0\end{array}\]</span></p>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-9-1.png" class="quarto-figure quarto-figure-center" width="576"></p>
+<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-11-1.png" class="quarto-figure quarto-figure-center" width="576"></p>
 </figure>
 </div>
 </div>
@@ -660,7 +724,7 @@ H_a &amp; : &amp; \beta_i \neq 0\end{array}\]</span></p>
 <p><span class="math display">\[\displaystyle{\left(\tt{point~estimate}\right)\pm t^*_{\text{df}}\cdot \left(\tt{RMSE}\right)\left(\sqrt{\frac{1}{n} + \frac{(x_{new} - \bar{x})^2}{\sum{\left(x - \bar{x}\right)^2}}}\right)}\]</span></p>
 <p>We’ll use R to construct these intervals for us.</p>
 
-<img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><p>Are these wrong too? No – confidence intervals bound the <em>average response</em> over all observations having given input features.</p>
+<img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><p>Are these wrong too? No – confidence intervals bound the <em>average response</em> over all observations having given input features.</p>
 </section>
 <section id="prediction-intervals" class="slide level2">
 <h2>Prediction Intervals</h2>
@@ -675,7 +739,7 @@ H_a &amp; : &amp; \beta_i \neq 0\end{array}\]</span></p>
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
+<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -689,7 +753,7 @@ H_a &amp; : &amp; \beta_i \neq 0\end{array}\]</span></p>
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
+<p><img data-src="8d_IntroSlides_files/figure-revealjs/unnamed-chunk-14-1.png" width="960"></p>
 </figure>
 </div>
 </div>

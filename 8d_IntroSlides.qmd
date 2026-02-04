@@ -119,6 +119,10 @@ lin_reg_fit %>%
   kable_styling()
 ```
 
+. . . 
+
+**Result:** Since our $p$ value is less than $0.05$ (it's about $2.3 \times 10^{-6}$), we reject the null hypothesis and accept that at least one of the terms in our model has a non-zero coefficient.
+
 ## Global Test for Model Utility in Pictures
 
 $$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \cdots = \beta_k = 0\\
@@ -184,6 +188,37 @@ Are our *sloped* models better (more justifiable) models than the horizontal lin
 
 ::::
 
+## Additional Global Metrics from `glance()`
+
+. . .
+
+```{r}
+#| echo: true
+#| eval: false
+
+lin_reg_fit %>%
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lin_reg_fit %>%
+  glance() %>%
+  kable() %>%
+  kable_styling()
+```
+
+. . . 
+
+The output from `glance()`ing at our fitted model object gives lots of additional information about overall model fit and quality.
+
++ The adjusted R-squared value (`adj.r.squared`) measures *the proportion of variation in the response variable which is explained by the terms in our fitted model*.
++ The *adjusted* R-squared value is a better measure than R-squared because *adjusted* R-squared penalizes the inclusion of additional model terms.
++ The `sigma` value is our *residual standard error*, which we'll often call our "*training error*". It is a measure of how far off we should expect our predictions to be, on average (but it is a biased measure).
++ We won't generally consider the additional items in our course.
+
 ## Tests on Individual Model Terms
 
 . . . 
@@ -222,6 +257,10 @@ lin_reg_fit %>%
   kable() %>%
   kable_styling()
 ```
+
+. . .
+
+**Result:** The `x1` predictor is statistically significant but the `x2` predictor is not. We should drop the `x2` predictor from the model and re-fit it. ($\bigstar$ We'll only ever drop one predictor / model term at a time, using the highest p-value to indicate which.)
 
 ## Confidence Intervals (Model Coefficients)
 

@@ -515,7 +515,7 @@ mlr_fit %>%
 + $p$-value is rounded to $0$, so our resulting model still has some utility in predicting / explaining penguin body mass.
 + $R^2_{\text{adj}} \approx 77.6\%$, so approximately 77.6% of variation in penguin body mass is explained by our model.
 
-+ Training RMSE (`sigma`) is about 388.41, so we expect our model to predict penguin body mass to within $\pm 2\cdot\left(388.41\right) \approx \pm 776.82$ grams.
++ Training RMSE (`sigma`) is about 388.41, so we expect our model's typical prediction error to be about388.41 grams.
 
   + Recall that we should generally expect this estimate to be too optimistic.
 
@@ -656,7 +656,7 @@ mlr_fit %>%
 
 + $R^2 \approx 74.5\%$, so approximately 74.5% of variation in penguin body mass is explained by our model, when taking away the training data advantage.
 
-+ Test RMSE is about 376.7, so we expect our model to predict penguin body mass to within $\pm 2\cdot\left(376.7\right) \approx \pm 753.4$ grams.
++ Test RMSE is about 376.7, so we expect our model's typical prediction error on new observations to be about 376.7 grams.
 
 + As with our *simple linear regression* models, the test $R^2$ value is slightly worse than the corresponding training metric, while the test RMSE is an improvement over the training RMSE.
 

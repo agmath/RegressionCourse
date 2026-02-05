@@ -198,7 +198,7 @@ train %>%
 
 ::::
 
-We can see that Rome has the greatest number of property listings, which Amsterdam has the fewest. No city has an extremely small number of listings though. Now let's consider the average listing `price` by city.
+We can see that Rome has the greatest number of property listings, while Amsterdam has the fewest. No city has an extremely small number of listings though. Now let's consider the average listing `price` by city.
 
 ```{r}
 p1 <- train %>%
@@ -513,7 +513,7 @@ mlr_fit %>%
   kable_styling()
 ```
 
-Again, we have a scenario in which our performance metrics on our test data are better than the metrics on our training data. This indicates that our new model is likely still underfitting. With this new model, we expect predictions to be accurate to within about $\pm$ \$413.
+Again, we have a scenario in which our performance metrics on our test data are better than the metrics on our training data. This indicates that our new model is likely still underfitting. With this new model, we expect a typical prediction error to be about \$206.43.
 
 :::{.callout-note}
 ## On Benchmarking
@@ -562,7 +562,7 @@ slr_cv_results %>%
   kable_styling()
 ```
 
-We see that the cross-validation RMSE for this first model is about \$272.26. We can construct a confidence interval for the future predictive accuracy of this model form ($\mathbb{E}\left[\text{price}\right] = \beta_0 + \beta_1\cdot\left(\text{guest satisfaction}\right)$) is between $\$272.26 \pm 2\cdot\$28.61$ (or \$ `r 272.26 - 2*28.61` and \$ `r 272.26 + 2*28.61`).
+We see that the cross-validation RMSE for this first model is about \$272.26. This means that a typical prediction error from a model of this form will be about \$272.26.
 
 #### Multiple Linear Regression
 
@@ -600,7 +600,7 @@ mlr_cv_results %>%
   kable_styling()
 ```
 
-The future predictive performance estimate from cross-validation this time is \$228.88, with a corresponding confidence interval of $\$228.88 \pm 2\cdot\$32.53$ (or between about \$ `r 228.88 - (2*32.53)` and \$ `r 228.88 + (2*32.53)`). The ~95% confidence intervals for the RMSE for these models overlaps, but the point estimate represents an improvement over our previous model.
+The future predictive performance estimate from cross-validation this time is that a typical prediction error will be about \$228.88. This represents and improvement over our earlier model
 
 :::{.callout-note}
 ## On p-values and Term Significance

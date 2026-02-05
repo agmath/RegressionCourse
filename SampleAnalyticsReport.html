@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Adam Gilbert">
-<meta name="dcterms.date" content="2026-02-04">
+<meta name="dcterms.date" content="2026-02-05">
 
 <title>Modeling Listing Prices for AirBnB Europe</title>
 <style>
@@ -160,7 +160,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 4, 2026</p>
+      <p class="date">February 5, 2026</p>
     </div>
   </div>
   
@@ -602,7 +602,7 @@ Note
 </div>
 </div>
 </div>
-<p>We can see that Rome has the greatest number of property listings, which Amsterdam has the fewest. No city has an extremely small number of listings though. Now let’s consider the average listing <code>price</code> by city.</p>
+<p>We can see that Rome has the greatest number of property listings, while Amsterdam has the fewest. No city has an extremely small number of listings though. Now let’s consider the average listing <code>price</code> by city.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -1620,7 +1620,7 @@ On Predictor Selection
 
 </div>
 </div>
-<p>Again, we have a scenario in which our performance metrics on our test data are better than the metrics on our training data. This indicates that our new model is likely still underfitting. With this new model, we expect predictions to be accurate to within about <span class="math inline">\(\pm\)</span> $413.</p>
+<p>Again, we have a scenario in which our performance metrics on our test data are better than the metrics on our training data. This indicates that our new model is likely still underfitting. With this new model, we expect a typical prediction error to be about $206.43.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1726,7 +1726,7 @@ On Predictor Selection
 
 </div>
 </div>
-<p>We see that the cross-validation RMSE for this first model is about $272.26. We can construct a confidence interval for the future predictive accuracy of this model form (<span class="math inline">\(\mathbb{E}\left[\text{price}\right] = \beta_0 + \beta_1\cdot\left(\text{guest satisfaction}\right)\)</span>) is between <span class="math inline">\(\$272.26 \pm 2\cdot\$28.61\)</span> (or $ 215.04 and $ 329.48).</p>
+<p>We see that the cross-validation RMSE for this first model is about $272.26. This means that a typical prediction error from a model of this form will be about $272.26.</p>
 </section>
 <section id="multiple-linear-regression-1" class="level4">
 <h4 class="anchored" data-anchor-id="multiple-linear-regression-1">Multiple Linear Regression</h4>
@@ -1798,7 +1798,7 @@ On Predictor Selection
 
 </div>
 </div>
-<p>The future predictive performance estimate from cross-validation this time is $228.88, with a corresponding confidence interval of <span class="math inline">\(\$228.88 \pm 2\cdot\$32.53\)</span> (or between about $ 163.82 and $ 293.94). The ~95% confidence intervals for the RMSE for these models overlaps, but the point estimate represents an improvement over our previous model.</p>
+<p>The future predictive performance estimate from cross-validation this time is that a typical prediction error will be about $228.88. This represents and improvement over our earlier model</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">

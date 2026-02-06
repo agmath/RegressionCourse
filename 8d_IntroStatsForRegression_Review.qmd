@@ -188,7 +188,7 @@ mass_multi_fit %>%
   + The `sigma` value is the residual standard error for our model. It is related to the standard error of the prediction errors our model makes. 
   
     + The `sigma` value is a measure of model fit, for which lower values are better.
-    + We can use `sigma` to build approximate confidence intervals for our model's predictions. We can say that we expect our model's predictions to be accurate to within about $\pm 2$`sigma`. We'll see better ways to build these intervals though.
+    + We can use `sigma` to estimate our model's typical prediction error. 
     
   + The `statistic` and `p.value` are the computed test statistic and $p$-value for our global test for model utility.
   $$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\

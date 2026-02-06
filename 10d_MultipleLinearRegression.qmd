@@ -188,7 +188,7 @@ The `p.value` for this test is extremely small, so we have evidence to suggest t
 
 We can see from the `adj.r.squared` value that *approximately `r round(100*(mass_multi_fit %>% glance() %>% pull(adj.r.squared)), 2)`% of the variation in penguin body mass is explained by this model*. 
 
-Finally, we can assess the *residual standard error* (`sigma`) for the model. This value helps us estimate how accurate we should expect our predictions to be. At approximately 95% confidence, we can expect our predictions to be accurate to within about $\pm$ `r round(2*(mass_multi_fit %>% glance() %>% pull(sigma)), 2)` grams. As a reminder, however, this estimate is biased and may be *too optimistic* about the errors our model will make in the future. We should recalculate this metric (and the adjusted R squared metric) using unseen data, such as the *test* data.
+Finally, we can assess the *residual standard error* (`sigma`) for the model. This value helps us estimate how accurate we should expect our predictions to be. We should expect our model's typical prediction error to be on the order of `r mass_multi_fit %>% glance() %>% pull(sigma)` grams. As a reminder, however, this estimate is biased and may be *too optimistic* about the errors our model will make in the future. We should recalculate this metric (and the adjusted R squared metric) using unseen data, such as the *test* data.
 
 #### Assessment of Individual Model Terms
 
@@ -332,7 +332,7 @@ It is no surprise that our model as a whole still has a significant `p.value`. W
 
 Our `adj.r.squared` value has changed slightly, and our final model explains approximately `r round(100*(mass_multi_fit %>% glance() %>% pull(adj.r.squared)), 2)`% of the variability in penguin body mass.
 
-Finally, our *residual standard error* has also changed slightly. We now expect our predictions to be accurate to within about $\pm$ `r round(2*(mass_multi_fit %>% glance() %>% pull(sigma)), 2)`g.
+Finally, our *residual standard error* has also changed slightly. We now expect our typical prediction error to be on the order of `r mass_multi_fit %>% glance() %>% pull(sigma)`g.
 
 #### Assessing Model Performance on Unseen (Test) Observations
 

@@ -2,11 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.56">
+<meta name="generator" content="quarto-1.5.43">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-08-07">
+<meta name="dcterms.date" content="2026-02-06">
 
 <title>Introductory Statistics Review</title>
 <style>
@@ -69,9 +69,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="8d_IntroStatsForRegression_Review_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="8d_IntroStatsForRegression_Review_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script src="8d_IntroStatsForRegression_Review_files/libs/kePrint-0.0.1/kePrint.js"></script>
-
 <link href="8d_IntroStatsForRegression_Review_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
-
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -139,7 +137,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 7, 2024</p>
+      <p class="date">February 6, 2026</p>
     </div>
   </div>
   
@@ -200,17 +198,20 @@ window.Quarto = {
 <pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 2 rows containing non-finite values (`stat_smooth()`).</code></pre>
+<pre><code>Warning: Removed 2 rows containing non-finite outside the scale range
+(`stat_smooth()`).</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 2 rows containing missing values (`geom_point()`).</code></pre>
+<pre><code>Warning: Removed 2 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 2 rows containing non-finite values (`stat_smooth()`).
-Removed 2 rows containing missing values (`geom_point()`).</code></pre>
+<pre><code>Warning: Removed 2 rows containing non-finite outside the scale range (`stat_smooth()`).
+Removed 2 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
@@ -474,7 +475,7 @@ where <span class="math inline">\(y\)</span> is the dependent (<em>response</em>
 <li><p>The <code>sigma</code> value is the residual standard error for our model. It is related to the standard error of the prediction errors our model makes.</p>
 <ul>
 <li>The <code>sigma</code> value is a measure of model fit, for which lower values are better.</li>
-<li>We can use <code>sigma</code> to build approximate confidence intervals for our model’s predictions. We can say that we expect our model’s predictions to be accurate to within about <span class="math inline">\(\pm 2\)</span><code>sigma</code>. We’ll see better ways to build these intervals though.</li>
+<li>We can use <code>sigma</code> to estimate our model’s typical prediction error.</li>
 </ul></li>
 <li><p>The <code>statistic</code> and <code>p.value</code> are the computed test statistic and <span class="math inline">\(p\)</span>-value for our global test for model utility. $$</p>
 <span class="math display">\[\begin{array}{lcl} H_0 &amp; : &amp; \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\

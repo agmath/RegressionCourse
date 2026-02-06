@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-08-08">
+<meta name="dcterms.date" content="2026-02-06">
 
 <title>Simple Linear Regression</title>
 <style>
@@ -138,7 +138,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 8, 2024</p>
+      <p class="date">February 6, 2026</p>
     </div>
   </div>
   
@@ -322,7 +322,7 @@ Removed 2 rows containing missing values or values outside the scale range
 
 </div>
 </div>
-<p>Firstly, we see that the <span class="math inline">\(p\)</span>-value for the overall model is very small. This indicates that our model has <em>some</em> utility in predicting/explaining penguin body mass. Since we are assessing a <em>simple</em> linear regression model, we’ll look at the <code>r.squared</code> value instead of <code>adj.r.squared</code>. From <code>r.squared</code>, we see that “<em>Approximately 35.94% of the variation in penguin body mass is explained by bill length</em>”. Finally, we see that the <em>residual standard error</em> (<code>sigma</code>) on the training data is about <span class="math inline">\(658\)</span>g. This residual standard error tells us that we should expect our predictions, on average, to be within about <span class="math inline">\(\pm 1,316\)</span>g.</p>
+<p>Firstly, we see that the <span class="math inline">\(p\)</span>-value for the overall model is very small. This indicates that our model has <em>some</em> utility in predicting/explaining penguin body mass. Since we are assessing a <em>simple</em> linear regression model, we’ll look at the <code>r.squared</code> value instead of <code>adj.r.squared</code>. From <code>r.squared</code>, we see that “<em>Approximately 35.94% of the variation in penguin body mass is explained by bill length</em>”. Finally, we see that the <em>residual standard error</em> (<code>sigma</code>) on the training data is about <span class="math inline">\(658\)</span>g. This residual standard error tells us that we should expect our model’s typical prediction error to be on the order of <span class="math inline">\(658\)</span>g.</p>
 <p>Now let’s look at our model using <code>flipper_length_mm</code> as the sole predictor and see how it stacks up the bill length model.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mass_flipper_fit <span class="sc">%&gt;%</span></span>
@@ -368,7 +368,7 @@ Removed 2 rows containing missing values or values outside the scale range
 
 </div>
 </div>
-<p>Our flipper length model is superior in every way! This model also has a statistically significant <span class="math inline">\(p\)</span>-value, indicating that it has some value in predicting/explaining penguin body mass. The <code>r.squared</code> value indicates that “<em>approximately 76.37% of the variation in penguin body mass is explained by our model</em>”. The <em>residual standard error</em> (<code>sigma</code>) indicates that we can expect this models predictions, on average, to be accurate to within about <span class="math inline">\(\pm 797\)</span>g.</p>
+<p>Our flipper length model is superior in every way! This model also has a statistically significant <span class="math inline">\(p\)</span>-value, indicating that it has some value in predicting/explaining penguin body mass. The <code>r.squared</code> value indicates that “<em>approximately 76.37% of the variation in penguin body mass is explained by our model</em>”. The <em>residual standard error</em> (<code>sigma</code>) indicates that we can expect this model’s typical prediction error to be on the order of <span class="math inline">\(398.5\)</span>g.</p>
 <p>Now let’s move to assessing the individual model terms.</p>
 </section>
 <section id="assessing-model-terms" class="level4">
@@ -412,7 +412,7 @@ Removed 2 rows containing missing values or values outside the scale range
 
 </div>
 </div>
-<p>From the data frame above, we have several takeaways. First, the fitted model is <span class="math inline">\(\mathbb{E}\left[\text{body\_mass\_g}\right] \approx 320.35 + 88.58\cdot\text{bill\_length\_mm}\)</span>. Since the <span class="math inline">\(p\)</span>-value on the <code>bill_length_mm</code> predictor is low, this indicates that <code>bill_length_mm</code> is a <em>statistically significant</em> predictor of <code>body_mass_g</code>. This means we can use this model to make predictions about the body mass of a new penguin (as long as we remain aware of the expected prediction error, <span class="math inline">\(\pm 2\)</span><code>sigma</code>), and we can also interpret the effect of <code>bill_length_mm</code> on <code>body_mass_g</code> (we’ll see this in the Model Interpretations section of this notebook). We shouldn’t overlook the <code>std.error</code> column. This gives us the standard error in the coefficient estimates. We can use that standard error to compute confidence intervals for the coefficient estimate – that is, <em>we can be about 95% certain that the coefficient on <code>bill_length_mm</code> is somewhere between <span class="math inline">\(88.58 - 2\left(7.42\right)\)</span> and <span class="math inline">\(88.58 + 2\left(7.42\right)\)</span></em>.</p>
+<p>From the data frame above, we have several takeaways. First, the fitted model is <span class="math inline">\(\mathbb{E}\left[\text{body\_mass\_g}\right] \approx 320.35 + 88.58\cdot\text{bill\_length\_mm}\)</span>. Since the <span class="math inline">\(p\)</span>-value on the <code>bill_length_mm</code> predictor is low, this indicates that <code>bill_length_mm</code> is a <em>statistically significant</em> predictor of <code>body_mass_g</code>. This means we can use this model to make predictions about the body mass of a new penguin (as long as we remain aware of the expected prediction error, <code>sigma</code>), and we can also interpret the effect of <code>bill_length_mm</code> on <code>body_mass_g</code> (we’ll see this in the Model Interpretations section of this notebook). We shouldn’t overlook the <code>std.error</code> column. This gives us the standard error in the coefficient estimates. We can use that standard error to compute confidence intervals for the coefficient estimate – that is, <em>we can be about 95% certain that the coefficient on <code>bill_length_mm</code> is somewhere between <span class="math inline">\(88.58 - 2\left(7.42\right)\)</span> and <span class="math inline">\(88.58 + 2\left(7.42\right)\)</span></em>.</p>
 <p>We can discover similar information about our model which uses <code>flipper_length_mm</code> as the sole predictor of penguin body mass.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mass_flipper_fit <span class="sc">%&gt;%</span></span>
@@ -495,7 +495,7 @@ Removed 2 rows containing missing values or values outside the scale range
 
 </div>
 </div>
-<p>The model using <code>bill_length_mm</code> as the sole predictor of <code>body_mass_g</code> seems to have done slightly better on the test set than it did on the training data. This is interesting and we’ll discuss it more in the coming weeks! For now, this output indicates that we should expect our model’s predictions to be accurate to within about <span class="math inline">\(\pm 1214\)</span>g.</p>
+<p>The model using <code>bill_length_mm</code> as the sole predictor of <code>body_mass_g</code> seems to have done slightly better on the test set than it did on the training data. This is interesting and we’ll discuss it more in the coming weeks! For now, this output indicates that we should expect our model’s typical prediction error to be about <span class="math inline">\(607\)</span>g.</p>
 <p>Let’s look at how our other model performs on the unseen test data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>my_metrics <span class="ot">&lt;-</span> <span class="fu">metric_set</span>(rmse, rsq)</span>
@@ -609,7 +609,7 @@ Removed 2 rows containing missing values or values outside the scale range
 <li><p>The <code>sigma</code> value estimates the <em>residual standard error</em> for our model’s predictions.</p>
 <ul>
 <li>Lower values are better here.</li>
-<li>While biased, we can use <code>sigma</code> to estimate how accurate we might expect our predictions to be. With approximately 95% confidence, our predictions are accurate to within <span class="math inline">\(\pm 2\)</span><code>sigma</code>.</li>
+<li>While biased, we can use <code>sigma</code> to estimate how accurate we might expect our predictions to be. We expect the typical prediction error from our model to be on the order of <code>sigma</code>.</li>
 </ul></li>
 </ul></li>
 <li><p>Metrics for individual model terms (<code>fitted_model %&gt;% extract_fit_engine() %&gt;% tidy()</code>)</p>

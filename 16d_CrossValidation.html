@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-08-03">
+<meta name="dcterms.date" content="2026-02-06">
 
 <title>Cross-Validation and Reliable Performance Estimation</title>
 <style>
@@ -137,7 +137,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">August 3, 2024</p>
+      <p class="date">February 6, 2026</p>
     </div>
   </div>
   
@@ -363,7 +363,7 @@ window.Quarto = {
 
 </div>
 </div>
-<p>The elbow plots pretty reliably identify the appropriate level of model flexibility. In the toy data set I generated, the true association between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> was quadratic. However, the <em>test RMSE</em>, which we utilize in estimating the “accuracy” of our model’s predictions fluctuates quite wildly – between a low of below <span class="math inline">\(115\)</span> for the first training/test set combination, and a high of nearly <span class="math inline">\(190\)</span> for the sixth training/test combination. There is a big difference between claiming our model’s predictions are accurate to within <span class="math inline">\(\pm 230\)</span> units and within <span class="math inline">\(\pm 380\)</span> units. These discrepancies should be worrisome. We are putting lots of trust in our models, so it would be nice to have more certainty about our estimated coefficients, predictions, and error/performance estimates.</p>
+<p>The elbow plots pretty reliably identify the appropriate level of model flexibility. In the toy data set I generated, the true association between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> was quadratic. However, the <em>test RMSE</em>, which we utilize in estimating the “accuracy” of our model’s predictions fluctuates quite wildly – between a low of below <span class="math inline">\(115\)</span> for the first training/test set combination, and a high of nearly <span class="math inline">\(190\)</span> for the sixth training/test combination. There is a big difference between claiming our model’s typical prediction error will be on the order of <span class="math inline">\(115\)</span> units and on the order of <span class="math inline">\(190\)</span> units. These discrepancies should be worrisome. We are putting lots of trust in our models, so it would be nice to have more certainty about our estimated coefficients, predictions, and error/performance estimates.</p>
 </section>
 <section id="objectives" class="level2">
 <h2 class="anchored" data-anchor-id="objectives">Objectives</h2>
@@ -515,7 +515,7 @@ window.Quarto = {
 <td style="text-align: right;">287.6428273</td>
 <td style="text-align: right;">10</td>
 <td style="text-align: right;">12.980473</td>
-<td style="text-align: left;">Preprocessor1_Model1</td>
+<td style="text-align: left;">pre0_mod0_post0</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">rsq</td>
@@ -523,7 +523,7 @@ window.Quarto = {
 <td style="text-align: right;">0.8622995</td>
 <td style="text-align: right;">10</td>
 <td style="text-align: right;">0.021012</td>
-<td style="text-align: left;">Preprocessor1_Model1</td>
+<td style="text-align: left;">pre0_mod0_post0</td>
 </tr>
 </tbody>
 </table>
@@ -532,7 +532,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Seeing the results on the individual folds gives us an idea about how our performance metrics fluctuate from one set to the next. Are the performance metrics relatively stable or do they vary wildly from one fold to the next? Seeing the aggregated results gives us a more trustworthy estimate for each of our performance metrics and also reports a standard error for each metric. That standard error measures the average fluctuation in the performance estimate from one fold to the next.</p>
-<p>In summary, we can be confident that the R-Squared value for this model is around <span class="math inline">\(86.2\% \pm 4\%\)</span>. Similarly, we can be confident that the predictions our model makes will be accurate to within about <span class="math inline">\(\pm 2\left(287.64 \pm 2\cdot 12.98\right)\)</span> grams. Check with the other students in the class – we should all have similar estimates for the Cross-Validation RMSE, even when we don’t set the same seed. This was not the case when we used the <em>validation-set approach</em>.</p>
+<p>In summary, we can be confident that the R-Squared value for this model is around <span class="math inline">\(86.2\% \pm 4\%\)</span>. Similarly, we can be confident that the our model’s typical prediction error will be on the order of <span class="math inline">\(287.64 \pm 2\cdot 12.98\)</span> grams. Check with the other students in the class – we should all have similar estimates for the Cross-Validation RMSE, even when we don’t set the same seed. This was not the case when we used the <em>validation-set approach</em>.</p>
 <hr>
 </section>
 </section>

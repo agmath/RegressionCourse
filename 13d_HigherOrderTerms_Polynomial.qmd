@@ -509,7 +509,7 @@ We can compute the same metrics for our new model.
   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
-We are doing quite a bit better now! The R-Squared value for our new model on the training data is up to 70% (from 58% with the main effects model). We've also observed an improvement in R-Squared on the test data -- 62% versus 52%. Much more of the variation in median home values is being explained by our curvi-linear model than was explained with our main effects model. Similarly, we've observed improvements in the RMSE (*root mean squared error*). The test RMSE for our main effects model was approximately $6.4$, indicating that we could expect our predictions to be accurate to within about $\$12,800$ on average. The test RMSE for our curvi-linear model is approximately 5.8, indicating that we should expect our predictions to be accurate to within about $\$11,600$ on average.
+We are doing quite a bit better now! The R-Squared value for our new model on the training data is up to 70% (from 58% with the main effects model). We've also observed an improvement in R-Squared on the test data -- 62% versus 52%. Much more of the variation in median home values is being explained by our curvi-linear model than was explained with our main effects model. Similarly, we've observed improvements in the RMSE (*root mean squared error*). The test RMSE for our main effects model was approximately $6.4$, indicating that we could expect our typical prediction error to be on the order of $\$6,400$. The test RMSE for our curvi-linear model is approximately 5.8, indicating that our typical prediction error is only about $\$5,800$ on average.
 
 *** 
 

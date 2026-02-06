@@ -135,7 +135,7 @@ collected_metrics_df %>%
   kable_styling()
 ```
 
-The elbow plots pretty reliably identify the appropriate level of model flexibility. In the toy data set I generated, the true association between $x$ and $y$ was quadratic. However, the *test RMSE*, which we utilize in estimating the "accuracy" of our model's predictions fluctuates quite wildly -- between a low of below $115$ for the first training/test set combination, and a high of nearly $190$ for the sixth training/test combination. There is a big difference between claiming our model's predictions are accurate to within $\pm 230$ units and within $\pm 380$ units. These discrepancies should be worrisome. We are putting lots of trust in our models, so it would be nice to have more certainty about our estimated coefficients, predictions, and error/performance estimates.
+The elbow plots pretty reliably identify the appropriate level of model flexibility. In the toy data set I generated, the true association between $x$ and $y$ was quadratic. However, the *test RMSE*, which we utilize in estimating the "accuracy" of our model's predictions fluctuates quite wildly -- between a low of below $115$ for the first training/test set combination, and a high of nearly $190$ for the sixth training/test combination. There is a big difference between claiming our model's typical prediction error will be on the order of $115$ units and on the order of $190$ units. These discrepancies should be worrisome. We are putting lots of trust in our models, so it would be nice to have more certainty about our estimated coefficients, predictions, and error/performance estimates.
 
 ## Objectives
 
@@ -214,7 +214,7 @@ lr_results %>%
 
 Seeing the results on the individual folds gives us an idea about how our performance metrics fluctuate from one set to the next. Are the performance metrics relatively stable or do they vary wildly from one fold to the next? Seeing the aggregated results gives us a more trustworthy estimate for each of our performance metrics and also reports a standard error for each metric. That standard error measures the average fluctuation in the performance estimate from one fold to the next.
 
-In summary, we can be confident that the R-Squared value for this model is around $86.2\% \pm 4\%$. Similarly, we can be confident that the predictions our model makes will be accurate to within about $\pm 2\left(287.64 \pm 2\cdot 12.98\right)$ grams. Check with the other students in the class -- we should all have similar estimates for the Cross-Validation RMSE, even when we don't set the same seed. This was not the case when we used the *validation-set approach*.
+In summary, we can be confident that the R-Squared value for this model is around $86.2\% \pm 4\%$. Similarly, we can be confident that the our model's typical prediction error will be on the order of $287.64 \pm 2\cdot 12.98$ grams. Check with the other students in the class -- we should all have similar estimates for the Cross-Validation RMSE, even when we don't set the same seed. This was not the case when we used the *validation-set approach*.
 
 ***
 

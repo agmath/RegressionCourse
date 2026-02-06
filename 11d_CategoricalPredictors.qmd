@@ -217,7 +217,7 @@ my_metrics <- metric_set(rsq, rmse)
 
 We can see that the R Squared metric is similar across the training and test sets. As we noted in the multiple linear regression notebook, the *test* RMSE is slightly lower than the *training* RMSE. Again, this is due to our test set containing mainly typical penguins, and fewer difficult penguins to predict body mass for.
 
-Note, however, that this new model is an enormous improvement over our previous models. In terms of R Squared, our model now explains around 85% of the variation in penguin body mass. In terms of predictive value, our model is now expected to make predictions accurate to within about $\pm 595$ to $\pm 632$ grams. These are big improvements over our multiple linear regression model which did not account for the penguin `species`.
+Note, however, that this new model is an enormous improvement over our previous models. In terms of R Squared, our model now explains around 85% of the variation in penguin body mass. In terms of predictive value, our model is now expected to have a typical prediction error on the order of 297.5g or 316g. These are big improvements over our multiple linear regression model which did not account for the penguin `species`.
 
 ***
 

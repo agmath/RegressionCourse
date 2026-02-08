@@ -291,7 +291,7 @@ lin_reg_flip_fit %>%
 
 :::{.column width="55%"}
 
-+ $R^2_{\text{adj}} \approx 76.4\%$, so approximately 76.4% of variation in penguin body mass is explained by variation in flipper length.
++ $R^2_{\text{adj}} \approx 76.4\%$, so approximately 76.4% of variation in penguin body mass is explained by the linear relationship with flipper length in this model.
 
 + Training RMSE (`sigma`) is about 398.88, so we expect our model's typical prediction error to be about 398.88 grams.
 
@@ -361,13 +361,13 @@ lin_reg_flip_fit %>%
 
 :::{.column width="60%"}
 
-+ $R^2 \approx 74.1\%$, so approximately 74.1% of variation in penguin body mass is explained by variation in flipper length, when taking away the training data advantage.
++ $R^2 \approx 74.1\%$, so approximately 74.1% of the variability in penguin body mass is accounted for by the linear relationship with flipper length when evaluated on unseen data (when taking away the training data advantage).
 
-+ Test RMSE is about 380.82, so a better estimate for our model's typical prediction error for new data is be about 380.82 grams.
++ Test RMSE is about 380.82, so a more appropriate estimate for our model's typical prediction error for new data is be about 380.82 grams.
 
 + The test $R^2$ value is slightly worse than the corresponding training metric, while the test RMSE is an improvement over the training RMSE.
 
-  + Generally, we should expect slightly worse performance on the test data than on training data.
+  + Generally, we should expect slightly worse performance on the test data than on training data, though individual metrics may occasionally improve due to sampling variability.
 
 :::
 

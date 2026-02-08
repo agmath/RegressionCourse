@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2026-02-05">
+  <meta name="dcterms.date" content="2026-02-08">
   <title>Simple Linear Regression: Construction, Assessment, and Interpretation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">February 5, 2026</p>
+  <p class="date">February 8, 2026</p>
 </section>
 <section class="slide level2">
 
@@ -518,14 +518,15 @@ code.sourceCode {
 <p><span class="math display">\[\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{flipper length}\right)\]</span></p>
 </div>
 <div class="fragment">
-<p><strong>Pre-Modeling Assumptions:</strong> Penguin body mass is associated with penguin flipper length in a linear manner, independent of all other possible features.</p>
+<p><strong>Pre-Modeling Assumptions:</strong> The conditional mean of penguin body mass is approximately a linear function of flipper length, with other factors treated as unmodeled sources of variability.</p>
 </div>
 <div class="fragment">
 <p><strong>Post-Modeling Assumptions:</strong> The following assumptions are made about model errors (<em>residuals</em>), to ensure that using and interpreting the model is appropriate.</p>
 <ul>
-<li class="fragment">Residuals are normally distributed</li>
-<li class="fragment">Residuals are independent of one another, the predictor, predictions, and the response</li>
-<li class="fragment">The standard deviation of residuals is constant with respect to the predictor, predictions, and the response</li>
+<li class="fragment">Residuals are independent across observations.</li>
+<li class="fragment">Residuals have mean zero, conditional on the predictor.</li>
+<li class="fragment">The variance of residuals is constant across values of the predictor (homoscedasticity).</li>
+<li class="fragment">Residuals are approximately normally distributed (primarily to support inference).</li>
 </ul>
 </div>
 </section>

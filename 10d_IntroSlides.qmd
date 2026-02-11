@@ -162,7 +162,7 @@ $\bigstar$ Let's try it! $\bigstar$
 
 . . . 
 
-**Pre-Modeling Assumptions:** Penguin body mass is associated with each of the four predictors in a linear manner, the predictors are not correlated with one another, and body mass is independent of all other possible features.
+**Pre-Modeling Assumptions:** Penguin body mass is associated with each of the four predictors in a linear manner, the predictors are not correlated with one another, and all other possible features are sources of unmodeled variation in body mass.
 
 . . . 
 

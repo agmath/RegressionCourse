@@ -775,7 +775,7 @@ lr_sbl_fit %>%
 
 . . .
 
-**Note:** Controlling for differences in bill depth, all three species have statistically discernible average body masses
+**Note:** Controlling for differences in bill depth, the average body mass for *Gentoo* and *Adelie* penguins is statistically discernible, but the body mass of *Adelie* and *Chinstrap* penguins is not.
 
 . . .
 
@@ -850,13 +850,13 @@ lr_sbl_fit %>%
 
 ::::{.columns}
 
-:::{.column width="15%"}
-
-:::
-
-:::{.column width="70%"}
+:::{.column width="40%"}
 
 ```{r}
+#| code-fold: true
+#| echo: true
+#| eval: false
+
 lr_sbl_fit %>%
   extract_fit_engine() %>%
   tidy(conf.int = TRUE) %>%
@@ -874,7 +874,23 @@ lr_sbl_fit %>%
 
 :::
 
-:::{.column width="15%"}
+:::{.column width="60%"}
+
+```{r}
+lr_sbl_fit %>%
+  extract_fit_engine() %>%
+  tidy(conf.int = TRUE) %>%
+  ggplot() + 
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high, y = term, color = term),
+                 lwd = 1.25) + 
+  geom_point(aes(x = estimate, y = term, color = term),
+             size = 4) + 
+  geom_vline(xintercept = 0, linetype = "dashed", lwd = 1.25) +
+  labs(title = "Model Coefficients",
+       x = "Coefficient",
+       y = "") + 
+  theme(legend.position = "None")
+```
 
 :::
 
@@ -907,15 +923,19 @@ lr_sbl_fit %>%
 
 \begin{align} \mathbb{E}\left[\text{body mass}\right] \approx -912.91 ~+ &~252.34\cdot\left(\text{bill depth}\right) - 23.37\cdot\left(\text{speciesChinstrap}\right) +\\ &~2221.0\cdot\left(\text{speciesGentoo}\right)\end{align}
 
+<div style="font-size:16pt">
+
 + (*Intercept*) Interpretation of this intercept is not meaningful because it would correspond to a penguin with a bill depth of 0mm.
 
 + (*Bill Depth*) Controlling for differences in species, we expect a 1mm increase in bill depth to be associated with a 252.34g increase in body mass, on average.
 
-+ (*Chinstrap*) Given a Chinstrap and Adelie penguin with the same bill depth, we expect the Chinstrap to have a lower body mass by about 23.37g, on average.
++ (*Chinstrap*) Given a Chinstrap and Adelie penguin with the same bill depth, we estimate the Chinstrap to have a lower body mass by about 23.37g, but this is not a statistically discernible difference.
 
 + (*Gentoo*) Given a Gentoo and Adelie penguin with the same bill depth, we expect the Gentoo to have greater mass by about 2221.0g, on average.
 
   + **Note:** Some comparisons are misleading since Adelie bill depths rarely overlap with Gentoos'
+
+</div>
 
 ## Interpreting the Model
 

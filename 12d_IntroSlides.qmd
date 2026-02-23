@@ -889,6 +889,7 @@ lr_sbl_fit %>%
   labs(title = "Model Coefficients",
        x = "Coefficient",
        y = "") + 
+  theme_bw(base_size = 24) +
   theme(legend.position = "None")
 ```
 

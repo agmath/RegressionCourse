@@ -1,0 +1,145 @@
+---
+title: "Basic Tidymodels Overview"
+format: html
+---
+
+## Setup
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+
+penguins <- penguins
+```
+
+## Data Splitting
+
+```{r}
+set.seed(300)
+data_splits <- initial_split(penguins, prop = 0.75)
+train <- training(data_splits)
+temp <- testing(data_splits)
+
+temp_splits <- initial_split(temp, prop = 0.5)
+test <- training(temp_splits)
+validation <- testing(temp_splits)
+```
+
+
+## EDA
+
+:::{.callout-note}
+Exploratory Data Analysis (calculation of summary statistics, construction of data visualizations, and interpretations of findings) is omitted for this video.
+:::
+
+## Simple Linear Regression
+
+The most basic type of linear regression model is a *simple linear regressor*. It includes a single numerical explanatory variable, and takes the form
+
+$$\mathbb{E}\left[\text{response}\right] = \beta_0 + \beta_1\cdot\left(\text{predictor}\right)$$
+
+Which is just a straight line, like the form below, which is very familiar to you.
+
+$$y = mx + b$$
+
+For this first part of our video, we'll construct a simple linear regression model for penguin body mass (g) using flipper length (mm) as our sole explanatory variable.
+
+$$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{flipper length}\right)$$
+
+```{r}
+#specification (class of model)
+slr_spec <- linear_reg() %>%
+  set_engine("lm")
+
+#recipe (formula: declares the output and the available inputs)
+slr_rec <- recipe(body_mass_g ~ flipper_length_mm, data = train)
+  
+#workflow
+slr_wf <- workflow() %>%
+  add_model(slr_spec) %>%
+  add_recipe(slr_rec)
+
+#fit the workflow to the training data
+slr_fit <- slr_wf %>%
+  fit(train)
+```
+
+:::{.callout-note}
+I'll save global and term-based model assessments (on both training and testing data) for another video.
+:::
+
+Let's examine our fitted model below.
+
+```{r}
+slr_fit %>%
+  extract_fit_engine() %>%
+  tidy()
+```
+
+The estimated model is:
+
+$$\mathbb{E}\left[\text{body mass}\right] = -5868.5 + 50.1\cdot\left(\text{flipper length}\right)$$
+
+:::{.callout-note}
+We'll save model interpretations for another video.
+:::
+
+:::{.callout-note}
+We'll also save using our model to make predictions for another video as well.
+:::
+
+## Multiple Linear Regression
+
+An extension of simple linear regression is to *multiple linear regression*. The form for a multiple linear regressor is below.
+
+$$\mathbb{E}\left[\text{response}\right] = \beta_0 + \beta_1\cdot\left(\text{predictor_1}\right) + \beta_2\cdot\left(\text{predictor_2}\right) + \cdots + \beta_k\cdot\left(\text{predictor_k}\right)$$
+
+We'll stick to only numerical explanatory variables because working with categorical predictors requires some extra care. As long as we stick to numerical predictors, then each of those coefficients attached to predictor terms can be thought of as a slope, holding all other explanatory variables constant.
+
+We'll build our multiple linear regression model below. We'll still stick with a regressor to predict penguin body mass (g), but now we'll use the bill length and bill depth in addition to flipper length as our explanatory variables.
+
+$$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{flipper length}\right) + \beta_2\cdot\left(\text{bill length}\right) + \beta_3\cdot\left(\text{bill depth}\right)$$
+
+```{r}
+#specification
+mlr_spec <- linear_reg() %>%
+  set_engine("lm")
+
+#recipe
+mlr_rec <- recipe(body_mass_g ~ bill_length_mm + bill_depth_mm + flipper_length_mm, data = train)
+
+#workflow
+mlr_wf <- workflow() %>%
+  add_model(mlr_spec) %>%
+  add_recipe(mlr_rec)
+
+#fit
+mlr_fit <- mlr_wf %>%
+  fit(train)
+```
+
+:::{.callout-note}
+We'll again save model assessments for another video.
+:::
+
+We'll examine the fitted model below.
+
+```{r}
+mlr_fit %>%
+  extract_fit_engine() %>%
+  tidy()
+```
+
+The estimated model is below:
+
+$$\mathbb{E}\left[\text{body mass}\right] = -6680.7 + 50.5\cdot\left(\text{flipper length}\right) + 6.66\cdot\left(\text{bill length}\right) + 25.69\cdot\left(\text{bill depth}\right)$$
+
+:::{.callout-note}
+We'll save model interpretations for another video.
+:::
+
+:::{.callout-note}
+We'll also save using our model to make predictions for another video as well.
+:::
+
+

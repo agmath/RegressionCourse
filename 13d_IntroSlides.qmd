@@ -210,7 +210,7 @@ ggplot() +
             aes(x = lstat, y = .pred),
             color = "blue",
             lwd = 1.5) +
-  labs(x = "% Built Before 1940",
+  labs(x = "% Low Socioeconomic Status",
        y = "Median Values (000s)")
 ```
 

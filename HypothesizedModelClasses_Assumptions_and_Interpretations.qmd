@@ -1,0 +1,264 @@
+---
+title: "A Crash Course on Regression Models"
+subtitle: "(Assumptions, Interpretations, and Comparisons)"
+format: html
+theme: flatly
+---
+
+```{r global-options, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(MASS)
+library(tidyverse)
+```
+<center>UNDER CONSTRUCTION <br> Please provide feedback regarding this document <br> What is clear? What is confusing? What else should it contain?</center>
+
+# Model Classes, Assumptions and Interpretations
+
+The class of model we choose/hypothesize is informed by some assumptions we make regarding the relationship between *predictors* and *response* (whether we make these assumptions consciously or not). Below are the major classes of models (in order of increasing complexity) that we consider in MAT 300 -- simple regression, straight-line multiple regression models, interaction models, curvilinear models, and curvilinear models involving interactions. 
+
+:::{.callout-tip}
+## On Hypothesizing Models
+
+Different regression models allow different kinds of relationships between predictors and the response. Choosing a model means deciding what kinds of patterns we believe may exist in the data.
+:::
+
+:::{.callout-note} 
+## Regarding Strength of Interpretations
+
+Recall from discussions about experimental design that statements inferring *causality* can only be made if data is collected as part of an experiment (control and treatment groups with manipulated test conditions), whereas data coming from an observational study can only be used to infer and *association*. We need to be careful with the language we use when interpreting our models.
+:::
+
+## Simple Regression Model 
+
+:::{.callout-note}
+## Simple Linear Regression (straight line)
+
+The aptly named, simplest case of regression -- a single *numerical* predictor ($x$), with a single *numerical* response ($y$).
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x$$
+
++ **Assumptions Made**: 
+  
+  + There is a straight line relationship between $x$ and $y$
+  + The impact of $x$ on $y$ is the same, regardless of how large or small $x$ is. (*no phenomena like diminishing marginal returns is reflected*)
+  
++ **Interpretation**: *We expect that a unit increase in $x$ (an increase by 1) will be associated with an increase of about $\beta_1$ in the response.*
+
+:::
+
+# Models with Categorical Predictors
+
+:::{.callout-tip}
+## Categorical Predictors
+
+Remember that a categorical predictor corresponds to a column in a *data frame* (table) for which measures like the `mean()`, `median()`, and `sd()` don't make sense. These are categorical columns.
+:::
+
+## How do we handle categorical predictors?
+
+:::{.callout-note}
+## Encoding Categorical Predictors
+
+Consider that we have a column in a dataset which is categorical. When we have a predictor which is categorical, we develop several *indicator* (also called *dummy*) variables.
+
+**Example**: Consider a column in a dataset which captures an individual's (respondent's) class year (Freshman, Sophomore, Junior Senior). In order to utilize this column in regression, we encode the column using *indicator variables*. We may elect to use the following:
+
+**Class Year**      |   class_sophomore   |   class_junior   |   class_senior
+--------------------|-----------|-----------|-----------
+*Freshman*          |   $0$     |   $0$     |   $0$     
+*Sophomore*         |   $1$     |   $0$     |   $0$     
+*Junior*            |   $0$     |   $1$     |   $0$     
+*Senior*            |   $0$     |   $0$     |   $1$
+
+In this scenario, the *Freshman* group is considered the *base level* since it corresponds to the case where all indicator variables take on the $0$ value. Choosing an appropriate base level can sometimes make your interpretations more natural.
+
+:::
+
+## Multiple Regression Models
+
+All of our remaining models fall under the *multiple regression* umbrella term. Assume that we have a single numerical response ($y$), but several explanatory variables $x_1,~,x_2,~...,~x_k$.
+
+### Straight Line Model
+
+:::{.callout-note}
+## Straight Line Multiple Regression Models
+
+A generalization of the simple regression model to allow for more than just a single predictor.
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x_1 + \beta_2\cdot x_2 + ... + \beta_k\cdot x_k = \beta_0 + \sum_{i = 1}^{k}{\beta_i\cdot x_i}$$
+
++ **Assumptions Made**: 
+    
+  + Each *numerical* predictor changes the expected response at a constant rate when the other predictors are held fixed. (You can think of this as there being a straight line relationship between each *numerical* $x_i$ and $y$.)
+  + The impact of any $x_i$ on $y$ is independent of all the other predictors.
+    
++ **Interpretations**:  
+
+  + **Numerical Predictor, $x_i$:** *With all other predictors held constant, we expect that a unit increase in $x_i$ (an increase by 1) will be associated with an increase of about $\beta_i$ in the response.*
+  + **Dummy Variable, $x_i$:** *With all other predictors held constant, the difference in expected response between an observation belonging to the "base level" and an observation belonging to the level corresponding to $x_i$ is $\beta_i$.*
+
+:::
+
+### Interaction Model 
+
+:::{.callout-note}
+## Interaction Models (changing slopes across groups)
+
+Models with interaction allow for the possibility that predictors may have a combined influence on the response which is different than their independent (*main*) effects.
+$$\mathbb{E}\left[y\right] = \beta_0 + \underbrace{\beta_1\cdot x_1 + \beta_2\cdot x_2 + \beta_3\cdot x_3}_{\text{Main Effects}} + \overbrace{\beta_4 \cdot x_1\cdot x_2 + \beta_5\cdot  x_1\cdot x_3 + \beta_6\cdot x_2\cdot x_3}^{\text{interaction effects}}$$
+Shown above is an interaction model with three predictors, but we certainly could consider interaction between more predictors. Notice that we don't usually consider interaction between more than two predictors at a time. This is again [for the sake of interpretability](https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwjS-Lr7kevgAhWrTt8KHdWECvcQjRx6BAgBEAU&url=https%3A%2F%2Ftwitter.com%2Fresearchmark%2Fstatus%2F851769751886057473&psig=AOvVaw31B4Kq53JXt6tnhMdeToRV&ust=1551879982403998).
+
++ **Assumptions**:
+  
+  + The relationship between $y$ and $x_i$ is a straight line relationship, but the slope depends on the values of the other predictors.
+  + Since we have interaction, the influence of $x_i$ on $y$ is dependent on the values of the other predictors with which $x_i$ interacts.
+    
++ **Interpretations (Considering the Example Model Above)**: *With all other predictors held constant, we expect that a unit increase in $x_1$ will be associated with an increase in the expected response by $\beta_1 + \beta_4\cdot x_2 + \beta_5\cdot x_3$.*
+
+  + Notice that now, the effect of $x_1$ on the response depends on the values of the predictors with which $x_1$ interacts.
+  + The effects of the other predictors ($x_2$ and $x_3$ here) on the response are derived similarly.
+  + Students who have taken multivariable calculus will identify this relationship as the partial derivative of the model with respect to $x_1$. Those who have not had exposure to derivatives may elect to just remember this relationship or can see me for a primer on derivatives.
+
+:::
+
+:::{.callout-tip}
+## Interactions: A Common Usage
+
+Interactions between a numerical and categorical variable allow for the shape of the model to be different from one category to the next. That is, these interactions allow you to accommodate different slopes or curvatures in the model across the groups.
+:::
+
+### Models Allowing Curvature
+
+Note that, since our course focuses on *statistical* learning (a balance between prediction and interpretation), we consider at most quadratic terms. That is, terms whose total variable degree (from numerical variables only) is at most $2$, with one exception (**see curvilinear interaction models** below). Machine learning applications will certainly allow for higher order terms because interpretation is not a goal there.
+
+:::{.callout-note}
+## Curvilinear Model (models that bend)
+
+These models are exactly what they sound like -- they allow for our regression model to curve (bend). In order to allow for curvature, we introduce *squared-terms* -- that is, we allow model terms to include predictors squared (ie. $x_i^2$).
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \underbrace{\beta_1\cdot x_1 + \beta_2\cdot x_2}_{\text{Linear Terms}} + \overbrace{\beta_3\cdot x_1^2 + \beta_4\cdot x_2^2}^{\text{Quadratic (Curvy) Terms}}$$
+
+The curvilinear model in two predictors, with both predictors exhibiting curved relationships with the response ($y$) is shown above. Note that it is possible for only some of the predictors to exhibit curvature in a curvilinear model.
+  
++ **Assumptions**: 
+  
+  + The relationship between $y$ and $x_i$ exhibits some curvature -- that is, the rate at which $x_i$ influences $y$ is dependent on the current value of $x_i$.
+  + Since there is no interaction present in this model, each of the predictors ($x_i$) influences the response independently of all the other predictors. That is, the rate at which $x_i$ influences $y$ does not depend on the values of the other predictors.
+    
++ **Interpretation**: *With all other predictors held constant, we expect that a unit increase in $x_1$ is associated with an increase of about $\beta_1 + 2\beta_3\cdot x_1$ in the response. Furthermore, the direction of curvature is determined by the sign of $\beta_3$ (the coefficient on the squared term).*
+
+  + This indicates that the effect of $x_i$ on the response is dependent on the current value of $x_i$.
+  + The expected impact of $x_i$ on $y$ is independent of the values of all other predictors of $y$.
+  + Again, students having exposure to calculus will notice this impact of $x_i$ on $\mathbb{E}\left[y\right]$ as the partial derivative of the regression model with respect to the predictor $x_i$.
+
+:::
+
+:::{.callout-note}
+## Curvilinear Interaction Models (bends that differ across groups)
+
+These are the most complex models that we will consider -- they allow for both curvature in the relationship between response and each predictor, but also for the rate at which that curvature exists to depend on the values of the other predictors. (...we are getting complicated...)
+$$\mathbb{E}\left[y\right] =\beta_0 + \underbrace{\beta_1\cdot x_1 + \beta_2\cdot x_2 + \overbrace{\beta_3\cdot x_1^2 + \beta_4\cdot x_2^2}^{\text{Curvature (Part I)}}}_{\text{Main Effects}} + \underbrace{\beta_5\cdot x_1\cdot x_2 + \overbrace{\beta_6\cdot x_1^2\cdot x_2 + \beta_7\cdot x_1\cdot x_2^2}^{\text{Curvature (Part II)}}}_{\text{Interaction}}$$
+
++ **Assumptions**: [Disclaimer -- these are not really assumptions] This is the "free-est" model that we consider in our entire course.
+
+  + The possibility of curvature in the relationships between each predictor ($x_i$) and the response exists -- furthermore, the rate of that curvature depends on the values of the other predictors that interact with $x_i$.
+    
++ **Interpretations**: Interpretation becomes more complex in these models and often benefits from calculus tools such as partial derivatives. However, in practice we usually explore these relationships through visualization and predicted values (packages like `{marginaleffects}` can help).
+  
+:::
+
+
+# Hypothesis Tests
+
+Anytime we assert a hypothesized model (that is, we claim a relationship between predictor and response and build the associated model), we are expecting to conduct a hypothesis test. In fact, we conduct many!
+
+## Initial Tests
+
+Don't forget about the initial tests that we've already discussed:
+
+:::{.callout-note}
+## Global Test for Model Utility
+
+The **global test for model utility** tells us whether there is significant evidence that at least one of our predictors hold some predictive value for the response.
+$$\begin{array}{lcl} H_0 & : & \beta_1~=~\beta_2~=~...~=~\beta_k~=~0\\
+H_a & : & \text{At least one of these } \beta \text{-values is non-zero}
+\end{array}$$
+
++ This test asks "*does the model have any predictive value at all?*".
+
+:::
+
+
+:::{.callout-note}
+## Term-Based Tests
+
+The **tests for significance of individual predictors** help us narrow down to a *final* model.
+$$\begin{array}{lcl} H_0 & : & \beta_i~=~0\\
+H_a & : & \beta_i \neq 0
+\end{array}$$
+
+  + These tests ask "*is this term contributing predictive / explanatory value to the model?*". 
+  + When we *reduce* insignificant predictors out of a model, one common approach is to do so via *backward-elimination*. This process removes explanatory terms one at a time, in order of highest p-value to lowest.
+  + There are cases when this cannot be done though...
+  
+    + If at least one level of a categorical explanatory variable is deemed significant, the others should not be "dropped" or "collapsed". Keep the insignificant terms in the model, but note the lack of significance when interpreting the model.
+    + If a higher-order term is statistically significant, then all component lower-order terms must be retained, regardless of $p$-value. That is, if the $x_1^2x_2$ interaction term is significant, then we must also retain the $x_1$, $x_2$, $x_1^2$, and $x_1x_2$ terms in the model even if their $p$-values are large.
+    
+:::
+
+## Advanced Tests for Nested Models
+
+:::{.callout-tip}
+## Nested Models
+
+Consider that we have two models -- Model A and Model B such that Model A is achieved from Model B if some of Model B's $\beta$-values are $0$. Consider the following:
+$$\begin{array}{lcl} \text{Model A} & : & \mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x_1 + \beta_2 \cdot x_2 + \beta_3 \cdot x_1\cdot x_2\\
+\text{Model B} & : & \mathbb{E}\left[y\right] =\beta_0 + \beta_1\cdot x_1 + \beta_2 \cdot x_2 + \beta_3 \cdot x_1\cdot x_2 + \beta_4\cdot x_1^2 + \beta_5\cdot x_2^2
+\end{array}$$
+
+Then Model A is *nested within* Model B. That is, Model A is achieved if $\beta_4 = \beta_5 = 0$ in Model B.
+
+:::
+
+:::{.callout-note}
+## Nested Model Test
+
+We can test the significance of a *parent* model over a *child* model -- that is, we can compare two nested models -- using an $\tt{anova}$ test. If `Model.A` and `Model.B` are nested such that `Model.A` sits *inside* `Model.B`, then we can test:
+$$\begin{array}{lcl} H_0 & : & \text{Model.A (the smaller model) is sufficient}\\
+H_a & : & \text{Model.B (the larger model) is significantly better}\end{array}$$
+
+using,
+
+```{r echo = TRUE, eval = FALSE}
+anova(Model.A, Model.B)
+```
+
+and declaring the result of the test according to the reported $p$-value.
+
+:::
+
+## Tests for Model Features
+
+In addition to testing the significance of individual predictors we can also test for the presence of assumed model features: interaction, curvature, etc. Each of these involves a hypothesis test involving all related model terms -- that is, we test the $\beta$ values attached to each term in question. The test involved is a **nested model test**!<br>
+
+For the following tests, consider our curvilinear interaction model (the most complex model we have). 
+$$\mathbb{E}\left[y\right] =\beta_0 + \underbrace{\beta_1\cdot x_1 + \beta_2\cdot x_2 + \overbrace{\beta_3\cdot x_1^2 + \beta_4\cdot x_2^2}^{\text{Curvature (Part I)}}}_{\text{Main Effects}} + \underbrace{\beta_5\cdot x_1\cdot x_2 + \overbrace{\beta_6\cdot x_1^2\cdot x_2 + \beta_7\cdot x_1\cdot x_2^2}^{\text{Curvature (Part II)}}}_{\text{Interaction}}$$
+
+:::{.callout-note}
+## Tests for interaction
+
+Given any hypothesized model, a test for interaction is a test which involves all of the $\beta$-values serving as coefficients for interaction terms. For our curvilinear interaction model above we have:
+$$\begin{array}{lcl} H_0 & : &  \beta_5 = \beta_6 = \beta_7 = 0\\
+H_a & : & \text{at least one of these } \beta \text{'s is non-zero}
+\end{array}$$
+
+:::
+
+:::{.callout-note}
+## Tests for curvature
+
+Given any hypothesized model, a test for curvature is a test which involves all of the $\beta$-values serving as coefficients for higher-power (at least *squared*) terms. For our curvilinear interaction model above we have:
+$$\begin{array}{lcl} H_0 & : &  \beta_3 = \beta_4 = \beta_6 = \beta_7 = 0\\
+H_a & : & \text{at least one of these } \beta \text{'s is non-zero}
+\end{array}$$
+
+:::
+

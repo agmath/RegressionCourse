@@ -1090,10 +1090,11 @@ lr_results %>%
   1. use `vfold_cv()` on our *training* data to create cross-validation folds
   2. use `fit_resamples()` on our folds, instead of `fit()` on the training data, to run the cross-validation procedure and obtain performance metrics on each fold
   3. use `collect_metrics()` to access the cross-validation performance measures
+  4. once you have a best model (lowest cv-RMSE, highest cv-R-squared, etc.), then `fit()` that model to your training data as we've done in the past.
 
 ## Let's Do This!
 
-Let's try out cross-validation on the AirBnB Europe data that we were using earlier this semester or with the DoorDash data you are using for our competition assignments.
+Let's try out cross-validation on the AirBnB Europe data that we were using earlier this semester or with the data you are using for our competition assignments.
 
 ## Next Time...
 

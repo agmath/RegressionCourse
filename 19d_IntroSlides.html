@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.43">
 
   <meta name="author" content="Dr.&nbsp;Gilbert">
-  <meta name="dcterms.date" content="2024-11-05">
+  <meta name="dcterms.date" content="2026-03-17">
   <title>Model Performance Expectations: Cross-Validation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -404,7 +404,7 @@ Dr.&nbsp;Gilbert
 </div>
 </div>
 
-  <p class="date">November 5, 2024</p>
+  <p class="date">March 17, 2026</p>
 </section>
 <section class="slide level2">
 
@@ -495,7 +495,7 @@ code.sourceCode {
 </div>
 </div>
 <blockquote>
-<p>We see that the test RMSE for our third degree model is 206.35, so we expect our model to make accurate predictions to within about <span class="math inline">\(\pm\)</span> 412.7</p>
+<p>We see that the test RMSE for our third degree model is 206.35, so we expect our model’s typical prediction error to be on the order of 206.35</p>
 </blockquote>
 </section>
 <section id="motivation" class="slide level2">
@@ -541,42 +541,42 @@ code.sourceCode {
 <tr class="odd">
 <td style="text-align: left;">cubic</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">0.6651619</td>
-<td style="text-align: right;">187.9246</td>
-<td style="text-align: right;">0.3514469</td>
-<td style="text-align: right;">270.9628</td>
+<td style="text-align: right;">0.7198472</td>
+<td style="text-align: right;">171.8199</td>
+<td style="text-align: right;">0.5100704</td>
+<td style="text-align: right;">191.5037</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">5th-Order</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">0.6823008</td>
-<td style="text-align: right;">183.0520</td>
-<td style="text-align: right;">0.2980608</td>
-<td style="text-align: right;">281.8076</td>
+<td style="text-align: right;">0.7240732</td>
+<td style="text-align: right;">170.5190</td>
+<td style="text-align: right;">0.4897179</td>
+<td style="text-align: right;">197.8341</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">11th-order</td>
 <td style="text-align: right;">11</td>
-<td style="text-align: right;">0.7034082</td>
-<td style="text-align: right;">176.8666</td>
-<td style="text-align: right;">0.2811059</td>
-<td style="text-align: right;">285.4861</td>
+<td style="text-align: right;">0.7432865</td>
+<td style="text-align: right;">164.4751</td>
+<td style="text-align: right;">0.4620363</td>
+<td style="text-align: right;">199.9296</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">straight-line</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0.3842480</td>
-<td style="text-align: right;">254.8409</td>
-<td style="text-align: right;">0.0761453</td>
-<td style="text-align: right;">329.8036</td>
-</tr>
-<tr class="odd">
 <td style="text-align: left;">quadratic</td>
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">0.4362690</td>
-<td style="text-align: right;">243.8385</td>
-<td style="text-align: right;">0.0629359</td>
-<td style="text-align: right;">332.0437</td>
+<td style="text-align: right;">0.2241478</td>
+<td style="text-align: right;">285.9337</td>
+<td style="text-align: right;">0.2289380</td>
+<td style="text-align: right;">208.8381</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">straight-line</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.1700949</td>
+<td style="text-align: right;">295.7264</td>
+<td style="text-align: right;">0.2137932</td>
+<td style="text-align: right;">211.2220</td>
 </tr>
 </tbody>
 </table>
@@ -601,44 +601,44 @@ code.sourceCode {
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">11th-order</td>
-<td style="text-align: right;">11</td>
-<td style="text-align: right;">0.6801406</td>
-<td style="text-align: right;">195.9718</td>
-<td style="text-align: right;">0.6647404</td>
-<td style="text-align: right;">209.8293</td>
+<td style="text-align: left;">cubic</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.6610485</td>
+<td style="text-align: right;">188.4068</td>
+<td style="text-align: right;">0.5997612</td>
+<td style="text-align: right;">211.0960</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">5th-Order</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">0.6524616</td>
-<td style="text-align: right;">204.2751</td>
-<td style="text-align: right;">0.6758039</td>
-<td style="text-align: right;">215.4387</td>
+<td style="text-align: right;">0.6634069</td>
+<td style="text-align: right;">187.7502</td>
+<td style="text-align: right;">0.5928634</td>
+<td style="text-align: right;">212.0900</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">cubic</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">0.6374751</td>
-<td style="text-align: right;">208.6329</td>
-<td style="text-align: right;">0.6573571</td>
-<td style="text-align: right;">219.8632</td>
+<td style="text-align: left;">11th-order</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.6812347</td>
+<td style="text-align: right;">182.7104</td>
+<td style="text-align: right;">0.5982803</td>
+<td style="text-align: right;">212.4318</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">quadratic</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">0.3229612</td>
-<td style="text-align: right;">285.1154</td>
-<td style="text-align: right;">0.4983305</td>
-<td style="text-align: right;">266.4246</td>
-</tr>
-<tr class="odd">
 <td style="text-align: left;">straight-line</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">0.2910810</td>
-<td style="text-align: right;">291.7509</td>
-<td style="text-align: right;">0.3624454</td>
-<td style="text-align: right;">294.8089</td>
+<td style="text-align: right;">0.3328312</td>
+<td style="text-align: right;">264.3295</td>
+<td style="text-align: right;">0.4931814</td>
+<td style="text-align: right;">270.5923</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">quadratic</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.3386405</td>
+<td style="text-align: right;">263.1762</td>
+<td style="text-align: right;">0.4854292</td>
+<td style="text-align: right;">272.6796</td>
 </tr>
 </tbody>
 </table>
@@ -766,7 +766,7 @@ code.sourceCode {
 </blockquote>
 </div>
 <div class="fragment">
-<p>Depending on the test set, we could be claiming model predictions accurate to within <span class="math inline">\(\pm 299\)</span> or <span class="math inline">\(\pm 492.68\)</span> – that’s a big difference</p>
+<p>Depending on the test set, we could be claiming that our model’s typical prediction error is on the order of <span class="math inline">\(149.5\)</span> or <span class="math inline">\(246.3\)</span> – that’s a big difference</p>
 </div>
 </section>
 <section id="okay-so-whats-going-on" class="slide level2">
@@ -916,7 +916,7 @@ code.sourceCode {
 <td style="text-align: right;">287.6428273</td>
 <td style="text-align: right;">10</td>
 <td style="text-align: right;">12.980473</td>
-<td style="text-align: left;">Preprocessor1_Model1</td>
+<td style="text-align: left;">pre0_mod0_post0</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">rsq</td>
@@ -924,7 +924,7 @@ code.sourceCode {
 <td style="text-align: right;">0.8622995</td>
 <td style="text-align: right;">10</td>
 <td style="text-align: right;">0.021012</td>
-<td style="text-align: left;">Preprocessor1_Model1</td>
+<td style="text-align: left;">pre0_mod0_post0</td>
 </tr>
 </tbody>
 </table>
@@ -933,7 +933,7 @@ code.sourceCode {
 </div>
 </div>
 <blockquote>
-<p>We see that the <em>cross-validation</em> RMSE is about 287.64, with a standard error of about 12.98, so we are confident our model will predict penguin body masses accurate within a conservative estimate of about <span class="math inline">\(\pm 2\cdot\left(\right.\)</span> 287.64 <span class="math inline">\(\pm 2\cdot\left(\right.\)</span> 12.98<span class="math inline">\(\left.\left.\right)\right)\)</span>g, which is the same as <span class="math inline">\(\pm\)</span> 627.21g</p>
+<p>We see that the <em>cross-validation</em> RMSE is about 287.64, with a standard error of about 12.98, so we can be about 95% confident typical body mass prediction error will be on an order somewhere between 287.64 <span class="math inline">\(\pm 2\cdot\left(\right.\)</span> 12.98<span class="math inline">\(\left.\right)\)</span>g, or equivalently, somewhere between 261.68g and 313.6g.</p>
 </blockquote>
 </div>
 </section>

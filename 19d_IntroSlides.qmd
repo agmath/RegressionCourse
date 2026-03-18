@@ -326,7 +326,7 @@ train_results %>%
   kable_styling()
 ```
 
-> We see that the test RMSE for our third degree model is `r round(test_error, 2)`, so we expect our model to make accurate predictions to within about $\pm$ `r round(2*test_error, 2)`
+> We see that the test RMSE for our third degree model is `r round(test_error, 2)`, so we expect our model's typical prediction error to be on the order of `r round(test_error, 2)`
 
 ## Motivation
 
@@ -874,7 +874,7 @@ collected_metrics_df %>%
 
 . . .
 
-Depending on the test set, we could be claiming model predictions accurate to within $\pm 299$ or $\pm 492.68$ -- that's a big difference
+Depending on the test set, we could be claiming that our model's typical prediction error is on the order of $149.5$ or $246.3$ -- that's a big difference
 
 ## Okay, So What's Going On
 
@@ -1044,7 +1044,7 @@ lr_results %>%
   kable_styling()
 ```
 
-> We see that the *cross-validation* RMSE is about `r round(cv_rmse, 2)`, with a standard error of about `r round(cv_rmse_sd, 2)`, so we are confident our model will predict penguin body masses accurate within a conservative estimate of about $\pm 2\cdot\left(\right.$ `r round(cv_rmse, 2)` $\pm 2\cdot\left(\right.$ `r round(cv_rmse_sd, 2)`$\left.\left.\right)\right)$g, which is the same as $\pm$ `r round(2*(cv_rmse + (2*cv_rmse_sd)), 2)`g
+> We see that the *cross-validation* RMSE is about `r round(cv_rmse, 2)`, with a standard error of about `r round(cv_rmse_sd, 2)`, so we can be about 95% confident typical body mass prediction error will be on an order somewhere between `r round(cv_rmse, 2)` $\pm 2\cdot\left(\right.$ `r round(cv_rmse_sd, 2)`$\left.\right)$g, or equivalently, somewhere between `r round(cv_rmse - 2*cv_rmse_sd, 2)`g and `r round(cv_rmse + 2*cv_rmse_sd, 2)`g. 
 
 ## Implementing *Cross-Validation* in `{tidymodels}`
 

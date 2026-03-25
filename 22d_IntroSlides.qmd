@@ -312,7 +312,7 @@ model_list <- list(
 my_models_wfs <- workflow_set(rec_list, model_list, cross = FALSE)
 ```
 
-## Fit and Assess the Workflow Set
+## Assess the Workflow Set
 
 . . . 
 

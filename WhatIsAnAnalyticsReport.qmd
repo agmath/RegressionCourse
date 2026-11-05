@@ -20,9 +20,21 @@ theme_set(theme_bw(base_size = 14))
 
 ## Statement of Purpose
 
-This section is a very short, 2 - 3 sentence synopsis of the problem that the analytics report seeks to solve. The Statement of Purpose should help the reader know whether they need to know the contents of the report or if they should pass it along to a colleague. You might think of the Statement of Purpose as an *abstract*, without including any of the results.
+:::{.callout-important}
+The goal of this section is to answer three questions very concisely.
+
+1. What are you proposing to do?
+2. Who are you doing it for?
+3. Why should they care about the outcome, and how should they expect to benefit?
+
+Think of this as an "elevator pitch", requesting funding or resources from a decision maker or manager. They should be able to read it in less than a minute and should be convinced that the project has value.
+:::
 
 ## Executive Summary
+
+:::{.callout-important}
+This is the last section you'll write. It is about 3/4 of a page in length (definitely no longer than one page). It contains all of the "need-to-know" information for final decision makers. You should be transparent about what you've found, what your recommendations are, and how certain/uncertain you are in those recommendations. Make sure you are very transparent about the limitations of your analysis and you don't over-sell your conclusions.
+:::
 
 While it comes second, this is the last section of the Analytics Report that you'll write. This section should be between a half page and a full page in length. It is designed as a very quick summary for top-level decision-makers. This section should answer three questions as simply as possible, but with enough detail to provide the decision-maker(s) the information they need as well as the confidence to act on it.
 
@@ -34,25 +46,54 @@ These first two sections are likely the only two that the final decision-makers 
 
 ## Introduction
 
-This section is a much more detailed expansion of the problem laid out in the Statement of Purpose. It contains the background for that problem, its importance to the firm/target audience, as well as the resources available for solving that problem. It is possible that the problem, as originally stated, could not be solved with the resources available. In this case, the problem appearing in the Statement of Purpose is an edited version of the originally posed
-question. This section should outline choices that had to be made (and rationale for why) to refine the original problem and arrive at the problem statement in its current form. For example, maybe we wanted to predict hourly demand ( count ) for Bike Share companies across all of North America, but we only had data for a particular Bike Share in the Washington DC Metro Area. How does the restricted form of the problem statement differ from the original? Why is the solution to this related question still valuable to the firm/target audience? Are there any significant limitations or concerns about the refined questions versus the original?
+:::{.callout-important}
+This is an expanded version of the *Statement of Purpose*, providing much more background about context and goals. We're skipping this section as part of the Competition Assignments series, but you'll include it as part of your final project for MAT300.
+:::
+
+This section is a much more detailed expansion of the problem laid out in the Statement of Purpose. It contains the background for that problem, its importance to the firm/target audience, as well as the resources available for solving that problem. It is possible that the problem, as originally stated, could not be solved with the resources available. In this case, the problem appearing in the Statement of Purpose is an edited version of the originally posed question. This section should outline choices that had to be made (and rationale for why) to refine the original problem and arrive at the problem statement in its current form. For example, maybe we wanted to predict hourly demand ( count ) for Bike Share companies across all of North America, but we only had data for a particular Bike Share in the Washington DC Metro Area. How does the restricted form of the problem statement differ from the original? Why is the solution to this related question still valuable to the firm/target audience? Are there any significant limitations or concerns about the refined questions versus the original?
 
 ## Exploratory Data Analysis
+  
+:::{.callout-important}
+The goal of this section is to investigate your *training* data, learn about your response variable, the available explanatory variables, and to investigate potential associations that may exist between the explanatory variables and your response. A strong exploratory data analysis (EDA) informs modeling choices and guards against failures resulting from unsatisfied model assumptions.
+:::
   
 This section uses the training data to build intuition about the answer to our question(s) of interest. For us, this means understanding which features may be most relevant in predicting or explaining our response variable. This section includes summary statistics and data visualization as well as a narrative to walk the reader through it all. This section should seek to tell a story about how the available predictors may (or may not) influence our response variable. This section can also include information about how and why new features may have been engineered. For example, maybe one of our plots exhibits a curved relationship between the corresponding predictor and response, so we add a new column to our dataset corresponding to the square of that predictor.
 
 ## Model Construction
 
+:::{.callout-important}
+This is the section where you'll justify, construct, and assess your models. You'll also compare model performances here as well, identifying models that perform the best, informing and executing updates to improve your model performance, and more. This section is iterative.
+:::
+
 This section describes construction and validation of the models used to address the main purpose(s) for the report. You'll detail all of the models you constructed as well as how you tested their performance to arrive at a final model or ensemble of models. You should clearly identify performance expectations in this section as well, using error metrics from the test or safe datasets (or even better, from using cross-validation). This section is mostly present for the head of the analytics team, project manager, or other scientists/analysts. It is used to justify your approach and to provide support for the validity of the inferences and/or predictions made in the next section.
 
 ## Model Interpretation and Inference
+
+:::{.callout-important}
+
+In this section you'll provide a detailed assessment of your best model(s) from the Model Construction section. In addition to model interpretation, you'll elaborate with commentary about what you are seeing, whether it is expected or unexpected, provide conjectures about why you are seeing what you're seeing, and suggest actions or interventions due to these insights.
+
+:::
 
 It isn't often the case that our sole purpose in constructing a model is for prediction. We typically seek to uncover and understand relationships that might exist between our predictors and response variable as well. These relationships can inform decision-making too. In this section, the final models are analyzed and interpreted. If applicable, predictions are made and the appropriate measures of performance and uncertainty are discussed. Most of your findings and recommendations will come from this section of your report.
 
 ## Conclusion
 
+:::{.callout-important}
+
+This is the section where you'll provide a detailed summary of all of your findings. The Conclusion section is more extensive and expansive than the Executive Summary. If a decision-makers needs or wants more details, then they should find them here.
+
+:::
+
 This is a detailed summary of your findings and limitations. More of the technical details are contained here than in the Executive Summary, but these two sections will likely be similar.
 
 ## References
+
+:::{.callout-note}
+
+As is typical, you'll include a bibliography with any references you've used here. Remember that references add credibility to your work, so it is important to consult reliable resources and to document that consultation here.
+
+:::
 
 This section contains any references utilized in the creation of the report. Specifically, this will include any external data sources utilized in the report's creation.

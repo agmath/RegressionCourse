@@ -130,7 +130,7 @@ data <- read_csv("PATH_TO_CSV_FILE")
 
 . . .
 
-$\bigstar$ Read this `ems` dataset into your Quarto Notebook [from this link](github.com/agmath/RegressionCourse/blob/main/Updated/ems_response_times.csv)
+$\bigstar$ Read this `ems` dataset into your Quarto Notebook [from this link](https://raw.githubusercontent.com/agmath/RegressionCourse/refs/heads/main/Updated/ems_small.csv)
 
 . . .
 

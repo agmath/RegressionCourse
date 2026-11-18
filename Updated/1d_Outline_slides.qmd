@@ -1,0 +1,327 @@
+---
+title: "MAT 300: Introduction and What to Expect"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## What Are We Here For?
+
+```{r}
+#| echo: false
+#| message: false
+
+set.seed(123)
+x <- runif(50, 0, 100)
+y <- 5*x + rnorm(50, 0, 75)
+
+ggplot() + 
+  geom_point(aes(x = x, y = y), alpha = 0) + 
+  geom_abline(slope = 5, intercept = 0, color = "purple", lwd = 2) + 
+  labs(x = "x", y = "y")
+  
+```
+
+## What Are We Here For?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y)) + 
+  geom_abline(slope = 5, intercept = 0, color = "purple", lwd = 2, alpha = 0.25) + 
+  labs(x = "x", y = "y")
+  
+```
+
+## What Are We Here For?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() +
+  geom_point(aes(x = x, y = y), 
+             color = "black") + 
+  labs(x = "x",
+       y = "y")
+```
+
+## What Are We Here For?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() +
+  geom_point(aes(x = x, y = y), color = "black") +
+  geom_hline(yintercept = mean(y), 
+             color = "red",
+             linetype = "dashed",
+             lwd = 1.5)
+```
+
+## What Are We Here For?
+
+```{r}
+#| echo: false
+#| message: false
+
+#Many candidate models
+slopes <- rnorm(75, 0, 8)
+intercepts <- mean(y) - slopes*mean(x) + rnorm(75, 0, 7)
+
+#Null, Candidates, regression, and actual
+ggplot() + 
+  geom_point(aes(x = x, y = y)) +
+  geom_abline(aes(slope = slopes, intercept = intercepts), alpha = 0.2) +
+  #geom_abline(slope = 5, intercept = 0, color = "purple", lwd = 2) + 
+  geom_hline(yintercept = mean(y), 
+             color = "red", linetype = "dashed", lwd = 1.5)
+```
+
+## What Are We Here For?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y)) +
+  geom_abline(aes(slope = slopes, intercept = intercepts), alpha = 0.1) +
+  #geom_abline(slope = 5, intercept = 0, color = "purple", lwd = 2) + 
+  geom_hline(yintercept = mean(y), 
+             color = "red", linetype = "dashed", lwd = 1.5) +
+  geom_smooth(aes(x = x, y = y),
+              method = "lm", color = "blue", lwd = 1.5, se = FALSE)
+```
+
+## What Are We Here For?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y)) +
+  #geom_abline(aes(slope = slopes, intercept = intercepts), alpha = 0.1) +
+  #geom_abline(slope = 5, intercept = 0, color = "purple", lwd = 2) + 
+  geom_hline(yintercept = mean(y), 
+             color = "red", linetype = "dashed", lwd = 1.5) +
+  geom_smooth(aes(x = x, y = y),
+              method = "lm", color = "blue", lwd = 1.5, se = FALSE)
+```
+
+## What Are We Here For?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y)) +
+  #geom_abline(aes(slope = slopes, intercept = intercepts), alpha = 0.1) +
+  geom_abline(slope = 5, intercept = 0, color = "purple", lwd = 2) + 
+  geom_hline(yintercept = mean(y), 
+             color = "red", linetype = "dashed", lwd = 1.5) +
+  geom_smooth(aes(x = x, y = y),
+              method = "lm", color = "blue", lwd = 1.5, se = FALSE)
+```
+
+## Syllabus
+
+**Major Highlights from the Syllabus**: I'll ask you to read the syllabus, but the most important items are on the following slides.
+
+## Instructor and Office Hours
+
+  + Instructor: Dr. Adam Gilbert
+  
+    + e-mail address: [a.gilbert1@snhu.edu](mailto:a.gilbert1@snhu.edu)
+    + Office: Robert Frost Hall, Room 311
+    + Office Hours: 
+    
+      + Mondays 11:00am - 12:00pm
+      + Thursdays 9:00am - 1:00pm
+
+## Required Resources
+
+First and foremost...everything is free!
+
+  + **Main Textbook:** Loosely following [*Introduction to Statisical Learning (with R)* by Hastie et. al.](https://www.statlearning.com/)
+  + **Supplemental Text I:** [*R for Data Science* by Wickham et. al.](https://r4ds.hadley.nz/) for foundational R
+  + **Supplemental Text II:** [*Tidy Modeling with R* by Silge and Khun](https://www.tmwr.org/) for modeling in R with `{tidymodels}`
+  + [R](https://cran.r-project.org/) and [RStudio](https://posit.co/download/rstudio-desktop/)
+
+## Grading Scheme
+
+  <center> 
+  Grade Item                     | Value
+  -------------------------------|-----------
+  Homework (~6)                  | 30%
+  Competition Assignments (~6)   | 30%
+  Exams                          | 30%
+  Project                        | 10%
+  </center>
+
+## Explanations of Grade Items
+
++ **Homework:** These are scripted assignments that may ask you to fix a flawed analysis, explore assumptions and consequences of violations, and more.
++ **Competition Assignments:** We'll learn regression by doing regression. We have six assignments associated with a modeling competition on a real world data set.
++ **Exams:** We'll have two in-class exams during the semester. You won't be permitted any use of technology on these exams and no coding will be required. 
++ **Project:** A final course project spanning our last few weeks together. You'll choose a data set of interest to you and decide to focus on an inferential or predictive objective. Your finished product will be a completed *analytics report* or *research paper* associated with your topic.
+
+## Competition?
+
++ Hosted at Kaggle.
++ Closed to only students in our course and perhaps a similar course at St. Vincent College just outside of Pittsburgh, PA.
++ You'll need a free account -- link in Slack.
++ Your grade is **not** tied to your finishing place.
++ The competition aspect is *friendly* -- please keep it that way.
++ Students often say the competition is motivating and a great source of learning -- one of the most valuable parts of the course.
+
+## Brightspace
+
++ Weekly Announcements
++ Assignments
++ Gradebook
++ Go to the webpage for everything else
+
+## Course Webpage
+
+I've built a [webpage to organize our course content](https://agmath.github.io/RegressionCourse.html).
+
++ Syllabus
++ Tentative timeline
+  
+  + Truly tentative -- can slow down, speed up, swap out topics, etc.
+  + Links to daily *companion slides*.
+  + Links to assignments -- you can see everything now.
+
+## What's Class Like?
+
++ **Discussion Days** - Most of our meetings...
+
+  + We'll explore regression models for two purposes -- statistical inference and also for predictive tasks.
+  + We'll generally cover a topic each day.
+  + The first ~40 minutes of class will examine that topic from an inferential lens, while the remaining ~30 will examine the same topic from a predictive lens, with the last ~5 minutes used for a recap.
+
++ **Workshop Days** - Days to slow down and practice recent skills.
++ **Lecture Days** - Hopefully none after this first week, but I'll lecture when you all want me to.
+
+## A Note on Approach to Class
+
++ I'm open to change in all of my courses.
++ If the structure isn't working for you, let's chat and see what changes we can make to improve your experience.
++ If you don't want to tell me in person, leave an anonymous note under my office door.
+
+My goal in this course is for all of you to learn as much about regression and statistical modeling as possible -- we can't achieve that if you don't feel like you are benefiting from our class meetings.
+
+## A Road Map to Our Semester
+
+We'll be discussing a lot of material in MAT 300. The next few slides cover a very generic road map of what we will discuss.
+
+## What Are We Doing?
+
++ Artificial Intelligence (AI)?
++ Statistical learning?
++ Machine learning?
++ Data science?
+
+## Background For Working With Data
+
++ What is data?
++ How to work ethically with data.
++ How do we visualize and story-tell with data?
++ What if my data is messy? (Spoiler Alert: It will be!)
+
+## What Foundational Statistics Knowledge Do I Need?
+  
++ Confidence Intervals: $\left(\text{point estimate}\right) \pm 2\cdot \left(\text{standard error}\right)$
+
+  + We are [XX]% confident that [our parameter] falls between [the lower bound] and [the upper bound].
++ Hypothesis Testing: $p< \alpha$ means data are incompatible with a null (skeptical) hypothesis.
+
+  + Generally this will mean that a model, predictor, or model term, has statistically significant explanatory or predictive value in estimating a response.
+
+## Regression
+    
++ What is regression?
++ Simple linear regression
++ Assessing model quality and model performance
++ Multiple linear regression
++ How do we deal with categorical predictors?
++ Higher-order terms
++ Predictive accuracy versus model interpretability
++ The bias-variance trade off
+
+## Advanced Ideas
+
+:::{.fragment}
+
+We *may* cover some of the following:
+
+:::
+
++ What if my dataset has lots of features?
++ Can we penalize models to avoid overfitting?
++ What happens when relationships change?
++ Are there other classes of regression model?
++ Can we build models that predict a categorical outcome?
+
+## Before Next Class (Part I)
+
+Read Chapter 1 (pages 1 - 14) of the [Introduction to Statistical Learning (ISLR)](https://hastie.su.domains/ISLR2/ISLRv2_website.pdf) book, or watch the corresponding videos from the textbook authors.
+  
++ Discusses three arenas where statistical learning is applied 
+
+  + Regression, Classification, and Unsupervised Learning
+  + Our focus is regression, but knowing about all three will help you grasp what we are trying to do in our class
+
+## Before Next Class (Part II)
+
+Stop by my office (Robert Frost 311), say hi and let's briefly chat about the following: 
+
++ Why are you taking this course? 
++ What do you hope to get out of it?
++ What contexts do you want us to pull data from in our course? (animal physiology, medicine, business/economics, football, etc.)
+
+## Next Time...
+
++ What is statistical learning in terms of regression?
++ Why try to build models (estimate $f$)?
++ What are noise, reducible error, and irreducible error?
++ Why do prediction and interpretation compete?
++ What are parametric and non-parametric models?
++ How do I identify regression versus classification problems?
++ What is the difference between supervised and unsupervised learning?

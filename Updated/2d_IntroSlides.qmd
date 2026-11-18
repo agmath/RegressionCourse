@@ -1,0 +1,1099 @@
+---
+title: "Overview of Statistical Learning (and Competition Overview)"
+author: Dr. Gilbert
+format: revealjs
+fontsize: 24pt
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{css}
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## Comments
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+Data-based models are often built for two competing purposes.
+
+:::
+
+</div>
+
+:::{.fragment}
+
+:::{.callout-note}
+## Inferential versus Predictive Models
+
++ **Inferential Models:** Seek to explain associations between one or more explanatory variables and a corresponding response variable.
++ **Predictive Models:** Seek to predict a response given one or more predictor variables.
+
+:::
+
+:::
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+There are two different circumstances from which we can come at statistics and data projects.
+
+:::
+
+</div>
+
+:::{.fragment}
+
+:::{.callout-note}
+## Exploratory versus Confirmatory Settings
+
++ **Exploratory Settings:** Where we don't yet have well-defined expectations or formal hypotheses generated about associations, patterns, or relationships in our data.
+
+  + The data itself will, at least in part, dictate the direction of our analyses.
++ **Confirmatory Settings:** Where we have generated formal hypotheses or perhaps [even better] officially pre-registered them prior to collecting any data.
+
+:::
+
+:::
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+The scenario we are in dictates the workflow we must use in order to conduct valid inference.
+
+:::
+
+</div>
+
+## Four Modeling Scenarios
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Inferential versus predictive modeling and the exploratory versus confirmatory settings give us four main scenarios under which we can construct data-based models.
+
+:::
+
+:::{.fragment}
+
+<center>
+|   | **Inferential** | **Predictive** |
+|---|:--|:--|
+**Confirmatory** | Beginning from a pre-determined / hypothesized model form, we'll fit the model, assess / test, and interpret the results. | A pre-specified model with a stated performance target, evaluated on new data. |
+| **Exploratory** | Searching for associations, this approach is used for hypothesis-generating at best. | Searching for the best predictive performance over many features, terms, transformations, and more. Many models will be created and must be judged / scored / compared on held-out data.
+</center>
+
+:::
+
+</div>
+
+## Four Modeling Scenarios
+
+<div style="font-size:18pt">
+
+Inferential versus predictive modeling and the exploratory versus confirmatory settings give us four main scenarios under which we can construct data-based models.
+
+<center>
+|   | **Inferential** | **Predictive** |
+|---|:--|:--|
+**Confirmatory** | [Beginning from a pre-determined / hypothesized model form, we'll fit the model, assess / test, and interpret the results.]{style="display:block; border:4px solid #c0392b; border-radius:12px; padding:8px"} | A pre-specified model with a stated performance target, evaluated on new data. |
+| **Exploratory** | Searching for associations, this approach is used for hypothesis-generating at best. | [Searching for the best predictive performance over many features, terms, transformations, and more. Many models will be created and must be judged / scored / compared on held-out data.]{style="display:block; border:4px solid #c0392b; border-radius:12px; padding:8px"}
+</center>
+
+We'll consider the two boxed scenarios throughout our course.
+
+</div>
+
+## Confirmatory-Inferential Setting
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+**Data:** We'll be working with a data set including temporal (time), spatial (location), anatomical, and physiological observations of penguins near the Palmer research station in Antarctica.
+
+:::
+
+:::{.fragment}
+
+**Why It's Confirmatory and Inferential:** While none of us are likely to be experts on penguin physiology, we do have some intuition about animals and body masses.
+
+:::
+
++ We'll be able to hypothesize about intuitive relationships between the available explanatory variables and penguin body mass.
++ Our goal will be to understand how body mass is related to these available explanatory variables rather than to simply predict what a penguin's body mass will be. 
+
+</div>
+
+:::{.fragment}
+
+:::{.callout-warning}
+
+Once we hit the modeling portion of our course (Weeks 4+), we'll be using the penguin data almost daily. We'll hypothesize different model forms each day we meet, so that we can explore different types of associations. In general, we *must* pre-specify our complete model form prior to any model construction in a research project -- otherwise, we're engaging in "data-snooping" or "p-hacking" activities (which are unethical). 
+
+:::
+
+:::
+
+## Confirmatory-Inferential Workflows
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+**Workflow:** From the *confirmatory-inferential* setting, we come to our scenarios with predetermined hypotheses about associations between our relevant explanatory variables and the response we are trying to understand. The general approach is as follows:
+
+:::
+
+1. Define a research question about a response of interest and associated explanatory variables.
+2. Declare a model form that allows testing of the associations cited in the research question.
+3. Collect the relevant data using a simple random sample or well-designed experiment.
+4. Use the collected data to construct the model.
+5. Assess whether the assumptions made around the data and resulting model are reasonably well-satisfied.
+6. Assess and interpret the model to answer the original research question(s).
+
+:::{.fragment}
+
+We won't have the opportunity to collect our own data or design and run our own experiments in this class, so we'll mimic the workflow above to the best of our ability.
+
+:::
+
+</div>
+
+## Exploratory-Predictive Setting
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+**Data:** We'll be working with a data set including temporal (time), spatial (location), weather and more, focused on emergency response times.
+
+:::
+
+:::{.fragment}
+
+**Why It's Exploratory and Predictive:** We likely have much less intuition about what influences emergency response times to roadway incidents (though, certainly not a complete absence of intuition).
+
+:::
+
++ We'll have access to lots and lots of potential predictors and we won't necessarily know which ones will perform best.
++ Our main objective will be to predict how long until emergency services will arrive at a scene, rather than explaining what might lead to longer or shorter wait times.
+
+</div>
+
+## Exploratory-Predictive Workflows
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+**Workflow:** From the *exploratory-predictive* setting, we come to our scenarios without firm hypotheses about which available predictor variables will be most effective at reconstructing the response. We often have many available features and limited intuition. The general approach is as follows:
+
+:::
+
+1. Define and justify a response variable that you'd like to predict.
+2. Determine a metric that will measure predictive performance (usually some sort of accuracy or error metric, often referred to as a *loss* function).
+3. Split your available data into disjoint training, testing, and validation sets.
+4. Conduct an exploratory data analysis on your *training* data to identify the distributions of your variables and to uncover associations between available predictor(s) and your response.
+5. Fit multiple candidate models using the *training* data.
+6. Compare the performance of those models on the *validation* data and with the use of residual plots.
+7. Repeat steps 5 and 6 as necessary.
+8. Once you settle on a final model, estimate that model’s performance on the test set, once, before putting it into production.
+
+:::{.fragment}
+
+In Step 7, we'll use the results on the *validation* set to update our model (including additional predictors, using predictors in different ways, etc.). In this way, the validation data becomes part of the training data, which is why we need a separate *test* set.
+
+:::
+
+</div>
+
+## Statistical Learning versus Machine Learning
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+We'll refer to our *confirmatory-inferential* scenario as ***statistical learning***.
+
+:::
+
+:::{.fragment}
+
+Similarly, we'll refer to our *exploratory-predictive* setting as ***machine learning***.
+
+:::
+
+:::{.fragment}
+
+Note that differentiation between *statistical learning* and *machine learning* is not widely agreed upon, so this framing is simply for convenience within our course.
+
+:::
+
+</div>
+
+<div style="font-size:16pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center>**Statistical Learning**</center>
+
+:::
+
+1. Research Question and Hypotheses
+2. Determine Model Form
+3. Collect Data
+4. Fit Model to Data
+5. Validate Assumptions
+6. Assess and Interpret
+
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center>**Machine Learning**</center>
+
+:::
+
+1. Identify and Justify Response Variable
+2. Determine Performance Metric
+3. Split Data (Train/Validation/Test)
+4. EDA on Training Data
+5. Fit Models to Training Data
+6. Assess Models on Validation Data
+7. Repeat Steps 5 and 6
+8. Identify and Test Final Model
+
+:::
+
+::::
+
+</div>
+
+## Model Fitting in Pictures
+
+:::{.fragment}
+
+Both the *statistical learning* and *machine learning* settings involve fitting models to data, and the process by which those models are fit is the same across the two.
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| message: false
+
+num_pts <- 15
+set.seed(123)
+x <- runif(num_pts, 0, 100)
+y <- (x - 75)^2 + rnorm(num_pts, 0, 350)
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  labs(title = "Our observed data",
+       x = "x", y = "y")
+  
+```
+
+:::
+
+<div style="font-size:18pt">
+
++ **Goal:** Build a model $\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x}$ to explain / predict $y$, given $x$.
++ **Generalized Goal:** Build a model $\displaystyle{\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k}$ to explain / predict $y$ given features $x_1, \cdots, x_k$.
+
+  + $\beta_i$'s are *parameters*, *learned* from training data.
+
+</div>
+
+## Model Fitting in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+x_vals <- seq(0, 100, length.out = 500)
+y_vals <- -750 + 50*x_vals
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) + 
+  labs(title = 'How "good" is the purple model?',
+       x = "x", y = "y")
+```
+
++ This model doesn't capture the general trend between our observed $x$ and $y$ pairs.
+
+## Model Fitting in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+x_vals <- seq(0, 100, length.out = 500)
+y_vals <- 7000 - 60*x_vals
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) + 
+  labs(title = 'Okay, how about this one?',
+       x = "x", y = "y")
+```
+
++ Better job capturing the general trend (*sort of*).
++ Larger $x$ values are associated with smaller $y$ values.
+
+## Model Fitting in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+preds <- 7000 - 60*x
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "Check out those prediction errors",
+       x = "x", y = "y")
+```
+
+## Model Fitting in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+preds <- 7000 - 60*x
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  geom_segment(aes(x = x, xend = x,
+                   y = y, yend = preds),
+               color = "red", 
+               size = 3,
+               alpha = 0.5) + 
+  labs(title = "Check out those prediction errors",
+       x = "x", y = "y",
+       caption = "Reducible error remains")
+```
+
++ Always predicting too high!
+
+  + We should overpredict sometimes and underpredict others. The *average* error should be $0$.
+
+## Model Fitting in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+my_data <- tibble(x = x, y = y)
+
+lin_reg_spec <- linear_reg()
+lin_reg_rec <- recipe(y ~ x, data = my_data)
+lin_reg_wf <- workflow() %>%
+  add_model(lin_reg_spec) %>%
+  add_recipe(lin_reg_rec)
+lin_reg_fit <- lin_reg_wf %>%
+  fit(my_data)
+
+coefs <- lin_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  pull(estimate)
+
+y_vals_lin <- coefs[1] + x_vals*coefs[2]
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "Getting better?",
+       x = "x", y = "y")
+```
+
+## Model Fitting in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+preds <- coefs[1] + x*coefs[2]
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  geom_segment(aes(x = x, xend = x,
+                   y = y, yend = preds),
+               color = "red", 
+               size = 3,
+               alpha = 0.5) + 
+  labs(title = "Getting better?",
+       x = "x", y = "y",
+       caption = "Remaining error is irreducible (at least with this model form)")
+```
+
+## Model Fitting in Pictures
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  geom_segment(aes(x = x, xend = x,
+                   y = y, yend = preds),
+               color = "red", 
+               size = 3,
+               alpha = 0.5) + 
+  labs(title = "Getting better?",
+       x = "x", y = "y")
+```
+
++ Capturing the general trend?
+
+  + ...*mostly*
+
++ Balanced errors?
+
+  + ✓
+
+## How it works
+
+. . . 
+
+In this case, we have $\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x$ and we find $\beta_0$ (intercept) and $\beta_1$ (slope) to minimize the quantity
+
+. . . 
+
+$$\sum_{i = 1}^{n}{\left(y_{\text{obs}_i} - y_{\text{pred}_i}\right)^2}$$
+
+## How it works
+
+In this case, we have $\mathbb{E}\left[y\right] = \beta_0 + \beta_1\cdot x$ and we find $\beta_0$ (intercept) and $\beta_1$ (slope) to minimize the quantity
+
+$$\sum_{i = 1}^{n}{\left(y_{\text{obs}_i} - \left(\beta_0 + \beta_1\cdot x_{\text{obs}_i}\right)\right)^2}$$
+
++ Changing $\beta_0$ and/or $\beta_1$ will change this sum.
+
+## How it works
+
+```{r}
+#| echo: false
+#| message: false
+
+resids <- y - preds
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  geom_rect(aes(xmin = x, xmax = ifelse(x > 50, x - resids*(100/15000), x + resids*(100/15000)),
+                ymin = preds, ymax = preds + resids),
+               color = "red",
+               fill = "red",
+               alpha = 0.25) + 
+  scale_x_continuous(labels = NULL) + 
+  scale_y_continuous(labels = NULL) + 
+  labs(title = "Residual Sum of Squares",
+       x = "x", y = "y",
+       caption = "Note: Not to scale -- axis marks removed for visual purposes")
+```
+
+## Interpreting the Model
+
+. . . 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "What does the model tell us?",
+       x = "x", y = "y")
+```
+
+:::
+
+:::{.column width="50%"}
+
+$\displaystyle{\mathbb{E}\left[y\right] = 3783.21 - 45.3\cdot x}$
+
+:::
+
+::::
+
++ The expected value of $y$ when $x = 0$ is $3783.21$.
++ As $x$ increases, we expect $y$ to decrease (on average).
++ Given a unit increase in $x$, we expect $y$ to decrease by about $45.3$ units.
+
+## Interpreting the Model
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "What does the model tell us?",
+       x = "x", y = "y")
+```
+
+:::
+
+:::{.column width="50%"}
+
+$\displaystyle{\mathbb{E}\left[y\right] = 3783.21 - 45.3\cdot x}$
+
+:::
+
+::::
+
+:::{.nonincremental}
+
++ The <font color="purple">expected</font> value of $y$ when $x = 0$ is $3783.21$.
++ As $x$ increases, we <font color="purple">expect</font> $y$ to decrease (on average).
++ Given a unit increase in $x$, we <font color="purple">expect</font> $y$ to decrease by <font color="purple">about</font> $45.3$ units.
+
+:::
+
+. . .
+
+**Approach to Model Interpretation:** In general, we'll interpret the intercept (when appropriate) and the <font color="purple">expected</font> effect of a unit change in each predictor on the response
+
+## Can we find a *better* model? 
+
+:::{.fragment}
+
+In the *machine learning* setting, we generally seek to improve the predictive performance of our models.
+
+:::
+
+:::{.fragment}
+
+We do this by proposing different model forms.
+
+:::
+
+. . . 
+
+```{r}
+#| echo: false
+#| message: false
+
+my_data <- tibble(x = x, y = y)
+
+poly_reg_spec <- linear_reg()
+poly_reg_rec <- recipe(y ~ x, data = my_data) %>%
+  step_poly(x, degree = 7, options = list(raw = TRUE))
+poly_reg_wf <- workflow() %>%
+  add_model(poly_reg_spec) %>%
+  add_recipe(poly_reg_rec)
+poly_reg_fit <- poly_reg_wf %>%
+  fit(my_data)
+
+y_vals_poly <- poly_reg_fit %>%
+  predict(tibble(x = x_vals)) %>%
+  pull(.pred)
+
+coefs <- poly_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  pull(estimate)
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_poly),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "Wowzers!",
+       x = "x", y = "y")
+```
+
+## Can we interpret this model?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_poly),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "What a great model!",
+       x = "x", y = "y")
+```
+
++ The equation is $\mathbb{E}\left[y\right] \approx 8011.8 - 956.3x + 90.6x^2 - 4.4x^3 +\\ 0.1x^4 - 0.002x^5 + 0.00001x^6 - 0.00000003x^7$ <br/> ...approximately
++ No thanks...
+
+## Do we expect this model to generalize well?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_poly),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "Great fit on past data",
+       x = "x", y = "y")
+```
+
+## Do we expect this model to generalize well?
+
+```{r}
+#| echo: false
+#| message: false
+
+num_new <- 20
+set.seed(456)
+x_new <- c(runif(num_new, 0, 100), 100, 0)
+y_new <- (x_new - 75)^2 + rnorm(num_new + 2, 0, 350)
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_poly),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  geom_point(aes(x = x_new, y = y_new),
+             color = "red",
+             size = 3) +
+  labs(title = "Oh no! Bigger (unexpectedly large) errors with new data",
+       x = "x", y = "y")
+```
+
++ Especially near $x = 0$ and $x = 100$
+
+## Is there a happy medium?
+
+. . . 
+
+```{r}
+#| echo: false
+#| message: false
+
+quad_reg_spec <- linear_reg()
+quad_reg_rec <- recipe(y ~ x, data = my_data) %>%
+  step_poly(x, degree = 2, options = list(raw = TRUE))
+quad_reg_wf <- workflow() %>%
+  add_model(quad_reg_spec) %>%
+  add_recipe(quad_reg_rec)
+quad_reg_fit <- quad_reg_wf %>%
+  fit(my_data)
+
+y_vals_quad <- quad_reg_fit %>%
+  predict(tibble(x = x_vals)) %>%
+  pull(.pred)
+
+coefs <- quad_reg_fit %>%
+  extract_fit_engine() %>%
+  tidy() %>%
+  pull(estimate)
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_quad),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  labs(title = "Something less wiggly",
+       x = "x", y = "y")
+```
+
+## Is there a happy medium?
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) +
+  geom_line(aes(x = x_vals, 
+                y = y_vals_quad),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.75) +
+  geom_point(aes(x = x_new, y = y_new),
+             color = "red",
+             size = 3) + 
+  labs(title = "Something less wiggly",
+       x = "x", y = "y")
+```
+
++ Fits old and new observations similarly well
++ Equation $\displaystyle{\mathbb{E}\left[y\right] \approx 5850.33 - 153.82x + 1.02x^2}$
+
+  + We'll be able to interpret this
+  
+## How do we know what model is *right*?
+
+:::{.fragment}
+
+In the ***statistical learning*** setting, we hypothesize and justify the model form ahead of time. 
+
+:::
+
+:::{.fragment}
+
+In the ***machine learning*** setting, we test many models against one another in an effort to find a model that fits best, but this can lead to *overfitting*. 
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+#| fig.height: 8
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) + 
+  geom_line(aes(x = x_vals, y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.9) + 
+  geom_line(aes(x = x_vals, y = y_vals_quad),
+            color = "darkgreen",
+            lwd = 2,
+            alpha = 0.9) + 
+  geom_line(aes(x = x_vals, y = y_vals_poly),
+            color = "orange",
+            lwd = 2,
+            alpha = 0.9) + 
+  geom_point(aes(x = x_new, y = y_new),
+             color = "red",
+             size = 3) +
+  labs(title = "All three models",
+       x = "x",
+       y = "y")
+```
+
+:::
+
+:::{.column width="50%"}
+
++ The <font color="purple">purple</font> model is *too straight*
++ The <font color="orange">orange</font> model is *too wiggly*
++ The <font color="green">green</font> model is *just right*
+
+:::
+
+::::
+
+## How do we know what model is *right*?
+
+In the ***statistical learning*** setting, we hypothesize and justify the model form ahead of time. 
+
+In the ***machine learning*** setting, we test many models against one another in an effort to find a model that fits best, but this can lead to *overfitting*. 
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+#| fig.height: 8
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3) + 
+  geom_line(aes(x = x_vals, y = y_vals_lin),
+            color = "purple",
+            lwd = 2,
+            alpha = 0.3) + 
+  geom_line(aes(x = x_vals, y = y_vals_quad),
+            color = "darkgreen",
+            lwd = 2) + 
+  geom_line(aes(x = x_vals, y = y_vals_poly),
+            color = "orange",
+            lwd = 2,
+            alpha = 0.3) + 
+  geom_point(aes(x = x_new, y = y_new),
+             color = "red",
+             size = 3) +
+  labs(title = "All three models",
+       x = "x",
+       y = "y")
+```
+
+:::
+
+:::{.column width="50%"}
+
++ We don't want to wait for new data to know we are wrong.
+
+  + Use some of our available data for training
+  + And the rest for validation
+
+:::
+
+::::
+
+## Okay, but our predictions are all wrong...literally!
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+#| fig.height: 8
+
+ggplot() + 
+  geom_point(aes(x = x, y = y),
+             size = 3,
+             alpha = 0.25) + 
+  geom_line(aes(x = x_vals, y = y_vals_quad),
+            color = "darkgreen",
+            lwd = 2) + 
+  geom_point(aes(x = x_new, y = y_new),
+             color = "red",
+             size = 3) +
+  labs(title = "Our best model",
+       x = "x",
+       y = "y")
+```
+
+:::
+
+:::{.column width="50%"}
+
++ "*All models are wrong, but some are useful*", George Box (1976)
++ Predictions will be wrong but, with some assumptions, they have value
+
+:::
+
+::::
+
+## Assumptions: What Needs to Be True?
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+**Assumptions about the data:** 
+
+:::
+
++ The data used are random and representative of population that we want to make claims about (the actual population or the future cases we'll make predictions for).
+
+  + Otherwise, we should not be modeling this way.
+
+:::{.fragment}
+
+**For model and predictions:**
+
+:::
+
++ The model form captures the true average relationship between explanatory/predictor variables and the outcome/response.
++ Residuals (prediction errors) are normally distributed with mean $\mu = 0$ and constant standard deviation $\sigma$.
++ Residuals are independent of one another (watch out for time, location, or repeated measures on the same experimental unit).
+
+  + These assumptions allow construction of confidence intervals around predictions (making our models *right*).
+  
+:::{.fragment}
+
+**For coefficient interpretation:** 
+
+:::
+
++ Explanatory variables are not too strongly correlated with one another (no multicollinearity).
+
+  + We need this for our inferences about associations to be trustworthy.
+
+</div>
+
+## Summary
+
+<div style="font-size:17pt">
+
++ Building models $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$
++ Explaining or predicting a *numerical* response ($y$) given features ($x_i$)
+
+  + In ***statistical learning***, we seek to interpret associations between explanatory variables and an outcome.
+  + In ***machine learning***, we seek to predict a response given a set of associated predictor variables.
++ Need data to build the models
+
+  + The $\beta_i$'s are *parameters* whose values are *learned/estimated* from the data.
+  + In the ***machine learning*** setting, since we aren't using a pre-determined model form, we need to have separate *training* and *validation* data for building and assessing models, to guard against overfitting.
+
++ Model predictions will be wrong
++ As long as the model form is appropriate, residuals (prediction errors) are independent and normally distributed, and the standard deviation of residuals is constant, we can build meaningful confidence intervals for predictions.
++ We can interpret our models to gain insight into relationships between explanatory variables and response
+
+</div>
+
+## Competition Information
+
++ Predict medical insurance payouts
+
++ **Response:** `total_claims`
++ **Predictors:** You have access to nearly 40 explanatory variables which could be useful in predicting the total cost of insuring a subscriber. 
+
+  + Age and demographic information
+  + Household and regional characteristics
+  + Several risk factors
+  + Previous medical history
+  + Plan information
+
+## How this works
+
+<div style="font-size:16pt">
+
++ Six assignments to guide you.
++ You'll take data provided by the insurance company and build models.
++ Kaggle will assess the predictions generated by your models.
++ A live leaderboard will let you know approximately where you stand, using a portion of the competition data.
++ You'll talk with one other about modeling ideas and performance differences. 
++ People *might* choose share their strategies, while others *might not* -- this is a competition after all.
+
+:::{.fragment}
+
+**Clarification:** All work submitted on these competitions must reflect your own analytical thinking and modeling decisions.
+
++ It is acceptable to ask peers for advice and to share what they did, but direct model-based code-sharing is not permitted. 
++ Use of AI tools is limited to debugging or correcting errors in code that you have written.
++ Using AI to generate models, analysis, or interpretations is inconsistent with the goals of these assignments, and is prohibited.
+
+:::
+
+</div>
+
+## Why?
+
++ Interest in homework assignments generally ends after they're turned in and graded.
++ The competition assignments and competitive environment ask you to iterate on previous work.
++ You'll almost surely be interested in what other people have done, especially if their models have performed better than yours.
++ You'll talk with one another about strategies and modeling choices.
++ You'll be motivated to improve your model even between assignments.
+
+## What past students say
+
++ The competition is fun
++ It is motivating
++ I learned more because I wanted to place better in the competition
++ Talking with others about their models made me more confident in my understanding of course material
+
+## What you are building
+
++ An [analytics report](https://agmath.github.io/RegressionCourse/WhatIsAnAnalyticsReport.html)
++ You'll be building models *and* (more importantly) writing about your modeling choices and the performance of your models
++ Six assignments -- each focusing on part(s) of the modeling process and analytics report
++ Prepares you for the final project, where you'll do all this over again on a data set you identified and care about
+
+## Next Time...
+
++ Way fewer slides! <span style="font-size:48pt"> 🤕 </span>
++ An introduction to R
++ Getting our hands dirty!
+
+. . . 
+
+**Homework:** Start [Competition Assignment 1](https://agmath.github.io/RegressionCourse/CA1_StatementOfPurpose.html) -- join the competition, read the details, download the data, and start writing a *Statement of Purpose*

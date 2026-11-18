@@ -36,6 +36,37 @@ a:visited{
 }
 ```
 
+## Before Getting Into Visualization...
+
+<div style="font-size:20pt">
+
+:::{.fragment}
+
+Exploring a data set and calculating summary statistics like we saw at our last class meeting, along with data visualization are components of an *Exploratory Data Analysis* (EDA).
+
+:::
+
+:::{.fragment}
+
+**What Makes a Good EDA?** A good EDA seeks to answer the following:
+
+:::
+
+1. What does my data "look like"? (How many records? How many variables? Is there missing data? etc.)
+2. What is my outcome/response variable? Am I missing any relevant explanatory/predictor variables?
+3. How is my outcome/response variable distributed?
+4. For any explanatory/predictor variables, how are they distributed?
+5. Which of my available explanatory/predictor variables are associated with my outcome/response? Do those associations match my intuition? Are there explanatory/predictor variables showing no association that I am surprised by?
+
+:::{.fragment}
+
+The EDA process is iterated throughout a project, and we'll find more uses for EDA later.
+
+:::
+
+
+</div>
+
 ## The Highlights
 
 + Sample Viz
@@ -53,7 +84,7 @@ a:visited{
 #| message: false
 #| warning: false
 
-p1 <- mpg %>%
+p1 <- mpg |>
   ggplot() + 
   geom_histogram(aes(x = hwy, y = ..density..),
                  color = "black",
@@ -64,29 +95,29 @@ p1 <- mpg %>%
   labs(x = "Highway MPG",
        y = "")
 
-p2 <- mpg %>%
+p2 <- mpg |>
   mutate(
     drv = case_when(
       drv == "f" ~ "Forward Drive",
       drv == "r" ~ "Rear Drive",
       TRUE ~ "Four Wheel"
     )
-  ) %>%
+  ) |>
   ggplot() +
   geom_boxplot(aes(x = cty, y = drv, fill = drv),
                show.legend = FALSE) +
   labs(x = "City MPG",
        y = "")
 
-p3 <- mpg %>%
-  count(class) %>%
+p3 <- mpg |>
+  count(class) |>
   ggplot() +
   geom_col(aes(x = fct_reorder(class, n), y = n)) +
   labs(x = "",
        y = "Count") + 
   coord_flip()
 
-p4 <- mpg %>%
+p4 <- mpg |>
   ggplot() + 
   geom_point(aes(x = cty, y = hwy)) + 
   labs(x = "City MPG", 
@@ -105,19 +136,19 @@ pwk + plot_annotation(
 #| message: false
 #| warning: false
 
-p1 <- mpg %>%
+p1 <- mpg |>
   ggplot() + 
   geom_bar(aes(x = displ)) + 
   labs(x = "Engine Displacement",
        y = "")
 
-p2 <- mpg %>%
+p2 <- mpg |>
   ggplot() +
   geom_point(aes(x = as.factor(year), y = class)) +
   labs(x = "Year",
        y = "")
 
-p3 <- mpg %>%
+p3 <- mpg |>
   ggplot() +
   geom_point(aes(x = cyl, y = cty)) +
   labs(x = "",
@@ -158,13 +189,13 @@ pwk + plot_annotation(
 #| eval: false
 #| code-line-numbers: "|1|2|3|4|1-4"
 
-data %>% #the data to be plotted
+data |> #the data to be plotted
   ggplot() + #initialize a plot
   geom_PLOT_TYPE(aes(...)) + #plot type and required mappings
   labs() #labels for plot
 ```
 
-+ Note we can pipe (`%>%`) a data frame into a plot
++ Note we can pipe (`|>`) a data frame into a plot
 
   + We don't need a data frame though
 
@@ -351,14 +382,6 @@ countdown(minutes = 5)
     + Decide what you like better in this case
 
 3. Provide interpretations of the plots you are seeing
-
-. . .
-
-**Reminder:** You have a fully complete notebook using the `penguins` data on the class webpage.
-
-. . .
-
-> In that notebook, I split the available data into *training* and *testing* sets -- we'll talk about why later on.
 
 ## Next Time...
 

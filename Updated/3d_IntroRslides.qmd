@@ -159,7 +159,7 @@ $\bigstar$ Try these functions to explore your `ems` data
 #| eval: false
 #| code-line-numbers: "|1|2|"
 
-penguins %>%
+penguins |>
   head()
 ```
 
@@ -201,9 +201,9 @@ $\bigstar$ We'll try answering some of those questions now!
 #| echo: true
 #| eval: false
 
-penguins %>%
-  filter(species == "Gentoo") %>%
-  group_by(island) %>%
+penguins |>
+  filter(species == "Gentoo") |>
+  group_by(island) |>
   summarize(
     avg_mass = mean(body_mass_g)
   )
@@ -224,9 +224,9 @@ penguins %>%
 #| echo: true
 #| eval: false
 
-penguins <- penguins %>%
-  filter(species == "Gentoo") %>%
-  group_by(island) %>%
+penguins <- penguins |>
+  filter(species == "Gentoo") |>
+  group_by(island) |>
   summarize(
     avg_mass = mean(body_mass_g)
   )

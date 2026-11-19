@@ -1,0 +1,57 @@
+---
+title: "Statistical Inference for Regression (Day 8 Shell)"
+format: html
+theme: flatly
+date: today
+date-format: long
+toc: true
+---
+
+```{r}
+#| label: setup
+#| echo: true
+#| eval: true
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(tidymodels)
+```
+
+## Purpose
+
+To be written...
+
+## Reading in Data
+
+```{r}
+toy_data <- read_csv("https://raw.githubusercontent.com/agmath/RegressionCourse/refs/heads/main/Updated/toy_data_day8.csv")
+
+toy_data |> 
+  head(n = 2)
+```
+
+## Hypothesized Model Form
+
+$$y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4 + \varepsilon$$
+
+<center>...or, equivalently...</center>
+
+$$\mathbb{e}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$
+
+## Construct a Model
+
+Assume we're in a statistical learning scenario. Use what you know about the `{tidymodels}` modeling framework to construct the linear regression model corresponding to the hypothesized model form above.
+
+```{r}
+
+```
+
+## Assess the Model Quality and Fit
+
+Use the `{tidymodels}` framework to assess both the global and term-based model quality metrics.
+
+```{r}
+
+```
+

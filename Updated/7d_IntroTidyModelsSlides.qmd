@@ -1,0 +1,899 @@
+---
+title: "`{tidymodels}` Overview"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+
+ems <- read_csv("https://raw.githubusercontent.com/agmath/RegressionCourse/refs/heads/main/Updated/ems_response_times.csv")
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## A Reminder About Our Goals
+
+```{r}
+set.seed(123)
+num_pts <- 20 
+
+x <- runif(num_pts, min = 0, max = 100)
+y <- 7*x + 2 + rnorm(num_pts, mean = 0, sd = 100)
+
+motivation_df <- tibble(
+  x = x,
+  y = y
+)
+
+mot_lr_spec <- linear_reg() 
+mot_lr_rec <- recipe(y ~ x, data = motivation_df)
+mot_lr_wf <- workflow() %>%
+  add_model(mot_lr_spec) %>%
+  add_recipe(mot_lr_rec)
+
+mot_lr_fit <- mot_lr_wf %>%
+  fit(motivation_df)
+
+plot_data <- tibble(
+  x = seq(0, 100, length.out = 250),
+)
+
+plot_data <- mot_lr_fit %>%
+  augment(plot_data) %>%
+  bind_cols(
+    mot_lr_fit %>%
+      predict(plot_data, type = "conf_int") %>%
+      rename(.conf_lower = .pred_lower,
+             .conf_upper = .pred_upper)
+  ) %>%
+  bind_cols(
+    mot_lr_fit %>%
+      predict(plot_data, type = "pred_int")
+  )
+
+ggplot() + 
+  geom_ribbon(data = plot_data,
+              aes(x = x, ymin = .pred_lower, ymax = .pred_upper),
+              fill = "grey",
+              alpha = 0.3) + 
+  geom_ribbon(data = plot_data,
+              aes(x = x, ymin = .conf_lower, ymax = .conf_upper),
+              fill = "grey",
+              alpha = 0.6) + 
+  geom_line(data = plot_data,
+            aes(x = x, y = .pred),
+            color = "blue",
+            lwd = 2) +
+  geom_point(data = motivation_df,
+             aes(x = x, y = y)) + 
+  labs(title = "Let's Model y, given x", 
+       x = "x",
+       y = "y")
+```
+
+. . .
+
+So...how do we do it?
+
+## The Highlights {.smaller}
+
+<div style="font-size:15pt">
+
+:::{.fragment}
+
+The approach we use will depend on the setting we find ourselves in: ***Statistical Learning*** (confirmatory/inferential) or ***Machine Learning*** (exploratory/predictive).
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+**Statistical Learning:**
+
+:::
+
++ Hypothesize a model form
++ Build a model using the `{tidymodels}` framework
+  
+  + Model specification (model class)
+  + Recipe (defining the response, features, and transformations)
+  + Workflow (pair specification and recipe)
+  + Fit the workflow to the data
+
++ Assess model quality and fit
+
+  + Global model metrics
+  + Term-based assessments
+
++ Interpret the model
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+**Machine Learning:**
+
+:::
+
++ Obtain training and validation data set(s)
++ EDA on training data
++ Build a model using the `{tidymodels}` framework
+  
+  + Model specification (model class)
+  + Recipe (defining the response, features, and transformations)
+  + Workflow (pair specification and recipe)
+  + Fit the workflow to training data
+
++ Assess model performance
+
+  + Global performance metrics (training data)
+  + Compare predictive performance on training and validation data
+  + We'll add more assessment techniques later
+
++ Iterate
++ Evaluate final model on test data and make new predictions
+
+:::
+
+::::
+
+</div>
+
+## Two Data Sets
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Each day we discuss regression models, we'll split time between modeling in the ***statistical learning*** and ***machine learning*** contexts.
+
+:::
+
+:::{.fragment}
+
+We'll use two separate data sets -- one for each context.
+
+:::
+
+:::{.fragment}
+
+**Statistical Learning:** We'll use data on penguins observed near Palmer Research Station in Antarctica.
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+penguins |>
+  head(n = 2) |>
+  kable()
+```
+
+:::
+
+:::{.fragment}
+
+**Machine Learning:** Emergency medical service response times.
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+ems |>
+  head(n = 2) |>
+  kable()
+```
+
+:::
+
+</div>
+
+## Statistical Learning
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+In our *statistical learning* context, we come to the scenario with a hypothesis about the association between a response and available explanatory variable(s).
+
+:::
+
+:::{.fragment}
+
+**The Objective:** We'll hypothesize and examine relationships between anatomical, physiological, spatial, and temporal variables with penguin body mass.
+
+:::
+
+:::{.fragment}
+
+**1. Hypothesis:** Penguin body mass is associated with penguin flipper length.
+
+:::
+
+:::{.fragment}
+
+**2. Hypothesized Model Form:** There are two forms in which we can write our models...
+
+:::
+
+:::{.fragment}
+
+$$\text{body mass} = \beta_0 + \beta_1\cdot\left(\text{flipper length}\right) + \varepsilon$$
+
+:::
+
+:::{.fragment}
+
+$$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{flipper length}\right)$$
+
+:::
+
+:::{.fragment}
+
+**3. Corresponding Hypothesis Test:** Just like in introductory statistics, we write a corresponding null (skeptical) hypothesis and an alternative hypothesis reflecting our original hypothesized relationship in item 1.
+
+:::
+
+:::{.fragment}
+
+$$\begin{array}{lcl} H_0 & : & \beta_1 = 0\\ H_a & : & \beta_1 \neq 0\end{array}$$
+
+:::
+
+</div>
+
+## Statistical Learning
+
+<div style="font-size:18pt">
+
+**1. Hypothesis:** Penguin body mass is associated with penguin flipper length.
+
+**2. Hypothesized Model Form:** $\displaystyle{\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{flipper length}\right)}$
+
+**3. Corresponding Hypothesis Test:** $\displaystyle{\begin{array}{lcl} H_0 & : & \beta_1 = 0\\ H_a & : & \beta_1 \neq 0\end{array}}$
+
+:::{.fragment}
+
+**4. Construct the Model:** We'll use the `{tidymodels}` framework to construct the model. It happens in four steps...(i) `specification`, (ii) `recipe`, (iii) `workflow`, and (iv) `fit`. 
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "|1-2|4|6-8|10-12|"
+
+lr_spec <- linear_reg() |>
+  set_engine("lm")
+
+lr_rec <- recipe(body_mass_g ~ flipper_length_mm, data = penguins)
+
+lr_wf <- workflow() |>
+  add_model(lr_spec) |>
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf |>
+  fit(penguins)
+```
+
+:::
+
+</div>
+
+## Statistical Learning
+
+<div style="font-size:18pt">
+
+**1. Hypothesis:** Penguin body mass is associated with penguin flipper length.
+
+**2. Hypothesized Model Form:** $\displaystyle{\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{flipper length}\right)}$
+
+**3. Corresponding Hypothesis Test:** $\displaystyle{\begin{array}{lcl} H_0 & : & \beta_1 = 0\\ H_a & : & \beta_1 \neq 0\end{array}}$
+
+**4. Construct the Model:** We'll use the `{tidymodels}` framework to construct the model. It happens in four steps...(i) `specification`, (ii) `recipe`, (iii) `workflow`, and (iv) `fit`. 
+
+:::{.fragment}
+
+**5. Assess the Model Quality:** Assess the quality of the overall model and individual model terms.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center> **Global**</center>
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  glance() |>
+  kable()
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center> **Individual Terms**</center>
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  tidy() |>
+  kable()
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+We'll discuss what all of this output means and what it tells us soon!
+
+:::
+
+</div>
+
+## Statistical Learning
+
+<div style="font-size:18pt">
+
+**1. Hypothesis:** Penguin body mass is associated with penguin flipper length.
+
+**2. Hypothesized Model Form:** $\displaystyle{\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{flipper length}\right)}$
+
+**3. Corresponding Hypothesis Test:** $\displaystyle{\begin{array}{lcl} H_0 & : & \beta_1 = 0\\ H_a & : & \beta_1 \neq 0\end{array}}$
+
+**4. Construct the Model:** We'll use the `{tidymodels}` framework to construct the model. It happens in four steps...(i) `specification`, (ii) `recipe`, (iii) `workflow`, and (iv) `fit`. 
+
+**5. Assess the Model Quality:** Assess the quality of the overall model and individual model terms.
+
+:::{.fragment}
+
+**6. Interpret the Model:** If model quality is sufficient, interpret the resulting model as it pertains to your initial hypothesis.
+
+:::
+
+</div>
+
+## `{tidymodels}` Summary for Statistical Learning
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+We'll use the `{tidymodels}` framework for constructing our models in MAT300. 
+
+:::
+
+:::{.fragment}
+
+This framework just determines how we'll approach model construction, assessment, and utilization through code.
+
+:::
+
+:::{.fragment}
+
+All of the code we'll need to get started in the ***statistical learning*** setting is summarized below:
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+#Model Construction
+model_spec <- linear_reg() |>
+  set_engine("lm")
+
+model_rec <- recipe(outcome ~ explanatory_1 + explanatory_2 + ... + explanatory_k, data = my_data)
+
+model_wf <- workflow() |>
+  add_model(model_spec) |>
+  add_recipe(model_rec)
+
+model_fit <- model_wf |>
+  fit(my_data)
+
+#Model Quality Assessment
+model_fit |>
+  glance()
+
+model_fit |>
+  tidy()
+```
+
+:::
+
+</div>
+
+## Machine Learning
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+In our *machine learning* context, we seek to identify a best-possible predictive model.
+
+:::
+
+:::{.fragment}
+
+**The Objective:** Given information about an EMS call, predict the response time as accurately as possible.
+
+:::
+
+:::{.fragment}
+
+**1. Define the Outcome Variable:** Total response time, in minutes.
+
+:::
+
+:::{.fragment}
+
+**2. Define the Performance Measure:** We'll need to define how *accuracy* will be measured. There are [many options for regression scenarios](https://yardstick.tidymodels.org/reference/index.html#regression-metrics) -- root mean squared error, mean absolute error, and r-squared are metrics we'll work with in MAT300.
+
+:::
+
+:::{.fragment}
+
+Here, we'll use root mean squared error (RMSE):
+
+:::
+
+:::{.fragment}
+
+$$\text{RMSE} = \sqrt{\frac{\sum_{i = 1}^{n}{\left(y_{\text{actual}} - y_{\text{predicted}}\right)^2}}{n}}$$
+
+:::
+
+</div>
+
+## Machine Learning
+
+<div style="font-size:18pt">
+
+**The Objective:** Given information about an EMS call, predict the response time as accurately as possible.
+
+**1. Define the Outcome Variable:** Total response time, in minutes.
+
+**2. Define the Performance Measure:** $\displaystyle{\text{RMSE} = \sqrt{\frac{\sum_{i = 1}^{n}{\left(y_{\text{actual}} - y_{\text{predicted}}\right)^2}}{n}}}$
+
+:::{.fragment}
+
+**3. Split Data:** We'll need data to *train* our models on and separate data set(s) to assess them on.
+
+:::
+
+:::{.fragment}
+
+For now, we'll obtain a `train`ing set, a `validation` set, and a final `test`ing set.
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "|1|3|5-7|5|6|7|"
+
+set.seed(300)
+
+data_splits <- initial_validation_split(ems, prop = c(0.8, 0.15))
+
+train <- training(data_splits)
+validation <- validation(data_splits)
+test <- testing(data_splits)
+```
+
+:::
+
+</div>
+
+## Machine Learning
+
+<div style="font-size:18pt">
+
+**The Objective:** Given information about an EMS call, predict the response time as accurately as possible.
+
+**1. Define the Outcome Variable:** Total response time, in minutes.
+
+**2. Define the Performance Measure:** $\displaystyle{\text{RMSE} = \sqrt{\frac{\sum_{i = 1}^{n}{\left(y_{\text{actual}} - y_{\text{predicted}}\right)^2}}{n}}}$
+
+::::{.columns}
+
+:::{.column width="15%"}
+
+**3. Split Data:** 
+
+:::
+
+:::{.column width="85%"}
+
+```{r}
+#| echo: true
+#| eval: true
+
+set.seed(300)
+
+data_splits <- initial_validation_split(ems, prop = c(0.8, 0.15))
+
+train <- training(data_splits)
+validation <- validation(data_splits)
+test <- testing(data_splits)
+```
+
+:::
+
+::::
+
+:::{.fragment}
+
+**4. Conduct EDA on Training Data:** (Omitted here, for time)
+
+:::
+
+:::{.fragment}
+
+**5. Build Models:** Use the same `{tidymodels}` framework as we saw earlier, but be sure to only use the `train`ing data!
+
+:::
+
+</div>
+
+## Machine Learning
+
+<div style="font-size:18pt">
+
+**The Objective:** Given information about an EMS call, predict the response time as accurately as possible.
+
+**1. Define the Outcome Variable:** Total response time, in minutes.
+
+**2. Define the Performance Measure:** $\displaystyle{\text{RMSE} = \sqrt{\frac{\sum_{i = 1}^{n}{\left(y_{\text{actual}} - y_{\text{predicted}}\right)^2}}{n}}}$
+
+**3. Split Data:** Obtain training data and validation set(s).
+
+**4. Conduct EDA on Training Data:** (Omitted here, for time)
+
+**5. Build Models:** Use the same `{tidymodels}` framework as we saw earlier, but be sure to only use the `train`ing data!
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-line-numbers: "|1-2|4|6-8|10-11|"
+
+lr_spec <- linear_reg() |>
+  set_engine("lm")
+
+lr_rec <- recipe(response_time_min ~ distance_mi + traffic_index, data = train)
+
+lr_wf <- workflow() |>
+  add_model(lr_spec) |>
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf |>
+  fit(train)
+```
+
+:::
+
+</div>
+
+## Machine Learning
+
+<div style="font-size:18pt">
+
+**The Objective:** Given information about an EMS call, predict the response time as accurately as possible.
+
+**1. Define the Outcome Variable:** Total response time, in minutes.
+
+**2. Define the Performance Measure:** $\displaystyle{\text{RMSE} = \sqrt{\frac{\sum_{i = 1}^{n}{\left(y_{\text{actual}} - y_{\text{predicted}}\right)^2}}{n}}}$
+
+**3. Split Data:** Obtain training data and validation set(s).
+
+**4. Conduct EDA on Training Data:** (Omitted here, for time)
+
+**5. Build Models:** Use the same `{tidymodels}` framework as we saw earlier, but be sure to only use the `train`ing data!
+
+:::{.fragment}
+
+**6. Assess Model Performance:** Measure how well our model performs with respect to our performance metric using in sample (`train`ing) and out of sample (`validation`) data.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center> **Training**</center>
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  augment(train) |>
+  rmse(response_time_min, .pred)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  augment(train) |>
+  rmse(response_time_min, .pred) |>
+  kable()
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center> **Validation**</center>
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  augment(validation) |>
+  rmse(response_time_min, .pred)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  augment(validation) |>
+  rmse(response_time_min, .pred) |>
+  kable()
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Machine Learning
+
+<div style="font-size:18pt">
+
+**The Objective:** Given information about an EMS call, predict the response time as accurately as possible.
+
+**1. Define the Outcome Variable:** Total response time, in minutes.
+
+**2. Define the Performance Measure:** $\displaystyle{\text{RMSE} = \sqrt{\frac{\sum_{i = 1}^{n}{\left(y_{\text{actual}} - y_{\text{predicted}}\right)^2}}{n}}}$
+
+**3. Split Data:** Obtain training data and validation set(s).
+
+**4. Conduct EDA on Training Data:** (Omitted here, for time)
+
+**5. Build Models:** Use the same `{tidymodels}` framework as we saw earlier, but be sure to only use the `train`ing data!
+
+**6. Assess Model Performance:** Measure how well our model performs with respect to our performance metric using in sample (`train`ing) and out of sample (`validation`) data.
+
+:::{.fragment}
+
+**7. Iterate:** Now you have a benchmark out of sample (`validation`) performance metric. Iterate by constructing new models and trying to improve your metric. Your best performing model always becomes your next benchmark.
+
+:::
+
+</div>
+
+## `{tidymodels}` Summary for Machine Learning
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+All of the code we'll need to get started in the ***machine learning*** setting is summarized below:
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+#Split Data
+set.seed(300)
+data_splits <- initial_validation_split(my_data, prop = c(0.8, 0.15))
+train <- training(data_splits)
+validation <- validation(data_splits)
+test <- testing(data_splits)
+
+#Model Construction
+model_spec <- linear_reg() |>
+  set_engine("lm")
+
+model_rec <- recipe(outcome ~ explanatory_1 + explanatory_2 + ... + explanatory_k, data = train)
+
+model_wf <- workflow() |>
+  add_model(model_spec) |>
+  add_recipe(model_rec)
+
+model_fit <- model_wf |>
+  fit(train)
+
+#Model Performance Assessment
+model_fit |>
+  augment(validation) |>
+  rmse(outcome, .pred)
+```
+
+:::
+
+</div>
+
+## Wrap-Up Summary
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+We still have much more work to do in order to learn how regression works and what our models actually tell us.
+
+:::
+
+:::{.fragment}
+
+Today, we learned a little bit more about the differences (and the similarities) between the ***statistical learning*** and ***machine learning*** settings that we'll encounter in MAT300.
+
+:::
+
+:::{.fragment}
+
+Because we're learning from our data in the ***machine learning*** setting, we need to split our data into subsets that we can *learn* from and then separate sets that we can *validate* and *test* on, to reduce the likelihood that we're just interpreting "noise" in the data.
+
+:::
+
+:::{.fragment}
+
+We don't do this in the ***statistical learning*** setting because we've already come to the modeling project with hypotheses we'd like to test, prior to looking at the data.
+
+:::
+
+:::{.fragment}
+
+The *model construction* code in the `{tidymodels}` framework is the same in both settings.
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_spec <- linear_reg() |>
+  set_engine("lm")
+
+lr_rec <- recipe(outcome ~ explanatory_1 + explanatory_2 + ... + explanatory_k, data = my_data_or_train)
+
+lr_wf <- workflow() |>
+  add_model(lr_spec) |>
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf |>
+  fit(my_data_or_train)
+```
+
+:::
+
+</div>
+
+## Next Time...
+
+<center>
+
+<font size="120pt">A review of hypothesis testing and confidence intervals</font>
+
+</center>

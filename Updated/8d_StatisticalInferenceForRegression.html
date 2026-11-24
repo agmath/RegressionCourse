@@ -388,6 +388,18 @@
   </style>
   <script src="8d_StatisticalInferenceForRegression_files/libs/kePrint-0.0.1/kePrint.js"></script>
   <link href="8d_StatisticalInferenceForRegression_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+  <script>
+  window.MathJax = {
+    loader: {
+      load: ['[tex]/cancel'],
+      },
+    tex: {
+      packages: {
+        '[+]': ['cancel']
+      }
+    }
+  };
+  </script>
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -448,7 +460,7 @@ a:visited {
 <p><strong>Note:</strong> While statistical inference techniques will be more present in our <strong><em>statistical learning</em></strong> settings, we’ll still need some of them in the <strong><em>machine learning</em></strong> setting.</p>
 </div>
 <div class="fragment">
-<p>In particular, we should have no expectation that our models make perfectly accurate predictions. We’ll need to report intervals within which we expect a future observation to fall within, and then perhaps make further use of those intervals if we wish to report a singular value.</p>
+<p>In particular, we should have no expectation that our models make perfectly accurate predictions. We’ll need to report intervals within which we expect a future observation to fall, and then perhaps make further use of those intervals if we wish to report a singular value.</p>
 </div>
 </section>
 <section id="playing-along" class="slide level2">
@@ -700,7 +712,7 @@ or, equivalently…
 <h2>Consequences of the Tests</h2>
 <div style="font-size:14pt">
 <div class="fragment" data-fragment-index="1">
-<p>As long as the assumptions underlying the model construction are approximately satisfied, then the <strong><em>Global Test for Model Utility</em></strong> will tell us whether the data provides evidence to suggest that at least one of the model terms has explanatory value, and the <strong><em>Term-Based Tests</em></strong> will tell us which terms those are.</p>
+<p>As long as the assumptions underlying the model construction are approximately satisfied, then the <strong><em>Global Test for Model Utility</em></strong> will tell us whether the data provides evidence to suggest that at least one of the model terms has explanatory value, and the <strong><em>Term-Based Tests</em></strong> will tell us which terms those are, controlling for the other model terms.</p>
 </div>
 <div class="fragment" data-fragment-index="2">
 <p>We’ll look at the modeling assumptions at our next class meeting but, for now, we’ll focus on interpreting the output.</p>
@@ -839,7 +851,6 @@ or, equivalently…
 <section id="consequences-of-the-tests-contd." class="slide level2">
 <h2>Consequences of the Tests (Cont’d.)</h2>
 <div style="font-size:14pt">
-<div class="fragment">
 <div class="columns">
 <div class="column" style="width:50%;">
 <p><strong>Model Form:</strong></p>
@@ -960,7 +971,6 @@ or, equivalently…
 </div>
 </div>
 <p><strong>Term-Based Tests:</strong> The data provide evidence suggesting that <code>x1</code> and <code>x2</code> have explanatory value, but that <code>x3</code> and <code>x4</code> may not, due to their high p-values.</p>
-</div>
 <div class="fragment">
 <p><strong>Next Action:</strong> Since the <strong><em>Global Test for Model Utility</em></strong> indicated that our model has explanatory value but some of our explanatory variables are not statistically significant, we’ll need to reduce the model.</p>
 </div>
@@ -977,20 +987,26 @@ or, equivalently…
 <div class="fragment" data-fragment-index="1">
 <p>We’ll drop <code>x4</code> from the model and re-fit it. Note that dropping one variable from the model will change all fitted coefficients, standard errors, tests statistics, p-values, and other performance metrics so <strong><em>we should only ever drop one explanatory variable at a time</em></strong>.</p>
 </div>
+</div>
 <div class="columns">
 <div class="column" style="width:50%;">
+<div style="font-size:12pt">
 <div class="fragment" data-fragment-index="2">
 <p><strong>Model Form:</strong></p>
-<p><span class="math display">\[\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4\]</span></p>
+<p><span class="math display">\[\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 \cancel{+ \beta_4 x_4}\]</span></p>
 <p><strong>Global Test for Model Utility:</strong></p>
-<p><span class="math display">\[\begin{array}{lcl} H_0 &amp; : &amp; \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a &amp; : &amp; \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}\]</span></p>
+<p><span class="math display">\[\begin{array}{lcl} H_0 &amp; : &amp; \beta_1 = \beta_2 = \beta_3 \cancel{= \beta_4} = 0\\ H_a &amp; : &amp; \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}\]</span></p>
 <p><strong>Term-Based Tests:</strong></p>
-<p><span class="math display">\[\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}\]</span></p>
+<p><span class="math display">\[\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\cancel{\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}}\]</span></p>
 </div>
+</div>
+<div style="font-size:14pt">
 <div class="fragment" data-fragment-index="4">
 <p>Now we’ll re-run the tests on the newly fitted model.</p>
 </div>
+</div>
 </div><div class="column" style="width:50%;">
+<div style="font-size:14pt">
 <div class="fragment" data-fragment-index="3">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>lr_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span></span>
@@ -1017,19 +1033,25 @@ or, equivalently…
 <p><strong>Next Action:</strong> Since the <strong><em>Global Test for Model Utility</em></strong> indicated that our model has explanatory value but some of our explanatory variables are not statistically significant, we’ll need to reduce the model.</p>
 <p>We’ll do this by removing the explanatory variable with the <em>least</em> evidence for inclusion (that’s the one with the highest p-value).</p>
 <p>We’ll drop <code>x4</code> from the model and re-fit it. Note that dropping one variable from the model will change all fitted coefficients, standard errors, tests statistics, p-values, and other performance metrics so <strong><em>we should only ever drop one explanatory variable at a time</em></strong>.</p>
+</div>
 <div class="columns">
 <div class="column" style="width:50%;">
+<div style="font-size:12pt">
 <p><strong>Model Form:</strong></p>
-<p><span class="math display">\[\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4\]</span></p>
+<p><span class="math display">\[\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 \cancel{+ \beta_4 x_4}\]</span></p>
 <p><strong>Global Test for Model Utility:</strong></p>
-<p><span class="math display">\[\begin{array}{lcl} H_0 &amp; : &amp; \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a &amp; : &amp; \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}\]</span></p>
+<p><span class="math display">\[\begin{array}{lcl} H_0 &amp; : &amp; \beta_1 = \beta_2 = \beta_3 \cancel{= \beta_4} = 0\\ H_a &amp; : &amp; \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}\]</span></p>
 <p><strong>Term-Based Tests:</strong></p>
-<p><span class="math display">\[\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}\]</span></p>
+<p><span class="math display">\[\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\cancel{\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}}\]</span></p>
+</div>
+<div style="font-size:14pt">
 <p>Now we’ll re-run the tests on the newly fitted model.</p>
 <div class="fragment" data-fragment-index="3">
 <p><strong>Results:</strong> Notice that the p-value corresponding to <code>x3</code> still fails to indicate statistical significance. We’ll remove it and refit the model.</p>
 </div>
+</div>
 </div><div class="column" style="width:50%;">
+<div style="font-size:14pt">
 <div class="fragment" data-fragment-index="1">
 <center>
 <strong>Global Test for Model Utility</strong>
@@ -1144,15 +1166,19 @@ or, equivalently…
 <div style="font-size:14pt">
 <p><strong>Next Action:</strong> Since the <strong><em>Global Test for Model Utility</em></strong> indicated that our model has explanatory value but some of our explanatory variables are not statistically significant, we’ll need to reduce the model.</p>
 <p>The p-value corresponding to <code>x3</code> still fails to indicate statistical significance. We’ll remove it, refit, and reassess the model.</p>
+</div>
 <div class="columns">
 <div class="column" style="width:50%;">
+<div style="font-size:12pt">
 <p><strong>Model Form:</strong></p>
-<p><span class="math display">\[\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4\]</span></p>
+<p><span class="math display">\[\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 \cancel{+ \beta_3 x_3} \cancel{+ \beta_4 x_4}\]</span></p>
 <p><strong>Global Test for Model Utility:</strong></p>
-<p><span class="math display">\[\begin{array}{lcl} H_0 &amp; : &amp; \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a &amp; : &amp; \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}\]</span></p>
+<p><span class="math display">\[\begin{array}{lcl} H_0 &amp; : &amp; \beta_1 = \beta_2 \cancel{= \beta_3} \cancel{= \beta_4} = 0\\ H_a &amp; : &amp; \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}\]</span></p>
 <p><strong>Term-Based Tests:</strong></p>
-<p><span class="math display">\[\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}\]</span></p>
+<p><span class="math display">\[\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\cancel{\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}}~~~\cancel{\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}}\]</span></p>
+</div>
 </div><div class="column" style="width:50%;">
+<div style="font-size:14pt">
 <div class="fragment" data-fragment-index="1">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href=""></a>lr_spec <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span></span>
@@ -1174,6 +1200,8 @@ or, equivalently…
 </div>
 </div>
 </div>
+</div>
+<div style="font-size:14pt">
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="fragment" data-fragment-index="2">
@@ -1512,7 +1540,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 </div>
 </div>
 <div class="fragment">
-<p><strong>Sample Interpretation:</strong> We are 95% confident that, holding <code>x2</code> fixed, each one-unit increase in <code>x1</code> is associated with an average increase between about 1.66 and 6.46 units in <code>y</code>.</p>
+<p><strong>Sample Interpretation:</strong> We are 95% confident that, holding <code>x2</code> fixed, each one-unit increase in <code>x1</code> is associated with an average increase of between about 1.66 and 6.46 units in <code>y</code>.</p>
 </div>
 </div>
 </section>
@@ -1548,7 +1576,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <p>The formula for confidence intervals on predictions is complex!</p>
 </div>
 <div class="fragment">
-<p><span class="math display">\[\displaystyle{\left(\tt{point~estimate}\right)\pm t^*_{\text{df}}\cdot \left(\tt{RMSE}\right)\left(\sqrt{\frac{1}{n} + \frac{(x_{new} - \bar{x})^2}{\sum{\left(x - \bar{x}\right)^2}}}\right)}\]</span></p>
+<p><span class="math display">\[\displaystyle{\left(\tt{point~estimate}\right)\pm t^*_{\text{df}}\cdot \left(\substack{\text{Residual}\\ \text{Standard}\\ \text{Error}}\right)\left(\sqrt{\frac{1}{n} + \frac{(x_{new} - \bar{x})^2}{\sum{\left(x - \bar{x}\right)^2}}}\right)}\]</span></p>
 </div>
 <div class="fragment">
 <p>We’ll use R to construct these intervals for us.</p>
@@ -2225,7 +2253,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <p><strong><em>Confidence intervals</em></strong> are useful for capturing the <em>average</em> response given values of the explanatory/predictor variables.</p>
 </div>
 <div class="fragment">
-<p>Often times though, we are more interested in predicting an <em>individual</em> response – <strong><em>prediction intervals</em></strong> will do that.</p>
+<p>Often though, we are more interested in predicting an <em>individual</em> response – <strong><em>prediction intervals</em></strong> will do that.</p>
 </div>
 <div class="fragment">
 <p>There’s more uncertainty associated with predicting an <em>individual</em> response than an <em>average</em> response though, so these prediction intervals will be wider than the corresponding confidence intervals.</p>
@@ -2252,7 +2280,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <span id="cb18-16"><a href=""></a>            <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span> </span>
 <span id="cb18-17"><a href=""></a>  <span class="fu">labs</span>(</span>
 <span id="cb18-18"><a href=""></a>    <span class="at">title =</span> <span class="st">"Model with Prediction Intervals"</span>,</span>
-<span id="cb18-19"><a href=""></a>    <span class="at">subtitle =</span> <span class="st">"(for an individual response)"</span>,</span>
+<span id="cb18-19"><a href=""></a>    <span class="at">subtitle =</span> <span class="st">"(for individual responses)"</span>,</span>
 <span id="cb18-20"><a href=""></a>    <span class="at">x =</span> <span class="st">"x1"</span>,</span>
 <span id="cb18-21"><a href=""></a>    <span class="at">y =</span> <span class="st">"y"</span></span>
 <span id="cb18-22"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -2899,7 +2927,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <h2>Both Intervals Together</h2>
 <div style="font-size:15pt">
 <p><strong><em>Confidence intervals</em></strong> are useful for capturing the <em>average</em> response given values of the explanatory/predictor variables.</p>
-<p>Often times though, we are more interested in predicting an <em>individual</em> response – <strong><em>prediction intervals</em></strong> will do that.</p>
+<p>Often though, we are more interested in predicting an <em>individual</em> response – <strong><em>prediction intervals</em></strong> will do that.</p>
 <p>There’s more uncertainty associated with predicting an <em>individual</em> response than an <em>average</em> response though, so these prediction intervals will be wider than the corresponding confidence intervals.</p>
 <div class="columns">
 <div class="column" style="width:45%;">
@@ -2926,11 +2954,10 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <span id="cb19-20"><a href=""></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> .pred), </span>
 <span id="cb19-21"><a href=""></a>            <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span> </span>
 <span id="cb19-22"><a href=""></a>  <span class="fu">labs</span>(</span>
-<span id="cb19-23"><a href=""></a>    <span class="at">title =</span> <span class="st">"Model with Confidence Intervals"</span>,</span>
-<span id="cb19-24"><a href=""></a>    <span class="at">subtitle =</span> <span class="st">"(for average response)"</span>,</span>
-<span id="cb19-25"><a href=""></a>    <span class="at">x =</span> <span class="st">"x1"</span>,</span>
-<span id="cb19-26"><a href=""></a>    <span class="at">y =</span> <span class="st">"y"</span></span>
-<span id="cb19-27"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-23"><a href=""></a>    <span class="at">title =</span> <span class="st">"Model with Confidence and Prediction Intervals"</span>,</span>
+<span id="cb19-24"><a href=""></a>    <span class="at">x =</span> <span class="st">"x1"</span>,</span>
+<span id="cb19-25"><a href=""></a>    <span class="at">y =</span> <span class="st">"y"</span></span>
+<span id="cb19-26"><a href=""></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="width:55%;">
 <div class="cell">
@@ -2962,800 +2989,800 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <td style="text-align: right;">-1.1840074</td>
 <td style="text-align: right;">-6.7115712</td>
 <td style="text-align: right;">4.343556</td>
-<td style="text-align: right;">-6.7115712</td>
-<td style="text-align: right;">4.343556</td>
+<td style="text-align: right;">-15.1256841</td>
+<td style="text-align: right;">12.75767</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">0.1010101</td>
 <td style="text-align: right;">-0.7371018</td>
 <td style="text-align: right;">-6.1651401</td>
 <td style="text-align: right;">4.690936</td>
-<td style="text-align: right;">-6.1651401</td>
-<td style="text-align: right;">4.690936</td>
+<td style="text-align: right;">-14.6396191</td>
+<td style="text-align: right;">13.16542</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">0.2020202</td>
 <td style="text-align: right;">-0.2901963</td>
 <td style="text-align: right;">-5.6194071</td>
 <td style="text-align: right;">5.039015</td>
-<td style="text-align: right;">-5.6194071</td>
-<td style="text-align: right;">5.039015</td>
+<td style="text-align: right;">-14.1544263</td>
+<td style="text-align: right;">13.57403</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">0.3030303</td>
 <td style="text-align: right;">0.1567093</td>
 <td style="text-align: right;">-5.0744116</td>
 <td style="text-align: right;">5.387830</td>
-<td style="text-align: right;">-5.0744116</td>
-<td style="text-align: right;">5.387830</td>
+<td style="text-align: right;">-13.6701130</td>
+<td style="text-align: right;">13.98353</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">0.4040404</td>
 <td style="text-align: right;">0.6036148</td>
 <td style="text-align: right;">-4.5301960</td>
 <td style="text-align: right;">5.737426</td>
-<td style="text-align: right;">-4.5301960</td>
-<td style="text-align: right;">5.737426</td>
+<td style="text-align: right;">-13.1866861</td>
+<td style="text-align: right;">14.39392</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">0.5050505</td>
 <td style="text-align: right;">1.0505204</td>
 <td style="text-align: right;">-3.9868055</td>
 <td style="text-align: right;">6.087846</td>
-<td style="text-align: right;">-3.9868055</td>
-<td style="text-align: right;">6.087846</td>
+<td style="text-align: right;">-12.7041529</td>
+<td style="text-align: right;">14.80519</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">0.6060606</td>
 <td style="text-align: right;">1.4974259</td>
 <td style="text-align: right;">-3.4442883</td>
 <td style="text-align: right;">6.439140</td>
-<td style="text-align: right;">-3.4442883</td>
-<td style="text-align: right;">6.439140</td>
+<td style="text-align: right;">-12.2225204</td>
+<td style="text-align: right;">15.21737</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">0.7070707</td>
 <td style="text-align: right;">1.9443315</td>
 <td style="text-align: right;">-2.9026962</td>
 <td style="text-align: right;">6.791359</td>
-<td style="text-align: right;">-2.9026962</td>
-<td style="text-align: right;">6.791359</td>
+<td style="text-align: right;">-11.7417952</td>
+<td style="text-align: right;">15.63046</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">0.8080808</td>
 <td style="text-align: right;">2.3912371</td>
 <td style="text-align: right;">-2.3620844</td>
 <td style="text-align: right;">7.144558</td>
-<td style="text-align: right;">-2.3620844</td>
-<td style="text-align: right;">7.144558</td>
+<td style="text-align: right;">-11.2619842</td>
+<td style="text-align: right;">16.04446</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">0.9090909</td>
 <td style="text-align: right;">2.8381426</td>
 <td style="text-align: right;">-1.8225121</td>
 <td style="text-align: right;">7.498797</td>
-<td style="text-align: right;">-1.8225121</td>
-<td style="text-align: right;">7.498797</td>
+<td style="text-align: right;">-10.7830941</td>
+<td style="text-align: right;">16.45938</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">1.0101010</td>
 <td style="text-align: right;">3.2850482</td>
 <td style="text-align: right;">-1.2840425</td>
 <td style="text-align: right;">7.854139</td>
-<td style="text-align: right;">-1.2840425</td>
-<td style="text-align: right;">7.854139</td>
+<td style="text-align: right;">-10.3051312</td>
+<td style="text-align: right;">16.87523</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1.1111111</td>
 <td style="text-align: right;">3.7319537</td>
 <td style="text-align: right;">-0.7467433</td>
 <td style="text-align: right;">8.210651</td>
-<td style="text-align: right;">-0.7467433</td>
-<td style="text-align: right;">8.210651</td>
+<td style="text-align: right;">-9.8281021</td>
+<td style="text-align: right;">17.29201</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">1.2121212</td>
 <td style="text-align: right;">4.1788593</td>
 <td style="text-align: right;">-0.2106867</td>
 <td style="text-align: right;">8.568405</td>
-<td style="text-align: right;">-0.2106867</td>
-<td style="text-align: right;">8.568405</td>
+<td style="text-align: right;">-9.3520128</td>
+<td style="text-align: right;">17.70973</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1.3131313</td>
 <td style="text-align: right;">4.6257648</td>
 <td style="text-align: right;">0.3240500</td>
 <td style="text-align: right;">8.927480</td>
-<td style="text-align: right;">0.3240500</td>
-<td style="text-align: right;">8.927480</td>
+<td style="text-align: right;">-8.8768696</td>
+<td style="text-align: right;">18.12840</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">1.4141414</td>
 <td style="text-align: right;">5.0726704</td>
 <td style="text-align: right;">0.8573842</td>
 <td style="text-align: right;">9.287957</td>
-<td style="text-align: right;">0.8573842</td>
-<td style="text-align: right;">9.287957</td>
+<td style="text-align: right;">-8.4026784</td>
+<td style="text-align: right;">18.54802</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1.5151515</td>
 <td style="text-align: right;">5.5195760</td>
 <td style="text-align: right;">1.3892280</td>
 <td style="text-align: right;">9.649924</td>
-<td style="text-align: right;">1.3892280</td>
-<td style="text-align: right;">9.649924</td>
+<td style="text-align: right;">-7.9294449</td>
+<td style="text-align: right;">18.96860</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">1.6161616</td>
 <td style="text-align: right;">5.9664815</td>
 <td style="text-align: right;">1.9194874</td>
 <td style="text-align: right;">10.013476</td>
-<td style="text-align: right;">1.9194874</td>
-<td style="text-align: right;">10.013476</td>
+<td style="text-align: right;">-7.4571748</td>
+<td style="text-align: right;">19.39014</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1.7171717</td>
 <td style="text-align: right;">6.4133871</td>
 <td style="text-align: right;">2.4480626</td>
 <td style="text-align: right;">10.378711</td>
-<td style="text-align: right;">2.4480626</td>
-<td style="text-align: right;">10.378711</td>
+<td style="text-align: right;">-6.9858735</td>
+<td style="text-align: right;">19.81265</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">1.8181818</td>
 <td style="text-align: right;">6.8602926</td>
 <td style="text-align: right;">2.9748474</td>
 <td style="text-align: right;">10.745738</td>
-<td style="text-align: right;">2.9748474</td>
-<td style="text-align: right;">10.745738</td>
+<td style="text-align: right;">-6.5155464</td>
+<td style="text-align: right;">20.23613</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1.9191919</td>
 <td style="text-align: right;">7.3071982</td>
 <td style="text-align: right;">3.4997291</td>
 <td style="text-align: right;">11.114667</td>
-<td style="text-align: right;">3.4997291</td>
-<td style="text-align: right;">11.114667</td>
+<td style="text-align: right;">-6.0461987</td>
+<td style="text-align: right;">20.66060</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2.0202020</td>
 <td style="text-align: right;">7.7541038</td>
 <td style="text-align: right;">4.0225884</td>
 <td style="text-align: right;">11.485619</td>
-<td style="text-align: right;">4.0225884</td>
-<td style="text-align: right;">11.485619</td>
+<td style="text-align: right;">-5.5778351</td>
+<td style="text-align: right;">21.08604</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2.1212121</td>
 <td style="text-align: right;">8.2010093</td>
 <td style="text-align: right;">4.5432992</td>
 <td style="text-align: right;">11.858719</td>
-<td style="text-align: right;">4.5432992</td>
-<td style="text-align: right;">11.858719</td>
+<td style="text-align: right;">-5.1104606</td>
+<td style="text-align: right;">21.51248</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2.2222222</td>
 <td style="text-align: right;">8.6479149</td>
 <td style="text-align: right;">5.0617290</td>
 <td style="text-align: right;">12.234101</td>
-<td style="text-align: right;">5.0617290</td>
-<td style="text-align: right;">12.234101</td>
+<td style="text-align: right;">-4.6440796</td>
+<td style="text-align: right;">21.93991</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2.3232323</td>
 <td style="text-align: right;">9.0948204</td>
 <td style="text-align: right;">5.5777385</td>
 <td style="text-align: right;">12.611902</td>
-<td style="text-align: right;">5.5777385</td>
-<td style="text-align: right;">12.611902</td>
+<td style="text-align: right;">-4.1786965</td>
+<td style="text-align: right;">22.36834</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2.4242424</td>
 <td style="text-align: right;">9.5417260</td>
 <td style="text-align: right;">6.0911824</td>
 <td style="text-align: right;">12.992270</td>
-<td style="text-align: right;">6.0911824</td>
-<td style="text-align: right;">12.992270</td>
+<td style="text-align: right;">-3.7143156</td>
+<td style="text-align: right;">22.79777</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2.5252525</td>
 <td style="text-align: right;">9.9886315</td>
 <td style="text-align: right;">6.6019094</td>
 <td style="text-align: right;">13.375354</td>
-<td style="text-align: right;">6.6019094</td>
-<td style="text-align: right;">13.375354</td>
+<td style="text-align: right;">-3.2509407</td>
+<td style="text-align: right;">23.22820</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2.6262626</td>
 <td style="text-align: right;">10.4355371</td>
 <td style="text-align: right;">7.1097631</td>
 <td style="text-align: right;">13.761311</td>
-<td style="text-align: right;">7.1097631</td>
-<td style="text-align: right;">13.761311</td>
+<td style="text-align: right;">-2.7885757</td>
+<td style="text-align: right;">23.65965</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2.7272727</td>
 <td style="text-align: right;">10.8824427</td>
 <td style="text-align: right;">7.6145828</td>
 <td style="text-align: right;">14.150303</td>
-<td style="text-align: right;">7.6145828</td>
-<td style="text-align: right;">14.150303</td>
+<td style="text-align: right;">-2.3272241</td>
+<td style="text-align: right;">24.09211</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2.8282828</td>
 <td style="text-align: right;">11.3293482</td>
 <td style="text-align: right;">8.1162043</td>
 <td style="text-align: right;">14.542492</td>
-<td style="text-align: right;">8.1162043</td>
-<td style="text-align: right;">14.542492</td>
+<td style="text-align: right;">-1.8668891</td>
+<td style="text-align: right;">24.52559</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2.9292929</td>
 <td style="text-align: right;">11.7762538</td>
 <td style="text-align: right;">8.6144617</td>
 <td style="text-align: right;">14.938046</td>
-<td style="text-align: right;">8.6144617</td>
-<td style="text-align: right;">14.938046</td>
+<td style="text-align: right;">-1.4075740</td>
+<td style="text-align: right;">24.96008</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">3.0303030</td>
 <td style="text-align: right;">12.2231593</td>
 <td style="text-align: right;">9.1091885</td>
 <td style="text-align: right;">15.337130</td>
-<td style="text-align: right;">9.1091885</td>
-<td style="text-align: right;">15.337130</td>
+<td style="text-align: right;">-0.9492816</td>
+<td style="text-align: right;">25.39560</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">3.1313131</td>
 <td style="text-align: right;">12.6700649</td>
 <td style="text-align: right;">9.6002197</td>
 <td style="text-align: right;">15.739910</td>
-<td style="text-align: right;">9.6002197</td>
-<td style="text-align: right;">15.739910</td>
+<td style="text-align: right;">-0.4920146</td>
+<td style="text-align: right;">25.83214</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">3.2323232</td>
 <td style="text-align: right;">13.1169705</td>
 <td style="text-align: right;">10.0873938</td>
 <td style="text-align: right;">16.146547</td>
-<td style="text-align: right;">10.0873938</td>
-<td style="text-align: right;">16.146547</td>
+<td style="text-align: right;">-0.0357753</td>
+<td style="text-align: right;">26.26972</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">3.3333333</td>
 <td style="text-align: right;">13.5638760</td>
 <td style="text-align: right;">10.5705552</td>
 <td style="text-align: right;">16.557197</td>
-<td style="text-align: right;">10.5705552</td>
-<td style="text-align: right;">16.557197</td>
+<td style="text-align: right;">0.4194340</td>
+<td style="text-align: right;">26.70832</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">3.4343434</td>
 <td style="text-align: right;">14.0107816</td>
 <td style="text-align: right;">11.0495565</td>
 <td style="text-align: right;">16.972007</td>
-<td style="text-align: right;">11.0495565</td>
-<td style="text-align: right;">16.972007</td>
+<td style="text-align: right;">0.8736114</td>
+<td style="text-align: right;">27.14795</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">3.5353535</td>
 <td style="text-align: right;">14.4576871</td>
 <td style="text-align: right;">11.5242610</td>
 <td style="text-align: right;">17.391113</td>
-<td style="text-align: right;">11.5242610</td>
-<td style="text-align: right;">17.391113</td>
+<td style="text-align: right;">1.3267551</td>
+<td style="text-align: right;">27.58862</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">3.6363636</td>
 <td style="text-align: right;">14.9045927</td>
 <td style="text-align: right;">11.9945457</td>
 <td style="text-align: right;">17.814640</td>
-<td style="text-align: right;">11.9945457</td>
-<td style="text-align: right;">17.814640</td>
+<td style="text-align: right;">1.7788637</td>
+<td style="text-align: right;">28.03032</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">3.7373737</td>
 <td style="text-align: right;">15.3514982</td>
 <td style="text-align: right;">12.4603033</td>
 <td style="text-align: right;">18.242693</td>
-<td style="text-align: right;">12.4603033</td>
-<td style="text-align: right;">18.242693</td>
+<td style="text-align: right;">2.2299360</td>
+<td style="text-align: right;">28.47306</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">3.8383838</td>
 <td style="text-align: right;">15.7984038</td>
 <td style="text-align: right;">12.9214449</td>
 <td style="text-align: right;">18.675363</td>
-<td style="text-align: right;">12.9214449</td>
-<td style="text-align: right;">18.675363</td>
+<td style="text-align: right;">2.6799710</td>
+<td style="text-align: right;">28.91684</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">3.9393939</td>
 <td style="text-align: right;">16.2453094</td>
 <td style="text-align: right;">13.3779017</td>
 <td style="text-align: right;">19.112717</td>
-<td style="text-align: right;">13.3779017</td>
-<td style="text-align: right;">19.112717</td>
+<td style="text-align: right;">3.1289679</td>
+<td style="text-align: right;">29.36165</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">4.0404040</td>
 <td style="text-align: right;">16.6922149</td>
 <td style="text-align: right;">13.8296268</td>
 <td style="text-align: right;">19.554803</td>
-<td style="text-align: right;">13.8296268</td>
-<td style="text-align: right;">19.554803</td>
+<td style="text-align: right;">3.5769262</td>
+<td style="text-align: right;">29.80750</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">4.1414141</td>
 <td style="text-align: right;">17.1391205</td>
 <td style="text-align: right;">14.2765962</td>
 <td style="text-align: right;">20.001645</td>
-<td style="text-align: right;">14.2765962</td>
-<td style="text-align: right;">20.001645</td>
+<td style="text-align: right;">4.0238457</td>
+<td style="text-align: right;">30.25440</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">4.2424242</td>
 <td style="text-align: right;">17.5860260</td>
 <td style="text-align: right;">14.7188098</td>
 <td style="text-align: right;">20.453242</td>
-<td style="text-align: right;">14.7188098</td>
-<td style="text-align: right;">20.453242</td>
+<td style="text-align: right;">4.4697264</td>
+<td style="text-align: right;">30.70233</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">4.3434343</td>
 <td style="text-align: right;">18.0329316</td>
 <td style="text-align: right;">15.1562907</td>
 <td style="text-align: right;">20.909572</td>
-<td style="text-align: right;">15.1562907</td>
-<td style="text-align: right;">20.909572</td>
+<td style="text-align: right;">4.9145685</td>
+<td style="text-align: right;">31.15129</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">4.4444444</td>
 <td style="text-align: right;">18.4798372</td>
 <td style="text-align: right;">15.5890852</td>
 <td style="text-align: right;">21.370589</td>
-<td style="text-align: right;">15.5890852</td>
-<td style="text-align: right;">21.370589</td>
+<td style="text-align: right;">5.3583725</td>
+<td style="text-align: right;">31.60130</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">4.5454545</td>
 <td style="text-align: right;">18.9267427</td>
 <td style="text-align: right;">16.0172616</td>
 <td style="text-align: right;">21.836224</td>
-<td style="text-align: right;">16.0172616</td>
-<td style="text-align: right;">21.836224</td>
+<td style="text-align: right;">5.8011392</td>
+<td style="text-align: right;">32.05235</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">4.6464646</td>
 <td style="text-align: right;">19.3736483</td>
 <td style="text-align: right;">16.4409083</td>
 <td style="text-align: right;">22.306388</td>
-<td style="text-align: right;">16.4409083</td>
-<td style="text-align: right;">22.306388</td>
+<td style="text-align: right;">6.2428695</td>
+<td style="text-align: right;">32.50443</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">4.7474747</td>
 <td style="text-align: right;">19.8205538</td>
 <td style="text-align: right;">16.8601320</td>
 <td style="text-align: right;">22.780976</td>
-<td style="text-align: right;">16.8601320</td>
-<td style="text-align: right;">22.780976</td>
+<td style="text-align: right;">6.6835647</td>
+<td style="text-align: right;">32.95754</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">4.8484848</td>
 <td style="text-align: right;">20.2674594</td>
 <td style="text-align: right;">17.2750555</td>
 <td style="text-align: right;">23.259863</td>
-<td style="text-align: right;">17.2750555</td>
-<td style="text-align: right;">23.259863</td>
+<td style="text-align: right;">7.1232261</td>
+<td style="text-align: right;">33.41169</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">4.9494949</td>
 <td style="text-align: right;">20.7143649</td>
 <td style="text-align: right;">17.6858151</td>
 <td style="text-align: right;">23.742915</td>
-<td style="text-align: right;">17.6858151</td>
-<td style="text-align: right;">23.742915</td>
+<td style="text-align: right;">7.5618556</td>
+<td style="text-align: right;">33.86687</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">5.0505051</td>
 <td style="text-align: right;">21.1612705</td>
 <td style="text-align: right;">18.0925579</td>
 <td style="text-align: right;">24.229983</td>
-<td style="text-align: right;">18.0925579</td>
-<td style="text-align: right;">24.229983</td>
+<td style="text-align: right;">7.9994551</td>
+<td style="text-align: right;">34.32309</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">5.1515152</td>
 <td style="text-align: right;">21.6081761</td>
 <td style="text-align: right;">18.4954393</td>
 <td style="text-align: right;">24.720913</td>
-<td style="text-align: right;">18.4954393</td>
-<td style="text-align: right;">24.720913</td>
+<td style="text-align: right;">8.4360268</td>
+<td style="text-align: right;">34.78033</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">5.2525253</td>
 <td style="text-align: right;">22.0550816</td>
 <td style="text-align: right;">18.8946207</td>
 <td style="text-align: right;">25.215543</td>
-<td style="text-align: right;">18.8946207</td>
-<td style="text-align: right;">25.215543</td>
+<td style="text-align: right;">8.8715730</td>
+<td style="text-align: right;">35.23859</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">5.3535354</td>
 <td style="text-align: right;">22.5019872</td>
 <td style="text-align: right;">19.2902671</td>
 <td style="text-align: right;">25.713707</td>
-<td style="text-align: right;">19.2902671</td>
-<td style="text-align: right;">25.713707</td>
+<td style="text-align: right;">9.3060964</td>
+<td style="text-align: right;">35.69788</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">5.4545455</td>
 <td style="text-align: right;">22.9488927</td>
 <td style="text-align: right;">19.6825448</td>
 <td style="text-align: right;">26.215241</td>
-<td style="text-align: right;">19.6825448</td>
-<td style="text-align: right;">26.215241</td>
+<td style="text-align: right;">9.7396000</td>
+<td style="text-align: right;">36.15819</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">5.5555556</td>
 <td style="text-align: right;">23.3957983</td>
 <td style="text-align: right;">20.0716200</td>
 <td style="text-align: right;">26.719977</td>
-<td style="text-align: right;">20.0716200</td>
-<td style="text-align: right;">26.719977</td>
+<td style="text-align: right;">10.1720867</td>
+<td style="text-align: right;">36.61951</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">5.6565657</td>
 <td style="text-align: right;">23.8427039</td>
 <td style="text-align: right;">20.4576567</td>
 <td style="text-align: right;">27.227751</td>
-<td style="text-align: right;">20.4576567</td>
-<td style="text-align: right;">27.227751</td>
+<td style="text-align: right;">10.6035600</td>
+<td style="text-align: right;">37.08185</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">5.7575758</td>
 <td style="text-align: right;">24.2896094</td>
 <td style="text-align: right;">20.8408159</td>
 <td style="text-align: right;">27.738403</td>
-<td style="text-align: right;">20.8408159</td>
-<td style="text-align: right;">27.738403</td>
+<td style="text-align: right;">11.0340233</td>
+<td style="text-align: right;">37.54520</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">5.8585859</td>
 <td style="text-align: right;">24.7365150</td>
 <td style="text-align: right;">21.2212541</td>
 <td style="text-align: right;">28.251776</td>
-<td style="text-align: right;">21.2212541</td>
-<td style="text-align: right;">28.251776</td>
+<td style="text-align: right;">11.4634804</td>
+<td style="text-align: right;">38.00955</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">5.9595960</td>
 <td style="text-align: right;">25.1834205</td>
 <td style="text-align: right;">21.5991227</td>
 <td style="text-align: right;">28.767718</td>
-<td style="text-align: right;">21.5991227</td>
-<td style="text-align: right;">28.767718</td>
+<td style="text-align: right;">11.8919354</td>
+<td style="text-align: right;">38.47491</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">6.0606061</td>
 <td style="text-align: right;">25.6303261</td>
 <td style="text-align: right;">21.9745672</td>
 <td style="text-align: right;">29.286085</td>
-<td style="text-align: right;">21.9745672</td>
-<td style="text-align: right;">29.286085</td>
+<td style="text-align: right;">12.3193922</td>
+<td style="text-align: right;">38.94126</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">6.1616162</td>
 <td style="text-align: right;">26.0772316</td>
 <td style="text-align: right;">22.3477270</td>
 <td style="text-align: right;">29.806736</td>
-<td style="text-align: right;">22.3477270</td>
-<td style="text-align: right;">29.806736</td>
+<td style="text-align: right;">12.7458554</td>
+<td style="text-align: right;">39.40861</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">6.2626263</td>
 <td style="text-align: right;">26.5241372</td>
 <td style="text-align: right;">22.7187348</td>
 <td style="text-align: right;">30.329540</td>
-<td style="text-align: right;">22.7187348</td>
-<td style="text-align: right;">30.329540</td>
+<td style="text-align: right;">13.1713295</td>
+<td style="text-align: right;">39.87694</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">6.3636364</td>
 <td style="text-align: right;">26.9710428</td>
 <td style="text-align: right;">23.0877170</td>
 <td style="text-align: right;">30.854368</td>
-<td style="text-align: right;">23.0877170</td>
-<td style="text-align: right;">30.854368</td>
+<td style="text-align: right;">13.5958192</td>
+<td style="text-align: right;">40.34627</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">6.4646465</td>
 <td style="text-align: right;">27.4179483</td>
 <td style="text-align: right;">23.4547929</td>
 <td style="text-align: right;">31.381104</td>
-<td style="text-align: right;">23.4547929</td>
-<td style="text-align: right;">31.381104</td>
+<td style="text-align: right;">14.0193295</td>
+<td style="text-align: right;">40.81657</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">6.5656566</td>
 <td style="text-align: right;">27.8648539</td>
 <td style="text-align: right;">23.8200755</td>
 <td style="text-align: right;">31.909632</td>
-<td style="text-align: right;">23.8200755</td>
-<td style="text-align: right;">31.909632</td>
+<td style="text-align: right;">14.4418654</td>
+<td style="text-align: right;">41.28784</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">6.6666667</td>
 <td style="text-align: right;">28.3117594</td>
 <td style="text-align: right;">24.1836711</td>
 <td style="text-align: right;">32.439848</td>
-<td style="text-align: right;">24.1836711</td>
-<td style="text-align: right;">32.439848</td>
+<td style="text-align: right;">14.8634324</td>
+<td style="text-align: right;">41.76009</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">6.7676768</td>
 <td style="text-align: right;">28.7586650</td>
 <td style="text-align: right;">24.5456797</td>
 <td style="text-align: right;">32.971650</td>
-<td style="text-align: right;">24.5456797</td>
-<td style="text-align: right;">32.971650</td>
+<td style="text-align: right;">15.2840358</td>
+<td style="text-align: right;">42.23329</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">6.8686869</td>
 <td style="text-align: right;">29.2055705</td>
 <td style="text-align: right;">24.9061954</td>
 <td style="text-align: right;">33.504946</td>
-<td style="text-align: right;">24.9061954</td>
-<td style="text-align: right;">33.504946</td>
+<td style="text-align: right;">15.7036813</td>
+<td style="text-align: right;">42.70746</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">6.9696970</td>
 <td style="text-align: right;">29.6524761</td>
 <td style="text-align: right;">25.2653065</td>
 <td style="text-align: right;">34.039646</td>
-<td style="text-align: right;">25.2653065</td>
-<td style="text-align: right;">34.039646</td>
+<td style="text-align: right;">16.1223747</td>
+<td style="text-align: right;">43.18258</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">7.0707071</td>
 <td style="text-align: right;">30.0993817</td>
 <td style="text-align: right;">25.6230954</td>
 <td style="text-align: right;">34.575668</td>
-<td style="text-align: right;">25.6230954</td>
-<td style="text-align: right;">34.575668</td>
+<td style="text-align: right;">16.5401219</td>
+<td style="text-align: right;">43.65864</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">7.1717172</td>
 <td style="text-align: right;">30.5462872</td>
 <td style="text-align: right;">25.9796397</td>
 <td style="text-align: right;">35.112935</td>
-<td style="text-align: right;">25.9796397</td>
-<td style="text-align: right;">35.112935</td>
+<td style="text-align: right;">16.9569290</td>
+<td style="text-align: right;">44.13565</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">7.2727273</td>
 <td style="text-align: right;">30.9931928</td>
 <td style="text-align: right;">26.3350118</td>
 <td style="text-align: right;">35.651374</td>
-<td style="text-align: right;">26.3350118</td>
-<td style="text-align: right;">35.651374</td>
+<td style="text-align: right;">17.3728023</td>
+<td style="text-align: right;">44.61358</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">7.3737374</td>
 <td style="text-align: right;">31.4400983</td>
 <td style="text-align: right;">26.6892793</td>
 <td style="text-align: right;">36.190917</td>
-<td style="text-align: right;">26.6892793</td>
-<td style="text-align: right;">36.190917</td>
+<td style="text-align: right;">17.7877481</td>
+<td style="text-align: right;">45.09245</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">7.4747475</td>
 <td style="text-align: right;">31.8870039</td>
 <td style="text-align: right;">27.0425058</td>
 <td style="text-align: right;">36.731502</td>
-<td style="text-align: right;">27.0425058</td>
-<td style="text-align: right;">36.731502</td>
+<td style="text-align: right;">18.2017729</td>
+<td style="text-align: right;">45.57223</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">7.5757576</td>
 <td style="text-align: right;">32.3339095</td>
 <td style="text-align: right;">27.3947504</td>
 <td style="text-align: right;">37.273069</td>
-<td style="text-align: right;">27.3947504</td>
-<td style="text-align: right;">37.273069</td>
+<td style="text-align: right;">18.6148833</td>
+<td style="text-align: right;">46.05294</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">7.6767677</td>
 <td style="text-align: right;">32.7808150</td>
 <td style="text-align: right;">27.7460685</td>
 <td style="text-align: right;">37.815562</td>
-<td style="text-align: right;">27.7460685</td>
-<td style="text-align: right;">37.815562</td>
+<td style="text-align: right;">19.0270861</td>
+<td style="text-align: right;">46.53454</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">7.7777778</td>
 <td style="text-align: right;">33.2277206</td>
 <td style="text-align: right;">28.0965118</td>
 <td style="text-align: right;">38.358929</td>
-<td style="text-align: right;">28.0965118</td>
-<td style="text-align: right;">38.358929</td>
+<td style="text-align: right;">19.4383881</td>
+<td style="text-align: right;">47.01705</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">7.8787879</td>
 <td style="text-align: right;">33.6746261</td>
 <td style="text-align: right;">28.4461289</td>
 <td style="text-align: right;">38.903123</td>
-<td style="text-align: right;">28.4461289</td>
-<td style="text-align: right;">38.903123</td>
+<td style="text-align: right;">19.8487963</td>
+<td style="text-align: right;">47.50046</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">7.9797980</td>
 <td style="text-align: right;">34.1215317</td>
 <td style="text-align: right;">28.7949649</td>
 <td style="text-align: right;">39.448099</td>
-<td style="text-align: right;">28.7949649</td>
-<td style="text-align: right;">39.448099</td>
+<td style="text-align: right;">20.2583178</td>
+<td style="text-align: right;">47.98475</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">8.0808081</td>
 <td style="text-align: right;">34.5684372</td>
 <td style="text-align: right;">29.1430623</td>
 <td style="text-align: right;">39.993812</td>
-<td style="text-align: right;">29.1430623</td>
-<td style="text-align: right;">39.993812</td>
+<td style="text-align: right;">20.6669596</td>
+<td style="text-align: right;">48.46991</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">8.1818182</td>
 <td style="text-align: right;">35.0153428</td>
 <td style="text-align: right;">29.4904606</td>
 <td style="text-align: right;">40.540225</td>
-<td style="text-align: right;">29.4904606</td>
-<td style="text-align: right;">40.540225</td>
+<td style="text-align: right;">21.0747291</td>
+<td style="text-align: right;">48.95596</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">8.2828283</td>
 <td style="text-align: right;">35.4622484</td>
 <td style="text-align: right;">29.8371970</td>
 <td style="text-align: right;">41.087300</td>
-<td style="text-align: right;">29.8371970</td>
-<td style="text-align: right;">41.087300</td>
+<td style="text-align: right;">21.4816336</td>
+<td style="text-align: right;">49.44286</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">8.3838384</td>
 <td style="text-align: right;">35.9091539</td>
 <td style="text-align: right;">30.1833061</td>
 <td style="text-align: right;">41.635002</td>
-<td style="text-align: right;">30.1833061</td>
-<td style="text-align: right;">41.635002</td>
+<td style="text-align: right;">21.8876804</td>
+<td style="text-align: right;">49.93063</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">8.4848485</td>
 <td style="text-align: right;">36.3560595</td>
 <td style="text-align: right;">30.5288206</td>
 <td style="text-align: right;">42.183298</td>
-<td style="text-align: right;">30.5288206</td>
-<td style="text-align: right;">42.183298</td>
+<td style="text-align: right;">22.2928771</td>
+<td style="text-align: right;">50.41924</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">8.5858586</td>
 <td style="text-align: right;">36.8029650</td>
 <td style="text-align: right;">30.8737710</td>
 <td style="text-align: right;">42.732159</td>
-<td style="text-align: right;">30.8737710</td>
-<td style="text-align: right;">42.732159</td>
+<td style="text-align: right;">22.6972311</td>
+<td style="text-align: right;">50.90870</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">8.6868687</td>
 <td style="text-align: right;">37.2498706</td>
 <td style="text-align: right;">31.2181858</td>
 <td style="text-align: right;">43.281555</td>
-<td style="text-align: right;">31.2181858</td>
-<td style="text-align: right;">43.281555</td>
+<td style="text-align: right;">23.1007502</td>
+<td style="text-align: right;">51.39899</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">8.7878788</td>
 <td style="text-align: right;">37.6967762</td>
 <td style="text-align: right;">31.5620919</td>
 <td style="text-align: right;">43.831460</td>
-<td style="text-align: right;">31.5620919</td>
-<td style="text-align: right;">43.831460</td>
+<td style="text-align: right;">23.5034419</td>
+<td style="text-align: right;">51.89011</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">8.8888889</td>
 <td style="text-align: right;">38.1436817</td>
 <td style="text-align: right;">31.9055145</td>
 <td style="text-align: right;">44.381849</td>
-<td style="text-align: right;">31.9055145</td>
-<td style="text-align: right;">44.381849</td>
+<td style="text-align: right;">23.9053139</td>
+<td style="text-align: right;">52.38205</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">8.9898990</td>
 <td style="text-align: right;">38.5905873</td>
 <td style="text-align: right;">32.2484773</td>
 <td style="text-align: right;">44.932697</td>
-<td style="text-align: right;">32.2484773</td>
-<td style="text-align: right;">44.932697</td>
+<td style="text-align: right;">24.3063741</td>
+<td style="text-align: right;">52.87480</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">9.0909091</td>
 <td style="text-align: right;">39.0374928</td>
 <td style="text-align: right;">32.5910024</td>
 <td style="text-align: right;">45.483983</td>
-<td style="text-align: right;">32.5910024</td>
-<td style="text-align: right;">45.483983</td>
+<td style="text-align: right;">24.7066302</td>
+<td style="text-align: right;">53.36836</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">9.1919192</td>
 <td style="text-align: right;">39.4843984</td>
 <td style="text-align: right;">32.9331109</td>
 <td style="text-align: right;">46.035686</td>
-<td style="text-align: right;">32.9331109</td>
-<td style="text-align: right;">46.035686</td>
+<td style="text-align: right;">25.1060899</td>
+<td style="text-align: right;">53.86271</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">9.2929293</td>
 <td style="text-align: right;">39.9313039</td>
 <td style="text-align: right;">33.2748224</td>
 <td style="text-align: right;">46.587785</td>
-<td style="text-align: right;">33.2748224</td>
-<td style="text-align: right;">46.587785</td>
+<td style="text-align: right;">25.5047613</td>
+<td style="text-align: right;">54.35785</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">9.3939394</td>
 <td style="text-align: right;">40.3782095</td>
 <td style="text-align: right;">33.6161555</td>
 <td style="text-align: right;">47.140264</td>
-<td style="text-align: right;">33.6161555</td>
-<td style="text-align: right;">47.140264</td>
+<td style="text-align: right;">25.9026521</td>
+<td style="text-align: right;">54.85377</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">9.4949495</td>
 <td style="text-align: right;">40.8251151</td>
 <td style="text-align: right;">33.9571275</td>
 <td style="text-align: right;">47.693103</td>
-<td style="text-align: right;">33.9571275</td>
-<td style="text-align: right;">47.693103</td>
+<td style="text-align: right;">26.2997703</td>
+<td style="text-align: right;">55.35046</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">9.5959596</td>
 <td style="text-align: right;">41.2720206</td>
 <td style="text-align: right;">34.2977549</td>
 <td style="text-align: right;">48.246286</td>
-<td style="text-align: right;">34.2977549</td>
-<td style="text-align: right;">48.246286</td>
+<td style="text-align: right;">26.6961238</td>
+<td style="text-align: right;">55.84792</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">9.6969697</td>
 <td style="text-align: right;">41.7189262</td>
 <td style="text-align: right;">34.6380533</td>
 <td style="text-align: right;">48.799799</td>
-<td style="text-align: right;">34.6380533</td>
-<td style="text-align: right;">48.799799</td>
+<td style="text-align: right;">27.0917205</td>
+<td style="text-align: right;">56.34613</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">9.7979798</td>
 <td style="text-align: right;">42.1658317</td>
 <td style="text-align: right;">34.9780373</td>
 <td style="text-align: right;">49.353626</td>
-<td style="text-align: right;">34.9780373</td>
-<td style="text-align: right;">49.353626</td>
+<td style="text-align: right;">27.4865683</td>
+<td style="text-align: right;">56.84510</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">9.8989899</td>
 <td style="text-align: right;">42.6127373</td>
 <td style="text-align: right;">35.3177207</td>
 <td style="text-align: right;">49.907754</td>
-<td style="text-align: right;">35.3177207</td>
-<td style="text-align: right;">49.907754</td>
+<td style="text-align: right;">27.8806752</td>
+<td style="text-align: right;">57.34480</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">10.0000000</td>
 <td style="text-align: right;">43.0596429</td>
 <td style="text-align: right;">35.6571166</td>
 <td style="text-align: right;">50.462169</td>
-<td style="text-align: right;">35.6571166</td>
-<td style="text-align: right;">50.462169</td>
+<td style="text-align: right;">28.2740491</td>
+<td style="text-align: right;">57.84524</td>
 </tr>
 </tbody>
 </table>
@@ -3777,13 +3804,13 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <li class="fragment"><p>Hypothesis Tests</p>
 <ul>
 <li class="fragment"><strong>Global Test for Model Utility:</strong> Does our model have any utility at all?</li>
-<li class="fragment"><strong>Individual Term-Based Tests:</strong> Are each of the included predictor terms useful?</li>
+<li class="fragment"><strong>Individual Term-Based Tests:</strong> Are each of the included predictor terms useful after accounting for the other terms in the model?</li>
 </ul></li>
 <li class="fragment"><p>Confidence Intervals</p>
 <ul>
 <li class="fragment"><p>What is the plausible range for each parameter/coefficient?</p>
 <ul>
-<li class="fragment">How do we interpret those ranges?</li>
+<li class="fragment">Confidence Intervals for coefficients, conditioned on other model terms.</li>
 </ul></li>
 <li class="fragment"><p>Can we make reliable predictions?</p>
 <ul>
@@ -3798,6 +3825,8 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <div class="fragment">
 <p>We’ll leverage R functionality to obtain intervals or to calculate test statistics and <span class="math inline">\(p\)</span>-values though, since it is much faster and more accurate than doing any of this by hand.</p>
 </div>
+</div>
+</section>
 <section id="next-time" class="slide level2">
 <h2>Next Time…</h2>
 <center>
@@ -3807,8 +3836,6 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
 <div class="footer footer-default">
 
 </div>
-</div>
-</section>
 </div>
 </section>
     </div>
@@ -3995,7 +4022,7 @@ H_a &amp; : &amp; \text{At least one } \beta_i \text{ is non-zero}\end{array}\]<
         margin: 0.1,
 
         math: {
-          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
           config: 'TeX-AMS_HTML-full',
           tex2jax: {
             inlineMath: [['\\(','\\)']],

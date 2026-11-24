@@ -4,6 +4,21 @@ author: Dr. Gilbert
 format: 
   revealjs:
     smaller: true
+    html-math-method: mathjax
+    include-in-header:
+      - text: |
+          <script>
+          window.MathJax = {
+            loader: {
+              load: ['[tex]/cancel'],
+              },
+            tex: {
+              packages: {
+                '[+]': ['cancel']
+              }
+            }
+          };
+          </script>
 date: today
 date-format: long
 theme: serif
@@ -105,7 +120,7 @@ a:visited {
 
 :::{.fragment}
 
-In particular, we should have no expectation that our models make perfectly accurate predictions. We'll need to report intervals within which we expect a future observation to fall within, and then perhaps make further use of those intervals if we wish to report a singular value.
+In particular, we should have no expectation that our models make perfectly accurate predictions. We'll need to report intervals within which we expect a future observation to fall, and then perhaps make further use of those intervals if we wish to report a singular value.
 
 :::
 
@@ -383,7 +398,7 @@ lr_fit |>
 
 :::{.fragment fragment-index=1}
 
-As long as the assumptions underlying the model construction are approximately satisfied, then the ***Global Test for Model Utility*** will tell us whether the data provides evidence to suggest that at least one of the model terms has explanatory value, and the ***Term-Based Tests*** will tell us which terms those are.
+As long as the assumptions underlying the model construction are approximately satisfied, then the ***Global Test for Model Utility*** will tell us whether the data provides evidence to suggest that at least one of the model terms has explanatory value, and the ***Term-Based Tests*** will tell us which terms those are, controlling for the other model terms.
 
 :::
 
@@ -482,8 +497,6 @@ lr_fit |>
 
 <div style="font-size:14pt">
 
-:::{.fragment}
-
 ::::{.columns}
 
 :::{.column width="50%"}
@@ -551,8 +564,6 @@ lr_fit |>
 
 **Term-Based Tests:** The data provide evidence suggesting that `x1` and `x2` have explanatory value, but that `x3` and `x4` may not, due to their high p-values.
 
-:::
-
 :::{.fragment}
 
 **Next Action:** Since the ***Global Test for Model Utility*** indicated that our model has explanatory value but some of our explanatory variables are not statistically significant, we'll need to reduce the model.
@@ -581,25 +592,33 @@ We'll drop `x4` from the model and re-fit it. Note that dropping one variable fr
 
 :::
 
+</div>
+
 ::::{.columns}
 
 :::{.column width="50%"}
+
+<div style="font-size:12pt">
 
 :::{.fragment fragment-index=2}
 
 **Model Form:**
 
-$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 \cancel{+ \beta_4 x_4}$$
 
 **Global Test for Model Utility:**
 
-$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
+$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 \cancel{= \beta_4} = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
 
 **Term-Based Tests:**
 
-$$\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}$$
+$$\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\cancel{\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}}$$
 
 :::
+
+</div>
+
+<div style="font-size:14pt">
 
 :::{.fragment fragment-index=4}
 
@@ -607,9 +626,13 @@ Now we'll re-run the tests on the newly fitted model.
 
 :::
 
+</div>
+
 :::
 
 :::{.column width="50%"}
+
+<div style="font-size:14pt">
 
 :::{.fragment fragment-index=3}
 
@@ -633,11 +656,11 @@ lr_fit <- lr_wf |>
 
 :::
 
+</div>
+
 :::
 
 ::::
-
-</div>
 
 ## Consequences of the Tests (Cont'd.)
 
@@ -649,21 +672,29 @@ We'll do this by removing the explanatory variable with the *least* evidence for
 
 We'll drop `x4` from the model and re-fit it. Note that dropping one variable from the model will change all fitted coefficients, standard errors, tests statistics, p-values, and other performance metrics so ***we should only ever drop one explanatory variable at a time***.
 
+</div>
+
 ::::{.columns}
 
 :::{.column width="50%"}
 
+<div style="font-size:12pt">
+
 **Model Form:**
 
-$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 \cancel{+ \beta_4 x_4}$$
 
 **Global Test for Model Utility:**
 
-$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
+$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 \cancel{= \beta_4} = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
 
 **Term-Based Tests:**
 
-$$\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}$$
+$$\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\cancel{\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}}$$
+
+</div>
+
+<div style="font-size:14pt">
 
 Now we'll re-run the tests on the newly fitted model.
 
@@ -673,9 +704,13 @@ Now we'll re-run the tests on the newly fitted model.
 
 :::
 
+</div>
+
 :::
 
 :::{.column width="50%"}
+
+<div style="font-size:14pt">
 
 :::{.fragment fragment-index=1}
 
@@ -725,11 +760,11 @@ lr_fit |>
 
 :::
 
+</div>
+
 :::
 
 ::::
-
-</div>
 
 ## Consequences of the Tests (Cont'd.)
 
@@ -739,25 +774,33 @@ lr_fit |>
 
 The p-value corresponding to `x3` still fails to indicate statistical significance. We'll remove it, refit, and reassess the model.
 
+</div>
+
 ::::{.columns}
 
 :::{.column width="50%"}
 
+<div style="font-size:12pt">
+
 **Model Form:**
 
-$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 \cancel{+ \beta_3 x_3} \cancel{+ \beta_4 x_4}$$
 
 **Global Test for Model Utility:**
 
-$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
+$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 \cancel{= \beta_3} \cancel{= \beta_4} = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
 
 **Term-Based Tests:**
 
-$$\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}$$
+$$\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\cancel{\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}}~~~\cancel{\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}}$$
+
+</div>
 
 :::
 
 :::{.column width="50%"}
+
+<div style="font-size:14pt">
 
 :::{.fragment fragment-index=1}
 
@@ -788,9 +831,13 @@ $$\mathbb{E}\left[y\right] \approx -708.23 + 4.06x_1 + 5.85x_2$$
 
 :::
 
+</div>
+
 :::
 
 ::::
+
+<div style="font-size:14pt">
 
 ::::{.columns}
 
@@ -1080,7 +1127,7 @@ lr_fit |>
 
 :::{.fragment}
 
-**Sample Interpretation:** We are 95% confident that, holding `x2` fixed, each one-unit increase in `x1` is associated with an average increase between about 1.66 and 6.46 units in `y`.
+**Sample Interpretation:** We are 95% confident that, holding `x2` fixed, each one-unit increase in `x1` is associated with an average increase of between about 1.66 and 6.46 units in `y`.
 
 :::
 
@@ -1167,7 +1214,7 @@ The formula for confidence intervals on predictions is complex!
 
 :::{.fragment}
 
-$$\displaystyle{\left(\tt{point~estimate}\right)\pm t^*_{\text{df}}\cdot \left(\tt{RMSE}\right)\left(\sqrt{\frac{1}{n} + \frac{(x_{new} - \bar{x})^2}{\sum{\left(x - \bar{x}\right)^2}}}\right)}$$
+$$\displaystyle{\left(\tt{point~estimate}\right)\pm t^*_{\text{df}}\cdot \left(\substack{\text{Residual}\\ \text{Standard}\\ \text{Error}}\right)\left(\sqrt{\frac{1}{n} + \frac{(x_{new} - \bar{x})^2}{\sum{\left(x - \bar{x}\right)^2}}}\right)}$$
 
 :::
 
@@ -1286,7 +1333,7 @@ new_data |>
 
 :::{.fragment}
 
-Often times though, we are more interested in predicting an *individual* response -- ***prediction intervals*** will do that.
+Often though, we are more interested in predicting an *individual* response -- ***prediction intervals*** will do that.
 
 :::
 
@@ -1324,7 +1371,7 @@ new_data |>
             color = "blue") + 
   labs(
     title = "Model with Prediction Intervals",
-    subtitle = "(for an individual response)",
+    subtitle = "(for individual responses)",
     x = "x1",
     y = "y"
   )
@@ -1356,8 +1403,8 @@ new_data |>
   geom_ribbon(aes(x = x1, ymin = .pred_lower, ymax = .pred_upper), fill = "grey") +
   geom_line(aes(x = x1, y = .pred), color = "blue") + 
   labs(
-    title = "Model with Confidence Intervals",
-    subtitle = "(for average response)",
+    title = "Model with Prediction Intervals",
+    subtitle = "(for individual responses)",
     x = "x1",
     y = "y"
   )
@@ -1397,7 +1444,7 @@ new_data |>
 
 ***Confidence intervals*** are useful for capturing the *average* response given values of the explanatory/predictor variables.
 
-Often times though, we are more interested in predicting an *individual* response -- ***prediction intervals*** will do that.
+Often though, we are more interested in predicting an *individual* response -- ***prediction intervals*** will do that.
 
 There's more uncertainty associated with predicting an *individual* response than an *average* response though, so these prediction intervals will be wider than the corresponding confidence intervals.
 
@@ -1431,8 +1478,7 @@ new_data |>
   geom_line(aes(x = x1, y = .pred), 
             color = "blue") + 
   labs(
-    title = "Model with Confidence Intervals",
-    subtitle = "(for average response)",
+    title = "Model with Confidence and Prediction Intervals",
     x = "x1",
     y = "y"
   )
@@ -1463,8 +1509,7 @@ new_data |>
   geom_ribbon(aes(x = x1, ymin = .conf_lower, ymax = .conf_upper), fill = "steelblue") +
   geom_line(aes(x = x1, y = .pred), color = "blue") + 
   labs(
-    title = "Model with Confidence Intervals",
-    subtitle = "(for average response)",
+    title = "Model with Confidence and Prediction Intervals",
     x = "x1",
     y = "y"
   )
@@ -1480,7 +1525,7 @@ new_data |>
     lr_plot_fit |> predict(new_data, type = "conf_int") |>
       rename(.conf_lower = .pred_lower,
              .conf_upper = .pred_upper),
-    lr_plot_fit |> predict(new_data, type = "conf_int")
+    lr_plot_fit |> predict(new_data, type = "pred_int")
   ) |>
   kable() |>
   kable_styling(font_size = 16) |>
@@ -1507,13 +1552,13 @@ Below are the most common applications of statistical inference in regression mo
 + Hypothesis Tests
 
   + **Global Test for Model Utility:** Does our model have any utility at all?
-  + **Individual Term-Based Tests:** Are each of the included predictor terms useful?
+  + **Individual Term-Based Tests:** Are each of the included predictor terms useful after accounting for the other terms in the model?
 
 + Confidence Intervals
 
   + What is the plausible range for each parameter/coefficient? 
   
-    + How do we interpret those ranges?
+    + Confidence Intervals for coefficients, conditioned on other model terms.
   + Can we make reliable predictions? 
   
     + Confidence Intervals for *average response*
@@ -1530,6 +1575,8 @@ We'll be utilizing all of these ideas throughout our course.
 We'll leverage R functionality to obtain intervals or to calculate test statistics and $p$-values though, since it is much faster and more accurate than doing any of this by hand.
 
 :::
+
+</div>
 
 ## Next Time... 
 

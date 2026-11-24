@@ -1,0 +1,1542 @@
+---
+title: "Statistical Inference for Regression"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+
+tidymodels_prefer()
+
+set.seed(567)
+num_pts <- 20
+x1 <- runif(num_pts, 0, 10)
+x2 <- runif(num_pts, 0, 10) 
+y1 <- 4*x1 - 1 + rnorm(num_pts, 0, 8)
+y2 <- 4*x1 - 1 + rnorm(num_pts, 0, 30)
+
+num_new <- 10
+x1_new <- runif(num_new, 0, 10)
+x2_new <- runif(num_new, 0, 10)
+y1_new <- 4*x1_new - 1 + rnorm(num_new, 0, 8)
+
+data <- tibble(
+  x1 = x1,
+  x2 = x2,
+  y = y1
+)
+
+lr_plot_spec <- linear_reg() 
+lr_plot_rec <- recipe(y ~ x1, data = data)
+lr_plot_wf <- workflow() %>%
+  add_model(lr_plot_spec) %>%
+  add_recipe(lr_plot_rec)
+lr_plot_fit <- lr_plot_wf %>%
+  fit(data)
+
+# n_obs <- 30
+# my_x1 <- runif(n_obs, 0, 100)
+# my_x2 <- runif(n_obs, 0, 100)
+# my_x3 <- runif(n_obs, 0, 100)
+# my_x4 <- runif(n_obs, 0, 100)
+# my_y <- 3.5*my_x1 - 0.25*(my_x2 - 60)^2 - 2*my_x4 + rnorm(n_obs, 0, 30) 
+# my_data <- tibble(
+#   x1 = my_x1,
+#   x2 = my_x2,
+#   x3 = my_x3, 
+#   x4 = my_x4,
+#   y = my_y
+# )
+
+toy_data <- read_csv("https://raw.githubusercontent.com/agmath/RegressionCourse/refs/heads/main/Updated/toy_data_day8.csv")
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## The Highlights
+
++ Are our models useful?
+
+  + Global tests for model utility
+  + Tests on individual model terms
+  + Confidence intervals for coefficients
+
++ Intervals for Model Predictions
+
+  + Confidence intervals for a *mean* response
+  + Prediction intervals for an *individual* response
+  
+:::{.fragment}
+
+**Note:** While statistical inference techniques will be more present in our ***statistical learning*** settings, we'll still need some of them in the ***machine learning*** setting. 
+
+:::
+
+:::{.fragment}
+
+In particular, we should have no expectation that our models make perfectly accurate predictions. We'll need to report intervals within which we expect a future observation to fall within, and then perhaps make further use of those intervals if we wish to report a singular value.
+
+:::
+
+## Playing Along
+
+1. Create a new blank Quarto document by going to `File` $\to$ `New File` $\to$ `Quarto Document...` and hitting the button to *Create Empty Document*.
+2. The document isn't truly empty -- delete the initial few lines so that the file is truly blank.
+3. Copy the contents of [this Quarto document](https://github.com/agmath/RegressionCourse/blob/main/Updated/Day8_StatisticalInferenceForRegression_Shell.qmd) and paste it into your empty document. 
+4. Run the first and second code chunks to get set up.
+
+## Statistical Learning Reminders
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+In the statistical learning context, we come with a hypothesized model form:
+
+:::
+
+:::{.fragment}
+
+$$y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k + \varepsilon$$
+
+<center> or, equivalently...</center>
+
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+
+:::
+
+:::{.fragment}
+
+Proposing such a model comes with several questions -- one global (about the model as a whole), and potentially many local (about individual model terms).
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center> **Global Test for Model Utility** </center>
+
+:::
+
+:::{.fragment}
+
+**Intuitive Version:** Does my model have any explanatory value at all?
+
+:::
+
+:::{.fragment}
+
+**Formal Hypotheses:** $\begin{array}{lcl} H_{0} & : & \beta_1 = \beta_2 = \cdots = \beta_k = 0\\ H_{a} & : & \text{At least one explanatory variable has a}\\ & & \text{non-zero coefficient}\end{array}$
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center> **Local, Term-Based Tests** </center>
+
+:::
+
+:::{.fragment}
+
+**Intuitive Version:** Does this particular model term provide explanatory value, given all of the other model terms?
+
+:::
+
+:::{.fragment}
+
+**Formal Hypotheses:** <br/>$\begin{array}{lcl} H_0 & : & \beta_{~i} = 0\\ H_a & : & \beta_{~i} \neq 0\end{array}$
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## For You to Try
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+Before moving on, in your Quarto Document, assume we're in a statistical learning context and we have reason to believe $y$ is linearly associated with `x1`, `x2`, `x3`, and `x4`. Try the following:
+
+:::
+
+1. Write out the proposed model form.
+2. Write out the hypotheses for the *Global Test of Model Utility*.
+3. How many individual term-based tests are there? Write the hypotheses for all of them.
+4. Use the `{tidymodels}` framework to construct the linear regression model.
+
+</div>
+
+<div style="font-size:15pt">
+
+:::{.fragment}
+
+*Solution.*
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+**Model Form:**
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$
+
+:::
+
+:::{.fragment}
+
+**Global Test for Model Utility:**
+
+$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
+
+:::
+
+:::{.fragment}
+
+**Term-Based Tests:**
+
+$$\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}$$
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_spec <- linear_reg() |>
+  set_engine("lm")
+
+lr_rec <- recipe(y ~ x1 + x2 + x3 + x4, 
+                 data = toy_data)
+
+lr_wf <- workflow() |>
+  add_model(lr_spec) |>
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf |>
+  fit(toy_data)
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Carrying Out the Tests
+
+<div style="font-size:14pt">
+
+:::{.fragment}
+
+**Global Test for Model Utility:** This is an ANOVA test, which we can run by piping our fitted model object (`lr_fit`) into `glance()`.
+
+:::
+
+:::{.fragment}
+
+**Individual Term-Based Tests:** These individual tests are $t$-tests and can be run by piping our fitted model object (`lr_fit`) into `tidy()`.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+**Model Form:**
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$
+
+**Global Test for Model Utility:**
+
+$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
+
+**Term-Based Tests:**
+
+$$\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}$$
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+**Let's try it!** Run the tests in your Quarto document.
+
+:::
+
+:::{.fragment}
+
+<center>**Global Test for Model Utility**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  glance() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.fragment}
+
+<center> **Term-Based Tests**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  tidy() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Consequences of the Tests
+
+<div style="font-size:14pt">
+
+:::{.fragment fragment-index=1}
+
+As long as the assumptions underlying the model construction are approximately satisfied, then the ***Global Test for Model Utility*** will tell us whether the data provides evidence to suggest that at least one of the model terms has explanatory value, and the ***Term-Based Tests*** will tell us which terms those are.
+
+:::
+
+:::{.fragment fragment-index=2}
+
+We'll look at the modeling assumptions at our next class meeting but, for now, we'll focus on interpreting the output.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=3}
+
+**Model Form:**
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$
+
+**Global Test for Model Utility:**
+
+$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
+
+**Term-Based Tests:**
+
+$$\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}$$
+:::
+
+:::{.fragment fragment-index=4}
+
+**Global Test for Model Utility:** The p-value is approximately $5.12\times 10^{-5}$, which is below $0.05$. The data suggests our model has some utility.
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=3}
+
+<center>**Global Test for Model Utility**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  glance() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+<center> **Term-Based Tests**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  tidy() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+**Term-Based Tests:** The data provide evidence suggesting that `x1` and `x2` have explanatory value, but that `x3` and `x4` may not, due to their high p-values.
+
+:::
+
+</div>
+
+## Consequences of the Tests (Cont'd.)
+
+<div style="font-size:14pt">
+
+:::{.fragment}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+**Model Form:**
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$
+
+**Global Test for Model Utility:**
+
+$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
+
+**Term-Based Tests:**
+
+$$\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}$$
+**Global Test for Model Utility:** The p-value is approximately $5.12\times 10^{-5}$, which is below $0.05$. The data suggests our model has some utility.
+
+:::
+
+:::{.column width="50%"}
+
+<center>**Global Test for Model Utility**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  glance() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+<center> **Term-Based Tests**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  tidy() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+::::
+
+**Term-Based Tests:** The data provide evidence suggesting that `x1` and `x2` have explanatory value, but that `x3` and `x4` may not, due to their high p-values.
+
+:::
+
+:::{.fragment}
+
+**Next Action:** Since the ***Global Test for Model Utility*** indicated that our model has explanatory value but some of our explanatory variables are not statistically significant, we'll need to reduce the model.
+
+:::
+
+:::{.fragment}
+
+We'll do this by removing the explanatory variable with the *least* evidence for inclusion (that's the one with the highest p-value).
+
+:::
+
+</div>
+
+## Consequences of the Tests (Cont'd.)
+
+<div style="font-size:14pt">
+
+**Next Action:** Since the ***Global Test for Model Utility*** indicated that our model has explanatory value but some of our explanatory variables are not statistically significant, we'll need to reduce the model.
+
+We'll do this by removing the explanatory variable with the *least* evidence for inclusion (that's the one with the highest p-value).
+
+:::{.fragment fragment-index=1}
+
+We'll drop `x4` from the model and re-fit it. Note that dropping one variable from the model will change all fitted coefficients, standard errors, tests statistics, p-values, and other performance metrics so ***we should only ever drop one explanatory variable at a time***.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=2}
+
+**Model Form:**
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$
+
+**Global Test for Model Utility:**
+
+$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
+
+**Term-Based Tests:**
+
+$$\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}$$
+
+:::
+
+:::{.fragment fragment-index=4}
+
+Now we'll re-run the tests on the newly fitted model.
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=3}
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_spec <- linear_reg() |>
+  set_engine("lm")
+
+lr_rec <- recipe(y ~ x1 + x2 + x3, 
+                 data = toy_data)
+
+lr_wf <- workflow() |>
+  add_model(lr_spec) |>
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf |>
+  fit(toy_data)
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Consequences of the Tests (Cont'd.)
+
+<div style="font-size:14pt">
+
+**Next Action:** Since the ***Global Test for Model Utility*** indicated that our model has explanatory value but some of our explanatory variables are not statistically significant, we'll need to reduce the model.
+
+We'll do this by removing the explanatory variable with the *least* evidence for inclusion (that's the one with the highest p-value).
+
+We'll drop `x4` from the model and re-fit it. Note that dropping one variable from the model will change all fitted coefficients, standard errors, tests statistics, p-values, and other performance metrics so ***we should only ever drop one explanatory variable at a time***.
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+**Model Form:**
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$
+
+**Global Test for Model Utility:**
+
+$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
+
+**Term-Based Tests:**
+
+$$\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}$$
+
+Now we'll re-run the tests on the newly fitted model.
+
+:::{.fragment fragment-index=3}
+
+**Results:** Notice that the p-value corresponding to `x3` still fails to indicate statistical significance. We'll remove it and refit the model.
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=1}
+
+<center> **Global Test for Model Utility**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  glance() |>
+  kable() |>
+  kable_styling(font_size = 14)
+```
+
+:::
+
+:::{.fragment fragment-index=2}
+
+<center> **Term-Based Tests**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  tidy() |>
+  kable() |>
+  kable_styling(font_size = 14)
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Consequences of the Tests (Cont'd.)
+
+<div style="font-size:14pt">
+
+**Next Action:** Since the ***Global Test for Model Utility*** indicated that our model has explanatory value but some of our explanatory variables are not statistically significant, we'll need to reduce the model.
+
+The p-value corresponding to `x3` still fails to indicate statistical significance. We'll remove it, refit, and reassess the model.
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+**Model Form:**
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$
+
+**Global Test for Model Utility:**
+
+$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
+
+**Term-Based Tests:**
+
+$$\begin{array}{l} H_0 : \beta_1 = 0\\ H_a : \beta_1 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_2 = 0\\ H_a : \beta_2 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_3 = 0\\ H_a : \beta_3 \neq 0\end{array}~~~\begin{array}{lcl} H_0 : \beta_4 = 0\\ H_a : \beta_4 \neq 0\end{array}$$
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=1}
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_spec <- linear_reg() |>
+  set_engine("lm")
+
+lr_rec <- recipe(y ~ x1 + x2, data = toy_data)
+
+lr_wf <- workflow() |>
+  add_model(lr_spec) |>
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf |>
+  fit(toy_data)
+```
+
+:::
+
+:::{.fragment fragment-index=4}
+
+**Conclusion:** The explanatory variables `x3` and `x4` failed to be statistically significant. The estimated model is:
+
+$$\mathbb{E}\left[y\right] \approx -708.23 + 4.06x_1 + 5.85x_2$$
+
+:::
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=2}
+
+<center> **Global Test for Model Utility**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  glance() |>
+  kable() |>
+  kable_styling(font_size = 14)
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=3}
+
+<center> **Term-Based Tests**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  tidy() |>
+  kable() |>
+  kable_styling(font_size = 14)
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Global Test for Model Utility in Pictures
+
+<div style="font-size:16pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=3}
+
+**Note:** The plots below are simplified versions for viewing -- in general, our [multiple] linear regression models will create a surface rather than a line.
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig.height: 9
+
+p1 <- toy_data |>
+  ggplot() + 
+  geom_point(aes(x = x1, y = y),
+             size = 3) + 
+  geom_hline(yintercept = mean(toy_data$y), 
+             color = "red", 
+             linetype = "dashed", 
+             lwd = 2) +
+  geom_smooth(aes(x = x1, y = y),
+              method = "lm",
+              color = "blue",
+              se = FALSE) + 
+  labs(title = "Scenario A",
+       x = "x1",
+       y = "y")
+
+p2 <- toy_data |>
+  ggplot() + 
+  geom_point(aes(x = x3, y = y),
+             size = 3) + 
+  geom_hline(yintercept = mean(toy_data$y), 
+             color = "red", 
+             linetype = "dashed", 
+             lwd = 2) +
+  geom_smooth(aes(x = x3, y = y),
+              method = "lm",
+              color = "blue",
+              se = FALSE) + 
+  labs(title = "Scenario B",
+       x = "x3",
+       y = "y")
+
+p1 / p2
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=1}
+
+$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \cdots = \beta_k = 0\\
+H_a & : & \text{At least one } \beta_i \text{ is non-zero}\end{array}$$
+
+:::
+
+:::{.fragment fragment-index=2}
+
+Are our *sloped* models better (more justifiable) models than the horizontal line?
+
+:::
+
++ *Sloped* models use predictor information
++ Horizontal models just predict average response, ignoring all observation-specific features
+
+  + They assume that having information about features of an observation gives no advantage in predicting/explaining its response
+
+::: 
+
+::::
+
+</div>
+
+## Additional Global Metrics from `glance()`
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  glance() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+<div style="font-size:15pt">
+
+:::{.fragment}
+
+The output from `glance()`ing at our fitted model object gives lots of additional information about overall model fit and quality.
+
+:::
+
++ The R-squared value (`r.squared`) measures *the proportion of variation in the response variable which is explained by the terms in our fitted model*.
+
+  + "About 60.45% of the variation in `y` is explained by linear relationships with `x1` and `x2` (our model)."
++ The *adjusted* R-squared value (`adj.r.squared`) is a better measure for comparing models than R-squared because *adjusted* R-squared penalizes the inclusion of additional model terms, while R-squared never decreases with additional terms.
++ The `sigma` value is our *residual standard error*, which is roughly the typical size of a residual (prediction error). It is often referred to as a biased measure because it is too optimistic (estimated from the data the model was trained on).
+
+  + Considering the data our model was trained on, we expect a typical prediction error to be about 188.6, but on new or previously unseen observations we should expect that error to be higher.
++ We won't generally consider the additional items in our course.
+
+</div>
+
+## Confidence Intervals (Model Coefficients)
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+Whenever we estimate a parameter using data, there is uncertainty associated with that estimate.
+
+:::
+
+:::{.fragment}
+
+The $\beta$-coefficients we estimate during model fitting are parameters, and there is uncertainty associated with their values.
+
+:::
+
+:::{.fragment}
+
+Each fitted coefficient is accompanied by a standard error estimate (`std.error`), which can be used to construct a confidence interval.
+
+:::
+
+:::{.fragment}
+
+As a reminder, an approximate 95% confidence interval can be constructed using:
+
+$$\left(\substack{\text{Point}\\\text{Estimate}}\right) \pm 2\cdot \left(\substack{\text{Standard}\\\text{Error}}\right)$$
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  tidy() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.fragment}
+
+We can have R build confidence intervals for us though!
+
+:::
+
+</div>
+
+## Confidence Intervals (Model Coefficients)
+
+<div style="font-size:16pt">
+
+Whenever we estimate a parameter using data, there is uncertainty associated with that estimate.
+
+The $\beta$-coefficients we estimate during model fitting are parameters, and there is uncertainty associated with their values.
+
+Each fitted coefficient is accompanied by a standard error estimate (`std.error`), which can be used to construct a confidence interval.
+
+As a reminder, an approximate 95% confidence interval can be constructed using:
+
+$$\left(\substack{\text{Point}\\\text{Estimate}}\right) \pm 2\cdot \left(\substack{\text{Standard}\\\text{Error}}\right)$$
+
+We can have R build confidence intervals for us though!
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  tidy(conf.int = TRUE, conf.level = 0.95)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  tidy(conf.int = TRUE, conf.level = 0.95) |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.fragment}
+
+**Sample Interpretation:** We are 95% confident that, holding `x2` fixed, each one-unit increase in `x1` is associated with an average increase between about 1.66 and 6.46 units in `y`.
+
+:::
+
+</div>
+
+## Model Predictions
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+When we build a model, we often want to use it to make predictions on new sets of observations (counterfactuals/hypotheticals or future occurrences).
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| fig.height: 4
+
+x_plot <- tibble(
+  x1 = seq(0, 10, length.out = 250)
+)
+
+x_plot <- x_plot %>%
+  bind_cols(
+  lr_plot_fit %>%
+    predict(x_plot)
+  ) %>%
+  bind_cols(
+  lr_plot_fit %>%
+    predict(x_plot,
+            type = "conf_int",
+            level = 0.95) %>%
+    rename(.conf_lower = .pred_lower,
+           .conf_upper = .pred_upper)) %>%
+  bind_cols(
+  lr_plot_fit %>%
+    predict(x_plot,
+            type = "pred_int",
+            level = 0.95)
+  )
+  
+ggplot() +
+  geom_point(aes(x = x1_new, y = y1_new)) +
+  geom_line(data = x_plot,
+            aes(x = x1,
+                y = .pred),
+            color = "blue",
+            lwd = 1.25) + 
+  labs(
+    title = "Model Predictions",
+    subtitle = "(from a different scenario, for ease of visualization)",
+    x = "x",
+    y = "y"
+  )
+```
+
+:::
+
+:::{.fragment}
+
+They're all wrong!
+
+:::
+
+:::{.fragment}
+
+**Solution:** We'll have two types of intervals associated with model predictions, depending on our goals. We can construct ***confidence intervals*** to capture an *average* response, or ***prediction intervals*** to capture an *individual* response (each with some degree of confidence).
+
+:::
+
+</div>
+
+## Confidence Intervals (Predictions)
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+The formula for confidence intervals on predictions is complex! 
+
+:::
+
+:::{.fragment}
+
+$$\displaystyle{\left(\tt{point~estimate}\right)\pm t^*_{\text{df}}\cdot \left(\tt{RMSE}\right)\left(\sqrt{\frac{1}{n} + \frac{(x_{new} - \bar{x})^2}{\sum{\left(x - \bar{x}\right)^2}}}\right)}$$
+
+:::
+
+:::{.fragment}
+
+We'll use R to construct these intervals for us.
+
+:::
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+new_data <- tibble(
+  x1 = seq(0, 10, length.out = 100)
+)
+
+new_data |>
+  bind_cols(
+    lr_plot_fit |> predict(new_data),
+    lr_plot_fit |> predict(new_data, 
+                           type = "conf_int")
+  ) |>
+  ggplot() +
+  geom_ribbon(aes(x = x1, ymin = .pred_lower, 
+                  ymax = .pred_upper), 
+              fill = "grey") +
+  geom_line(aes(x = x1, y = .pred), 
+            color = "blue") + 
+  labs(
+    title = "Model with Confidence Intervals",
+    subtitle = "(for average response)",
+    x = "x1",
+    y = "y"
+  )
+  
+```
+
+:::
+
+:::
+
+:::{.column width="55%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+new_data <- tibble(
+  x1 = seq(0, 10, length.out = 100)
+)
+
+new_data |>
+  bind_cols(
+    lr_plot_fit |> predict(new_data),
+    lr_plot_fit |> predict(new_data, type = "conf_int")
+  ) |>
+  ggplot() +
+  geom_ribbon(aes(x = x1, ymin = .pred_lower, ymax = .pred_upper), fill = "grey") +
+  geom_line(aes(x = x1, y = .pred), color = "blue") + 
+  labs(
+    title = "Model with Confidence Intervals",
+    subtitle = "(for average response)",
+    x = "x1",
+    y = "y"
+  )
+  
+```
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+new_data |>
+  bind_cols(
+    lr_plot_fit |> predict(new_data),
+    lr_plot_fit |> predict(new_data, type = "conf_int")
+  ) |>
+  kable() |>
+  kable_styling(font_size = 16) |>
+  scroll_box(height = "150px")
+  
+```
+
+:::
+
+:::
+
+::::
+
+
+
+</div>
+
+## Prediction Intervals
+
+<div style="font-size:15pt">
+
+:::{.fragment}
+
+***Confidence intervals*** are useful for capturing the *average* response given values of the explanatory/predictor variables.
+
+:::
+
+:::{.fragment}
+
+Often times though, we are more interested in predicting an *individual* response -- ***prediction intervals*** will do that.
+
+:::
+
+:::{.fragment}
+
+There's more uncertainty associated with predicting an *individual* response than an *average* response though, so these prediction intervals will be wider than the corresponding confidence intervals.
+
+:::
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+new_data <- tibble(
+  x1 = seq(0, 10, length.out = 100)
+)
+
+new_data |>
+  bind_cols(
+    lr_plot_fit |> predict(new_data),
+    lr_plot_fit |> predict(new_data, 
+                           type = "pred_int")
+  ) |>
+  ggplot() +
+  geom_ribbon(aes(x = x1, ymin = .pred_lower, 
+                  ymax = .pred_upper), 
+              fill = "grey") +
+  geom_line(aes(x = x1, y = .pred), 
+            color = "blue") + 
+  labs(
+    title = "Model with Prediction Intervals",
+    subtitle = "(for an individual response)",
+    x = "x1",
+    y = "y"
+  )
+  
+```
+
+:::
+
+:::
+
+:::{.column width="55%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+new_data <- tibble(
+  x1 = seq(0, 10, length.out = 100)
+)
+
+new_data |>
+  bind_cols(
+    lr_plot_fit |> predict(new_data),
+    lr_plot_fit |> predict(new_data, type = "pred_int")
+  ) |>
+  ggplot() +
+  geom_ribbon(aes(x = x1, ymin = .pred_lower, ymax = .pred_upper), fill = "grey") +
+  geom_line(aes(x = x1, y = .pred), color = "blue") + 
+  labs(
+    title = "Model with Confidence Intervals",
+    subtitle = "(for average response)",
+    x = "x1",
+    y = "y"
+  )
+  
+```
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+new_data |>
+  bind_cols(
+    lr_plot_fit |> predict(new_data),
+    lr_plot_fit |> predict(new_data, type = "pred_int")
+  ) |>
+  kable() |>
+  kable_styling(font_size = 16) |>
+  scroll_box(height = "150px")
+  
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Both Intervals Together
+
+<div style="font-size:15pt">
+
+***Confidence intervals*** are useful for capturing the *average* response given values of the explanatory/predictor variables.
+
+Often times though, we are more interested in predicting an *individual* response -- ***prediction intervals*** will do that.
+
+There's more uncertainty associated with predicting an *individual* response than an *average* response though, so these prediction intervals will be wider than the corresponding confidence intervals.
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+```{r}
+#| echo: true
+#| eval: false
+
+new_data <- tibble(
+  x1 = seq(0, 10, length.out = 100)
+)
+
+new_data |>
+  bind_cols(
+    lr_plot_fit |> predict(new_data),
+    lr_plot_fit |> predict(new_data, 
+                           type = "conf_int") |>
+      rename(.conf_lower = .pred_lower,
+             .conf_upper = .pred_upper),
+    lr_plot_fit |> predict(new_data, 
+                           type = "pred_int")
+  ) |>
+  ggplot() +
+  geom_ribbon(aes(x = x1, ymin = .pred_lower, 
+                  ymax = .pred_upper), fill = "grey") +
+  geom_ribbon(aes(x = x1, ymin = .conf_lower, 
+                  ymax = .conf_upper), fill = "steelblue") +
+  geom_line(aes(x = x1, y = .pred), 
+            color = "blue") + 
+  labs(
+    title = "Model with Confidence Intervals",
+    subtitle = "(for average response)",
+    x = "x1",
+    y = "y"
+  )
+```
+
+:::
+
+:::{.column width="55%"}
+
+```{r}
+#| echo: false
+#| eval: true
+
+new_data <- tibble(
+  x1 = seq(0, 10, length.out = 100)
+)
+
+new_data |>
+  bind_cols(
+    lr_plot_fit |> predict(new_data),
+    lr_plot_fit |> predict(new_data, type = "conf_int") |>
+      rename(.conf_lower = .pred_lower,
+             .conf_upper = .pred_upper),
+    lr_plot_fit |> predict(new_data, type = "pred_int")
+  ) |>
+  ggplot() +
+  geom_ribbon(aes(x = x1, ymin = .pred_lower, ymax = .pred_upper), fill = "grey") +
+  geom_ribbon(aes(x = x1, ymin = .conf_lower, ymax = .conf_upper), fill = "steelblue") +
+  geom_line(aes(x = x1, y = .pred), color = "blue") + 
+  labs(
+    title = "Model with Confidence Intervals",
+    subtitle = "(for average response)",
+    x = "x1",
+    y = "y"
+  )
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+new_data |>
+  bind_cols(
+    lr_plot_fit |> predict(new_data),
+    lr_plot_fit |> predict(new_data, type = "conf_int") |>
+      rename(.conf_lower = .pred_lower,
+             .conf_upper = .pred_upper),
+    lr_plot_fit |> predict(new_data, type = "conf_int")
+  ) |>
+  kable() |>
+  kable_styling(font_size = 16) |>
+  scroll_box(height = "150px")
+  
+```
+
+:::
+
+::::
+
+</div>
+
+## Summary
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+Below are the most common applications of statistical inference in regression modeling.
+
+:::
+
++ Hypothesis Tests
+
+  + **Global Test for Model Utility:** Does our model have any utility at all?
+  + **Individual Term-Based Tests:** Are each of the included predictor terms useful?
+
++ Confidence Intervals
+
+  + What is the plausible range for each parameter/coefficient? 
+  
+    + How do we interpret those ranges?
+  + Can we make reliable predictions? 
+  
+    + Confidence Intervals for *average response*
+    + Prediction Intervals for *individual response*
+    
+:::{.fragment}
+
+We'll be utilizing all of these ideas throughout our course.
+
+:::
+
+:::{.fragment}
+
+We'll leverage R functionality to obtain intervals or to calculate test statistics and $p$-values though, since it is much faster and more accurate than doing any of this by hand.
+
+:::
+
+## Next Time... 
+
+<center> 
+
+<font size="120pt"><br/> Assumptions for Model-Building
+</font>
+
+</center>
+    

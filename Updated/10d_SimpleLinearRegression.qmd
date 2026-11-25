@@ -1,0 +1,1477 @@
+---
+title: "Simple Linear Regression"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+fontsize: 22pt
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(patchwork)
+library(kableExtra)
+tidymodels_prefer()
+
+penguins <- palmerpenguins::penguins
+ems <- read_csv("https://raw.githubusercontent.com/agmath/RegressionCourse/refs/heads/main/Updated/ems_response_times.csv")
+
+penguins <- penguins |>
+  mutate(flipper_length_mm = as.numeric(flipper_length_mm))
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+options(scipen = 999)
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 14))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## The Highlights
+
+<div style="font-size:18pt">
+
++ What is simple linear regression?
+
+::::{.columns}
+
+:::{.column width="50%"}
+
++ The Statistical Learning Setting
+
+  + Can we hypothesize a linear association and test it?
+  + Are the assumptions for linear regression reasonable?
+  + What do the slope and intercept tell us?
+  + Where does the model stop being trustworthy?
+
+:::
+
+:::{.column width="50%"}
+
++ The Machine Learning Setting
+
+  + Why do we split our data?
+  + How well does a simple model predict, on data it has and hasn't seen?
+  + What do the residuals reveal about where the model struggles?
+  + What is the benchmark that future models need to beat?
+
+:::
+
+::::
+
+:::{.fragment}
+
+**Note:** The `{tidymodels}` code is nearly identical in the two settings. What changes is our *goal*, and the data we use to judge the model.
+
+:::
+
+</div>
+
+## What Is Simple Linear Regression?
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+In *simple linear regression*, we seek to explain/predict a numerical outcome (`y`), given a single numerical explanatory/predictor variable (`x`).
+
+:::
+
+:::{.fragment}
+
+Our models are of the form:
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x$$
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+The model forms a straight line, where 
+
++ $\beta_0$ is the expected value of `y` when `x` is 0 (the `y`-intercept), and 
++ $\beta_1$ is the expected change in `y` given a unit increase in `x` (the slope).
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{r}
+#| fig.height: 3.5
+#| fig.width: 6
+
+n_obs <- 15
+x_vals <- runif(n_obs, 0, 10)
+y_vals <- 48 - 3.5*x_vals + rnorm(n_obs, 0, 2)
+
+my_data <- tibble(
+  x = x_vals,
+  y = y_vals
+)
+
+my_data |>
+  ggplot() + 
+  geom_point(aes(x = x, y = y)) + 
+  geom_smooth(aes(x = x, y = y), method = "lm", color = "blue", se = FALSE)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+We'll begin in the ***statistical learning*** setting before exploring simple linear regression in the ***machine learning*** setting.
+
+:::
+
+</div>
+
+## Statistical Learning Reminders
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+We've defined the statistical learning setting to be one where we come to our modeling scenarios with a pre-determined model form and our primary goal is *inference* (interpretation).
+
+:::
+
+:::{.fragment}
+
+**The Data:** We're using data collected on penguins observed near Palmer Research Station in Antarctica.
+
+:::
+
+:::{.fragment}
+
+```{r}
+penguins |>
+  head() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.fragment}
+
+**Objective:** We're seeking to understand how penguin body mass is related to physiological, spatial, and temporal explanatory variables.
+
+:::
+
+:::{.fragment}
+
+**Limitation:** We're going to make heavy use of this data set over the course of our semester, proposing different model structures at each class meeting. As a reminder, this choice is made for convenience of not needing to understand a new data set at each class meeting. When approaching a statistical learning project, a researcher should have a singular model structure in mind, designed to test hypotheses about associations between their outcome and explanatory variables.
+
+:::
+
+</div>
+
+## Hypotheses and Corresponding Model
+
+:::{.fragment}
+
+**Hypotheses:** We believe that penguin body mass (`body_mass_g`) is linearly related to penguin flipper length (`flipper_length_mm`). Intuitively, we suspect that penguins with longer flippers have greater body mass, on average.
+
+:::
+
+:::{.fragment}
+
+**Corresponding Model:** The following model encodes the primary hypothesis.
+
+$$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1\cdot\left(\text{flipper length}\right)$$
+
+:::
+
+:::{.fragment}
+
+**Resulting Null and Alternative Hypotheses:** The following null and alternative hypotheses relate to the research question:
+
+$$\begin{array}{l} H_0: \beta_1 = 0\\ H_a: \beta_1\neq 0\end{array}$$
+
+:::
+
+:::{.fragment}
+
+As long as $\beta_1 \neq 0$, then our model suggests that flipper length and body mass are linearly associated.
+
+:::
+
+:::{.fragment}
+
+Our intuition leads us to believe that $\beta_1$ should be positive.
+
+:::
+
+:::{.fragment}
+
+**Note:** For *simple linear regression*, the ***Global Test for Model Utility*** and the ***Term-Based Test*** are identical since there is only one variable term.
+
+:::
+
+## Fitting and Assessing the Model
+
+:::{.fragment}
+
+With our model form proposed and our hypotheses set, we're ready to construct the model
+
+:::
+
+:::{.fragment}
+
+We'll use the `{tidymodels}` framework for this.
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_spec <- linear_reg() |>
+  set_engine("lm")
+
+lr_rec <- recipe(body_mass_g ~ flipper_length_mm, data = penguins)
+
+lr_wf <- workflow() |>
+  add_model(lr_spec) |>
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf |>
+  fit(penguins)
+```
+
+:::
+
+:::{.fragment}
+
+With the model fit, we'll look at the *global* performance metrics and the *term-based* output as well.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center>**Global Metrics**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  glance() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center>**Term-Based Output**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  tidy() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+Both sets of output indicate that the model has explanatory value and that flipper length has a linear association with penguin body mass.
+
+:::
+
+:::{.fragment}
+
+Before reading too much into this, let's verify that the assumptions for linear regression are at least approximately satisfied.
+
+:::
+
+## Validating Model Assumptions
+
+:::{.fragment fragment-index=1}
+
+With our model fit, and significance tested, let's validate the assumptions accompanying linear regression.
+
+:::
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+:::{.fragment fragment-index=2}
+
+As a reminder, those assumptions are:
+
+:::
+
+:::{.fragment fragment-index=3}
+
+:::{.nonincremental}
+
++ Linearity (between flipper length and body mass)
++ Independence of residuals
++ Homoskedasticity (constant variance of residuals)
++ Normality of residuals
+
+:::
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+:::{.fragment fragment-index=7}
+
+The linear model seems to fit the data well.
+
+:::
+
+:::{.fragment fragment-index=8}
+
+We'll look at a plot of the residuals against the explanatory variable to confirm.
+
+:::
+
+
+:::
+
+::::
+
+:::{.fragment fragment-index=4}
+
+**Linearity:**
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=5}
+
+```{r}
+#| echo: true
+#| eval: false
+
+min_flipper <- min(penguins$flipper_length_mm, na.rm = TRUE)
+max_flipper <- max(penguins$flipper_length_mm, na.rm = TRUE)
+
+plot_vals <- tibble(
+  flipper_length_mm = seq(min_flipper,
+                       max_flipper, 
+                       length.out = 250)
+)
+
+plot_vals <- lr_fit |>
+  augment(plot_vals)
+
+ggplot() + 
+  geom_point(data = penguins,
+             aes(x = flipper_length_mm,
+                 y = body_mass_g)) +
+  geom_line(data = plot_vals, 
+            aes(x = flipper_length_mm, y = .pred), 
+            color = "blue")
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=6}
+
+```{r}
+#| echo: false
+#| eval: true
+
+min_flipper <- min(penguins$flipper_length_mm, na.rm = TRUE)
+max_flipper <- max(penguins$flipper_length_mm, na.rm = TRUE)
+
+plot_vals <- tibble(
+  flipper_length_mm = seq(min_flipper,
+                       max_flipper, 
+                       length.out = 250)
+)
+
+plot_vals <- lr_fit |>
+  augment(plot_vals)
+
+ggplot() + 
+  geom_point(data = penguins,
+             aes(x = flipper_length_mm,
+                 y = body_mass_g)) +
+  geom_line(data = plot_vals, 
+            aes(x = flipper_length_mm, y = .pred), color = "blue", linewidth = 1.5)
+```
+
+:::
+
+:::
+
+::::
+
+## Validating Model Assumptions
+
+With our model fit, and significance tested, let's validate the assumptions accompanying linear regression.
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+As a reminder, those assumptions are:
+
+:::{.nonincremental}
+
++ Linearity (between flipper length and body mass)
++ Independence of residuals
++ Homoskedasticity (constant variance of residuals)
++ Normality of residuals
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+The linear model seems to fit the data well.
+
+We'll look at a plot of the residuals against the explanatory variable to confirm.
+
+:::{.fragment fragment-index=3}
+
+There is some evidence of a slight violation with penguins of the shortest flipper lengths. These may be *high leverage* observations.
+
+:::
+
+:::
+
+::::
+
+**Linearity:**
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=1}
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  augment(penguins) |>
+  ggplot() + 
+  geom_point(aes(x = flipper_length_mm,
+                 y = .resid)) +
+  geom_hline(yintercept = 0,
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) + 
+  geom_smooth(aes(x = flipper_length_mm, 
+                  y = .resid), 
+              se = TRUE)
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=2}
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  augment(penguins) |>
+  ggplot() + 
+  geom_point(aes(x = flipper_length_mm,
+                 y = .resid)) +
+  geom_hline(yintercept = 0,
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) + 
+  geom_smooth(aes(x = flipper_length_mm, 
+                  y = .resid), 
+              se = TRUE)
+```
+
+:::
+
+:::
+
+::::
+
+## Validating Model Assumptions
+
+With our model fit, and significance tested, let's validate the assumptions accompanying linear regression.
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+As a reminder, those assumptions are:
+
+:::{.nonincremental}
+
++ Linearity (between flipper length and body mass)
++ Independence of residuals
++ Homoskedasticity (constant variance of residuals)
++ Normality of residuals
+
+:::
+
+:::
+
+::::
+
+**Independence of Residuals:**
+
+:::{.fragment}
+
+Independence of residuals is generally about *how* the data were collected or generated. 
+
+:::
+
+:::{.fragment}
+
+The following items could affect independence of the residuals:
+
+:::
+
++ observations collected at different times
++ observations collected at different locations
++ observations collected on different subgroups within the population
+
+:::{.fragment}
+
+Actually, each of those things is a potential issue with this particular model and data set combination. They'll need to be accounted for by a more inclusive model.
+
+:::
+
+:::{.fragment}
+
+For now, we'll leave this alone and move on.
+
+:::
+
+## Validating Model Assumptions
+
+With our model fit, and significance tested, let's validate the assumptions accompanying linear regression.
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+As a reminder, those assumptions are:
+
+:::{.nonincremental}
+
++ Linearity (between flipper length and body mass)
++ Independence of residuals
++ Homoskedasticity (constant variance of residuals)
++ Normality of residuals
+
+:::
+
+:::
+
+::::
+
+**Homoskedasticity:**
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  augment(penguins) |>
+  ggplot() + 
+  geom_point(aes(x = .pred,
+                 y = .resid)) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  geom_smooth(aes(x = .pred, 
+                  y = .resid), 
+              se = TRUE)
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig.height: 4.5
+
+lr_fit |>
+  augment(penguins) |>
+  ggplot() + 
+  geom_point(aes(x = .pred,
+                 y = .resid)) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  geom_smooth(aes(x = .pred, 
+                  y = .resid), 
+              se = TRUE)
+```
+
+:::
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+The plot here is no different than the residual plot we used to investigate linearity. This will always be the case with *simple* linear regression.
+
+:::
+
+:::
+
+:::{.column width="5%"}
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+A faint bow-tie shape is present. Constant variance is not severely violated, but variability seems tighter for penguins with predicted body masses between 4200g and 4400g -- though there aren't many penguins in this range.
+
+:::
+
+:::
+
+::::
+
+## Validating Model Assumptions
+
+With our model fit, and significance tested, let's validate the assumptions accompanying linear regression.
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+As a reminder, those assumptions are:
+
+:::{.nonincremental}
+
++ Linearity (between flipper length and body mass)
++ Independence of residuals
++ Homoskedasticity (constant variance of residuals)
++ Normality of residuals
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+:::{.fragment fragment-index=3}
+
+The residuals look to be approximately normal. The histogram shows approximate normality and the QQ-plot doesn't show substantial deviation from the theoretical quantiles (red line).
+
+:::
+
+:::
+
+::::
+
+**Normality of Residuals:**
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=1}
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_fit |>
+  augment(penguins) |>
+  ggplot() + 
+  geom_histogram(aes(x = .resid),
+                 color = "white")
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=2}
+
+```{r}
+#| echo: true
+#| eval: true
+#| fig.height: 4.5
+
+lr_fit |>
+  extract_fit_engine() |>
+  augment() |>
+  ggplot() +
+  stat_qq(aes(sample = .std.resid), size = 2) +
+  stat_qq_line(aes(sample = .std.resid),
+               color = "red", lwd = 1.5)
+```
+
+:::
+
+:::
+
+::::
+
+## Summary of Assumption Validation
+
+:::{.fragment}
+
+We admitted that there are likely violations of the independence of residuals assumption due to when and where the observations were collected.
+
+:::
+
+:::{.fragment}
+
+We decided to punt on this for now though, because we don't have the tools to address the dependencies yet.
+
+:::
+
+:::{.fragment}
+
+None of the other assumptions for linear regression were wildly violated. However we did find some evidence for minor violations of linearity and homoskedasticity (constant variance of residuals). 
+
+:::
+
+:::{.fragment}
+
+For linearity, we observed a slight violation for those penguins with the shortest flippers. The line tends to underpredict for these observations and we have very few penguins in that region.
+
+:::
+
+:::{.fragment}
+
+For constant variance, there were very few penguins of moderate masses (4200g to 4400g) and the variability of the residuals through this segment seemed smaller than for penguins of smaller or larger masses.
+
+:::
+
+:::{.fragment}
+
+We didn't find evidence for severe violations, so we can trust our statistical analysis as long as we maintain some level of skepticism.
+
+:::
+
+## Interpreting the Model
+
+We didn't find evidence for severe violations, so we can trust our statistical analysis as long as we maintain some level of skepticism.
+
+:::{.fragment}
+
+```{r}
+lr_fit |>
+  glance() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.fragment}
+
+The F-statistic and corresponding p-value indicate that our model has explanatory value.
+
+:::
+
+:::{.fragment}
+
+The R-squared value indicates that approximately 75.9% of the variability in penguin body masses is explained by a linear relationship with flipper length.
+
+:::
+
+:::{.fragment}
+
+The `sigma` value indicates that our typical residual (prediction error) is approximately 394.3 grams.
+
+:::
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+```{r}
+lr_fit |>
+  tidy(conf.int = TRUE) |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+The estimated model is:
+
+$$\mathbb{E}\left[\text{body mass}\right] \approx -5780.8 + 49.7\cdot\left(\text{flipper length}\right)$$
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+**Intercept:** An interpretation of the intercept here would be meaningless, since it would correspond to the body mass of a penguin with a 0mm flipper length.
+
+:::
+
+:::{.fragment}
+
+Note that, even if it made physical sense, the data supporting the model cannot justify such an interpretation because no penguins with such short flippers (or no flippers) were part of the observed data. Making or interpreting predictions beyond the range of observed training data is known as *extrapolation* and is unreliable.
+
+:::
+
+:::{.fragment}
+
+**Flipper Length:** We expect a one millimeter increase in flipper length to be associated with an increase in average body mass by about 49.7g. The 95% confidence bounds indicate that the increase is between 46.7g and 52.7g.
+
+:::
+
+:::{.fragment}
+
+This association matches our initial expectation of longer flippers being associated with more massive penguins.
+
+:::
+
+## Your Turn!
+
+:::{.fragment}
+
+If time permits, repeat this entire line of inquiry using penguin bill depth (`bill_depth_mm`) to explain penguin body mass (`body_mass_g`). Note that bill depth is a "top-to-bottom" measurement, as opposed to bill length.
+
+:::
+
+1. Make a hypothesis about the association between penguin body mass and bill depth. What does intuition tell you about that relationship? Why?
+2. Write out the model form that allows you to test your hypothesis.
+3. Write out the formal hypotheses associated with the model.
+4. Fit and assess the model.
+5. Validate the assumptions.
+6. Interpret the results and check them against your intuition.
+
+:::{.fragment}
+
+Can you think of any reasons you might be observing the results you are?
+
+:::
+
+## Machine Learning Reminders
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+We've defined the machine learning setting to be one where we come to our modeling scenarios from an exploratory standpoint and where our primary goal is *prediction*.
+
+:::
+
+:::{.fragment}
+
+**The Data:** We're using data collected on emergency medical response times.
+
+:::
+
+:::{.fragment}
+
+```{r}
+ems |>
+  head(n = 3) |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.fragment}
+
+**Objective:** We're seeking to predict how long an EMS team will take to arrive on the scene of an emergency, from the instant a 911 call is placed.
+
+:::
+
+:::{.fragment}
+
+**A Note on Approach:** Simple linear regression is not a technique which is typically applied in a machine learning setting because its predictive power is quite weak. Machine learning scenarios generally demand models which can account for more predictors and can approximate more complex relationships. 
+
+:::
+
+:::{.fragment}
+
+We'll still build and assess a simple linear regression model here, for the following reasons:
+
+:::
+
++ Doing so allows us to build intuition for how we approach modeling in a machine learning setting.
++ A simple linear regression model can provide an initial performance *benchmark* which we'll seek to improve upon with future models.
+
+</div>
+
+## Training, Validation, and Test Data
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+**Why Splitting Data Is Necessary:**
+
+:::
+
++ We come to these machine learning settings without pre-determined hypotheses or a model form.
++ The data will inform the choices we make, the models we build, and our expectations for future model performance.
++ This leaves us susceptible to (i) fitting "relationships" that are just noise, and (ii) having overly optimistic expectations about future predictive performance.
+
+:::{.fragment}
+
+Because of this, we'll need some data to explore and learn from (the `train`ing data) and other data to validate our models, inform how to tweak the model structure, and to test the performance of our final model (the `validation` and `test` data).
+
+:::
+
+</div>
+
+## Training, Validation, and Test Data
+
+<div style="font-size:16pt">
+
+We'll need some data to explore and learn from (the `train`ing data) and other data to validate our models, inform how to tweak the model structure, and to test the performance of our final model (the `validation` and `test` data).
+
+::::{.columns}
+
+:::{.column width="59%"}
+
+:::{.fragment}
+
+The basic intuition for what we're about to do is...
+
++ Treat all your available data like a deck of cards, where each row is a card.
++ Deal cards randomly among three piles -- a large pile for `train`ing, a smaller pile for `validation`, and the smallest pile for a final `test`.
+
+  + There is no set size for how much of your data should go into training, validation, or testing.
+  + The final `test` set should be small because you never get to learn from those observations -- it should be large enough that your final performance assessment is trustworthy though.
+  + A general approach is to start with 75% of observations for training, 15% for validation, and 10% for testing.
+  + The more observations you have though, the smaller the percentages you need to reserve for testing and validation.
+
+:::
+
+:::
+
+:::{.column width="41%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+
+set.seed(11252026)
+
+data_splits <- initial_validation_split(
+  ems, prop = c(0.8, 0.15)
+  )
+
+train <- training(data_splits)
+validation <- validation(data_splits)
+test <- testing(data_splits)
+```
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+train |>
+  head()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+train |>
+  head() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## EDA and Training Data
+
+:::{.fragment}
+
+The `train`ing data is the data that we get to explore and learn from.
+
+:::
+
+:::{.fragment}
+
+An important part of this is exploratory data analysis (EDA), where we investigate numerical and graphical summaries of our data.
+
+:::
+
+:::{.fragment}
+
+It's important that we only conduct EDA on our `train`ing set because, otherwise, information from the validation and/or test sets leak into the modeling process and our performance estimates become biased.
+
+:::
+
+:::{.fragment}
+
+In the interest of time, we'll skip EDA and simply refer back to the knowledge we gained from conducting EDA on the smaller emergency response data set from earlier this semester.
+
+:::
+
+## A Simple Linear Regression Model
+
+:::{.fragment fragment-index=1}
+
+Just like with EDA, we only get to *learn* from our `train`ing data. This goes for our models as well.
+
+:::
+
+:::{.fragment fragment-index=2}
+
+We'll still use our same `{tidymodels}` workflow, but we'll make use of the `train`ing set instead of the full data set.
+
+:::
+
+:::{.fragment fragment-index=3}
+
+We'll use distance (`distance_mi`) as the sole predictor of total response time (`response_time_min`).
+
+:::
+
+::::{.columns}
+
+:::{.column width="55%"}
+
+:::{.fragment fragment-index=4}
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_spec <- linear_reg() |>
+  set_engine("lm")
+
+lr_rec <- recipe(response_time_min ~ distance_mi, 
+                 data = train)
+
+lr_wf <- workflow() |>
+  add_model(lr_spec) |>
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf |>
+  fit(train)
+```
+
+:::
+
+:::
+
+:::{.column width="45%"}
+
+:::{.fragment fragment-index=9}
+
+As expected, our training and validation metrics are similar to one another, and the performance on the validation set is slightly worse.
+
+:::
+
+:::{.fragment fragment-index=10}
+
+We should expect the typical prediction error from this model to be about 2.4 minutes (2 minutes and 24 seconds).
+
+:::
+
+:::
+
+::::
+
+:::{.fragment fragment-index=5}
+
+Now that we've got our fitted model, let's compare training and validation performance.
+
+:::
+
+:::{.fragment fragment-index=6}
+
+As a reminder, if the model is fit appropriately, the training and validation metrics should be similar (though we expect the validation performance to be somewhat worse).
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=7}
+
+<center>**Training**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  augment(train) |>
+  rmse(response_time_min, .pred)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  augment(train) |>
+  rmse(response_time_min, .pred) |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=8}
+
+<center>**Validation**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  augment(validation) |>
+  rmse(response_time_min, .pred)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  augment(validation) |>
+  rmse(response_time_min, .pred) |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+::::
+
+## Examining Performance
+
+:::{.fragment}
+
+We just fit a model of the form:
+
+$$\mathbb{E}\left[\text{response time}\right] = \beta_0 + \beta_1 \cdot\left(\text{distance}\right)$$
+
+:::
+
+:::{.fragment}
+
+We assessed that model's performance on the training and validation sets, discovering that our typical prediction error is expected to be about 2 minutes and 24 seconds.
+
+:::
+
+:::{.fragment}
+
+That claim is only valid to apply across all distances (for creating confidence or prediction intervals) as long as the constant variance assumption (homoskedasticity) is satisfied.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center>**Training**</center>
+
+```{r}
+#| echo: true
+#| eval: true
+#| fig.height: 4
+
+lr_fit |>
+  augment(train) |>
+  ggplot() + 
+  geom_point(aes(x = distance_mi, y = .resid)) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  geom_smooth(aes(x = distance_mi, y = .resid),
+              se = TRUE)
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center>**Validation**</center>
+
+```{r}
+#| echo: true
+#| eval: true
+#| fig.height: 4
+
+lr_fit |>
+  augment(validation) |>
+  ggplot() + 
+  geom_point(aes(x = distance_mi, y = .resid)) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  geom_smooth(aes(x = distance_mi, y = .resid),
+              se = TRUE)
+```
+
+:::
+
+:::
+
+::::
+
+## Examining Performance
+
+We just fit a model of the form:
+
+$$\mathbb{E}\left[\text{response time}\right] = \beta_0 + \beta_1 \cdot\left(\text{distance}\right)$$
+
+We assessed that model's performance on the training and validation sets, discovering that our typical prediction error is expected to be about 2 minutes and 24 seconds.
+
+That claim is only valid to apply across all distances (for creating confidence or prediction intervals) as long as the constant variance assumption (homoskedasticity) is satisfied.
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+<center>**Training**</center>
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig.height: 4
+
+lr_fit |>
+  augment(train) |>
+  ggplot() + 
+  geom_point(aes(x = distance_mi, y = .resid)) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  geom_smooth(aes(x = distance_mi, y = .resid),
+              se = TRUE)
+```
+
+:::
+
+:::{.column width="50%"}
+
+<center>**Validation**</center>
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig.height: 4
+
+lr_fit |>
+  augment(validation) |>
+  ggplot() + 
+  geom_point(aes(x = distance_mi, y = .resid)) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  geom_smooth(aes(x = distance_mi, y = .resid),
+              se = TRUE)
+```
+
+:::
+
+::::
+
+:::{.fragment}
+
+There are some visible issues in the residual plots above, indicating that we've got some work to do before we have a model whose predictions (and our expectations) we can trust.
+
+:::
+
+:::{.fragment}
+
+For now, we'll leave this discussion by simply saying that the validation RMSE of 2.4 minutes is currently the benchmark for us to beat with future models.
+
+:::
+
+## Summary
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+*Simple linear regression* models a numerical response using a single numerical predictor, through a straight line with an intercept ($\beta_0$) and a slope ($\beta_1$).
+
+:::
+
+:::{.fragment}
+
+**In the *statistical learning* setting**, we began with a hypothesis about penguin flipper length and body mass, fit the model, and checked the assumptions before reading the results. We estimated that each additional millimeter of flipper length is associated with about 49.7g more body mass, on average. Independence was a concern, so we treat our p-value and interval with some skepticism. The intercept was meaningless, and predicting outside the observed flipper lengths would be extrapolation.
+
+:::
+
+:::{.fragment}
+
+**In the *machine learning* setting**, we split the EMS data, fit a model for response time using distance on the `train`ing set, and compared training and validation RMSE. Our typical prediction error was about 2.4 minutes, but the residuals showed us that the model has room for improvement.
+
+:::
+
+:::{.fragment}
+
+The model construction code was the same in both settings. The difference is the question we're asking and the data we use to answer it.
+
+:::
+
+:::{.fragment}
+
+**The benchmark:** A validation RMSE of about 2.4 minutes is the number future models will need to beat.
+
+:::
+
+</div>
+
+## Next Time
+
+<center>Multiple Linear Regression</center>

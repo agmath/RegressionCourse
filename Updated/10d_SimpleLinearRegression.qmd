@@ -1474,4 +1474,5 @@ The model construction code was the same in both settings. The difference is the
 
 ## Next Time
 
-<center>Multiple Linear Regression</center>
+<center> <font size="120pt"><br/> Multiple Linear Regression
+</font></center>

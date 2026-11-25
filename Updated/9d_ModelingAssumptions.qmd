@@ -1,0 +1,1247 @@
+---
+title: "Assumptions for Model-Building"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(kableExtra)
+
+tidymodels_prefer()
+
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+
+# ---- Simulated data sets, one for each scenario ----
+set.seed(4242)
+n <- 100
+x <- runif(n, 0, 10)
+
+# Well-behaved data: linear, independent, constant variance, normal errors
+good_df <- tibble(x = x, y = 3 + 2*x + rnorm(n, 0, 3))
+
+# Curved relationship (linearity violated)
+curve_df <- tibble(x = x, y = 2 + 0.6*x^2 + rnorm(n, 0, 3))
+
+# Dependent errors (independence violated) -- there is NO true trend in y
+t_n <- 100
+ar_df <- tibble(
+  t = 1:t_n, 
+  y = 10 + as.numeric(arima.sim(list(ar = 0.9), n = t_n, sd = 2))
+)
+
+# Non-constant variance (equal variance violated)
+het_n <- 500
+het_df <- tibble(x = runif(het_n, 1, 10)) |>
+  mutate(y = 2 + 3*x + rnorm(het_n, 0, 0.8*x))
+
+# Skewed errors (normality violated)
+skew_n <- 500
+skew_df <- tibble(x = runif(skew_n, 0, 10)) |>
+  mutate(y = 2 + 3*x + (rexp(skew_n, rate = 1/5) - 5))
+
+# Nearly redundant predictors (multicollinearity)
+col_n <- 40
+c_x1 <- runif(col_n, 0, 10)
+col_df <- tibble(x1 = c_x1, x2 = c_x1 + rnorm(col_n, 0, 0.2)) |>
+  mutate(y = 5 + 2*x1 + 2*x2 + rnorm(col_n, 0, 8))
+
+# One high-leverage, badly-fitting observation (influence)
+infl_df <- good_df |>
+  bind_rows(tibble(x = 20, y = 10))
+
+# ---- Helpers (the {tidymodels} steps are the same ones we've been using) ----
+fit_lm <- function(formula, data){
+  workflow() |>
+    add_model(linear_reg() |> set_engine("lm")) |>
+    add_recipe(recipe(formula, data = data)) |>
+    fit(data)
+}
+
+resid_plot <- function(fit){
+  fit |>
+    extract_fit_engine() |>
+    augment() |>
+    ggplot(aes(x = .fitted, y = .resid)) +
+    geom_point(size = 2) +
+    geom_hline(yintercept = 0, color = "red", linetype = "dashed", lwd = 1.5) +
+    geom_smooth(method = "loess", formula = y ~ x, se = TRUE, color = "blue") +
+    labs(title = "Residuals vs. Fitted Values",
+         x = "Fitted Value",
+         y = "Residual")
+}
+
+qq_plot <- function(fit){
+  fit |>
+    extract_fit_engine() |>
+    augment() |>
+    ggplot(aes(sample = .std.resid)) +
+    stat_qq(size = 2) +
+    stat_qq_line(color = "red", lwd = 1.5) +
+    labs(title = "Normal Q-Q Plot of Residuals",
+         x = "Theoretical Quantile",
+         y = "Standardized Residual")
+}
+
+good_fit  <- fit_lm(y ~ x, good_df)
+curve_fit <- fit_lm(y ~ x, curve_df)
+ar_fit    <- fit_lm(y ~ t, ar_df)
+het_fit   <- fit_lm(y ~ x, het_df)
+skew_fit  <- fit_lm(y ~ x, skew_df)
+col_fit   <- fit_lm(y ~ x1 + x2, col_df)
+infl_fit  <- fit_lm(y ~ x, infl_df)
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+
+theme_set(theme_bw(base_size = 20))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## The Highlights
+
++ What are we assuming when we build a linear regression model?
+
+  + Linearity
+  + Independence
+  + Equal variance
+  + Normality
+
++ Two additional concerns for multiple regression
+
+  + Multicollinearity
+  + Outliers and influential observations
+
++ For each: how do we *check* it, and what *goes wrong* when it fails?
+
+:::{.fragment}
+
+**Note:** Last time, every p-value and interval we computed came with the phrase "as long as the assumptions underlying the model construction are approximately satisfied." Today we find out what that phrase means, and what it costs us when it isn't true.
+
+:::
+
+## Playing Along
+
+1. Create a new blank Quarto document by going to `File` $\to$ `New File` $\to$ `Quarto Document...` and hitting the button to *Create Empty Document*.
+2. The document isn't truly empty -- delete the initial few lines so that the file is truly blank.
+3. Copy the contents of [this Quarto document](LINK-TO-SHELL-DOCUMENT-GOES-HERE) and paste it into your empty document. 
+4. Run the first and second code chunks to get set up.
+
+## Why Do Assumptions Matter?
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+Every model we build is a *simplified story* about how the data came to be. For linear regression, the story is:
+
+:::
+
+:::{.fragment}
+
+$$y = \beta_0 + \beta_1 x_1 + \cdots + \beta_k x_k + \varepsilon \quad\text{where}\quad \varepsilon_i \overset{\text{iid}}{\sim} N\left(0, \sigma^2\right)$$
+
+:::
+
+:::{.fragment}
+
+Unpacked, the story says that the *mean* of $y$ is a **linear** function of our predictors, and that the **errors** around that mean are **independent**, have **equal variance**, and are **normally distributed**.
+
+:::
+
+:::{.fragment}
+
+The *fitted model* is only ever an approximation of this story. The assumptions are what justify the tests and intervals we built last time.
+
+:::
+
+:::{.fragment}
+
+**In the *statistical learning* setting**, we are leaning on the story to draw conclusions (hypothesis tests, confidence intervals, interpretations), so violations threaten our conclusions directly.
+
+:::
+
+:::{.fragment}
+
+**In the *machine learning* setting**, we judge models by how they perform on validation data, so we care less about the story. Violations still matter though -- they are often the *reason* a model predicts poorly, and our prediction intervals rely on the story too.
+
+:::
+
+</div>
+
+## Residuals: Our Window Into the Errors
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+We can't observe the true errors $\varepsilon_i$, but we can observe their stand-ins -- the *residuals*.
+
+:::
+
+:::{.fragment}
+
+$$e_i = y_i - \hat{y}_i = \left(\text{observed response}\right) - \left(\text{predicted response}\right)$$
+
+:::
+
+:::{.fragment}
+
+If the model's story is a good description of our data, then the residuals should look like **patternless, roughly bell-shaped noise** centered at zero.
+
+:::
+
+:::{.fragment}
+
+Nearly all of our assumption checks are really *residual* checks. We'll make two plots over and over today:
+
+:::
+
++ **Residuals vs. Fitted Values** -- for linearity, equal variance (and sometimes independence)
++ **Normal Q-Q Plot** -- for normality
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+good_fit |>
+  extract_fit_engine() |>
+  augment()
+```
+
+:::
+
+:::{.fragment}
+
+`augment()` on the underlying `lm` engine object gives us the fitted values (`.fitted`), residuals (`.resid`), standardized residuals (`.std.resid`), and some influence measures (`.hat`, `.cooksd`) that we'll use later.
+
+:::
+
+</div>
+
+## What *Good* Looks Like
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+Before we look at violations, let's get a feel for what a *well-behaved* model looks like. These data were simulated so that all of the assumptions hold.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+#Residuals vs. Fitted Values
+good_fit |>
+  extract_fit_engine() |>
+  augment() |>
+  ggplot() +
+  geom_point(aes(x = .fitted, y = .resid)) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  geom_smooth(aes(x = .fitted, y = .resid))
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+#Normal Probability Plot
+good_fit |>
+    extract_fit_engine() |>
+    augment() |>
+    ggplot() +
+    stat_qq(aes(sample = .std.resid), size = 2) +
+    stat_qq_line(aes(sample = .std.resid), 
+                 color = "red", lwd = 1.5)
+```
+
+:::
+
+:::
+
+::::
+
+::::{.columns}
+
+:::{.column width="75%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig.height: 4
+#| fig.width: 12
+
+resid_plot(good_fit) | qq_plot(good_fit)
+```
+
+:::
+
+:::
+
+:::{.column width="25%"}
+
+:::{.fragment}
+
+**What to notice:** The residuals form a shapeless cloud, evenly spread around zero, with no curve and no funnel. The Q-Q points hug the red line. *This* is the benchmark we'll compare everything else to.
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+**Nothing Is Perfect:** Note that even with a dataset constructed to satisfy the assumptions, the assumptions are not *perfectly* satisfied. The more severe the violation(s), the less reliable/useful the model.
+
+:::
+
+</div>
+
+## Assumption 1: Linearity
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+**The Assumption:** The *average* response changes linearly with each predictor (holding the others fixed). Mathematically, $\mathbb{E}\left[y\right]$ is a linear function of the $\beta$ coefficients and our predictors.
+
+:::
+
+:::{.fragment}
+
+**How to Check:** Look at the original scatterplot(s) and the *Residuals vs. Fitted Values* plot. We're hoping to find *no pattern* in the "residuals versus fits".
+
+:::
+
+:::{.fragment}
+
+**What a Violation Looks Like:** Here, the true relationship is curved, but we fit a straight line.
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig.height: 4
+#| fig.width: 12
+
+p_scatter <- curve_df |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point(size = 2) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, color = "blue") +
+  labs(title = "A Line Fit to Curved Data")
+
+p_scatter | resid_plot(curve_fit)
+```
+
+:::
+
+:::{.fragment}
+
+The residuals are positive, then negative, then positive again -- the line is *systematically* wrong in predictable places. That *curve* in the residual plot is a signature of a linearity violation.
+
+:::
+
+</div>
+
+## Consequences of Violating Linearity
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+If the *shape* of the model is wrong, then *everything built on top of it* is wrong too. Let's look at the average residual in different regions of $x$. If the model were right, these should all be close to zero.
+
+:::
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+curve_fit |>
+  extract_fit_engine() |>
+  augment() |>
+  mutate(region = case_when(x < 3.5 ~ "Low x",
+                            x > 6.5 ~ "High x",
+                            TRUE ~ "Middle x")) |>
+  group_by(region) |>
+  summarize(average_residual = mean(.resid))
+```
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+curve_fit |>
+  extract_fit_engine() |>
+  augment() |>
+  mutate(region = case_when(x < 3.5 ~ "Low x",
+                            x > 6.5 ~ "High x",
+                            TRUE ~ "Middle x")) |>
+  group_by(region) |>
+  summarize(average_residual = mean(.resid)) |>
+  kable() |>
+  kable_styling(font_size = 18)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+**Consequences:**
+
+:::
+
++ Predictions are *systematically* too high in some regions and too low in others -- no amount of additional data fixes this.
++ The slope coefficient describes a "constant rate of change" that doesn't exist, so its interpretation is misleading (the rate of change differs depending on where you are).
++ Confidence and prediction intervals are centered in the wrong place, so they miss the truth more often than advertised.
+
+:::{.fragment}
+
+**What We Can Do:** Transform a variable (e.g. $\log(x)$), or add terms that capture the curvature (e.g. $x^2$). We'll spend time on this later in our course!
+
+:::
+
+</div>
+
+## Assumption 2: Independence
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+**The Assumption:** The errors are independent of one another. Knowing that one observation's residual was large and positive tells us *nothing* about the next observation's residual.
+
+:::
+
+:::{.fragment}
+
+**How to Check:** Think about how the data were collected! Observations from the same person, the same classroom, or consecutive moments in time are often related to each other. If there is a natural *order* to the data, plot the residuals in that order.
+
+:::
+
+:::{.fragment}
+
+**What a Violation Looks Like:** These data were generated to be *time-ordered*, and each error is strongly related to the one before it. Importantly, there is **no true relationship** between $y$ and time here.
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig.height: 3.5
+#| fig.width: 12
+
+ar_aug <- ar_fit |>
+  extract_fit_engine() |>
+  augment()
+
+p_ts <- ar_aug |>
+  rename(y = ..y) |>
+  ggplot(aes(x = t, y = y)) +
+  geom_line(color = "grey60") +
+  geom_point(size = 2) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, color = "blue") +
+  labs(title = "Response over Time", x = "Time")
+
+p_ts_resid <- ar_aug |>
+  ggplot(aes(x = t, y = .resid)) +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed", lwd = 1.5) +
+  geom_line(color = "grey60") +
+  geom_point(size = 2) +
+  labs(title = "Residuals vs. Time Order", x = "Time", y = "Residual")
+
+p_ts | p_ts_resid
+```
+
+:::
+
+:::{.fragment}
+
+The residuals wander in long runs above and below zero instead of bouncing randomly around it. This kind of residual plot is a sign that the errors are dependent.
+
+:::
+
+</div>
+
+## Consequences of Violating Independence
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+When observations are related, each one carries *less "new" information* than an independent observation would. Our formulas don't know that, so they behave as if we have more information than we do.
+
+:::
+
+:::{.fragment}
+
+Let's see what that costs us. We'll repeatedly (5000 times) simulate data where the **true slope is zero** and count how often a 5% test claims to have found a statistically significant relationship.
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+rejection_rate <- function(rho, n = 50, reps = 5000){
+  p_values <- replicate(reps, {
+    x <- 1:n
+    e <- if(rho == 0) rnorm(n) else as.numeric(arima.sim(list(ar = rho), n = n))
+    y <- e #true slope is zero
+    summary(lm(y ~ x))$coefficients[2, 4]
+  })
+  mean(p_values < 0.05)
+}
+
+tibble(
+  `Error Dependence` = c("Independent errors", "Strongly dependent errors"),
+  `Proportion of p-values below 0.05` = c(rejection_rate(0), rejection_rate(0.8))
+) |>
+  kable() |>
+  kable_styling(font_size = 18)
+```
+
+:::
+
+:::{.fragment}
+
+**Consequences:**
+
+:::
+
++ The fitted coefficients will still be reasonable, but their **standard errors are too small**.
++ This makes **p-values too small** (we "find" relationships that aren't there) and **confidence intervals too narrow** (they capture the truth far less than 95% of the time).
++ This is a *serious* problem, and it is invisible if we only look at the tabular model output via `glance()` and `tidy()`.
+
+:::{.fragment}
+
+**What We Can Do:** Plan the data collection to avoid dependence, or use models designed for dependent data (time series models, mixed-effects models). Those other models are beyond the scope of this course, but we should recognize when they're needed.
+
+:::
+
+</div>
+
+## Assumption 3: Equal Variance
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+**The Assumption:** The errors have the *same* spread ($\sigma^2$) no matter the values of the predictors. We sometimes call this *homoscedasticity* (and its violation *heteroscedasticity*).
+
+:::
+
+:::{.fragment}
+
+**How to Check:** *Residuals vs. Fitted Values.* We want a band of constant width, not a funnel, fan, bow-tie, etc.
+
+:::
+
+:::{.fragment}
+
+**What a Violation Looks Like:** Here, observations with larger $x$ are much more variable.
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig.height: 4
+#| fig.width: 12
+
+p_het <- het_df |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point(size = 1.5, alpha = 0.6) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, color = "blue") +
+  labs(title = "Spread Grows with x")
+
+p_het | resid_plot(het_fit)
+```
+
+:::
+
+:::{.fragment}
+
+The classic "fan" or "funnel" shape in the residual plot -- narrow on one end and wide on the other -- is one signature of unequal variance. Other shapes (a bow-tie, diamond, etc.) also indicate unequal variance.
+
+:::
+
+</div>
+
+## Consequences of Violating Equal Variance
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+The model uses a *single* $\sigma$ (`sigma` in `glance()`) to describe the spread *everywhere*. When the true spread changes, that one number is right on average but wrong almost everywhere.
+
+:::
+
+:::{.fragment}
+
+Check how often the 95% *prediction intervals* actually contain the observed responses in different regions of $x$:
+
+:::
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+het_fit |>
+  predict(het_df, type = "pred_int") |>
+  bind_cols(het_df) |>
+  mutate(covered = y >= .pred_lower & y <= .pred_upper,
+         region = case_when(x < 3 ~ "Low x",
+                            x > 7 ~ "High x",
+                            TRUE ~ "Middle x")) |>
+  group_by(region) |>
+  summarize(coverage = mean(covered))
+```
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+het_fit |>
+  predict(het_df, type = "pred_int") |>
+  bind_cols(het_df) |>
+  mutate(covered = y >= .pred_lower & y <= .pred_upper,
+         region = case_when(x < 3 ~ "Low x",
+                            x > 7 ~ "High x",
+                            TRUE ~ "Middle x")) |>
+  group_by(region) |>
+  summarize(coverage = mean(covered)) |>
+  kable() |>
+  kable_styling(font_size = 18)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+**Consequences:**
+
+:::
+
++ **Prediction intervals** are too wide where the data are quiet (we over-state our uncertainty) and too narrow where the data are noisy (we *under*-state it, and miss far more than 5% of the time).
++ The standard errors for our coefficients, and the tests and intervals built from them, are unreliable too.
++ The fitted line itself is still a reasonable (unbiased) estimate -- it's our measures of *uncertainty* that suffer.
+
+:::{.fragment}
+
+**What We Can Do:** Transform the response (a $\log(y)$ transformation often calms a fan shape), or use methods designed for unequal variance (weighted least squares, robust standard errors).
+
+:::
+
+</div>
+
+## Assumption 4: Normality
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+**The Assumption:** The errors follow a normal (bell-shaped) distribution centered at zero.
+
+:::
+
+:::{.fragment}
+
+**How to Check:** A histogram of the residuals, and especially a *Normal Q-Q plot*. If the residuals are normal, the Q-Q points fall along the line. Curvature or heavy tails signal non-normality.
+
+:::
+
+:::{.fragment}
+
+**What a Violation Looks Like:** Here, the errors are strongly right-skewed.
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig.height: 4
+#| fig.width: 12
+
+p_hist <- skew_fit |>
+  extract_fit_engine() |>
+  augment() |>
+  ggplot(aes(x = .resid)) +
+  geom_histogram(color = "white", bins = 25) +
+  labs(title = "Histogram of Residuals", x = "Residual", y = "Count")
+
+p_hist | qq_plot(skew_fit)
+```
+
+:::
+
+:::{.fragment}
+
+The histogram has a long right tail, and the Q-Q points bend away from the line at both ends.
+
+:::
+
+:::{.fragment}
+
+A systematic bend away from the line at even just one end is sufficient for indicating a violation though.
+
+:::
+
+</div>
+
+## Consequences of Violating Normality
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+This is the assumption we can *most* afford to bend, but not to break. A *prediction interval* is built to be symmetric around the prediction, which is only appropriate if the errors are symmetric. Let's see how the *tails* of those intervals behave:
+
+:::
+
+::::{.columns}
+
+:::{.column width="52%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+skew_fit |>
+  predict(skew_df, type = "pred_int") |>
+  bind_cols(skew_df) |>
+  summarize(missed_below = mean(y < .pred_lower),
+            missed_above = mean(y > .pred_upper))
+```
+
+:::
+
+:::
+
+:::{.column width="48%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+skew_fit |>
+  predict(skew_df, type = "pred_int") |>
+  bind_cols(skew_df) |>
+  summarize(`Missed Below Interval` = mean(y < .pred_lower),
+            `Missed Above Interval` = mean(y > .pred_upper)) |>
+  kable() |>
+  kable_styling(font_size = 18)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+If the intervals were calibrated, we'd miss about 2.5% on each side. Instead, essentially *all* of the misses happen on one side.
+
+:::
+
+:::{.fragment}
+
+**Consequences:**
+
+:::
+
++ **Prediction intervals** are miscalibrated: too long on one side, too short on the other.
++ With *small* samples, the $t$-based tests and confidence intervals for coefficients also depend on normality. With *large* samples, the Central Limit Theorem protects the coefficient-level inference, so mild non-normality is much less of a concern.
+
+:::{.fragment}
+
+**What We Can Do:** Transform the response, collect more data, or move to models that fit the response's distribution better. Also, look for *outliers* -- a handful of extreme points often cause the heavy tails.
+
+:::
+
+</div>
+
+## Beyond Residuals: Multicollinearity
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+**The Concern:** In multiple regression, two or more predictors may carry nearly the *same* information (e.g. height in inches and height in centimeters). Each coefficient is interpreted "holding the other predictors fixed" -- but what if the other predictors *can't* be held fixed?
+
+:::
+
+:::{.fragment}
+
+**How to Check:** Look at correlations among predictors, and at *variance inflation factors* (VIFs). A common rule of thumb is that VIFs above about 5 to 10 are cause for concern.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+col_df |>
+  select(x1, x2) |>
+  cor()
+
+#Variance inflation factors (from the {car} package)
+car::vif(col_fit |> extract_fit_engine())
+```
+
+:::
+
+:::
+
+:::{.column width="30%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+col_df |>
+  select(x1, x2) |>
+  cor() |>
+  kable() |>
+  kable_styling(font_size = 14)
+```
+
+:::
+
+:::
+
+:::{.column width="20%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+car::vif(col_fit |> extract_fit_engine()) |>
+  kable() |>
+  kable_styling(font_size = 14)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+Here, `x1` and `x2` are almost perfectly correlated -- the true model uses both of them, and the model is useful. Watch what happens to the **Global Test** and the **Term-Based Tests**:
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+col_fit |>
+  glance() |>
+  select(r.squared, adj.r.squared, sigma, statistic, p.value) |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{r}
+col_fit |>
+  tidy() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Consequences of Multicollinearity
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+**Look familiar?** The *Global Test for Model Utility* says "this model is useful!" but the *Term-Based Tests* say "none of these terms add anything, given the others."
+
+:::
+
+:::{.fragment}
+
+Both statements are true! If `x1` and `x2` carry the same information, then given one of them, the other adds very little *new* information.
+
+:::
+
+:::{.fragment}
+
+**Consequences:**
+
+:::
+
++ Standard errors for the affected coefficients **balloon**, so intervals are wide and p-values are large, even for predictors that matter.
++ The coefficient estimates become **unstable** -- small changes in the data can swing them dramatically (even changing their signs).
++ Interpretations like "holding `x2` fixed" become hollow, since `x2` doesn't vary independently of `x1`.
++ The model's *predictions* (for new observations that follow the same pattern) can still be fine -- it's the individual coefficients that suffer.
+
+:::{.fragment}
+
+**What We Can Do:** Drop one of the redundant predictors, combine them into a single predictor, or (in the machine learning setting, where we care about predictions more than coefficients) simply be aware of it.
+
+:::
+
+:::{.fragment}
+
+**A Subtle Point:** This is one more reason we only drop *one* term at a time during model reduction. Removing a redundant predictor changes the other's standard error dramatically!
+
+:::
+
+</div>
+
+## Beyond Residuals: Outliers and Influential Observations
+
+<div style="font-size:15pt">
+
+:::{.fragment}
+
+**The Concern:** A least squares fit tries hard to avoid *large* residuals, so a single unusual point can pull the entire model toward itself. Points that are far from the rest of the data in $x$ have the most *leverage* to do this.
+
+:::
+
+:::{.fragment}
+
+**How to Check:** Plot the data, and look at the *leverage* (`.hat`) and *Cook's distance* (`.cooksd`) of each observation. An observation with an unusually large Cook's distance is *influential*.
+
+:::
+
+::::{.columns}
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+infl_fit |>
+  extract_fit_engine() |>
+  augment() |>
+  arrange(desc(.cooksd)) |>
+  select(x, y, .hat, .cooksd) |>
+  head(n = 3)
+```
+
+:::
+
+:::
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+infl_fit |>
+  extract_fit_engine() |>
+  augment() |>
+  rename(y = ..y) |>
+  arrange(desc(.cooksd)) |>
+  select(x, y, .hat, .cooksd) |>
+  head(n = 3) |>
+  kable() |>
+  kable_styling(font_size = 18)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig.height: 3
+#| fig.width: 12
+
+infl_df |>
+  mutate(group = if_else(x == 20, "Unusual observation", "Original data")) |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point(aes(color = group), size = 2.5) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, 
+              aes(linetype = "With unusual observation"), color = "blue") +
+  geom_smooth(data = good_df, method = "lm", formula = y ~ x, se = FALSE, 
+              aes(linetype = "Without unusual observation"), color = "darkgreen", fullrange = TRUE) +
+  scale_color_manual(values = c("Original data" = "black", "Unusual observation" = "red")) +
+  labs(title = "One Observation Can Move the Whole Model",
+       color = "", linetype = "")
+```
+
+:::
+
+</div>
+
+## Consequences of Influential Observations
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+Let's compare the fitted coefficients with and without that single observation:
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+bind_rows(
+  good_fit |> tidy() |> mutate(model = "Without unusual observation"),
+  infl_fit |> tidy() |> mutate(model = "With unusual observation")
+) |>
+  select(model, term, estimate, std.error, p.value) |>
+  kable() |>
+  kable_styling(font_size = 18)
+```
+
+:::
+
+:::{.fragment}
+
+**Consequences:**
+
+:::
+
++ One observation out of 101 can substantially change the slope, the intercept, the $R^2$, and our conclusions.
++ If our conclusions hinge on a single point, they are *fragile*.
+
+:::{.fragment}
+
+**What We Can Do:** *Investigate* the observation. Is it a data-entry error? A different kind of subject than the rest? A genuinely interesting finding? We shouldn't delete observations just because they're inconvenient -- but we should know when they are driving our results, and be transparent about it (for instance, by reporting the model with and without them).
+
+:::
+
+</div>
+
+## Putting It All Together
+
+<div style="font-size:15pt">
+
+```{r}
+#| echo: false
+#| eval: true
+
+tribble(
+  ~Assumption, ~`How We Check`, ~`If It's Violated`, ~`What We Can Try`,
+  "Linearity", "Scatterplots; residuals vs. fitted values", "Systematically wrong predictions; misleading coefficients", "Transform variables; add curvature terms",
+  "Independence", "Study design; residuals vs. order", "Standard errors too small, so p-values too small and intervals too narrow", "Better data collection; models specifically designed for dependent data",
+  "Equal Variance", "Residuals vs. fitted values (look for a fan, bow-tie, etc.)", "Prediction intervals too wide in some places and too narrow in others", "Transform the response; weighted least squares",
+  "Normality", "Q-Q plot; histogram of residuals", "Miscalibrated prediction intervals; shaky small-sample inference", "Transform the response; more data",
+  "No Multicollinearity", "Correlations; VIFs", "Inflated standard errors; unstable coefficients", "Drop or combine redundant predictors",
+  "No Influential Points", "Leverage; Cook's distance", "A few points can drive the whole fit", "Investigate; report models with and without high leverage observations"
+) |>
+  kable() |>
+  kable_styling(font_size = 15)
+```
+
+</div>
+
+## For You to Try
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+Return to the model you reduced during our last class. In your Quarto document, try the following:
+
+:::
+
+1. Create the *Residuals vs. Fitted Values* plot and the *Normal Q-Q Plot* for your final model. Do you notice any concerns?
+2. Use `augment()` on the underlying `lm` engine object to find the observation with the largest Cook's distance. Is it much larger than the others?
+3. Can you think of any ways the data might have been collected such that the independence assumption is questionable?
+4. Which assumption do you suspect would be *hardest* to check in practice? Why?
+
+:::{.fragment}
+
+**A Reminder:** We assess assumptions *after* fitting the model and *before* trusting its tests, intervals, and interpretations. When an assumption fails, our first move is to ask *why* -- not to abandon the model.
+
+:::
+
+</div>
+
+## Wrap-Up Summary
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+Every test and interval we computed last time was built on the story that the errors are independent, equally variable, and normal around a *linear* mean.
+
+:::
+
+:::{.fragment}
+
+Because none of these assumptions is ever *perfectly* true, we're not looking for perfection. We're looking for **evidence of serious violations**, and for an understanding of what each violation would cost us.
+
+:::
+
+:::{.fragment}
+
+In the ***statistical learning*** setting, violations threaten our conclusions -- p-values, intervals, and interpretations. In the ***machine learning*** setting, they often show up as poor *validation* performance and unreliable prediction intervals.
+
+:::
+
+:::{.fragment}
+
+Residual plots are our best friend. When something looks off, they tell us *where* to look next.
+
+:::
+
+</div>
+
+## Next Time... 
+
+<center> 
+
+<font size="120pt"><br/> Simple Linear Regression
+</font>
+
+</center>

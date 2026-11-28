@@ -1,0 +1,1892 @@
+---
+title: "Multiple Linear Regression"
+author: Dr. Gilbert
+format: 
+  revealjs:
+    smaller: true
+    html-math-method: mathjax
+    include-in-header:
+      - text: |
+          <script>
+          window.MathJax = {
+            loader: {
+              load: ['[tex]/cancel']
+            },
+            tex: {
+              packages: {
+                '[+]': ['cancel']
+              }
+            }
+          };
+          </script>
+date: today
+date-format: long
+theme: serif
+incremental: true
+---
+
+```{r global-options, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(patchwork)
+library(kableExtra)
+tidymodels_prefer()
+
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+
+# Two penguins are missing all of their measurements -- we set them aside
+penguins <- palmerpenguins::penguins |>
+  mutate(flipper_length_mm = as.numeric(flipper_length_mm),
+         body_mass_g = as.numeric(body_mass_g)) |>
+  drop_na(body_mass_g, flipper_length_mm, bill_length_mm, bill_depth_mm, year)
+
+ems <- read_csv("https://raw.githubusercontent.com/agmath/RegressionCourse/refs/heads/main/Updated/ems_response_times.csv")
+
+options(kable_styling_bootstrap_options = c("hover", "striped"))
+options(scipen = 999)
+
+# Helpers for formatting model output compactly on slides
+fmt_p <- function(p){
+  ifelse(is.na(p), "--", ifelse(p < 0.001, "< 0.001", sprintf("%.3f", p)))
+}
+
+show_glance <- function(fit, size = 14){
+  fit |>
+    glance() |>
+    select(r.squared, adj.r.squared, sigma, statistic, p.value, df.residual, nobs) |>
+    mutate(p.value = fmt_p(p.value)) |>
+    kable(digits = 3) |>
+    kable_styling(font_size = size)
+}
+
+show_tidy <- function(fit, size = 14, conf.int = FALSE){
+  fit |>
+    tidy(conf.int = conf.int) |>
+    mutate(p.value = fmt_p(p.value)) |>
+    kable(digits = 3) |>
+    kable_styling(font_size = size)
+}
+
+#Set ggplot base theme
+theme_set(theme_bw(base_size = 14))
+```
+
+```{css}
+code.sourceCode {
+  font-size: 1.3em;
+  /* or try font-size: xx-large; */
+}
+
+a {
+  color: purple;
+}
+
+a:link {
+  color: purple;
+}
+
+a:visited {
+  color: purple;
+}
+```
+
+## The Highlights
+
+<div style="font-size:18pt">
+
++ What is Multiple Linear Regression and how does it compare/relate to simple linear regression?
+
+::::{.columns}
+
+:::{.column width="50%"}
+
++ The Statistical Learning Setting
+
+  + How do our hypotheses and tests change with more than one explanatory variable?
+  + Which explanatory variables earn a place in the model? (model reduction)
+  + Are the assumptions reasonable -- including two new concerns?
+  + How do we interpret each coefficient, given the others?
+
+:::
+
+:::{.column width="50%"}
+
++ The Machine Learning Setting
+
+  + Which variables can we legitimately use as predictors?
+  + Do additional predictors improve predictions on data the model hasn't seen?
+  + How does the new model compare to our simple linear regression benchmark?
+  + What do the residuals still tell us?
+
+:::
+
+::::
+
+</div>
+
+## What Is Multiple Linear Regression?
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+In *multiple linear regression*, we seek to explain/predict a numerical outcome (`y`), using **two or more** numerical explanatory/predictor variables (`x1`, `x2`, ..., `xk`).
+
+:::
+
+:::{.fragment}
+
+Our models are of the form:
+
+$$\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_k x_k$$
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+With one predictor, the model is a line. With two predictors it is a *plane*, and with more it is a *hyperplane* -- a flat surface that we can't picture but can still fit.
+
+:::
+
+:::{.fragment}
+
+The coefficient $\beta_j$ is the expected change in `y` given a unit increase in $x_j$, **holding all of the other predictors fixed**.
+
+:::
+
+:::{.fragment}
+
+The plot shows this idea for two predictors. Each line is the model's prediction as `x1` changes, with `x2` held at a fixed value. The lines are parallel -- they share the same slope for `x1`.
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig.height: 3.5
+#| fig.width: 6
+
+set.seed(2026)
+n_sim <- 60
+sim_df <- tibble(
+  x1 = runif(n_sim, 0, 10),
+  x2 = runif(n_sim, 0, 10),
+  y = 5 + 2*x1 + 3*x2 + rnorm(n_sim, 0, 4)
+)
+
+sim_fit <- lm(y ~ x1 + x2, data = sim_df)
+
+sim_lines <- expand_grid(
+  x1 = seq(0, 10, length.out = 50),
+  x2 = c(1, 5, 9)
+)
+sim_lines$y_hat <- predict(sim_fit, newdata = sim_lines)
+
+ggplot() +
+  geom_point(data = sim_df, aes(x = x1, y = y, color = x2), size = 2.5) +
+  geom_line(data = sim_lines, 
+            aes(x = x1, y = y_hat, group = x2, linetype = factor(x2)),
+            linewidth = 1) +
+  scale_color_viridis_c() +
+  labs(color = "x2", linetype = "x2 held at")
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+We'll begin in the ***statistical learning*** setting before exploring multiple linear regression in the ***machine learning*** setting.
+
+:::
+
+</div>
+
+## What's Different About Multiple Regression?
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+Most of what we learned in simple linear regression carries over. Four things are new:
+
+:::
+
+1. **More tests.** There is still *one* global test for model utility, but now there are *several* term-based tests (one per explanatory variable). They are no longer the same test!
+2. **Conditional interpretations.** Each coefficient (and each term-based test) is interpreted *given the other terms in the model*. If we change the other terms, the coefficient changes too.
+3. **Model reduction.** Some of our explanatory variables may not earn their place in the model, so we need a strategy for removing them.
+4. **New assumption concerns.** Explanatory variables can overlap with one another (*multicollinearity*), and we'll want to check how much any single observation influences the fit.
+
+</div>
+
+## Statistical Learning Reminders
+
+<div style="font-size:18pt">
+
+:::{.fragment}
+
+We've defined the statistical learning setting to be one where we come to our modeling scenarios with a pre-determined model form and our primary goal is *inference* (interpretation).
+
+:::
+
+:::{.fragment}
+
+**The Data:** We're using data collected on penguins observed near Palmer Research Station in Antarctica. Two penguins are missing measurements, so we're working with the 342 complete observations.
+
+:::
+
+:::{.fragment}
+
+```{r}
+penguins |>
+  select(species, bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, year) |>
+  head() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.fragment}
+
+**Objective:** Today we're seeking to understand how penguin body mass is related to flipper length, bill length, bill depth, and year -- *all at once*.
+
+:::
+
+:::{.fragment}
+
+**A Note on Year:** Ultimately, `year` will be a categorical variable because it's got so few observed levels (just 2007, 2008, and 2009) and we'll eventually treat it that way. For today, we'll treat it as numeric.
+
+:::
+
+</div>
+
+## Hypotheses and Corresponding Model
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+**Hypotheses:** We believe that penguin body mass (`body_mass_g`) is linearly associated with penguin flipper length (`flipper_length_mm`), bill length (`bill_length_mm`), bill depth (`bill_depth_mm`), and year (`year`).
+
+:::
+
+:::{.fragment}
+
+**Corresponding Model:** Let $x_1$, $x_2$, $x_3$, and $x_4$ denote flipper length, bill length, bill depth, and year, respectively. Then,
+
+$$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center>**Global Test for Model Utility**</center>
+
+**Does the model have any explanatory value at all?**
+
+$$\begin{array}{lcl} H_0 & : & \beta_1 = \beta_2 = \beta_3 = \beta_4 = 0\\ H_a & : & \text{At least one of the coefficient } \beta \text{s is non-zero}\end{array}$$
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center>**Term-Based Tests (four of them)**</center>
+
+**Does this term add explanatory value, given the other terms?**
+
+$$\begin{array}{l} H_0 : \beta_i = 0\\ H_a : \beta_i \neq 0\end{array}~~~\text{for}~~~i = 1, 2, 3, 4$$
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+**Note:** In *simple* linear regression, the global test and the term-based test were identical. That is no longer the case -- now we get to ask both a global and a local question.
+
+:::
+
+</div>
+
+## Fitting the Full Model
+
+<div style="font-size:15pt">
+
+:::{.fragment}
+
+The `{tidymodels}` workflow is unchanged. The only difference is that the recipe has several predictors, separated by `+`.
+
+:::
+
+::::{.columns}
+
+:::{.column width="47%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_spec <- linear_reg() |>
+  set_engine("lm")
+
+lr_rec <- recipe(body_mass_g ~ flipper_length_mm + 
+                   bill_length_mm +
+                   bill_depth_mm + 
+                   year, 
+                 data = penguins)
+
+lr_wf <- workflow() |>
+  add_model(lr_spec) |>
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf |>
+  fit(penguins)
+```
+
+```{r}
+#| include: false
+
+full_fit <- lr_fit
+```
+
+:::
+
+:::
+
+:::{.column width="53%"}
+
+:::{.fragment}
+
+<center>**Global Test for Model Utility**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  glance()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  glance() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.fragment}
+
+<center>**Term-Based Tests**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+lr_fit |>
+  tidy()
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  tidy() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Assessing the Full Model
+
+<div style="font-size:15pt">
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+**Global Test for Model Utility:** The p-value is essentially zero, which is below $0.05$. The data suggests our model has some utility.
+
+:::
+
+:::{.fragment}
+
+**Term-Based Tests:** The data provide evidence that `flipper_length_mm` and `year` have explanatory value, *given the other terms in the model*. The evidence for `bill_length_mm` (p-value $\approx 0.676$) and `bill_depth_mm` (p-value $\approx 0.075$) is lacking.
+
+:::
+
+:::{.fragment}
+
+**Next Action:** The ***Global Test*** says the model is useful, but some of our explanatory variables are not statistically significant. We'll reduce the model by removing the term with the *least* evidence for inclusion -- the one with the *highest* p-value, `bill_length_mm`.
+
+:::
+
+:::
+
+:::{.column width="55%"}
+
+<center>**Global Test for Model Utility**</center>
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  glance()  |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+<center>**Term-Based Tests**</center>
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  tidy() |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+::::
+
+:::{.fragment}
+
+**A Curious Detail:** In simple linear regression, bill depth was *negatively* associated with body mass. In this model, its coefficient is *positive*. A coefficient's value and sign depend on which other terms are in the model!
+
+:::
+
+</div>
+
+## Model Reduction: Step 1
+
+<div style="font-size:14pt">
+
+:::{.fragment}
+
+We'll drop `bill_length_mm` and refit. Dropping a term changes *everything* -- every coefficient, standard error, test statistic, and p-value -- which is why we only ever drop **one** term at a time.
+
+:::
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+$$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1 x_1 \cancel{+ \beta_2 x_2} + \beta_3 x_3 + \beta_4 x_4$$
+
+$$\begin{array}{lcl} H_0 & : & \beta_1 \cancel{= \beta_2} = \beta_3 = \beta_4 = 0\\ H_a & : & \text{At least one remaining } \beta \text{ is non-zero}\end{array}$$
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_spec <- linear_reg() |>
+  set_engine("lm")
+
+lr_rec <- recipe(body_mass_g ~ flipper_length_mm + 
+                   bill_depth_mm + 
+                   year, 
+                 data = penguins)
+
+lr_wf <- workflow() |>
+  add_model(lr_spec) |>
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf |>
+  fit(penguins)
+```
+
+```{r}
+#| include: false
+
+step1_fit <- lr_fit
+```
+
+:::
+
+:::
+
+:::{.column width="55%"}
+
+:::{.fragment}
+
+<center>**Global Test for Model Utility**</center>
+
+```{r}
+#| echo: false
+#| eval: true
+
+show_glance(lr_fit, size = 13)
+```
+
+:::
+
+:::{.fragment}
+
+<center>**Term-Based Tests**</center>
+
+```{r}
+#| echo: false
+#| eval: true
+
+show_tidy(lr_fit, size = 13)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+**Results:** The global test still indicates model utility. The p-value for `bill_depth_mm` changed from about $0.075$ to about $0.052$ -- it's still above $0.05$, though only barely. This is a close call, but we'll stick with our $0.05$ threshold and remove `bill_depth_mm` next.
+
+:::
+
+</div>
+
+## Model Reduction: Step 2
+
+<div style="font-size:14pt">
+
+:::{.fragment}
+
+We'll drop `bill_depth_mm` and refit.
+
+:::
+
+::::{.columns}
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+$$\mathbb{E}\left[\text{body mass}\right] = \beta_0 + \beta_1 x_1 \cancel{+ \beta_2 x_2} \cancel{+ \beta_3 x_3} + \beta_4 x_4$$
+
+$$\begin{array}{lcl} H_0 & : & \beta_1 \cancel{= \beta_2} \cancel{= \beta_3} = \beta_4 = 0\\ H_a & : & \text{At least one remaining } \beta \text{ is non-zero}\end{array}$$
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_spec <- linear_reg() |>
+  set_engine("lm")
+
+lr_rec <- recipe(body_mass_g ~ flipper_length_mm + 
+                   year, 
+                 data = penguins)
+
+lr_wf <- workflow() |>
+  add_model(lr_spec) |>
+  add_recipe(lr_rec)
+
+lr_fit <- lr_wf |>
+  fit(penguins)
+```
+
+```{r}
+#| include: false
+
+step2_fit <- lr_fit
+```
+
+:::
+
+:::
+
+:::{.column width="55%"}
+
+:::{.fragment}
+
+<center>**Global Test for Model Utility**</center>
+
+```{r}
+#| echo: false
+#| eval: true
+
+show_glance(lr_fit, size = 13)
+```
+
+:::
+
+:::{.fragment}
+
+<center>**Term-Based Tests**</center>
+
+```{r}
+#| echo: false
+#| eval: true
+
+show_tidy(lr_fit, size = 13)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+**Conclusion:** Every remaining term is statistically significant, given the other term in the model, so we stop reducing. Our final model uses `flipper_length_mm` and `year`.
+
+:::
+
+</div>
+
+## The Reduction at a Glance
+
+<div style="font-size:15pt">
+
+:::{.fragment}
+
+**P-values for each term, at each step:**
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+model_list <- list(
+  `Full Model` = full_fit,
+  `Step 1: Without Bill Length` = step1_fit,
+  `Step 2: Without Bill Length and Bill Depth` = step2_fit
+)
+
+model_list |>
+  map(\(f) f |> tidy() |> select(term, p.value)) |>
+  bind_rows(.id = "model") |>
+  filter(term != "(Intercept)") |>
+  mutate(p.value = fmt_p(p.value)) |>
+  pivot_wider(names_from = model, values_from = p.value, values_fill = "--") |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.fragment}
+
+**Overall fit at each step:**
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+model_list |>
+  map(\(f) f |> glance() |> select(adj.r.squared, sigma)) |>
+  bind_rows(.id = "Model") |>
+  kable(digits = 3) |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.fragment}
+
+Removing the unneeded terms barely changed the adjusted R-squared or `sigma`. We now have a simpler model that explains the data about as well as the larger one.
+
+:::
+
+:::{.fragment}
+
+**A Caution:** Bill length and bill depth aren't "useless" -- each is associated with body mass on its own. They just add little once flipper length and year are already in the model. Also, because we let the data choose which terms to keep, the final model's p-values and intervals are somewhat *optimistic*. In a true statistical learning study, we'd hope to specify the model *before* looking at the data.
+
+:::
+
+</div>
+
+## Validating Model Assumptions
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+With our final model in hand, let's check the assumptions that accompany multiple linear regression.
+
+:::
+
+:::{.fragment}
+
+The first four are the same as in simple linear regression:
+
+:::
+
++ Linearity (between each predictor and the average body mass, holding the others fixed)
++ Independence of residuals
++ Homoskedasticity (constant variance of residuals)
++ Normality of residuals
+
+:::{.fragment}
+
+And we have two additional concerns for multiple regression:
+
+:::
+
++ Multicollinearity (do our explanatory variables overlap too much?)
++ Influential observations (does any one observation have outsized pull on the fit?)
+
+</div>
+
+## Linearity and Equal Variance
+
+<div style="font-size:15pt">
+
+:::{.fragment}
+
+With more than one predictor, we can't see the model in a single scatterplot. Instead, we plot the residuals against the *fitted values* and against *each predictor*.
+
+:::
+
+::::{.columns}
+
+:::{.column width="33%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_aug <- lr_fit |>
+  augment(penguins)
+
+p_fit <- lr_aug |>
+  ggplot() + 
+  geom_point(aes(x = .pred, y = .resid)) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  geom_smooth(aes(x = .pred, y = .resid), 
+              se = TRUE) +
+  labs(title = "Residuals vs. Fitted Values",
+       x = "Fitted Value",
+       y = "Residual")
+```
+
+:::
+
+:::
+
+:::{.column width="33%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+p_flip <- lr_aug |>
+  ggplot() + 
+  geom_point(aes(x = flipper_length_mm, y = .resid)) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  geom_smooth(aes(x = flipper_length_mm, y = .resid), 
+              se = TRUE) +
+  labs(title = "Residuals vs. Flipper Length",
+       x = "Flipper Length (mm)",
+       y = "Residual")
+```
+
+:::
+
+:::
+
+:::{.column width="33%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: false
+
+p_year <- lr_aug |>
+  ggplot(aes(x = year, y = .resid)) + 
+  geom_point(position = position_jitter(width = 0.08, height = 0), 
+             alpha = 0.6) +
+  stat_summary(fun = mean, geom = "point", color = "blue", size = 4) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  scale_x_continuous(breaks = c(2007, 2008, 2009)) +
+  labs(title = "Residuals vs. Year",
+       x = "Year",
+       y = "Residual")
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig.height: 3.5
+#| fig.width: 12
+
+p_flip <- lr_aug |>
+  ggplot() + 
+  geom_point(aes(x = flipper_length_mm, y = .resid)) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  geom_smooth(aes(x = flipper_length_mm, y = .resid), 
+              se = TRUE) +
+  labs(title = "Residuals vs. Flipper Length",
+       x = "Flipper Length (mm)",
+       y = "Residual")
+
+p_year <- lr_aug |>
+  ggplot(aes(x = year, y = .resid)) + 
+  geom_point(position = position_jitter(width = 0.08, height = 0), 
+             alpha = 0.6) +
+  stat_summary(fun = mean, geom = "point", color = "blue", size = 4) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  scale_x_continuous(breaks = c(2007, 2008, 2009)) +
+  labs(title = "Residuals vs. Year",
+       x = "Year",
+       y = "Residual")
+
+p_fit | p_flip | p_year
+```
+
+:::
+
+</div>
+
+## Linearity and Equal Variance
+
+<div style="font-size:15pt">
+
+With more than one predictor, we can't see the model in a single scatterplot. Instead, we plot the residuals against the *fitted values* and against *each predictor*.
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig.height: 3.5
+#| fig.width: 12
+
+p_flip <- lr_aug |>
+  ggplot() + 
+  geom_point(aes(x = flipper_length_mm, y = .resid)) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  geom_smooth(aes(x = flipper_length_mm, y = .resid), 
+              se = TRUE) +
+  labs(title = "Residuals vs. Flipper Length",
+       x = "Flipper Length (mm)",
+       y = "Residual")
+
+p_year <- lr_aug |>
+  ggplot(aes(x = year, y = .resid)) + 
+  geom_point(position = position_jitter(width = 0.08, height = 0), 
+             alpha = 0.6) +
+  stat_summary(fun = mean, geom = "point", color = "blue", size = 4) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  scale_x_continuous(breaks = c(2007, 2008, 2009)) +
+  labs(title = "Residuals vs. Year",
+       x = "Year",
+       y = "Residual")
+
+p_fit | p_flip | p_year
+```
+
+:::{.fragment}
+
+**Linearity:** There is a gentle U-shape in the first two plots -- residuals tend to be positive for the smallest and largest fitted values and negative in the middle. The curve is mild compared to the size of a typical residual (about 385g), so this is a modest concern. Residuals for each year are centered near zero.
+
+:::
+
+:::{.fragment}
+
+**Equal Variance:** The vertical spread looks roughly constant, perhaps slightly tighter at the extremes (a faint bow-tie, like we saw last time). We don't see evidence of a severe violation.
+
+:::
+
+</div>
+
+## Independence
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+Independence of residuals is generally about *how* the data were collected or generated. 
+
+:::
+
+:::{.fragment}
+
+The same concerns we noted last time apply here:
+
+:::
+
++ observations collected at different times
++ observations collected at different locations
++ observations collected on different subgroups within the population
+
+:::{.fragment}
+
+Including `year` in the model accounts for *some* of the time-related structure. It does nothing for the differences between locations (islands) or subgroups (species) though, so we should still suspect some dependence among the residuals.
+
+:::
+
+:::{.fragment}
+
+We'll need a more inclusive model to address this. For now, we'll acknowledge the concern and move on.
+
+:::
+
+</div>
+
+## Normality
+
+<div style="font-size:15pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+#| fig.height: 4.5
+
+lr_aug |>
+  ggplot() + 
+  geom_histogram(aes(x = .resid),
+                 color = "white")
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+#| fig.height: 4.5
+
+lr_fit |>
+  extract_fit_engine() |>
+  augment() |>
+  ggplot() +
+  stat_qq(aes(sample = .std.resid), size = 2) +
+  stat_qq_line(aes(sample = .std.resid),
+               color = "red", lwd = 1.5)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+The residuals look approximately normal, with perhaps a slight right skew. The Q-Q plot doesn't show substantial deviation from the theoretical quantiles (red line). We don't see evidence of a severe violation.
+
+:::
+
+</div>
+
+## Multicollinearity and Influence
+
+<div style="font-size:15pt">
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+**Multicollinearity:** Variance inflation factors (VIFs) measure how much each term's standard error is inflated by overlap with the other terms. Values above about 5 to 10 are cause for concern.
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_fit |> 
+  extract_fit_engine() |>
+  car::vif() |>
+  enframe(name = "term", value = "VIF") |>
+  kable(digits = 2) |>
+  kable_styling(font_size = 16)
+```
+
+Both VIFs are essentially 1, so there is no concern here. (Flipper length did overlap with the bill measurements in the full model -- one reason those terms added little.)
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+**Influential Observations:** Cook's distance measures how much the fit would change if an observation were removed.
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_fit |>
+  extract_fit_engine() |>
+  augment(penguins) |>
+  arrange(desc(.cooksd)) |>
+  select(flipper_length_mm, year, .hat, .cooksd) |>
+  head(n = 3) |>
+  kable(digits = 3) |>
+  kable_styling(font_size = 16)
+```
+
+```{r}
+#| include: false
+
+cooks_max <- lr_fit |>
+  extract_fit_engine() |>
+  cooks.distance() |>
+  max()
+```
+
+The largest Cook's distance is only about `r round(cooks_max, 3)`, far below common concern thresholds (like $0.5$ or $1$). No single penguin is driving our results.
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Summary of Assumption Validation
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+None of the assumptions for multiple linear regression were severely violated, and we found no multicollinearity or influential-observation problems in the final model.
+
+:::
+
+:::{.fragment}
+
+We did note a few things to be transparent about:
+
+:::
+
++ **Independence:** We still suspect dependence from the locations and subgroups (islands and species) represented in the data, which this model doesn't account for.
++ **Linearity:** There is a mild U-shaped pattern in the residuals, suggesting the model could be improved.
++ **Equal variance:** A faint bow-tie shape, though not severe.
+
+:::{.fragment}
+
+We didn't find evidence for severe violations, so we can trust our statistical analysis as long as we maintain some level of skepticism -- especially since the data helped us decide which terms to keep.
+
+:::
+
+</div>
+
+## Assessing the Final Model
+
+```{r}
+#| include: false
+
+final_glance <- lr_fit |> glance()
+
+slr_pen_fit <- workflow() |>
+  add_model(linear_reg() |> set_engine("lm")) |>
+  add_recipe(recipe(body_mass_g ~ flipper_length_mm, data = penguins)) |>
+  fit(penguins)
+
+slr_pen_glance <- slr_pen_fit |> glance()
+```
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  glance() |>
+  kable() |>
+  kable_styling(font_size=16)
+```
+
+:::
+
+:::{.fragment}
+
+The F-statistic and corresponding p-value indicate that our model has explanatory value.
+
+:::
+
+:::{.fragment}
+
+The R-squared value indicates that approximately 77% of the variability in penguin body masses is explained by linear relationships with flipper length and year.
+
+:::
+
+:::{.fragment}
+
+The `sigma` value indicates that, on the data our model was trained on, our typical residual (prediction error) is approximately `r round(final_glance$sigma, 1)` grams.
+
+:::
+
+:::{.fragment}
+
+**Compared to Simple Linear Regression:** Using flipper length alone, the adjusted R-squared was `r round(100 * slr_pen_glance$adj.r.squared, 1)`% and `sigma` was `r round(slr_pen_glance$sigma, 1)` grams. Adding `year` helped, but only a little.
+
+:::
+
+</div>
+
+## Interpreting the Model
+
+<div style="font-size:15pt">
+
+::::{.columns}
+
+:::{.column width="60%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+lr_fit |>
+  tidy(conf.int = TRUE) |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+:::{.column width="40%"}
+
+:::{.fragment}
+
+The estimated model is:
+
+$$\mathbb{E}\left[\text{body mass}\right] \approx 208300.6 + 50.74\cdot x_1 - 106.72\cdot x_4$$
+
+where $x_1$ is flipper length and $x_4$ is year.
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+**Intercept:** The intercept would be the average body mass of a penguin with a 0mm flipper length *in the year 0*. That is meaningless -- and doubly an extrapolation, since our flipper lengths are all between 172mm and 231mm and our years are 2007 to 2009.
+
+:::
+
+:::{.fragment}
+
+**Flipper Length:** Holding year fixed, we expect a one millimeter increase in flipper length to be associated with an increase in average body mass of about 50.7g. The 95% confidence bounds indicate that the increase is between 47.8g and 53.7g.
+
+:::
+
+:::{.fragment}
+
+**Year:** Holding flipper length fixed, we expect each additional year to be associated with a *decrease* in average body mass of about 106.7g (between 55.8g and 157.7g). Be careful with this one -- we only have three distinct years, treating year as numeric assumes the same change from year to year, and `year` may be standing in for other differences between penguins that we haven't modeled.
+
+:::
+
+:::{.fragment}
+
+**Checking Intuition:** The positive flipper length coefficient matches our expectation. We didn't have a strong expectation about year, so this is a result we'd want to investigate further before believing it.
+
+:::
+
+</div>
+
+## Machine Learning Reminders
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+We've defined the machine learning setting to be one where we come to our modeling scenarios from an exploratory standpoint and where our primary goal is *prediction*.
+
+:::
+
+:::{.fragment}
+
+**The Data:** We're using data collected on emergency medical response times.
+
+:::
+
+:::{.fragment}
+
+```{r}
+ems |>
+  select(call_id, hour, priority, distance_mi, station_units, traffic_index, active_incidents, short_crew, response_time_min) |>
+  head(n = 3) |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::{.fragment}
+
+**Objective:** We're seeking to predict how long an EMS team will take to arrive on the scene of an emergency, from the instant a 911 call is placed.
+
+:::
+
+:::{.fragment}
+
+**A Note on Approach:** Last time we built a simple linear regression benchmark using only distance. Multiple linear regression is a natural next step: it is fast to fit and can make use of many predictors at once. It also makes a respectable baseline against which more flexible models are compared.
+
+:::
+
+:::{.fragment}
+
+We'll compare our new multiple linear regression model against last time's simple linear regression benchmark. Our goal is to see whether adding predictors improves performance on *validation* data.
+
+:::
+
+</div>
+
+## Which Predictors Can We Use?
+
+<div style="font-size:15pt">
+
+:::{.fragment fragment-index=1}
+
+Our objective is to predict response time *from the instant a 911 call is placed*. That means every predictor must be something we would **know at that moment**.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=2}
+
+**Watch out for leakage.** Three columns in this data set are *components* of the response:
+
+```{r}
+#| echo: true
+#| eval: true
+
+ems |>
+  mutate(rebuilt = (dispatch_sec + turnout_sec)/60 + 
+           travel_min) |>
+  summarize(max_abs_difference = 
+              max(abs(response_time_min - rebuilt))) |>
+  kable(digits = 4) |>
+  kable_styling(font_size = 16)
+```
+
+The response time is *exactly* `dispatch_sec` plus `turnout_sec` (converted to minutes) plus `travel_min`, up to rounding. A model using them would look fantastic and be useless -- we won't know them until after the call is over.
+
+:::
+
+:::{.fragment fragment-index=4}
+
+Handling missing values is a topic for later. For now we'll stick to predictors that are complete.
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment fragment-index=3}
+
+**Watch out for missing values.** Some potential predictors have missing observations:
+
+```{r}
+#| echo: true
+#| eval: true
+
+ems |>
+  select(distance_mi, priority, station_units, 
+         active_incidents, short_crew,
+         traffic_index, units_available, 
+         visibility_mi) |>
+  summarize(across(everything(), \(x) sum(is.na(x)))) |>
+  pivot_longer(everything(), 
+               names_to = "variable", 
+               values_to = "missing") |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Splitting the Data
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+We'll split the data in *exactly* the same way we did last time -- same seed, same proportions. That means our training and validation observations are identical to those used for the simple linear regression benchmark, so comparing the two models is fair.
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+
+set.seed(11252026)
+
+data_splits <- initial_validation_split(ems, prop = c(0.8, 0.15))
+
+train <- training(data_splits)
+validation <- validation(data_splits)
+test <- testing(data_splits)
+```
+
+:::
+
+:::{.fragment}
+
+As before, the `test` set stays locked away until we've settled on a final model.
+
+:::
+
+</div>
+
+## Exploring the Training Data
+
+<div style="font-size:15pt">
+
+:::{.fragment}
+
+Exploratory data analysis happens on the `train`ing data only. Here are the correlations between the response and several candidate predictors that are complete and known at call time:
+
+:::
+
+::::{.columns}
+
+:::{.column width="55%"}
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+
+train |>
+  select(response_time_min, distance_mi, station_units,
+         priority, short_crew, active_incidents,
+         is_weekend, hour) |>
+  cor() |>
+  as_tibble(rownames = "variable") |>
+  select(variable, response_time_min) |>
+  filter(variable != "response_time_min") |>
+  arrange(desc(abs(response_time_min))) |>
+  kable(digits = 3) |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+Distance is by far the strongest. `station_units` and `priority` are moderately associated, and `short_crew` and `active_incidents` are weak on their own.
+
+:::
+
+:::{.fragment}
+
+We'll include distance, priority, station units, active incidents, and short crew. A predictor that looks weak by itself can still help once the others are in the model, and the validation data will tell us whether the extra predictors are worth it.
+
+:::
+
+:::{.fragment}
+
+Note that `priority` (1, 2, or 3) and `short_crew` (0 or 1) are *coded* as numbers. Like `year`, we'll treat them as numeric for now.
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Fitting the Models
+
+<div style="font-size:15pt">
+
+:::{.fragment}
+
+We'll refit last time's simple linear regression benchmark, then fit our multiple linear regression model -- both using only the `train`ing data.
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: true
+#| eval: true
+
+lr_spec <- linear_reg() |>
+  set_engine("lm")
+
+#Last time's simple linear regression benchmark
+slr_rec <- recipe(response_time_min ~ distance_mi, data = train)
+
+slr_wf <- workflow() |>
+  add_model(lr_spec) |>
+  add_recipe(slr_rec)
+
+slr_fit <- slr_wf |>
+  fit(train)
+
+#Our new multiple linear regression model
+mlr_rec <- recipe(response_time_min ~ distance_mi + 
+                    priority + 
+                    station_units + 
+                    active_incidents + 
+                    short_crew, 
+                  data = train)
+
+mlr_wf <- workflow() |>
+  add_model(lr_spec) |>
+  add_recipe(mlr_rec)
+
+mlr_fit <- mlr_wf |>
+  fit(train)
+```
+
+:::
+
+</div>
+
+## Assessing Performance
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+As before, we'll measure performance with RMSE on both the training (in sample) and validation (out of sample) data.
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center>**Training**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+mlr_fit |>
+  augment(train) |>
+  rmse(response_time_min, .pred)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+mlr_fit |>
+  augment(train) |>
+  rmse(response_time_min, .pred) |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center>**Validation**</center>
+
+```{r}
+#| echo: true
+#| eval: false
+
+mlr_fit |>
+  augment(validation) |>
+  rmse(response_time_min, .pred)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+mlr_fit |>
+  augment(validation) |>
+  rmse(response_time_min, .pred) |>
+  kable() |>
+  kable_styling(font_size = 16)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+The training and validation metrics are close to one another, so the model is not overfitting. That's not surprising -- we have roughly 160,000 training observations and only five predictors.
+
+:::
+
+</div>
+
+## Comparing to the Benchmark
+
+<div style="font-size:16pt">
+
+```{r}
+#| include: false
+
+get_rmse <- function(fit, data){
+  fit |>
+    augment(data) |>
+    rmse(response_time_min, .pred) |>
+    pull(.estimate)
+}
+
+perf <- tibble(
+  Model = c("Simple Linear Regression (distance only)", 
+            "Multiple Linear Regression (five predictors)"),
+  Training = c(get_rmse(slr_fit, train), get_rmse(mlr_fit, train)),
+  Validation = c(get_rmse(slr_fit, validation), get_rmse(mlr_fit, validation))
+)
+```
+
+:::{.fragment}
+
+**RMSE, in minutes:**
+
+:::
+
+:::{.fragment}
+
+```{r}
+#| echo: false
+#| eval: true
+
+perf |>
+  kable(digits = 3) |>
+  kable_styling(font_size = 18)
+```
+
+:::
+
+:::{.fragment}
+
+On validation data, our typical prediction error fell from about `r sprintf("%.2f", perf$Validation[1])` minutes to about `r sprintf("%.2f", perf$Validation[2])` minutes -- an improvement of roughly `r round(100 * (1 - perf$Validation[2] / perf$Validation[1]))`%.
+
+:::
+
+:::{.fragment}
+
+**A Reminder:** Adding predictors can never make *training* performance worse, so training RMSE alone can't tell us whether extra predictors are worth including. It's the improvement on the *validation* data that matters.
+
+:::
+
+:::{.fragment}
+
+The multiple linear regression model clearly beats our simple benchmark. But how good is "about `r sprintf("%.1f", perf$Validation[2])` minutes"? Let's look at the residuals.
+
+:::
+
+</div>
+
+## Examining Residuals
+
+<div style="font-size:16pt">
+
+:::{.fragment}
+
+Our "typical error" number is only trustworthy if the spread of the errors is about the same for every prediction. Let's see...
+
+:::
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center>**Training**</center>
+
+```{r}
+#| echo: true
+#| eval: true
+#| fig.height: 4
+
+mlr_fit |>
+  augment(train) |>
+  ggplot() + 
+  geom_point(aes(x = .pred, y = .resid),
+             alpha = 0.1) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  geom_smooth(aes(x = .pred, y = .resid),
+              se = TRUE)
+```
+
+:::
+
+:::
+
+:::{.column width="50%"}
+
+:::{.fragment}
+
+<center>**Validation**</center>
+
+```{r}
+#| echo: true
+#| eval: true
+#| fig.height: 4
+
+mlr_fit |>
+  augment(validation) |>
+  ggplot() + 
+  geom_point(aes(x = .pred, y = .resid),
+             alpha = 0.1) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  geom_smooth(aes(x = .pred, y = .resid),
+              se = TRUE)
+```
+
+:::
+
+:::
+
+::::
+
+</div>
+
+## Examining Residuals
+
+<div style="font-size:16pt">
+
+::::{.columns}
+
+:::{.column width="55%"}
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig.height: 4.5
+
+mlr_fit |>
+  augment(validation) |>
+  ggplot() + 
+  geom_point(aes(x = .pred, y = .resid),
+             alpha = 0.1) +
+  geom_hline(yintercept = 0, 
+             color = "red",
+             linetype = "dashed",
+             linewidth = 1.5) +
+  geom_smooth(aes(x = .pred, y = .resid),
+              se = TRUE) +
+  labs(title = "Validation Residuals",
+       x = "Predicted Response Time (min)",
+       y = "Residual")
+```
+
+:::
+
+:::{.column width="45%"}
+
+:::{.fragment}
+
+The residuals are centered close to zero across the range, but their **spread grows steadily** as the predicted response time grows -- a fan shape. There are also many more large *positive* residuals (under-predictions) than large negative ones. This is partly because response time can't go below zero.
+
+:::
+
+:::{.fragment}
+
+Let's quantify that fan, using the validation data:
+
+```{r}
+#| echo: false
+#| eval: true
+
+mlr_fit |>
+  augment(validation) |>
+  mutate(`Predicted Time (min)` = cut_number(.pred, n = 5)) |>
+  group_by(`Predicted Time (min)`) |>
+  summarize(`Observations` = n(),
+            `Typical Error (RMSE)` = sqrt(mean(.resid^2))) |>
+  kable(digits = 2) |>
+  kable_styling(font_size = 15)
+```
+
+:::
+
+:::
+
+::::
+
+:::{.fragment}
+
+The constant variance assumption is violated. A single "typical error" of about `r sprintf("%.1f", perf$Validation[2])` minutes is too pessimistic for the shortest predicted responses and far too optimistic for the longest, so any intervals we build from it will not be trustworthy. We have more work to do!
+
+:::
+
+</div>
+
+## Summary
+
+<div style="font-size:17pt">
+
+:::{.fragment}
+
+*Multiple linear regression* models a numerical response using two or more numerical predictors: $\mathbb{E}\left[y\right] = \beta_0 + \beta_1 x_1 + \cdots + \beta_k x_k$. Each coefficient is interpreted *holding the other predictors fixed*.
+
+:::
+
+:::{.fragment}
+
+**In the *statistical learning* setting**, we hypothesized a model for penguin body mass using flipper length, bill length, bill depth, and year. The global test and the term-based tests are no longer the same test. We reduced the model *one term at a time* -- dropping bill length, then bill depth -- until every remaining term was significant, and we checked the assumptions (including multicollinearity and influence) on the final model. The final model suggests that, holding the other term fixed, longer flippers are associated with greater body mass and later years with lower body mass.
+
+:::
+
+:::{.fragment}
+
+**In the *machine learning* setting**, we used only predictors we would know at call time (avoiding leakage) and complete predictors (avoiding missing values). We trained a five-predictor model for EMS response time on the same training data as last time, and it beat our simple linear regression benchmark on the validation data. The residuals still showed a fan shape, so there is room to improve.
+
+:::
+
+:::{.fragment}
+
+**The new benchmark:** A validation RMSE of about `r sprintf("%.1f", perf$Validation[2])` minutes is the number future models will need to beat.
+
+:::
+
+</div>
+
+## Next Time...
+
+<center> 
+
+<font size="120pt"><br/> Interpreting Model Coefficients and Predictions
+</font>
+
+</center>
